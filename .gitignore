@@ -1,0 +1,25 @@
+target
+*.class
+*.iml
+*.ipr
+*.iws
+.idea
+*.sc
+out
+*.sc
+metastore_db
+*.csv
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+/dsq-prototype/data/*.csv
+/dsq-prototype/data
+
+# Python
+*.pyc
