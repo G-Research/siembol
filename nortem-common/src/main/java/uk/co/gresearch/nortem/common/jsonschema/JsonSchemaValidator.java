@@ -1,6 +1,6 @@
 package uk.co.gresearch.nortem.common.jsonschema;
 
-import uk.co.gresearch.nortem.result.NortemResult;
+import uk.co.gresearch.nortem.common.result.NortemResult;
 
 public interface JsonSchemaValidator {
     NortemResult getJsonSchema();

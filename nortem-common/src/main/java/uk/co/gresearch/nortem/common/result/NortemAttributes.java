@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.result;
+package uk.co.gresearch.nortem.common.result;
 
 public class NortemAttributes {
     private String jsonSchema;

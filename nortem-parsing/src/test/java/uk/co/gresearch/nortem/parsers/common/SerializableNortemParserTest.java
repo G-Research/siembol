@@ -4,7 +4,6 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.internal.runners.statements.ExpectException;
 
 import java.util.List;
 import java.util.Map;

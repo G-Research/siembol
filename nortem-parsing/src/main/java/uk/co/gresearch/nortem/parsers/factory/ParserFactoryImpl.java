@@ -19,7 +19,7 @@ import uk.co.gresearch.nortem.parsers.extractors.*;
 import uk.co.gresearch.nortem.parsers.model.*;
 import uk.co.gresearch.nortem.parsers.transformations.Transformation;
 import uk.co.gresearch.nortem.parsers.transformations.TransformationFactory;
-import uk.co.gresearch.nortem.result.NortemResult;
+import uk.co.gresearch.nortem.common.result.NortemResult;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
