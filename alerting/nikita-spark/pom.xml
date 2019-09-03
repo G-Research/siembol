@@ -3,36 +3,41 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>nikita-core</artifactId>
-    <name>nikita-core</name>
+    <artifactId>nikita-spark</artifactId>
+    <name>nikita-spark</name>
     <packaging>jar</packaging>
     <properties>
     </properties>
-	<parent>
+    <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>alerting</artifactId>
         <version>1.00-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson_version}</version>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.2.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.adrianwalker</groupId>
-            <artifactId>multiline-string</artifactId>
-            <version>0.1.2</version>
+			<groupId>uk.co.gresearch.nortem</groupId>
+			<artifactId>nikita-core</artifactId>
+			<version>1.00-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -41,41 +46,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-schema-core</artifactId>
-            <version>1.2.10</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>2.2.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.reinert</groupId>
-            <artifactId>jjschema</artifactId>
-            <version>1.16</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.co.gresearch.nortem</groupId>
-            <artifactId>nortem-common</artifactId>
-            <version>1.00-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito_version}</version>
+            <groupId>org.adrianwalker</groupId>
+            <artifactId>multiline-string</artifactId>
+            <version>0.1.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito_version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <build>
+	</dependencies>	
+   <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -96,10 +73,16 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>uk.co.gresearch.nortem.nikita.spark</mainClass>
+                                </transformer>
+                            </transformers>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <shadedClassifierName>uber</shadedClassifierName>
                             <filters>
                                 <filter>
+                                    <!-- Sometimes these get added and confuse the uber jar out of shade -->
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.SF</exclude>
@@ -109,17 +92,10 @@
                                 </filter>
                             </filters>
                             <relocations>
-                                <relocation>
-                                    <pattern>com</pattern>
-                                    <shadedPattern>repackaged.com</shadedPattern>
-                                    <includes>
-                                        <include>com.fasterxml.jackson.*</include>
-                                        <include>com.github.*</include>
-                                    </includes>
-                                </relocation>
                             </relocations>
                             <artifactSet>
                                 <excludes>
+                                    <!-- We can also exclude by artifactId and groupId -->
                                     <exclude>org.slf4j.impl*</exclude>
                                     <exclude>org.slf4j:slf4j-log4j*</exclude>
                                 </excludes>
@@ -142,4 +118,6 @@
             </plugin>
         </plugins>
     </build>
+
+
 </project>

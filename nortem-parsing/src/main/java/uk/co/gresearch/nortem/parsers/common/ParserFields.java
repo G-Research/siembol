@@ -7,7 +7,9 @@ public enum ParserFields {
     DST_PORT("ip_dst_port"),
     PROTOCOL("protocol"),
     TIMESTAMP("timestamp"),
-    ORIGINAL("original_string");
+    ORIGINAL("original_string"),
+    GUID("guid"),
+    SENSOR_TYPE("source.type");
 
     private final String name;
     ParserFields(String name) {

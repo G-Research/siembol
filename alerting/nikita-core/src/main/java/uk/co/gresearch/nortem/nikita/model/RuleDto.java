@@ -24,7 +24,7 @@ public class RuleDto {
 
     @JsonProperty("source_type")
     @Attributes(required = true,
-            description = "The source type (source:type in metron), use '*' for an all source type rule")
+            description = "The source type (source:type in data), use '*' for an all source type rule")
     private String sourceType;
 
     @JsonProperty("matchers")
