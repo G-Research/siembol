@@ -167,6 +167,27 @@ public class CorrelationRuleTest {
         ret = rule.match(alerts.get(0));
         Assert.assertEquals(OK, ret.getStatusCode());
         Assert.assertEquals(MATCH, ret.getAttributes().getEvaluationResult());
+        rule.clean(30006 + 15000);
+    }
+
+    @Test
+    public void cleanAndRemove() {
+        ruleFlags = EnumSet.of(CorrelationRule.Flags.USE_EVENT_TIME);
+        rule = builder.flags(ruleFlags).alertsThresholds(1).build();
+
+        for (int i = 1; i < 100; i++) {
+            alerts = createAlert(2, correlationKey + String.valueOf(i),
+                    "alert3",
+                    30000 + i);
+            for (Map<String, Object> alert : alerts) {
+                NikitaResult ret = rule.match(alert);
+                Assert.assertEquals(OK, ret.getStatusCode());
+                Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+            }
+        }
+
+        rule.clean(30050 + 15000);
+
     }
 
     @Test

@@ -63,11 +63,7 @@ public class CorrelationRule extends AbstractRule {
 
     public void clean(long currentTime) {
         long waterMark = currentTime - timeWindowInMs - maxLagTimeInMs;
-        for (String key : alertCounters.keySet()) {
-            if (cleanAlertCounters(alertCounters.get(key), waterMark)) {
-                alertCounters.remove(key);
-            }
-        }
+        alertCounters.keySet().removeIf(x -> cleanAlertCounters(alertCounters.get(x), waterMark));
     }
 
     public List<String> getAlertNames() {
