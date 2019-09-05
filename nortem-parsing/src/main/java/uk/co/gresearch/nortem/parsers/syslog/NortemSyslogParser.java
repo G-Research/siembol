@@ -10,6 +10,7 @@ import uk.co.gresearch.nortem.parsers.extractors.ParserExtractor;
 import uk.co.gresearch.nortem.parsers.transformations.Transformation;
 import uk.co.gresearch.nortem.parsers.transformations.TransformationsLibrary;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static uk.co.gresearch.nortem.parsers.common.ParserFields.ORIGINAL;
@@ -96,14 +97,6 @@ public class NortemSyslogParser implements NortemParser {
                 }
             }
 
-            if (extractors != null) {
-                syslogObject = ParserExtractor.extract(extractors, syslogObject);
-            }
-
-            if (transformations != null) {
-                syslogObject = TransformationsLibrary.transform(transformations, syslogObject);
-            }
-
             int i = 0;
             for (Pair<String, List<Pair<String, String>>> sdElement : syslogMessage.getSdElements()) {
                 Map<String, Object> currentElements = new HashMap<>();
@@ -125,12 +118,26 @@ public class NortemSyslogParser implements NortemParser {
                 ret.add(syslogObject);
             }
 
-            return ret;
+            return ret.stream()
+                    .map(x -> extractAndTransfrom(x))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             String errorMessage = String.format("Unable to parse message: %s", originalMessage);
             LOG.error(errorMessage, e);
             throw new IllegalStateException(errorMessage, e);
         }
+    }
+
+    private Map<String, Object> extractAndTransfrom(Map<String, Object> message) {
+        Map<String, Object> ret = message;
+        if (extractors != null) {
+            ret = ParserExtractor.extract(extractors, ret);
+        }
+
+        if (transformations != null) {
+            ret = TransformationsLibrary.transform(transformations, ret);
+        }
+        return ret;
     }
 
     public static class Builder {

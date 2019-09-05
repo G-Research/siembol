@@ -169,6 +169,12 @@ public class BasicSyslogNortemParserTest {
     @Multiline
     public static String multipleSdElementsDummyCheckpoint1;
 
+    /**
+     * <85>1 2018-05-22T17:07:41Z 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 syslog1="accept"][Fields@1.3.6.1.4.1.2620 syslog2="deny"]
+     **/
+    @Multiline
+    public static String multipleSdElementsDummyCheckpoint2;
+
 
     @Before
     public void setUp() throws Exception {
@@ -386,6 +392,20 @@ public class BasicSyslogNortemParserTest {
         Assert.assertEquals("deny", current2.get("Action2"));
         Assert.assertEquals("Fields@1.3.6.1.4.1.2620", current1.get("syslog_sd_id"));
         Assert.assertEquals("Fields@1.3.6.1.4.1.2620", current2.get("syslog_sd_id"));
+    }
+
+    @Test
+    public void noMergeSdparametersExtractAndTransform(){
+        syslogParser = factory.create(syslogConfigCustomTimpestamp).getAttributes().getNortemParser();
+        List<Map<String, Object>> out = syslogParser.parse(multipleSdElementsDummyCheckpoint2.trim().getBytes());
+        Assert.assertEquals(2, out.size());
+        Map<String, Object> current1 = out.get(0);
+        Map<String, Object> current2 = out.get(1);
+        Assert.assertEquals(current2.size(), current1.size());
+        Assert.assertEquals("accept", current1.get("dummy1"));
+        Assert.assertEquals("deny", current2.get("dummy2"));
+        Assert.assertEquals("Fields@1.3.6.1.4.1.2620", current1.get("dummy_sd_id"));
+        Assert.assertEquals("Fields@1.3.6.1.4.1.2620", current2.get("dummy_sd_id"));
     }
 }
 
