@@ -11,7 +11,7 @@
 	<parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.01-SNAPSHOT</version>
+        <version>1.02-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -59,9 +59,8 @@
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-common</artifactId>
-            <version>1.01-SNAPSHOT</version>
+            <version>1.02-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>

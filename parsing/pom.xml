@@ -3,27 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>uk.co.gresearch.nortem</groupId>
-    <artifactId>nortem</artifactId>
-    <name>nortem</name>
-    <version>1.02-SNAPSHOT</version>
+    <artifactId>parsing</artifactId>
+    <name>parsing</name>
     <packaging>pom</packaging>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-		<java_version>1.8</java_version>
-        <jackson_version>2.9.8</jackson_version>
-        <junit_version>4.12</junit_version>
-        <mockito_version>1.10.19</mockito_version>
-        <shade_version>2.4.3</shade_version>
-        <curator_version>2.7.1</curator_version>
     </properties>
+	 <parent>
+        <groupId>uk.co.gresearch.nortem</groupId>
+        <artifactId>nortem</artifactId>
+        <version>1.02-SNAPSHOT</version>
+    </parent>
     <modules>
-        <module>nortem-common</module>
-        <module>parsing</module>
-        <module>alerting</module>
+        <module>nortem-parsing</module>
+        <module>nortem-parsing-app</module>
     </modules>
     <dependencies>
     </dependencies>

@@ -39,7 +39,7 @@ public class ModelHelper {
             .getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
-    private static final String NO_TITLE_ERROR_MSG = "Can not find title annotation in Dto Class";
+    private static final String NO_TITLE_ERROR_MSG = "Can not find title annotation in Dto Class %s";
     private static final String NO_FIELDS_ERROR_MSG = "Dto class without fields";
     private static ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final String PROPERTIES_KEY = "properties";
@@ -96,8 +96,9 @@ public class ModelHelper {
             String title = classAnnotations.get(AnnotationType.TITLE);
 
             if (title == null) {
-                LOG.error(NO_TITLE_ERROR_MSG);
-                throw new IllegalStateException(NO_TITLE_ERROR_MSG);
+                String errorMsg = String.format(NO_TITLE_ERROR_MSG, current.toString());
+                LOG.error(errorMsg);
+                throw new IllegalStateException(errorMsg);
             }
 
             if (fieldNames.containsKey(title)) {
