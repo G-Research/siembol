@@ -15,19 +15,9 @@
     </parent>
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson_version}</version>
+            <groupId>uk.co.gresearch.nortem</groupId>
+            <artifactId>nortem-common</artifactId>
+            <version>1.02-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -70,11 +60,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.co.gresearch.nortem</groupId>
-            <artifactId>nortem-common</artifactId>
-            <version>1.02-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
