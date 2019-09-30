@@ -39,9 +39,11 @@ public class StormParsingApplication {
     private static final int STORM_ATTR_INDEX = 0;
     private static final int PARSING_ATTR_INDEX = 1;
     private static final String WRONG_ARGUMENT_MSG =  "Wrong arguments. The application expects " +
-            "Base64 encoded storm attributes and parsin app attributes";
+            "Base64 encoded storm attributes and parsing app attributes";
     private static final String KAFKA_PRINCIPAL_FORMAT_MSG = "%s.%s";
     private static final String TOPOLOGY_NAME_FORMAT_MSG = "parsing-%s";
+    private static final String SUBMIT_INFO_LOG = "Submitted parsing application storm topology: {} " +
+            "with storm attributes: {}\nparsing application attributes: {}";
 
     private static KafkaSpoutConfig<String, byte[]> createKafkaSpoutConfig(
             StormParsingApplicationAttributes stormAttributes,
@@ -103,8 +105,9 @@ public class StormParsingApplication {
                 .readerFor(StormParsingApplicationAttributes.class)
                 .readValue(stormAttributesStr);
 
+
         ParsingApplicationFactoryResult result = new ParsingApplicationFactoryImpl().create(parsingAttributesStr);
-        if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.ERROR) {
+        if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK) {
             throw new IllegalArgumentException(result.getAttributes().getMessage());
         }
 
@@ -122,6 +125,7 @@ public class StormParsingApplication {
 
         StormTopology topology = createTopology(stormAttributes, parsingAttributes);
         String topologyName = String.format(TOPOLOGY_NAME_FORMAT_MSG, parsingAttributes.getName());
+        LOG.info(SUBMIT_INFO_LOG, topologyName, stormAttributesStr, parsingAttributesStr);
         StormSubmitter.submitTopology(topologyName, config, topology);
     }
 }
