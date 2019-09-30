@@ -24,3 +24,6 @@ pom.xml.versionsBackup
 
 # Python
 *.pyc
+
+#Storm
+worker.yaml

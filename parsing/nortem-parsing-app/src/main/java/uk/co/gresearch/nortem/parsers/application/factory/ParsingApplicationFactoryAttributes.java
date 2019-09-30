@@ -7,6 +7,7 @@ import java.util.List;
 public class ParsingApplicationFactoryAttributes {
     private String jsonSchema;
     private String name;
+    private String applicationParserSpecification;
     private Integer inputParallelism;
     private Integer outputParallelism;
     private Integer parsingParallelism;
@@ -76,5 +77,13 @@ public class ParsingApplicationFactoryAttributes {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getApplicationParserSpecification() {
+        return applicationParserSpecification;
+    }
+
+    public void setApplicationParserSpecification(String applicationParserSpecification) {
+        this.applicationParserSpecification = applicationParserSpecification;
     }
 }

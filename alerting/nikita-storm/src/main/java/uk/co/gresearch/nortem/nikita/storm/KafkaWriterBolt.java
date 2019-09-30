@@ -11,6 +11,7 @@ import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.OutOfOrderSequenceException;
 import org.apache.kafka.common.errors.ProducerFencedException;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -44,8 +45,8 @@ public class KafkaWriterBolt extends BaseRichBolt {
 
     public KafkaWriterBolt(NikitaStormAttributes attributes) {
         this.props = new Properties();
-        props.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        props.put(VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(BOOTSTRAP_SERVERS_CONFIG, attributes.getBootstrapServers());
         props.put(ProducerConfig.CLIENT_ID_CONFIG, attributes.getClientId());
         props.put(SECURITY_PROTOCOL_CONFIG, attributes.getSecurityProtocol());

@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.nikita.storm;
+package uk.co.gresearch.nortem.common.utils;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

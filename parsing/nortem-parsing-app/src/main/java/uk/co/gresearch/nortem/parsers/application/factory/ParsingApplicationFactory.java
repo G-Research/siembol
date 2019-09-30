@@ -6,6 +6,8 @@ public interface ParsingApplicationFactory {
 
     ParsingApplicationFactoryResult create(String parserApplicationConfig, String parserConfigs);
 
+    ParsingApplicationFactoryResult create(String parserApplicationConfig);
+
     ParsingApplicationFactoryResult validateConfiguration(String parserConfig);
 
     ParsingApplicationFactoryResult validateConfigurations(String parserConfigurations);

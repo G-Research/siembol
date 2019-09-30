@@ -7,7 +7,7 @@
     <groupId>uk.co.gresearch.nortem</groupId>
     <artifactId>nortem</artifactId>
     <name>nortem</name>
-    <version>1.02-SNAPSHOT</version>
+    <version>1.03-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,6 +19,8 @@
         <mockito_version>1.10.19</mockito_version>
         <shade_version>2.4.3</shade_version>
         <curator_version>2.7.1</curator_version>
+        <storm_version>1.1.0</storm_version>
+        <kafka_version>1.0.0</kafka_version>
     </properties>
     <modules>
         <module>nortem-common</module>

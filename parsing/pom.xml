@@ -11,11 +11,12 @@
 	 <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>nortem</artifactId>
-        <version>1.02-SNAPSHOT</version>
+        <version>1.03-SNAPSHOT</version>
     </parent>
     <modules>
         <module>nortem-parsing</module>
         <module>nortem-parsing-app</module>
+        <module>nortem-parsing-storm</module>
     </modules>
     <dependencies>
     </dependencies>

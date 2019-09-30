@@ -87,6 +87,7 @@ public class ParserFactoryImpl implements ParserFactory {
             attributes.setNortemParser(parser);
             attributes.setExtractors(extractors);
             attributes.setTransformations(transformations);
+            attributes.setParserName(parserConfig.getParserName());
             return new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, attributes);
 
         } catch (Exception e) {

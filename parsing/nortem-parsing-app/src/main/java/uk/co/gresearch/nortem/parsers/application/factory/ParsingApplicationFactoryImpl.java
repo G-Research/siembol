@@ -71,12 +71,8 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
 
         try {
             ParsingApplicationDto application = JSON_PARSING_APP_READER.readValue(parserApplicationConfig);
-            attributes.setName(application.getParsingApplicationName());
-            attributes.setInputParallelism(application.getParsingApplicationSettingsDto().getInputParallelism());
-            attributes.setOutputParallelism(application.getParsingApplicationSettingsDto().getOutputParallelism());
-            attributes.setParsingParallelism(application.getParsingApplicationSettingsDto().getParsingParallelism());
-            attributes.setInputTopics(application.getParsingApplicationSettingsDto().getInputTopics());
-
+            attributes.setApplicationParserSpecification(parserApplicationConfig);
+            addApplicationAttributes(attributes, application);
             attributes.setApplicationParser(createParser(application, parserConfigs));
         } catch (Exception e) {
             attributes.setMessage(ExceptionUtils.getStackTrace(e));
@@ -86,9 +82,23 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     }
 
     @Override
-    public ParsingApplicationFactoryResult validateConfiguration(String parserConfig) {
+    public ParsingApplicationFactoryResult create(String parserApplicationConfig) {
+        ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();
         try {
-            String applications = wrapParserApplicationToParserApplications(parserConfig);
+            ParsingApplicationDto application = JSON_PARSING_APP_READER.readValue(parserApplicationConfig);
+            attributes.setApplicationParserSpecification(parserApplicationConfig);
+            addApplicationAttributes(attributes, application);
+        } catch (Exception e) {
+            attributes.setMessage(ExceptionUtils.getStackTrace(e));
+            return new ParsingApplicationFactoryResult(ERROR, attributes);
+        }
+        return new ParsingApplicationFactoryResult(OK, attributes);
+    }
+
+    @Override
+    public ParsingApplicationFactoryResult validateConfiguration(String parserApplicationConfig) {
+        try {
+            String applications = wrapParserApplicationToParserApplications(parserApplicationConfig);
             return validateConfigurations(applications);
         } catch (IOException e) {
             ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();
@@ -199,5 +209,14 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
 
         applications.setParsingApplications(Arrays.asList(application));
         return JSON_PARSING_APPS_WRITER.writeValueAsString(applications);
+    }
+
+    private void addApplicationAttributes(ParsingApplicationFactoryAttributes attributes,
+                                          ParsingApplicationDto application) {
+        attributes.setName(application.getParsingApplicationName());
+        attributes.setInputParallelism(application.getParsingApplicationSettingsDto().getInputParallelism());
+        attributes.setOutputParallelism(application.getParsingApplicationSettingsDto().getOutputParallelism());
+        attributes.setParsingParallelism(application.getParsingApplicationSettingsDto().getParsingParallelism());
+        attributes.setInputTopics(application.getParsingApplicationSettingsDto().getInputTopics());
     }
 }
