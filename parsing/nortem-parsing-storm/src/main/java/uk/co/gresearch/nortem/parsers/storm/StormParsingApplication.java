@@ -113,7 +113,7 @@ public class StormParsingApplication {
 
         ParsingApplicationFactoryAttributes parsingAttributes = result.getAttributes();
         stormAttributes.setClientId(String.format(KAFKA_PRINCIPAL_FORMAT_MSG,
-                stormAttributes.getClientIdPrefix(),  parsingAttributes.getName()));
+                stormAttributes.getClientIdPrefix(), parsingAttributes.getName()));
         stormAttributes.setGroupId(String.format(KAFKA_PRINCIPAL_FORMAT_MSG,
                 stormAttributes.getGroupIdPrefix(), parsingAttributes.getName()));
 

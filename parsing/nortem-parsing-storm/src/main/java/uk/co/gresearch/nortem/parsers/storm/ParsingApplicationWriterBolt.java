@@ -5,7 +5,6 @@ import java.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.errors.AuthorizationException;
@@ -39,8 +38,11 @@ public class ParsingApplicationWriterBolt extends BaseRichBolt {
         props.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(BOOTSTRAP_SERVERS_CONFIG, attributes.getBootstrapServers());
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, attributes.getClientIdPrefix());
+        props.put(CLIENT_ID_CONFIG, attributes.getClientId());
         props.put(SECURITY_PROTOCOL_CONFIG, attributes.getSecurityProtocol());
+        if (attributes.getWriterCompressionType() != null) {
+            props.put(COMPRESSION_TYPE_CONFIG, attributes.getWriterCompressionType());
+        }
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ParsingApplicationWriterBolt extends BaseRichBolt {
         try {
             for (ParsingApplicationResult result : results) {
                 for (String message : result.getMessages()) {
-                    LOG.debug("Sending message {}\n to the topic topic {}", message, result.getTopic());
+                    LOG.debug("Sending message {}\n to the topic {}", message, result.getTopic());
                     producer.send(new ProducerRecord<>(result.getTopic(),
                             String.valueOf(message.hashCode()),
                             message));

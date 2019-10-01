@@ -161,16 +161,17 @@ public class StormParsingApplicationTest {
 
 
         StormParsingApplicationAttributes stormAttributes = new StormParsingApplicationAttributes();
-        stormAttributes.setGroupIdPrefix("parsing-test");
+        stormAttributes.setGroupId("parsing-test");
         stormAttributes.setBootstrapServers(sb.toString());
         stormAttributes.setSecurityProtocol(PLAINTEXT.toString());
 
         stormAttributes.setSessionTimeoutMs(300000);
-        stormAttributes.setClientIdPrefix("my_client_id");
+        stormAttributes.setClientId("my_client_id");
         stormAttributes.setZkUrl(zkServer.getConnectString());
         stormAttributes.setZkPathParserConfigs("/nortem/parserconfigs");
         stormAttributes.setZkBaseSleepMs(1000);
         stormAttributes.setZkMaxRetries(10);
+        stormAttributes.setWriterCompressionType("snappy");
 
         TestKafkaProducer testProducer = new TestKafkaProducer(sb.toString(), "secret");
 

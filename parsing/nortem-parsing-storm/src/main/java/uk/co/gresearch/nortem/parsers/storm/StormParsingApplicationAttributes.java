@@ -19,6 +19,8 @@ public class StormParsingApplicationAttributes implements Serializable {
     private String topologyWorkerChildopts;
     @JsonProperty("client.id.prefix")
     private String clientIdPrefix;
+    @JsonProperty("writer.compression.type")
+    private String writerCompressionType;
     @JsonIgnore
     private String clientId;
     @JsonProperty("max.spout.pending")
@@ -154,5 +156,13 @@ public class StormParsingApplicationAttributes implements Serializable {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public String getWriterCompressionType() {
+        return writerCompressionType;
+    }
+
+    public void setWriterCompressionType(String writerCompressionType) {
+        this.writerCompressionType = writerCompressionType;
     }
 }
