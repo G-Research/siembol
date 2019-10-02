@@ -9,7 +9,8 @@ public enum  TransformationTypeDto {
     @JsonProperty("field_name_string_replace_all") FIELD_NAME_STRING_REPLACE_ALL("field_name_string_replace_all"),
     @JsonProperty("rename_fields") RENAME_FIELDS("rename_fields"),
     @JsonProperty("delete_fields") DELETE_FIELDS("delete_fields"),
-    @JsonProperty("trim_value") TRIM_VALUE("trim_value");
+    @JsonProperty("trim_value") TRIM_VALUE("trim_value"),
+    @JsonProperty("chomp_value") CHOMP_VALUE("chomp_value");
 
     private final String name;
     TransformationTypeDto(String name) {

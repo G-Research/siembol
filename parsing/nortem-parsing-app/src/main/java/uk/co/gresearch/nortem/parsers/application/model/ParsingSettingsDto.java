@@ -10,7 +10,7 @@ public class ParsingSettingsDto {
     private RoutingParserDto routingParser;
 
     @JsonProperty("single_parser")
-    @Attributes(description = "The settings of the single parser parsing", minItems = 1)
+    @Attributes(title = "single parser", description = "The settings of the single parser parsing", minItems = 1)
     private ParserPropertiesDto singleParser;
 
     public RoutingParserDto getRoutingParser() {

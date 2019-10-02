@@ -66,6 +66,18 @@ public class TransformationsTest {
     @Multiline
     public static String transformationTrim;
 
+    /**
+     *{
+     *   "transformation_type": "chomp_value",
+     *   "attributes": {
+     *     "fields_filter": {
+     *      "including_fields": ["timestamp", "chomp_field"]
+     *     }
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String transformationChomp;
 
 
     /**
@@ -104,7 +116,7 @@ public class TransformationsTest {
 
 
     /**
-     * {"timestamp":12345, "test field a" : "true", "trim_field" : "   message     ", "dummy field" : "abc"}
+     * {"timestamp":12345, "test field a" : "true", "trim_field" : "   message     ", "dummy field" : "abc", "chomp_field" : "message\n"}
      **/
     @Multiline
     public static String message;
@@ -146,9 +158,26 @@ public class TransformationsTest {
         Assert.assertEquals(12345, transformed.get("timestamp"));
     }
 
+    @Test
+    public void testGoodChomp() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationChomp));
+        Assert.assertTrue(transformation != null);
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals("message", transformed.get("chomp_field"));
+        Assert.assertEquals(12345, transformed.get("timestamp"));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testBadTrim() throws IOException {
         TransformationDto specification = JSON_TRANSFORMATION_READER.readValue(transformationTrim);
+        specification.getAttributes().setFieldsFilter(null);
+        transformation = factory.create(specification);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadChomp() throws IOException {
+        TransformationDto specification = JSON_TRANSFORMATION_READER.readValue(transformationChomp);
         specification.getAttributes().setFieldsFilter(null);
         transformation = factory.create(specification);
     }
@@ -176,10 +205,11 @@ public class TransformationsTest {
         Assert.assertTrue(transformation != null);
 
         Map<String, Object> transformed = transformation.apply(log);
-        Assert.assertEquals(4, transformed.size());
+        Assert.assertEquals(5, transformed.size());
         Assert.assertEquals(12345, transformed.get("timestamp_renamed"));
         Assert.assertEquals("true", transformed.get("test field a"));
         Assert.assertEquals("   message     ", transformed.get("trim_field"));
+        Assert.assertEquals("message\n", transformed.get("chomp_field"));
         Assert.assertEquals("abc", transformed.get("dummy_field_renamed"));
     }
 

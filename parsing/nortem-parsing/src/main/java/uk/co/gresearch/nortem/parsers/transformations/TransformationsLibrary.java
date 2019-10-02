@@ -1,5 +1,6 @@
 package uk.co.gresearch.nortem.parsers.transformations;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,14 @@ public class TransformationsLibrary {
         }
 
         return ((String) obj).trim();
+    }
+
+    public static Object chomp(Object obj) {
+        if (!(obj instanceof String)) {
+            return obj;
+        }
+
+        return StringUtils.chomp((String) obj);
     }
 
     public static Map<String, Object> removeFields(Map<String, Object> log, PatternFilter filter) {

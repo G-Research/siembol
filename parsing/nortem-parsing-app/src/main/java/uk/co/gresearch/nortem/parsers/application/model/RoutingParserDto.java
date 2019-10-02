@@ -27,7 +27,8 @@ public class RoutingParserDto {
     private List<String> mergedFields;
 
     @JsonProperty("default_parser")
-    @Attributes(description = "The parser that should be used if no other parsers will be selected", required = true)
+    @Attributes(title = "default parser",
+            description = "The parser that should be used if no other parsers will be selected", required = true)
     private ParserPropertiesDto defaultParser;
 
     @JsonProperty("parsers")

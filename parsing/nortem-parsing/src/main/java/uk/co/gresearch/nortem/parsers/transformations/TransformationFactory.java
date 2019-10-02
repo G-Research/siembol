@@ -5,6 +5,7 @@ import uk.co.gresearch.nortem.parsers.model.TransformationDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationTypeDto;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TransformationFactory {
@@ -27,7 +28,9 @@ public class TransformationFactory {
             case DELETE_FIELDS:
                 return createDeleteFieldsTransformation(specification.getAttributes());
             case TRIM_VALUE:
-                return createTrimValueTransformation(specification.getAttributes());
+                return createValueTransformation(specification.getAttributes(), TransformationsLibrary::trim);
+            case CHOMP_VALUE:
+                return createValueTransformation(specification.getAttributes(), TransformationsLibrary::chomp);
         }
 
         throw new IllegalArgumentException(UNKNOWN_TRANSFORMATION_TYPE);
@@ -73,14 +76,15 @@ public class TransformationFactory {
         return x -> TransformationsLibrary.removeFields(x, patternFilter);
     }
 
-    private Transformation createTrimValueTransformation(TransformationAttributesDto attributes) {
+    private Transformation createValueTransformation(TransformationAttributesDto attributes,
+                                                     Function<Object, Object> fun) {
         if (attributes == null || attributes.getFieldsFilter() == null) {
             throw new IllegalArgumentException(MISSING_TRANSFORMATION_ATTRIBUTES);
         }
         final PatternFilter fieldFilter = PatternFilter.create(
                 attributes.getFieldsFilter().getIncludingFields(),
                 attributes.getFieldsFilter().getExcludingFields());
-        return x -> TransformationsLibrary.valueTransformation(x, TransformationsLibrary::trim, fieldFilter);
+        return x -> TransformationsLibrary.valueTransformation(x, fun, fieldFilter);
     }
 
 }
