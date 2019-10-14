@@ -7,7 +7,7 @@
     <groupId>uk.co.gresearch.nortem</groupId>
     <artifactId>nortem</artifactId>
     <name>nortem</name>
-    <version>1.06-SNAPSHOT</version>
+    <version>1.07-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,6 +26,7 @@
         <module>nortem-common</module>
         <module>parsing</module>
         <module>alerting</module>
+        <module>config-editor</module>
     </modules>
     <dependencies>
     </dependencies>
