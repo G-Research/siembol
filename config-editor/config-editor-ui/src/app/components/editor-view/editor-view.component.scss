@@ -1,0 +1,25 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    height: 100%;
+}
+
+re-side-bar {
+    min-width: 400px;
+    max-width: 800px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+mat-card-content {
+    max-height: 50px !important;
+    overflow-y: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.viewport {
+    flex: 2;
+    overflow-y: auto;
+}

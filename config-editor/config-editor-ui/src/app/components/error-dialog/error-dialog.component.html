@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Error Details</h1>
+<div mat-dialog-content>
+    <p  class="details">An error occurred when making a request. Please contact SecDev support for help.</p>
+    <mat-divider></mat-divider>
+    <p class="error">{{data.name}}, {{data.message}}</p>
+    <p class="error">{{data.error.attributes.message}}</p>
+</div>
+<div mat-dialog-actions>
+    <button mat-button class="button-layout" (click)="onClickClose()" tabindex="-1">CLOSE</button>
+</div>

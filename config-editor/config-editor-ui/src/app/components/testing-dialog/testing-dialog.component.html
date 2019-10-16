@@ -1,0 +1,42 @@
+<div mat-dialog-title>
+    <div *ngIf="!isSingleConfig"> 
+        <h1>Test Deployment Configuration:</h1> 
+        <div class="title">
+            <div *ngFor="let r of deploymentConfig.configs"><h3 class="list-item"> {{r?.name}} </h3></div>
+        </div>
+    </div>
+    <div *ngIf="isSingleConfig">
+        <h1>Test Config</h1>
+        <div class="title">
+            <h3 class="list-item"> {{deploymentConfig?.name}} </h3>
+        </div>
+    </div>
+</div>
+    <div mat-dialog-content>
+        <div class="columns">
+            <div class="input">
+                <span class="title">
+                    <h4><mat-icon class="left-icon">note</mat-icon>Event</h4>
+                    <h4 class="help"><mat-icon [matTooltip]="EVENT_HELP">help</mat-icon></h4>
+                </span>
+                <textarea class="text-file" [(ngModel)]="alert" (keydown.Tab)="onTab($event)"></textarea>
+            </div>
+            <div class="console">
+                <span class="title">
+                    <h4><mat-icon class="left-icon">computer</mat-icon>Test Output</h4>
+
+                    <div *ngIf="testSuccess === 'fail'">
+                        <h4 class="help"><mat-icon>cancel</mat-icon></h4>
+                    </div>
+                    <div *ngIf="testSuccess === 'success'">
+                        <h4 class="help"><mat-icon>check</mat-icon></h4>
+                    </div>
+                </span>
+                <pre>{{ output }}</pre>
+            </div>
+        </div>
+    </div>
+    <div mat-dialog-actions class="button-row">
+        <button mat-raised-button color="primary" (click)="beginTest()">Test Rule</button>
+        <button mat-raised-button (click)="onClickClose()">Close</button>
+    </div>

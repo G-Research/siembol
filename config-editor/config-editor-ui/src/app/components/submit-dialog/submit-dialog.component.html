@@ -1,0 +1,48 @@
+<div mat-dialog-title class="title-row">
+  <mat-icon *ngIf="!validating && isValid">check</mat-icon>
+  <mat-icon *ngIf="!validating && !isValid">cancel</mat-icon>
+  <h1>Submit Config</h1>
+</div>
+<div mat-dialog-content>
+  <div class="validation" *ngIf="validating; else validationDone">
+    <p> Validating </p>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  <ng-template #validationDone>
+    <div *ngIf="isValid; else invalidMessage">
+      <p>Config has been validated by the backend</p>
+      <p> Do you wish to submit {{ config.name }} to the store? </p>
+    </div>
+    <ng-template #invalidMessage>
+      <p>Config did not pass backend validation.</p>
+      <p>Status code: {{ statusCode }}</p>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Message
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <p class="error">{{ message }}</p>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Exception
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <p class="error">{{ exception || 'No exception provided - it may be wrapped in the message'}}</p>
+        </ng-template>
+      </mat-expansion-panel>
+    </ng-template>
+  </ng-template>
+
+  <mat-divider></mat-divider>
+
+</div>
+<div mat-dialog-actions class="button-row">
+  <button mat-raised-button color="primary" [disabled]="!isValid" (click)="onClickSubmit()">SUBMIT</button>
+  <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+</div>

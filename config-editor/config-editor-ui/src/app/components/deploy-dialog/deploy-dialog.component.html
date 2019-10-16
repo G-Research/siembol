@@ -1,0 +1,66 @@
+<div mat-dialog-title class="title-row">
+  <mat-icon *ngIf="!validating && isValid === true">check</mat-icon>
+  <mat-icon *ngIf="!validating && isValid === false">cancel</mat-icon>
+  <h1>Submit Deployment</h1>
+</div>
+<div mat-dialog-content>
+  <div class="validation" *ngIf="validating; else validationDone">
+    <p> Validating </p>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  <ng-template #validationDone>
+    <div *ngIf="isValid === true">
+      <p>Validation successful</p>
+      <p>Deploying to environment: {{ environment }}</p>
+      <mat-divider></mat-divider>
+      <p>Items in deployment:</p>
+      <div class="rules-list">
+          <ol>
+            <li *ngFor="let config of deployment.configs">
+              {{ config.name }} <span class="extra-info">(v{{ config.version }} - {{ config.author }})</span>
+            </li>
+          </ol>
+      </div>
+      <mat-divider></mat-divider>
+    </div>
+    <div *ngIf="isValid === false">
+      <p>Validation was unsuccessful</p>
+      <p>Status code: {{ statusCode }}</p>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Message
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <p class="error">{{ message }}</p>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Exception
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <p class="error">{{ exception || 'No exception provided - it may be wrapped in the message'}}</p>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-divider></mat-divider>
+    </div>
+  </ng-template>
+</div>
+
+<ng-container *ngIf="uiMetadata.deployment.extras !== undefined">
+    <form [formGroup]="form">
+        <formly-form [model]="extrasData" [fields]="fields" [options]="options" [form]="form"></formly-form>
+    </form>
+    <button mat-raised-button color="primary" (click)="onValidate()">VALIDATE</button>
+</ng-container> 
+
+<div mat-dialog-actions class="button-row">
+    <button mat-raised-button color="primary" *ngFor="let name of [serviceName$ |async]"
+    [disabled]="!testEnabled || !isValid" (click)="onClickTest()">TEST</button>
+    <button mat-raised-button color="primary" [disabled]="!isValid" (click)="onClickDeploy()">DEPLOY</button>
+    <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+</div>

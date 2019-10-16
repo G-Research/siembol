@@ -1,0 +1,55 @@
+import { NgModule } from '@angular/core';
+
+import * as material from './material-stubs';
+
+const COMPONENTS = [
+    material.MatAutocompleteStubComponent,
+    material.MatAutocompleteStubDirective,
+    material.MatButtonToggleGroupStubComponent,
+    material.MatButtonToggleStubComponent,
+    material.MatCardContentStubComponent,
+    material.MatCardStubComponent,
+    material.MatCardSubtitleStubComponent,
+    material.MatCardTitleStubComponent,
+    material.MatCellStubComponent,
+    material.MatCheckBoxStubComponent,
+    material.MatChipListStubComponent,
+    material.MatChipStubComponent,
+    material.MatDialogActionsStubComponent,
+    material.MatDialogContentStubComponent,
+    material.MatDividerStubComponent,
+    material.MatErrorStubComponent,
+    material.MatHeaderCellStubComponent,
+    material.MatHeaderRowStubComponent,
+    material.MatHintStubComponent,
+    material.MatIconStubComponent,
+    material.MatFormFieldStubComponent,
+    material.MatListStubComponent,
+    material.MatListItemStubComponent,
+    material.MatListOptionStubComponent,
+    material.MatMenuStubComponent,
+    material.MatMenuTriggerForStubDirective,
+    material.MatNavListStubComponent,
+    material.MatOptionStubComponent,
+    material.MatProgressBarStubComponent,
+    material.MatRowStubComponent,
+    material.MatSelectionListStubComponent,
+    material.MatSelectStubComponent,
+    material.MatSelectTriggerStubComponent,
+    material.MatSidenavContainerStubComponent,
+    material.MatSidenavStubComponent,
+    material.MatSpinnerStubComponent,
+    material.MatTabGroupStubComponent,
+    material.MatTableStubComponent,
+    material.MatTabStubComponent,
+    material.MatToolbarStubComponent,
+    material.MatCardActionsStubComponent,
+    material.NgxDatatableColumnStubComponent,
+    material.NgxDatatableStubComponent,
+];
+
+@NgModule({
+    declarations: COMPONENTS,
+    exports: COMPONENTS,
+})
+export class MaterialStubModule { }

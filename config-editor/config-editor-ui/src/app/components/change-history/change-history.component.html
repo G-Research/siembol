@@ -1,0 +1,11 @@
+<div class="container" >
+    <h2 class="title">Change History</h2>
+    <table class="history-table">
+        <tr *ngFor="let item of history">
+            <td>{{item.date | date:'yyyy MMM dd'}}</td>
+            <td>{{item.author}}</td>
+            <td><span class="added"><strong>+ {{item.added}}</strong></span></td>
+            <td><span class="removed"><strong> - {{item.removed}}</strong></span></td>
+        </tr>
+    </table>
+</div>

@@ -1,0 +1,120 @@
+<td-loader-spinner [active]="loading"></td-loader-spinner>
+<div class="td-wrapper" [ngClass]="outerContainerClass" [ngStyle]="outerContainerStyle" *ngIf="!loading">
+
+    <div [ngClass]="toolbarClass" [ngStyle]="toolbarStyle" *ngIf="showToolbar">
+        <div class="td-toolbar-show-diff">
+            <label class="td-checkbox-container">
+                Only Show Differences ({{ diffsCount }})
+                <input type="checkbox" id="showDiffs" [ngModel]="hideMatchingLines"
+                    (ngModelChange)="hideMatchingLinesChanged($event)" />
+                <span class="checkmark"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="td-toolbar-select-format" *ngIf="showToolbar && showBtnToolbar">
+        <div class="td-btn-group td-btn-group-toggle" data-toggle="buttons">
+            <button class="button" *ngFor="let option of formatOptions"
+                [ngClass]="{ active: format === option.value, disabled: !!option.disabled }" [name]="option.name"
+                [id]="option.id" [disabled]="!!option.disabled" (click)="setDiffTableFormat(option.value)">
+                {{ option.label }}
+            </button>
+        </div>
+    </div>
+
+    <div class="td-table-wrapper" [ngClass]="compareRowsClass" [ngStyle]="compareRowsStyle">
+        <!-- Right side-by-side -->
+        <ng-container *ngIf="format === 'SideBySide'; else LineByLine" >
+            <div class="td-table-container side-by-side" id="td-left-compare-container" tdContainer cdkScrollable>
+                    <table class="td-table">
+                        <tbody>
+                            <tr *ngFor="let row of filteredTableRows; trackBy: trackTableRows">
+                                <td scope="row" class="fit-column line-number-col"
+                                    [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'empty-row': !row.leftContent?.lineContent }">
+                                    {{ row.leftContent?.lineNumber !== -1 ? row.leftContent?.lineNumber : ' ' }}
+                                </td>
+                                <td class="fit-column prefix-col"
+                                    [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'empty-row': !row.leftContent?.lineContent }">
+                                    <span>{{ row.leftContent?.prefix || ' ' }}</span>
+                                </td>
+                                <td class="content-col"
+                                    [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'empty-row': !row.leftContent?.lineContent }"
+                                    *ngIf="!row.hasDiffs">
+                                    <span [innerHTML]="row.leftContent?.lineContent | formatLine"></span>
+                                </td>
+                                <td class="content-col"
+                                    [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'empty-row': !row.leftContent?.lineContent }"
+                                    *ngIf="row.hasDiffs">
+                                    <span [innerHTML]="diff.content | formatLine" [ngClass]="{ highlight: diff.isDiff }"
+                                        *ngFor="let diff of row.leftContent?.lineDiffs; trackBy: trackDiffs"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <!-- Left side-by-side -->
+            <div class="td-table-container side-by-side" *ngIf="format === 'SideBySide'" id="td-right-compare-container" tdContainer cdkScrollable>
+                    <table class="td-table">
+                        <tbody>
+                            <tr *ngFor="let row of filteredTableRows; trackBy: trackTableRows">
+                                <td scope="row" class="fit-column line-number-col"
+                                    [ngClass]="{ 'insert-row': row.rightContent?.prefix === '+', 'empty-row': !row.rightContent?.lineContent }">
+                                    {{ row.rightContent?.lineNumber !== -1 ? row.rightContent?.lineNumber : ' ' }}
+                                </td>
+                                <td class="fit-column prefix-col"
+                                    [ngClass]="{ 'insert-row': row.rightContent?.prefix === '+', 'empty-row': !row.rightContent?.lineContent }">
+                                    <span>{{ row.rightContent?.prefix || ' ' }}</span>
+                                </td>
+                                <td class="content-col"
+                                    [ngClass]="{ 'insert-row': row.rightContent?.prefix === '+', 'empty-row': !row.rightContent?.lineContent }"
+                                    *ngIf="!row.hasDiffs">
+                                    <span [innerHTML]="row.rightContent?.lineContent | formatLine"></span>
+                                </td>
+                                <td class="content-col"
+                                    [ngClass]="{ 'insert-row': row.rightContent?.prefix === '+', 'empty-row': !row.rightContent?.lineContent }"
+                                    *ngIf="row.hasDiffs">
+                                    <span [innerHTML]="diff.content | formatLine" [ngClass]="{ highlight: diff.isDiff }"
+                                        *ngFor="let diff of row.rightContent?.lineDiffs; trackBy: trackDiffs"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </ng-container>
+        <ng-template #LineByLine>
+            <!-- Line By Line - combined table -->
+            <div class="td-table-container line-by-line">
+                <table class="td-table">
+                    <tbody>
+                        <tr *ngFor="let row of filteredTableRowsLineByLine; trackBy: trackTableRows">
+                            <td scope="row" class="fit-column line-number-col-left">{{ row.leftContent?.lineNumber }}
+                            </td>
+                            <td scope="row" class="fit-column line-number-col">{{ row.rightContent?.lineNumber }}</td>
+                            <td class="fit-column prefix-col"
+                                [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'insert-row': row.rightContent?.prefix === '+' }">
+                                <span>{{ row.leftContent?.prefix || row.rightContent?.prefix || ' ' }}</span>
+                            </td>
+                            <td class="content-col"
+                                [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'insert-row': row.rightContent?.prefix === '+' }"
+                                *ngIf="!row.hasDiffs">
+                                <span [innerHTML]="row.leftContent?.lineContent | formatLine"></span>
+                            </td>
+                            <td class="content-col"
+                                [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'insert-row': row.rightContent?.prefix === '+' }"
+                                *ngIf="row.hasDiffs && row.leftContent && row.leftContent?.lineDiffs.length !== 0">
+                                <span [innerHTML]="diff.content | formatLine" [ngClass]="{ highlight: diff.isDiff }"
+                                    *ngFor="let diff of row.leftContent?.lineDiffs; trackBy: trackDiffs"></span>
+                            </td>
+                            <td class="content-col"
+                                [ngClass]="{ 'delete-row': row.leftContent?.prefix === '-', 'insert-row': row.rightContent?.prefix === '+' }"
+                                *ngIf="row.hasDiffs && row.rightContent && row.rightContent?.lineDiffs.length !== 0">
+                                <span [innerHTML]="diff.content | formatLine" [ngClass]="{ highlight: diff.isDiff }"
+                                    *ngFor="let diff of row.rightContent?.lineDiffs; trackBy: trackDiffs"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ng-template>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+pre {
+    max-width: 800px;
+    min-width: 800px;
+    min-height: 600px;
+    max-height: 600px;
+    overflow-x: auto;
+    overflow-y: auto; 
+    background-color: black;
+    padding: 20px;
+}
+
+textarea {
+    min-width: 300px;
+    max-width: 800px;
+    min-height: 600px;
+    max-height: 600px;
+    overflow-x: auto;
+    overflow-y: auto;
+    background-color: black;
+    color: inherit;
+    border-radius: 5px;
+    overflow-wrap: inherit;
+    width: 800px;
+}
+
+.input {
+    display: block;
+    margin: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 5px;
+}
+
+.console {
+    display: block;
+    margin: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 5px;
+}
+
+h4 {
+    font-weight: 400;
+    font-family: monospace;
+    font-size: 1.2em;
+    margin: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+
+.columns {
+    display: flex;
+    padding: 10px;
+}
+
+.config-options {
+    margin: 10px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+mat-form-field {
+    padding-bottom: 20px;
+}
+
+.title {
+    display: flex;
+    overflow: auto;
+}
+
+.help {
+    margin-left: auto;
+}
+
+.left-icon {
+    margin: 0 10px 0 5px;
+}
+
+::ng-deep .mat-tooltip {
+    white-space: pre-line;
+    font-size: 0.7em;
+    line-height: 1.4em;
+  }
+
+.list-item {
+    padding: 10px;
+}

@@ -1,0 +1,14 @@
+<div class="search-box">
+    <mat-icon>search</mat-icon>
+    <mat-form-field class="search-container" hintLabel="Search by name, author or labels">
+        <input matInput #searchBox [(ngModel)]="searchTerm" (keyup)="onSearch(searchTerm)" (keyup.escape)="onClearSearch()"/>
+        <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="onClearSearch()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+    <span class="checkboxes">
+        <mat-checkbox (change)="clickMyConfigs($event.checked)" [ngModel]="filterMyConfigs">My Edits</mat-checkbox>
+        <mat-checkbox (change)="clickNotDeployed($event.checked)" [ngModel]="filterUndeployed">Undeployed</mat-checkbox>
+        <mat-checkbox (change)="clickUpdatedConfigs($event.checked)" [ngModel]="filterUpgradable">Upgradable</mat-checkbox>
+    </span>
+</div>

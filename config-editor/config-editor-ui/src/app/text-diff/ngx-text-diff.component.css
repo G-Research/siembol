@@ -1,0 +1,252 @@
+.td-wrapper {
+    display: grid;
+    width: 100%;
+    grid-row-gap: 10px;
+    grid-template-columns: repeat(2, [col] 50%);
+    grid-template-rows: repeat(2, [row] auto);
+    background-color: #24292e;
+    /* color: #444; */
+    color: #e5e9ee;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12pt;
+  }
+  
+  .td-toolbar-show-diff {
+    grid-column: 1;
+    grid-row: 1;
+    padding-left: 5px;
+  }
+
+  .button {
+      padding: 5px 10px;
+  }
+  
+  .td-toolbar-select-format {
+    margin-left: auto;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  .td-table-container {
+    grid-column: 1 / 2;
+    grid-row: 2;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  
+  .td-table-wrapper {
+    display: flex;
+    width: 200%;
+  }
+  
+  .td-table {
+    /* border: 1px solid darkgray; */
+    max-height: 50vh;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .fit-column {
+    width: 1px;
+    white-space: nowrap;
+  }
+  
+  .line-number-col {
+    position: relative; /* I am the fallback */
+  
+    /* Give it everything you got! (use an auto prefixer...) */
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    top: auto;
+    border-right: 1px solid #2e353c;
+    color: #838a92;
+    text-align: right;
+    background-color: #1d2125;
+    padding-left: 10px;
+    padding-right: 10px;
+    /* font-size: 87.5%; */
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .line-number-col-left {
+    color: #838a92;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+    background-color: #1d2125;
+    /* font-size: 87.5%; */
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .insert-row,
+  .insert-row > .line-number-col {
+    background-color: #0c4532;
+    /* background-color: #dfd; */
+    /* border-color: #b4e2b4; */
+    border-color: #188a64;
+  }
+  
+  .delete-row,
+  .delete-row > .line-number-col {
+    border-color: #b31d28;
+    background-color: #421a1a;
+  }
+  
+  .empty-row {
+    background-color: #1d2125;
+    height: 24px;
+  }
+  
+  .td-table td {
+    border-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    white-space: nowrap;
+    max-width: 50%;
+  }
+  
+  pre {
+    margin-bottom: 0;
+  }
+  
+  td.content-col {
+    padding: 0;
+    margin: 0;
+    line-height: 24px;
+  }
+  
+  td.prefix-col {
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 24px;
+  }
+  
+  .td-btn-group {
+    border-radius: 4px;
+  }
+  
+  .td-btn-group button {
+    background-color: rgba(23,162,184,.7); /* Green background */
+    border: 1px solid #17a2b8; /* Green border */
+    color: white; /* White text */
+    cursor: pointer; /* Pointer/hand icon */
+    float: left; /* Float the buttons side by side */
+  }
+  
+  .td-btn-group button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+  }
+  .td-btn-group button:first-child {
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    -moz-border-radius-topleft: 4px;
+    -moz-border-radius-bottomleft: 4px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  
+  .td-btn-group button:last-child {
+    -webkit-border-top-right-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    -moz-border-radius-bottomright: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  
+  /* Clear floats (clearfix hack) */
+  .td-btn-group:after {
+    content: '';
+    clear: both;
+    display: table;
+  }
+  
+  /* Add a background color on hover */
+  .td-btn-group button:hover,
+  .td-btn-group button.active {
+    background-color: #17a2b8;
+  }
+  
+  /* Customize the label (the container) */
+  .td-checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 21px;
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 28px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
+  }
+  
+  /* Hide the browser's default checkbox */
+  .td-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  /* Create a custom checkbox */
+  .checkmark {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #eee;
+  }
+  
+  /* On mouse-over, add a grey background color */
+  .td-checkbox-container:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+  
+  /* When the checkbox is checked, add a blue background */
+  .td-checkbox-container input:checked ~ .checkmark {
+    background-color: #17a2b8;
+  }
+  
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  /* Show the checkmark when checked */
+  .td-checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  /* Style the checkmark/indicator */
+  .td-checkbox-container .checkmark:after {
+    left: 4px;
+    top: 0px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  
+  .insert-row > .highlight {
+    background-color: #188a64 !important;
+  }
+  
+  .delete-row > .highlight {
+    background-color: #b31d28 !important;
+  }
+
+  .scrollbar {
+    --scrollbar-thumb-color: #868686;
+    --scrollbar-thumb-hover-color: #a1a1a1;
+  }

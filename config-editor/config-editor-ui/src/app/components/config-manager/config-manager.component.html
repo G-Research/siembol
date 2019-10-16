@@ -1,0 +1,65 @@
+<ng-scrollbar class="scrollbar">
+    <div class="container">
+        <div class="rules-container">
+            <div class="container-title">
+                <div class="title-info">
+                    <h2>Store</h2>
+                    <span class="item-count">{{(allConfigs$ | async).length}} {{(allConfigs$ | async).length === 1 ? 'item': 'items'}}</span>
+                </div>
+                <re-search [searchTerm]="searchTerm$ | async" [filterMyConfigs]="filterMyConfigs$ | async" [filterUndeployed]="filterUndeployed$ | async"
+                    [filterUpgradable]="filterUpgradable$ | async" (searchTermChange)="onSearch($event)" (myConfigsChange)="onFilterMine($event)"
+                    (undeployedConfigsChange)="onFilterUndeployed($event)" (updatedConfigsChange)="onFilterUpgradable($event)">
+                </re-search>
+                <div class="add-button">
+                    <a mat-button color="primary" title="Create Config" (click)="onClickCreate()">
+                        <mat-icon>add</mat-icon>
+                    </a>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
+                (cdkDropListDropped)="drop($event)" class="rule-list">
+                    <re-config-tile *ngFor="let config of (filteredConfigs$ | async); index as i" [class.selected-rule-box]="i == (selectedConfig$ |async)"
+                        cdkDrag [cdkDragData]="config" [config]="config" (onEdit)="onEdit(i)" (onView)="onView(i)" (onAddToDeployment)="addToDeployment(i)">
+                    </re-config-tile>
+                </div>
+        </div>
+        <mat-divider [vertical]="true"></mat-divider>
+        <div class="deployment-container">
+            <div class="deployment-container-title">
+                <div class="title-info">
+                    <h2>Deployment</h2>
+                    <span class="item-count">{{filteredDeployment.configs.length}} {{filteredDeployment.configs.length === 1 ? 'item': 'items'}}</span>
+                </div>
+                <a class="history-button" [hoverPopover]="deploymentHistory">
+                    <mat-icon>history</mat-icon>
+                </a>
+                <span *ngIf="!(pullRequestPending$ | async).pull_request_pending && !(releaseStatus$ | async).submitInFlight; else prMessage">
+                    <button class="button" mat-button color="accent" title="Deploy Configs" (click)="onDeploy()">DEPLOY</button>
+                </span>
+                <ng-template #prMessage>
+                    <span>
+                        <a mat-button color="accent" *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" href="{{(pullRequestPending$ | async).pull_request_url}}"
+                            target="_blank">PR for release pending</a>
+                        <button class="button" mat-button color="accent" title="refresh PR status" (click)="onRefreshPrStatus()">
+                            <mat-icon>refresh</mat-icon>
+                        </button>
+                    </span>
+                </ng-template>
+            </div>
+            <mat-divider></mat-divider>
+            <div @list cdkDropList id="deployment-list" [cdkDropListData]="deployment.configs" [cdkDropListEnterPredicate]="duplicateItemCheck"
+                class="deployment-list" (cdkDropListDropped)="drop($event)">
+                <ng-container *ngIf="!deployment || !deployment.configs || deployment.configs.length === 0; else configTile">
+                    <div class="placeholder-box">
+                        <h4>drag item here to add to deployment</h4>
+                    </div>
+                </ng-container>
+                <ng-template #configTile>
+                        <re-deployment-tile *ngFor="let cfg of filteredDeployment.configs; index as i" [cdkDragData]="[cfg, deployment]" cdkDrag
+                            [config]="cfg" (onDelete)="onRemove(i)" (onUpgrade)="upgrade(i)" (onViewDiff)="onView(i, i)"></re-deployment-tile>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</ng-scrollbar>

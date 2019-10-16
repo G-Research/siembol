@@ -1,0 +1,3 @@
+Firefox ESR       # the latest [Firefox ESR] version.
+not dead          # Don't support outdated browsers
+not IE 9-11       # Don't support IE 9 - 11

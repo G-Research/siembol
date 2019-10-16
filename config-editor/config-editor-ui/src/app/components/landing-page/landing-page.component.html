@@ -1,0 +1,15 @@
+<div class="centre-box">
+  <div>
+    <h1>Config Editor UI</h1>
+    <div class="rulesets">
+      <mat-card *ngFor="let ruleset of serviceNames$ | async" class="ruleset">
+        <h2>{{ ruleset | titlecase}} </h2>
+        <button mat-raised-button color="primary" [routerLink]="['/' + ruleset]">{{ ruleset | titlecase }} Manager</button>
+        <ng-container *ngIf="repositoryLinks[ruleset]">
+          <a mat-raised-button color="accent" [href]="repositoryLinks[ruleset].rule_store_url">Working Repo</a>
+          <a mat-raised-button color="accent" [href]="repositoryLinks[ruleset].rules_release_url">Release Repo</a>
+        </ng-container>
+      </mat-card>
+    </div>
+  </div>
+</div>

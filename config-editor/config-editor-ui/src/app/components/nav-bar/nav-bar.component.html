@@ -1,0 +1,20 @@
+<mat-toolbar>
+  <mat-toolbar-row class="nav-content">
+    <div>
+      <img class="logo" src="/assets/grbig.png" [class.done-spin]="!(loading$ | async)">
+      <h1> {{ serviceName$ | async | titlecase }} Editor</h1>
+      <h1 class="env"> {{ environment | titlecase }} </h1>
+    </div>
+    <div>
+      <button mat-button color="accent" [routerLink]="['/']">Home</button>
+      <mat-button-toggle-group>
+        <mat-button-toggle *ngFor="let serviceName of serviceNames$ | async" [routerLink]="['/' + serviceName]" [checked]="serviceName === (serviceName$ | async)">
+          {{ serviceName | titlecase }}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <mat-icon>account_box</mat-icon>
+      <h3>{{ user$ | async }}</h3>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+<mat-progress-bar *ngIf="loading$ | async" mode="indeterminate" color="accent"></mat-progress-bar>

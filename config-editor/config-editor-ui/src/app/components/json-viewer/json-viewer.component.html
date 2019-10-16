@@ -1,0 +1,11 @@
+<div class="viewer">
+    <td-ngx-text-diff 
+        [left]="(leftContent === undefined ? rightContent?.configData : leftContent?.configData) | json"
+        [right]="rightContent?.configData | json"
+        [loading]="false"
+        [format]="leftContent === undefined ? 'LineByLine' : 'SideBySide'"
+        [compareRowsStyle]="{'max-height': '1000px', 'overflow': 'auto'}"
+        (compareResults)="onCompareResults($event)"
+    >
+    </td-ngx-text-diff>
+</div>
