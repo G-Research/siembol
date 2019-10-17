@@ -648,8 +648,7 @@
             "console-control-strings": {
               "version": "1.1.0",
               "bundled": true,
-              "dev": true,
-              "optional": true
+              "dev": true
             },
             "core-util-is": {
               "version": "1.0.2",
@@ -794,7 +793,6 @@
               "version": "3.0.4",
               "bundled": true,
               "dev": true,
-              "optional": true,
               "requires": {
                 "brace-expansion": "^1.1.7"
               }
@@ -808,7 +806,6 @@
               "version": "2.3.5",
               "bundled": true,
               "dev": true,
-              "optional": true,
               "requires": {
                 "safe-buffer": "^5.1.2",
                 "yallist": "^3.0.0"
@@ -920,7 +917,6 @@
               "version": "1.4.0",
               "bundled": true,
               "dev": true,
-              "optional": true,
               "requires": {
                 "wrappy": "1"
               }
@@ -1006,8 +1002,7 @@
             "safe-buffer": {
               "version": "5.1.2",
               "bundled": true,
-              "dev": true,
-              "optional": true
+              "dev": true
             },
             "safer-buffer": {
               "version": "2.1.2",
@@ -1043,7 +1038,6 @@
               "version": "1.0.2",
               "bundled": true,
               "dev": true,
-              "optional": true,
               "requires": {
                 "code-point-at": "^1.0.0",
                 "is-fullwidth-code-point": "^1.0.0",
@@ -1107,14 +1101,12 @@
             "wrappy": {
               "version": "1.0.2",
               "bundled": true,
-              "dev": true,
-              "optional": true
+              "dev": true
             },
             "yallist": {
               "version": "3.0.3",
               "bundled": true,
-              "dev": true,
-              "optional": true
+              "dev": true
             }
           }
         },
@@ -1249,6 +1241,11 @@
             "readable-stream": "^2.0.2"
           }
         },
+        "regjsgen": {
+          "version": "0.5.0",
+          "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/regjsgen/-/regjsgen-0.5.0.tgz",
+          "integrity": "sha1-p2NNwI+JIJwgSa3aNSVxH7lyZd0="
+        },
         "require-main-filename": {
           "version": "2.0.0",
           "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/require-main-filename/-/require-main-filename-2.0.0.tgz",
@@ -1303,11 +1300,6 @@
           "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/upath/-/upath-1.1.2.tgz",
           "integrity": "sha1-PbZYYA7a7sy+bbXmhNZ+6MKs0Gg=",
           "dev": true
-        },
-        "regjsgen": {
-          "version": "0.5.0",
-          "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/regjsgen/-/regjsgen-0.5.0.tgz",
-          "integrity": "sha1-p2NNwI+JIJwgSa3aNSVxH7lyZd0="
         },
         "yargs": {
           "version": "13.1.0",
@@ -2329,16 +2321,6 @@
       "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/@juggle/resize-observer/-/resize-observer-2.3.0.tgz",
       "integrity": "sha1-xSizaaKVnkmqaqrOVkDI5HSOkIQ="
     },
-    "@materia-ui/ngx-monaco-editor": {
-      "version": "2.0.2",
-      "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/@materia-ui/ngx-monaco-editor/-/ngx-monaco-editor-2.0.2.tgz",
-      "integrity": "sha1-bTuMT16GK+s68Qb5A1MrQ4bSZ3U=",
-      "requires": {
-        "css-element-queries": "^1.0.2",
-        "monaco-editor": "^0.15.6",
-        "tslib": "^1.9.0"
-      }
-    },
     "@ngrx/effects": {
       "version": "8.3.0",
       "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/@ngrx/effects/-/effects-8.3.0.tgz",
@@ -2685,11 +2667,6 @@
       "requires": {
         "@xtuc/long": "4.2.2"
       }
-    },
-    "@webassemblyjs/utf8": {
-      "version": "1.8.5",
-      "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/@webassemblyjs/utf8/-/utf8-1.8.5.tgz",
-      "integrity": "sha1-qL87XY/+mGx8Hjc8y9wqCRXwztw="
     },
     "@webassemblyjs/utf8": {
       "version": "1.8.5",
@@ -4548,11 +4525,6 @@
         "randombytes": "^2.0.0",
         "randomfill": "^1.0.3"
       }
-    },
-    "css-element-queries": {
-      "version": "1.1.1",
-      "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/css-element-queries/-/css-element-queries-1.1.1.tgz",
-      "integrity": "sha1-Ep4QTssneqYze3MCy7bVEcLRYzo="
     },
     "css-parse": {
       "version": "1.7.0",
@@ -6916,11 +6888,6 @@
       "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/html-entities/-/html-entities-1.2.1.tgz",
       "integrity": "sha1-DfKTUfByEWNRXfueVUPl9u7VFi8="
     },
-    "html-entities": {
-      "version": "1.2.1",
-      "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/html-entities/-/html-entities-1.2.1.tgz",
-      "integrity": "sha1-DfKTUfByEWNRXfueVUPl9u7VFi8="
-    },
     "http-cache-semantics": {
       "version": "3.8.1",
       "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/http-cache-semantics/-/http-cache-semantics-3.8.1.tgz",
@@ -7824,14 +7791,6 @@
       "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/json-schema-traverse/-/json-schema-traverse-0.3.1.tgz",
       "integrity": "sha1-NJptRMU6Ud6JtAgFxdXlm0F9M0A="
     },
-    "json-stable-stringify": {
-      "version": "1.0.1",
-      "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/json-stable-stringify/-/json-stable-stringify-1.0.1.tgz",
-      "integrity": "sha1-mnWdOcXy/1A/1TAGRu1EX4jE+a8=",
-      "requires": {
-        "jsonify": "~0.0.0"
-      }
-    },
     "json-stringify-safe": {
       "version": "5.0.1",
       "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz",
@@ -7856,11 +7815,6 @@
           "integrity": "sha1-o1AIsg9BOD7sH7kU9M1d95omQoQ="
         }
       }
-    },
-    "jsonify": {
-      "version": "0.0.0",
-      "resolved": "https://anon.artifactory.uberit.net:443/api/npm/ext-npm/jsonify/-/jsonify-0.0.0.tgz",
-      "integrity": "sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM="
     },
     "jsonparse": {
       "version": "1.3.1",
@@ -8882,11 +8836,6 @@
         "minimist": "0.0.8"
       }
     },
-    "monaco-editor": {
-      "version": "0.15.6",
-      "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/monaco-editor/-/monaco-editor-0.15.6.tgz",
-      "integrity": "sha1-1js7BvhvgDRk8AOyUmJ8PrSglIM="
-    },
     "move-concurrently": {
       "version": "1.0.1",
       "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/move-concurrently/-/move-concurrently-1.0.1.tgz",
@@ -8979,14 +8928,6 @@
       "version": "1.3.0",
       "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/ngx-mat-select-search/-/ngx-mat-select-search-1.3.0.tgz",
       "integrity": "sha1-4VaUuGQQ/5kQgWO9WAaKhFLs2sk=",
-      "requires": {
-        "tslib": "^1.9.0"
-      }
-    },
-    "ngx-monaco-editor": {
-      "version": "7.0.0",
-      "resolved": "https://anon.artifactory.vgis.sites.uberit.net:443/api/npm/ext-npm/ngx-monaco-editor/-/ngx-monaco-editor-7.0.0.tgz",
-      "integrity": "sha1-PEIlAt71xf8HcaT/UYNS0CFd5pg=",
       "requires": {
         "tslib": "^1.9.0"
       }
@@ -12982,6 +12923,7 @@
             "brace-expansion": {
               "version": "1.1.11",
               "bundled": true,
+              "optional": true,
               "requires": {
                 "balanced-match": "^1.0.0",
                 "concat-map": "0.0.1"
@@ -13128,6 +13070,7 @@
             "minimatch": {
               "version": "3.0.4",
               "bundled": true,
+              "optional": true,
               "requires": {
                 "brace-expansion": "^1.1.7"
               }

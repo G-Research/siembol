@@ -296,4 +296,76 @@ export class JsonPointer {
       return (<string>pointer).slice(1).split('/').map(this.unescape);
     }
   }
+
+    /**
+   * 'toIndexedPointer' function
+   *
+   * Merges an array of numeric indexes and a generic pointer to create an
+   * indexed pointer for a specific item.
+   *
+   * For example, merging the generic pointer '/foo/-/bar/-/baz' and
+   * the array [4, 2] would result in the indexed pointer '/foo/4/bar/2/baz'
+   *
+   *
+   * //  { Pointer } genericPointer - The generic pointer
+   * //  { number[] } indexArray - The array of numeric indexes
+   * //  { Map<string, number> } arrayMap - An optional array map
+   * // { string } - The merged pointer with indexes
+   */
+  static toIndexedPointer(
+    genericPointer, indexArray, arrayMap: Map<string, number> = null
+  ) {
+    if (this.isJsonPointer(genericPointer) && isArray(indexArray)) {
+      let indexedPointer = this.compile(genericPointer);
+      if (isMap(arrayMap)) {
+        let arrayIndex = 0;
+        return indexedPointer.replace(/\/\-(?=\/|$)/g, (key, stringIndex) =>
+          arrayMap.has((<string>indexedPointer).slice(0, stringIndex)) ?
+            '/' + indexArray[arrayIndex++] : key
+        );
+      } else {
+        for (const pointerIndex of indexArray) {
+          indexedPointer = indexedPointer.replace('/-', '/' + pointerIndex);
+        }
+        return indexedPointer;
+      }
+    }
+    if (!this.isJsonPointer(genericPointer)) {
+      console.error(`toIndexedPointer error: Invalid JSON Pointer: ${genericPointer}`);
+    }
+    if (!isArray(indexArray)) {
+      console.error(`toIndexedPointer error: Invalid indexArray: ${indexArray}`);
+    }
+  }
+
+    /**
+   * 'compile' function
+   *
+   * Converts an array of keys into a JSON Pointer string
+   * (if input is already a string, it is normalized and returned)
+   *
+   * The optional second parameter is a default which will replace any empty keys.
+   *
+   * //  { Pointer } pointer - JSON Pointer (string or array)
+   * //  { string | number = '' } defaultValue - Default value
+   * //  { boolean = false } errors - Show error if invalid pointer?
+   * // { string } - JSON Pointer string
+   */
+  static compile(pointer, defaultValue = '', errors = false) {
+    if (pointer === '#') { return ''; }
+    if (!this.isJsonPointer(pointer)) {
+      if (errors) { console.error(`compile error: Invalid JSON Pointer: ${pointer}`); }
+      return null;
+    }
+    if (isArray(pointer)) {
+      if ((<string[]>pointer).length === 0) { return ''; }
+      return '/' + (<string[]>pointer).map(
+        key => key === '' ? defaultValue : this.escape(key)
+      ).join('/');
+    }
+    if (typeof pointer === 'string') {
+      if (pointer[0] === '#') { pointer = pointer.slice(1); }
+      return pointer;
+    }
+  }
 }

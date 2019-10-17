@@ -1,6 +1,7 @@
 {
   "name": "rule-editor.ui",
   "version": "1.1.0",
+  "nortem-snapshot": "",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
