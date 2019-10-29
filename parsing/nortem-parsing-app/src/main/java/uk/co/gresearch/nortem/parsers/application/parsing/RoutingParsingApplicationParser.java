@@ -132,7 +132,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
         }
 
         public Builder<T> addParser(String topic, SerializableNortemParser nortemParser, String pattern) throws Exception {
-            final Pattern conditionPattern = Pattern.compile(pattern);
+            final Pattern conditionPattern = Pattern.compile(pattern, Pattern.DOTALL);
             final RouterCondition condition = x -> conditionPattern.matcher(x).matches();
             parsers.add(new NortemParserWrapper(condition, nortemParser, topic));
             return this;

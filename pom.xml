@@ -7,7 +7,7 @@
     <groupId>uk.co.gresearch.nortem</groupId>
     <artifactId>nortem</artifactId>
     <name>nortem</name>
-    <version>1.07-SNAPSHOT</version>
+    <version>1.09-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
