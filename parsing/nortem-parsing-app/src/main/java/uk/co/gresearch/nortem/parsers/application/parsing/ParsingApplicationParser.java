@@ -69,9 +69,9 @@ public abstract class ParsingApplicationParser implements Serializable {
         return msg.toString();
     }
 
-    protected abstract List<ParserResult> parseInternally(byte[] message);
+    protected abstract List<ParserResult> parseInternally(String metadata, byte[] message);
 
-    public ArrayList<ParsingApplicationResult> parse(byte[] message, String metadata) {
+    public ArrayList<ParsingApplicationResult> parse(String metadata, byte[] message) {
         ArrayList<ParsingApplicationResult> ret = new ArrayList<>();
         try {
             Map<String, Object> metadataObject = flags.contains(Flags.PARSE_METADATA)
@@ -80,7 +80,7 @@ public abstract class ParsingApplicationParser implements Serializable {
 
 
             long timestamp = timeProvider.getCurrentTimeInMs();
-            for (ParserResult parserResult : parseInternally(message)) {
+            for (ParserResult parserResult : parseInternally(metadata, message)) {
                 if (parserResult.getException() != null) {
                     ret.add(new ParsingApplicationResult(
                             errorTopic,

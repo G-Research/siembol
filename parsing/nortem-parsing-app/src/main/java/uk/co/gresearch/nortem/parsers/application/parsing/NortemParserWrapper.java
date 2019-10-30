@@ -26,12 +26,12 @@ public class NortemParserWrapper implements NortemParser, Serializable {
 
     @Override
     public List<Map<String, Object>> parse(byte[] message) {
-        return parse(message);
+        return parser.parse(message);
     }
 
     @Override
-    public ParserResult parseToResult(byte[] message) {
-        ParserResult result = parser.parseToResult(message);
+    public ParserResult parseToResult(String metadata, byte[] message) {
+        ParserResult result = parser.parseToResult(metadata, message);
         result.setSourceType(getSourceType());
         result.setTopic(topic);
         return result;

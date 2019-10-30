@@ -25,8 +25,8 @@ public class NetflowParser<T> {
         this.transportProvider = transportProvider;
     }
 
-    public NetflowParsingResult parse(byte[] data) {
-        NetflowTransportMessage<T> message = transportProvider.message(data);
+    public NetflowParsingResult parse(String metadata, byte[] data) {
+        NetflowTransportMessage<T> message = transportProvider.message(metadata, data);
         return parse(message);
     }
 

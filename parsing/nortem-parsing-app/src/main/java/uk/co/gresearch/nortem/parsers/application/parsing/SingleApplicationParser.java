@@ -21,9 +21,9 @@ public class SingleApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(byte[] message) {
+    protected List<ParserResult> parseInternally(String metadata, byte[] message) {
         List<ParserResult> ret = new ArrayList<>();
-        ret.add(parser.parseToResult(message));
+        ret.add(parser.parseToResult(metadata, message));
         return ret;
     }
 

@@ -128,13 +128,13 @@ public class RoutingParsingApplicationParserTest {
                 .build();
 
         routerParserResult.getParsedMessages().remove(1);
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
-        when(defaultParser.parseToResult("dummy".getBytes())).thenReturn(routedParserResult1);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(defaultParser.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(routerParser, times(1)).parseToResult(input);
-        verify(defaultParser, times(1)).parseToResult("dummy".getBytes());
+        verify(routerParser, times(1)).parseToResult(metadata, input);
+        verify(defaultParser, times(1)).parseToResult(metadata, "dummy".getBytes());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
@@ -145,7 +145,6 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
                 ParserFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
-
     }
 
     @Test
@@ -162,18 +161,17 @@ public class RoutingParsingApplicationParserTest {
 
         routerParserResult.getParsedMessages().clear();
         routerParserResult.setException(new IllegalStateException("test_exception"));
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(routerParser, times(1)).parseToResult(input);
+        verify(routerParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
 
         Assert.assertEquals(errorTopic, result.get(0).getTopic());
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_exception"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("\"failed_sensor_type\":\"router-parser\""));
-
     }
 
     @Test
@@ -190,10 +188,10 @@ public class RoutingParsingApplicationParserTest {
 
         routerParserResult.getParsedMessages().get(0).remove(routingMessageField);
         routerParserResult.getParsedMessages().get(1).remove(routingMessageField);
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
-        verify(routerParser, times(1)).parseToResult(input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(routerParser, times(1)).parseToResult(metadata, input);
 
         Assert.assertEquals(errorTopic, result.get(0).getTopic());
         Assert.assertEquals(2, result.size());
@@ -220,13 +218,13 @@ public class RoutingParsingApplicationParserTest {
                 .build();
 
         routerParserResult.getParsedMessages().remove(1);
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
-        when(defaultParser.parseToResult("dummy".getBytes())).thenReturn(routedParserResult1);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(defaultParser.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(routerParser, times(1)).parseToResult(input);
-        verify(defaultParser, times(1)).parseToResult("dummy".getBytes());
+        verify(routerParser, times(1)).parseToResult(metadata, input);
+        verify(defaultParser, times(1)).parseToResult(metadata, "dummy".getBytes());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
@@ -253,14 +251,14 @@ public class RoutingParsingApplicationParserTest {
                 .timeProvider(timeProvider)
                 .build();
 
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
-        when(routedParser1.parseToResult("dummy".getBytes())).thenReturn(routedParserResult1);
-        when(routedParser2.parseToResult("dummy".getBytes())).thenReturn(routedParserResult2);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
+        when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(routedParser1, times(1)).parseToResult("dummy".getBytes());
-        verify(routedParser2, times(1)).parseToResult("dummy".getBytes());
+        verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
+        verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
 
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("dummy1", result.get(0).getTopic());
@@ -286,14 +284,14 @@ public class RoutingParsingApplicationParserTest {
                 .timeProvider(timeProvider)
                 .build();
 
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
-        when(routedParser1.parseToResult("dummy".getBytes())).thenReturn(routedParserResult1);
-        when(routedParser2.parseToResult("dummy".getBytes())).thenReturn(routedParserResult2);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
+        when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(routedParser1, times(1)).parseToResult("dummy".getBytes());
-        verify(routedParser2, times(1)).parseToResult("dummy".getBytes());
+        verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
+        verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
 
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("dummy1", result.get(0).getTopic());
@@ -322,14 +320,14 @@ public class RoutingParsingApplicationParserTest {
                 .build();
 
         routedParserResult1.setException(new IllegalStateException("test_exception"));
-        when(routerParser.parseToResult(input)).thenReturn(routerParserResult);
-        when(routedParser1.parseToResult("dummy".getBytes())).thenReturn(routedParserResult1);
-        when(routedParser2.parseToResult("dummy".getBytes())).thenReturn(routedParserResult2);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
+        when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(routedParser1, times(1)).parseToResult("dummy".getBytes());
-        verify(routedParser2, times(1)).parseToResult("dummy".getBytes());
+        verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
+        verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
 
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("error", result.get(0).getTopic());

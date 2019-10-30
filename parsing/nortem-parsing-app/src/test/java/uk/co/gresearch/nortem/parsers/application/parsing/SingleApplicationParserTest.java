@@ -90,10 +90,10 @@ public class SingleApplicationParserTest {
                 .timeProvider(timeProvider)
                 .build();
 
-        when(nortemParser.parseToResult(input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(nortemParser, times(1)).parseToResult(input);
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
@@ -119,10 +119,10 @@ public class SingleApplicationParserTest {
                 .build();
 
         parserResult.getParsedMessages().remove(1);
-        when(nortemParser.parseToResult(input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(nortemParser, times(1)).parseToResult(input);
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
@@ -144,10 +144,10 @@ public class SingleApplicationParserTest {
 
         parserResult.setParsedMessages(null);
         parserResult.setException(new IllegalStateException("test_exception"));
-        when(nortemParser.parseToResult(input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(nortemParser, times(1)).parseToResult(input);
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
 
@@ -165,10 +165,10 @@ public class SingleApplicationParserTest {
                 .timeProvider(timeProvider)
                 .build();
 
-        when(nortemParser.parseToResult(input)).thenThrow(new RuntimeException("runtime_exception"));
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        when(nortemParser.parseToResult(metadata, input)).thenThrow(new RuntimeException("runtime_exception"));
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(nortemParser, times(1)).parseToResult(input);
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
 
@@ -187,10 +187,10 @@ public class SingleApplicationParserTest {
                 .build();
 
         parserResult.setParsedMessages(new ArrayList<>());
-        when(nortemParser.parseToResult(input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(nortemParser, times(1)).parseToResult(input);
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(0, result.size());
     }
 
@@ -205,10 +205,10 @@ public class SingleApplicationParserTest {
                 .metadataPrefix("test_metadata")
                 .build();
 
-        when(nortemParser.parseToResult(input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(input, metadata);
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
-        verify(nortemParser, times(1)).parseToResult(input);
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());

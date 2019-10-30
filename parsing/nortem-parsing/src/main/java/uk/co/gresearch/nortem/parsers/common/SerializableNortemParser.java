@@ -39,6 +39,12 @@ public class SerializableNortemParser implements NortemParser, Serializable {
     }
 
     @Override
+    public List<Map<String, Object>> parse(String metadata, byte[] message) {
+        return parser.parse(metadata, message);
+    }
+
+
+    @Override
     public String getSourceType() {
         return sourceType;
     }

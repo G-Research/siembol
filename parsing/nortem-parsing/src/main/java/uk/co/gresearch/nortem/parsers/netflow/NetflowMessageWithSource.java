@@ -1,34 +1,17 @@
 package uk.co.gresearch.nortem.parsers.netflow;
 
 public class NetflowMessageWithSource implements NetflowTransportMessage<String> {
-    private static final char IDENTIFIER_DELIMITER = '|';
     private static final String ORIGINAL_STRING = "NULL"; //NOTE: space optimisation
     private final String sourceIdentifier;
     private final BinaryBuffer buffer;
 
-    public NetflowMessageWithSource(byte[] data) {
-        buffer = new BinaryBuffer(data);
-        sourceIdentifier = getSourceIdentifier(buffer);
-    }
-
-    private String getSourceIdentifier(BinaryBuffer buffer) {
-        StringBuilder sb = new StringBuilder();
-        boolean found = false;
-        while (buffer.hasRemaining())
-        {
-            byte current = buffer.getBuffer().get();
-            if (current == IDENTIFIER_DELIMITER) {
-                found = true;
-                break;
-            }
-
-            sb.append((char)current);
-        }
-        if (!found || sb.length() == 0) {
+    public NetflowMessageWithSource(String metadata, byte[] data) {
+        if (metadata == null || metadata.isEmpty()) {
             throw new IllegalArgumentException("Missing Source identifier");
         }
 
-        return sb.toString();
+        buffer = new BinaryBuffer(data);
+        sourceIdentifier = metadata;
     }
 
     @Override

@@ -14,8 +14,8 @@ public class SimpleTransportProvider implements NetflowTransportProvider<String>
             = new HashMap<>();
 
     @Override
-    public NetflowTransportMessage<String> message(byte[] data) {
-        return new NetflowMessageWithSource(data);
+    public NetflowTransportMessage<String> message(String metadata, byte[] data) {
+        return new NetflowMessageWithSource(metadata, data);
     }
 
     @Override

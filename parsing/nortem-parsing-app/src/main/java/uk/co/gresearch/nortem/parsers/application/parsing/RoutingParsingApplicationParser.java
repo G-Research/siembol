@@ -32,9 +32,9 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(byte[] message) {
+    protected List<ParserResult> parseInternally(String metadata, byte[] message) {
         List<ParserResult> ret = new ArrayList<>();
-        ParserResult routerResult = routerParser.parseToResult(message);
+        ParserResult routerResult = routerParser.parseToResult(metadata, message);
         if (routerResult.getException() != null) {
             ret.add(routerResult);
             return ret;
@@ -59,7 +59,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
                     continue;
                 }
 
-                ParserResult result = parser.parseToResult(messageToParse.getBytes());
+                ParserResult result = parser.parseToResult(metadata, messageToParse.getBytes());
                 if (result.getParsedMessages() != null && !result.getParsedMessages().isEmpty()) {
                     for (String field : mergedFields) {
                         if (parsedMsg.containsKey(field)) {

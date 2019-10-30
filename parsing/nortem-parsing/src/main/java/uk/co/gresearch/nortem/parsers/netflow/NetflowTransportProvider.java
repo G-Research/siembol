@@ -9,7 +9,7 @@ public interface NetflowTransportProvider<T> {
      * @param  data byte array that contains netflow packet along with source identification
      * @return creates NetflowTransportMessage from an byte array data
      */
-    NetflowTransportMessage<T> message(byte[] data);
+    NetflowTransportMessage<T> message(String metadata, byte[] data);
 
 
     /**

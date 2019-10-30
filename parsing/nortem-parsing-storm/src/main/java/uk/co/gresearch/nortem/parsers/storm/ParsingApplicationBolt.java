@@ -107,7 +107,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         String metadata = tuple.getStringByField(ParsingApplicationTuples.METADATA.toString());
         byte[] log = (byte[])tuple.getValueByField(ParsingApplicationTuples.LOG.toString());
 
-        ArrayList<ParsingApplicationResult> results = currentParser.parse(log, metadata);
+        ArrayList<ParsingApplicationResult> results = currentParser.parse(metadata, log);
         if (!results.isEmpty()) {
             collector.emit(tuple, new Values(results));
         }

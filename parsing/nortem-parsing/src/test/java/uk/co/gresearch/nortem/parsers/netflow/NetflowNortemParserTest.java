@@ -29,7 +29,7 @@ public class NetflowNortemParserTest {
     @Test
     public void testTemplateAndDataParsing() throws IOException {
         byte[] data = readFileFromResource("example2.netflow9");
-        List<Map<String, Object>> ret = netflowParser.parse(data);
+        List<Map<String, Object>> ret = netflowParser.parse("10.16.22.254", data);
         Assert.assertEquals(30, ret.size());
 
         Map<String, Object> first = ret.get(0);
@@ -46,7 +46,7 @@ public class NetflowNortemParserTest {
         }
 
         //next time we will have template in the map
-        List<Map<String, Object>> retNext = netflowParser.parse(data);
+        List<Map<String, Object>> retNext = netflowParser.parse("10.16.22.254", data);
         Assert.assertEquals(30, retNext.size());
         Assert.assertEquals(ret, retNext);
     }
@@ -55,7 +55,7 @@ public class NetflowNortemParserTest {
     public void testUnknownTemplate() throws IOException {
         byte[] data = readFileFromResource("example5.netflow9");
 
-        List<Map<String, Object>> ret = netflowParser.parse(data);
+        List<Map<String, Object>> ret = netflowParser.parse("10.16.22.254", data);
         Assert.assertEquals(1, ret.size());
         Map<String, Object> unknownTemplate = ret.get(0);
 
@@ -71,7 +71,7 @@ public class NetflowNortemParserTest {
     public void testUsupportedVersionFail() throws IOException {
         byte[] data = readFileFromResource("unsupportedVersion.netflow9");
 
-        List<Map<String, Object>> ret = netflowParser.parse(data);
+        List<Map<String, Object>> ret = netflowParser.parse("10.16.22.254", data);
         Assert.assertNull(ret);
     }
 
@@ -79,7 +79,7 @@ public class NetflowNortemParserTest {
     public void missingIPFail() throws IOException {
         byte[] data = readFileFromResource("example3.netflow9");
 
-        List<Map<String, Object>> ret = netflowParser.parse(data);
+        List<Map<String, Object>> ret = netflowParser.parse("", data);
         Assert.assertNull(ret);
     }
 }

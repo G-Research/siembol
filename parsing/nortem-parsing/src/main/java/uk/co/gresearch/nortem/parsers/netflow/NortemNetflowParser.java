@@ -18,6 +18,7 @@ public class NortemNetflowParser implements NortemParser {
     public static final String NETFLOW_SOURCE_ID = "netflow_source_id";
     public static final String NETFLOW_GLOBAL_SOURCE = "netflow_source";
     public static final String NETFLOW_UNKNOWN_TEMPLATE = "netflow_unknown_template";
+    public static final String UNSUPPORTED_MSG = "The method is unsupported because netflow parsing requires metadata";
 
     private final NetflowParser netflowParser;
 
@@ -39,10 +40,10 @@ public class NortemNetflowParser implements NortemParser {
     }
 
     @Override
-    public List<Map<String, Object>> parse(byte[] bytes) {
+    public List<Map<String, Object>> parse(String metadata, byte[] bytes) {
         ArrayList<Map<String, Object>> ret = new ArrayList<>();
         try {
-            NetflowParsingResult result = netflowParser.parse(bytes);
+            NetflowParsingResult result = netflowParser.parse(metadata, bytes);
             if (result.getStatusCode() == NetflowParsingResult.StatusCode.UNKNOWN_TEMPLATE) {
                 ret.add(getUnknownTemplateObject(result, bytes));
                 return ret;
@@ -74,5 +75,10 @@ public class NortemNetflowParser implements NortemParser {
         }
 
         return ret;
+    }
+
+    @Override
+    public List<Map<String, Object>> parse(byte[] message) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MSG);
     }
 }
