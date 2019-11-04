@@ -6,7 +6,7 @@ public interface ParserFactory {
 
     ParserFactoryResult create(String parserConfig);
 
-    ParserFactoryResult test(String parserConfig, byte[] rawLog);
+    ParserFactoryResult test(String parserConfig, String metadata, byte[] rawLog);
 
     ParserFactoryResult validateConfiguration(String parserConfig);
 

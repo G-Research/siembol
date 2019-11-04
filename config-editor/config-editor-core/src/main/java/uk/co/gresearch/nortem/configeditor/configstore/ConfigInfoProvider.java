@@ -7,12 +7,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 public interface ConfigInfoProvider {
-    String RULE_COMMIT_TEMPLATE_NEW = "Adding new rule: %s";
-    String RULE_COMMIT_TEMPLATE_UPDATE = "Updating rule: %s to version: %d";
-    String RULE_COMMIT_TEMPLATE_RELEASE = "Rules released to version: %d";
-    String CONFIG_COMMIT_TEMPLATE_NEW = "Adding new configuration: %s";
-    String CONFIG_COMMIT_TEMPLATE_UPDATE = "Updating configuration: %s to version: %d";
-    String CONFIG_COMMIT_TEMPLATE_RELEASE = "Configuration released to version: %d";
     String RELEASE_BRANCH_TEMPLATE = "release_%d_by_%s_on_%s";
     int MILLI_SECONDS = 1000;
 

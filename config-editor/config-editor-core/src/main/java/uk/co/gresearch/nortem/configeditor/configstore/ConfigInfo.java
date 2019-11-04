@@ -11,6 +11,7 @@ public class ConfigInfo {
     private String committerEmail;
     private String branchName = "master";
     private boolean shouldCleanDirectory = false;
+    private ConfigInfoType configInfoType;
 
     public Map<String, String> getFilesContent() {
         return filesContent;
@@ -78,5 +79,13 @@ public class ConfigInfo {
 
     public void shouldCleanDirectory(boolean shouldCleanDirectory) {
         this.shouldCleanDirectory = shouldCleanDirectory;
+    }
+
+    public ConfigInfoType getConfigInfoType() {
+        return configInfoType;
+    }
+
+    public void setConfigInfoType(ConfigInfoType configInfoType) {
+        this.configInfoType = configInfoType;
     }
 }

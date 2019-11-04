@@ -6,6 +6,12 @@ import uk.co.gresearch.nortem.configeditor.common.HealthCheckable;
 
 public interface ConfigStore extends HealthCheckable {
 
+    ConfigEditorResult addTestCase(String user, String testCase);
+
+    ConfigEditorResult updateTestCase(String user, String testCase);
+
+    ConfigEditorResult getTestCases();
+
     ConfigEditorResult addConfig(String user, String newConfig);
 
     ConfigEditorResult updateConfig(String user, String configToUpdate);

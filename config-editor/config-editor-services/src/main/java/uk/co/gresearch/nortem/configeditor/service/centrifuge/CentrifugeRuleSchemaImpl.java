@@ -36,7 +36,8 @@ public class CentrifugeRuleSchemaImpl implements ConfigSchemaService {
     }
 
     public static ConfigSchemaService createCentrifugeRuleSchemaImpl(String centrifugeUrl,
-                                                                     Optional<String> uiConfig) throws IOException {
+                                                                     Optional<String> uiConfig,
+                                                                     Optional<String> testUiConfig) throws Exception {
         HttpProvider httpProvider = new HttpProvider(centrifugeUrl, HttpProvider::getKerberosHttpClient);
         if (!uiConfig.isPresent()) {
             throw new IllegalArgumentException(EMPTY_UI_CONFIG);
@@ -44,6 +45,7 @@ public class CentrifugeRuleSchemaImpl implements ConfigSchemaService {
 
         CentrifugeSchemaService centrifugeSchemaService = new CentrifugeSchemaService
                 .Builder(httpProvider, uiConfig.get())
+                .uiTestConfig(testUiConfig)
                 .build();
 
         return new CentrifugeRuleSchemaImpl(centrifugeSchemaService);
@@ -148,6 +150,7 @@ public class CentrifugeRuleSchemaImpl implements ConfigSchemaService {
                     exception.set(null);
                     attributes.setTestResultOutput(response.getAttributes().getMessage());
                     attributes.setTestResultComplete(true);
+                    attributes.setTestResultRawOutput("{}"); //NOTE: test_result_raw_output not supported in centrifuge
                     return new ConfigEditorResult(OK, attributes);
                 case BAD_REQUEST:
                     statusCode = ConfigEditorResult.StatusCode.BAD_REQUEST;
@@ -162,6 +165,14 @@ public class CentrifugeRuleSchemaImpl implements ConfigSchemaService {
             exception.set(e);
             return ConfigEditorResult.fromException(e);
         }
+    }
+
+    @Override
+    public ConfigEditorResult getTestSchema() {
+        String schema = this.centrifugeSchemaService.getTestSchema();
+        ConfigEditorAttributes result = new ConfigEditorAttributes();
+        result.setTestSchema(schema);
+        return new ConfigEditorResult(OK, result);
     }
 
     @Override

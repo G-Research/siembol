@@ -13,6 +13,8 @@ import uk.co.gresearch.nortem.configeditor.model.ConfigEditorResult;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -24,21 +26,29 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.nortem.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
+import static uk.co.gresearch.nortem.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.nortem.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class ConfigStoreImpl implements ConfigStore, Closeable {
+    public enum Flags {
+        SUPPORT_TEST_CASE
+    }
     private static final Logger LOG =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int RELEASES_MAXIMUM_SHUTTING_DOWN_TIME = 60000; //1min
     private static final int RULES_MAXIMUM_SHUTTING_DOWN_TIME = 120000; //2min
+    private static final String TEST_CASES_UNSUPPORTED_MSG = "Test cases are not supported";
 
     private final ExecutorService gitStoreService =
             Executors.newSingleThreadExecutor();
     private final ExecutorService gitReleasesService =
             Executors.newSingleThreadExecutor();
 
-    private final AtomicReference<List<ConfigEditorFile>> filesCache =
+    private final AtomicReference<List<ConfigEditorFile>> configsCache =
             new AtomicReference<>();
+    private final AtomicReference<List<ConfigEditorFile>> testCasesCache =
+            new AtomicReference<>(new ArrayList<>());
+
     private final AtomicReference<Exception> exception =
             new AtomicReference<>();
 
@@ -46,17 +56,24 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     private final GitRepository gitReleasesRepo;
     private final ReleasePullRequestService pullRequestService;
     private final ConfigInfoProvider configInfoProvider;
+    private final EnumSet<Flags> flags;
+    private final ConfigInfoProvider testCaseInfoProvider = new TestCaseInfoProvider();
 
     public ConfigStoreImpl(GitRepository gitStoreRepo,
                            GitRepository gitReleasesRepo,
                            ReleasePullRequestService pullRequestService,
-                           ConfigInfoProvider configInfoProvider) throws IOException, GitAPIException {
+                           ConfigInfoProvider configInfoProvider,
+                           EnumSet<Flags> flags) throws IOException, GitAPIException {
         this.gitStoreRepo = gitStoreRepo;
         this.gitReleasesRepo = gitReleasesRepo;
         this.pullRequestService = pullRequestService;
         this.configInfoProvider = configInfoProvider;
+        this.flags = flags;
         //NOTE: we would like to init rules cache
-        init();
+        initConfigs();
+        if (this.flags.contains(Flags.SUPPORT_TEST_CASE)) {
+            initTestCases();
+        }
     }
 
     private List<ConfigEditorFile> getFiles(ConfigEditorResult result, Function<String, Boolean> filter) {
@@ -65,27 +82,39 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
         return ret;
     }
 
-    private void init() throws IOException, GitAPIException {
-        ConfigEditorResult result = gitStoreRepo.getFiles();
+    private void initConfigs() throws IOException, GitAPIException {
+        ConfigEditorResult result = gitStoreRepo.getConfigs();
         if (result.getStatusCode() != OK) {
-            throw new IllegalStateException("Problem during initialisation");
+            throw new IllegalStateException("Problem during initialisation of configurations");
         }
 
         List<ConfigEditorFile> files = getFiles(result, configInfoProvider::isStoreFile);
-        filesCache.set(files);
+        configsCache.set(files);
     }
 
-    private ConfigEditorResult updateConfigInternally(ConfigInfo configInfo) {
+    private void initTestCases() throws IOException, GitAPIException {
+        ConfigEditorResult result = gitStoreRepo.getTestCases();
+        if (result.getStatusCode() != OK) {
+            throw new IllegalStateException("Problem during initialisation of test cases");
+        }
+
+        List<ConfigEditorFile> files = getFiles(result, testCaseInfoProvider::isStoreFile);
+        testCasesCache.set(files);
+    }
+
+    private ConfigEditorResult updateConfigInternally(ConfigInfo configInfo,
+                                                      AtomicReference<List<ConfigEditorFile>> cache) {
         try {
             Callable<ConfigEditorResult> command =
                     () -> gitStoreRepo.transactCopyAndCommit(configInfo);
 
-            filesCache.set(getFiles(gitStoreService.submit(command).get(), configInfoProvider::isStoreFile));
+            cache.set(getFiles(gitStoreService.submit(command).get(), configInfoProvider::isStoreFile));
             return getConfigs();
         } catch (Exception e) {
             exception.set(e);
-            String msg = String.format("Exception %s\n during storing a config %s in git",
+            String msg = String.format("Exception %s\n during storing a %s with a content %s in git",
                     ExceptionUtils.getStackTrace(e),
+                    configInfo.getConfigInfoType().getSingular(),
                     configInfo.getFilesContent());
             LOG.error(msg);
             gitStoreService.shutdown();
@@ -94,16 +123,52 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
-    public ConfigEditorResult addConfig(String user, String newConfig)  {
+    public ConfigEditorResult addTestCase(String user, String testCase) {
+        if (!flags.contains(Flags.SUPPORT_TEST_CASE)) {
+            return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
+        }
+
+        return addConfigItem(user, testCase, testCaseInfoProvider, testCasesCache);
+    }
+
+    @Override
+    public ConfigEditorResult updateTestCase(String user, String testCase) {
+        if (!flags.contains(Flags.SUPPORT_TEST_CASE)) {
+            return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
+        }
+        return updateConfigItem(user, testCase, testCaseInfoProvider, testCasesCache);
+    }
+
+    @Override
+    public ConfigEditorResult getTestCases() {
         if (exception.get() != null) {
             return ConfigEditorResult.fromException(exception.get());
         }
 
-        LOG.info(String.format("User %s requested to add configuration", user));
+        List<ConfigEditorFile> files = testCasesCache.get();
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setFiles(files);
+        return new ConfigEditorResult(OK, attributes);
+    }
+
+    @Override
+    public ConfigEditorResult addConfig(String user, String newConfig)  {
+        return addConfigItem(user, newConfig, configInfoProvider, configsCache);
+    }
+
+    private ConfigEditorResult addConfigItem(String user,
+                                             String newConfig,
+                                             ConfigInfoProvider provider,
+                                             AtomicReference<List<ConfigEditorFile>> cache)  {
+        if (exception.get() != null) {
+            return ConfigEditorResult.fromException(exception.get());
+        }
+
+        LOG.info(String.format("User %s requested to add a configuration", user));
         ConfigInfo configInfo;
         try {
             configInfo = configInfoProvider.getConfigInfo(user, newConfig);
-            Set<String> intersection = filesCache.get().stream().map(x -> x.getFileName()).collect(Collectors.toSet());
+            Set<String> intersection = cache.get().stream().map(x -> x.getFileName()).collect(Collectors.toSet());
             intersection.retainAll(configInfo.getFilesContent().keySet());
             if (!configInfo.isNewConfig()
                     || !intersection.isEmpty()) {
@@ -114,7 +179,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
                         msg);
             }
 
-            return updateConfigInternally(configInfo);
+            return updateConfigInternally(configInfo, cache);
         } catch (Exception e) {
             String msg = String.format("Exception %s\n during adding new configuration %s, user: %s",
                     ExceptionUtils.getStackTrace(e),
@@ -127,8 +192,10 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
         }
     }
 
-    @Override
-    public ConfigEditorResult updateConfig(String user, String configToUpdate) {
+    private ConfigEditorResult updateConfigItem(String user,
+                                                String configToUpdate,
+                                                ConfigInfoProvider provider,
+                                                AtomicReference<List<ConfigEditorFile>> cache) {
         if (exception.get() != null) {
             return ConfigEditorResult.fromException(exception.get());
         }
@@ -136,8 +203,8 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
         LOG.info(String.format("User %s requested to update the configuration", user));
         ConfigInfo configInfo;
         try {
-            configInfo = configInfoProvider.getConfigInfo(user, configToUpdate);
-            Set<String> intersection = filesCache.get().stream().map(x -> x.getFileName()).collect(Collectors.toSet());
+            configInfo = provider.getConfigInfo(user, configToUpdate);
+            Set<String> intersection = cache.get().stream().map(x -> x.getFileName()).collect(Collectors.toSet());
             intersection.retainAll(configInfo.getFilesContent().keySet());
             if (configInfo.isNewConfig()
                     || intersection.isEmpty()) {
@@ -147,7 +214,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
                         ConfigEditorResult.StatusCode.BAD_REQUEST,
                         msg);
             }
-            return updateConfigInternally(configInfo);
+            return updateConfigInternally(configInfo, cache);
         } catch (Exception e) {
             String msg = String.format("Exception %s\n during updating configuration %s, user: %s",
                     ExceptionUtils.getStackTrace(e),
@@ -161,15 +228,20 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
+    public ConfigEditorResult updateConfig(String user, String configToUpdate) {
+        return updateConfigItem(user, configToUpdate, configInfoProvider, configsCache);
+    }
+
+    @Override
     public ConfigEditorResult getConfigs() {
         if (exception.get() != null) {
             return ConfigEditorResult.fromException(exception.get());
         }
 
-        List<ConfigEditorFile> files = filesCache.get();
+        List<ConfigEditorFile> files = configsCache.get();
         if (files == null || files.isEmpty()) {
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR,
-                    "Empty rules");
+                    "Empty configs");
         }
 
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
@@ -183,7 +255,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
             return ConfigEditorResult.fromException(exception.get());
         }
 
-        Callable<ConfigEditorResult> command = () -> gitReleasesRepo.getFiles();
+        Callable<ConfigEditorResult> command = () -> gitReleasesRepo.getConfigs();
         try {
             ConfigEditorResult ret = gitReleasesService
                     .submit(command)
@@ -342,6 +414,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
                 .repoFolder(props.getStoreRepositoryPath())
                 .repoName(props.getStoreRepositoryName())
                 .rulesDirectory(props.getStoreDirectory())
+                .testCaseDirectory(props.getTestCaseDirectory())
                 .credentials(props.getGitUserName(), props.getGitPassword())
                 .contentType(ruleInfoProvider.getFileContentType())
                 .build();
@@ -361,11 +434,15 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
                 .credentials(props.getGitUserName(), props.getGitPassword())
                 .build();
 
+        EnumSet<Flags> flags = props.getTestCaseDirectory() == null
+                ? EnumSet.noneOf(Flags.class)
+                : EnumSet.of(Flags.SUPPORT_TEST_CASE);
         LOG.info("Initialising git config store service completed");
         return new ConfigStoreImpl(gitStoreRepo,
                 gitReleasesRepo,
                 pullRequestService,
-                ruleInfoProvider);
+                ruleInfoProvider,
+                flags);
     }
 
     @Override

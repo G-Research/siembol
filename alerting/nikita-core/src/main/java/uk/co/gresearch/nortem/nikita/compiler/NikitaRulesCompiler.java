@@ -28,6 +28,7 @@ public class NikitaRulesCompiler implements NikitaCompiler {
             new ObjectMapper()
                     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                     .writerFor(RulesDto.class);
+
     private static final ObjectReader JSON_RULE_READER =
             new ObjectMapper().readerFor(RuleDto.class);
     private static final String TEST_FIELD_NAME = "nikita:test";
@@ -175,9 +176,8 @@ public class NikitaRulesCompiler implements NikitaCompiler {
             }
         }
 
-        NikitaAttributes attributes = new NikitaAttributes();
-        attributes.setMessage(logger.getLog());
-        return new NikitaResult(NikitaResult.StatusCode.OK, attributes);
+        testResult.getAttributes().setMessage(logger.getLog());
+        return testResult;
     }
 
     @Override

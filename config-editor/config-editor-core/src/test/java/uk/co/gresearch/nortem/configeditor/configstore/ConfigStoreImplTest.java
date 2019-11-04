@@ -11,10 +11,7 @@ import uk.co.gresearch.nortem.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.nortem.configeditor.model.ConfigEditorResult;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -31,6 +28,7 @@ public class ConfigStoreImplTest {
     private List<ConfigEditorFile> files;
     private ConfigEditorResult getFilesResult;
     private ConfigInfo ruleInfo = new ConfigInfo();
+    private EnumSet<ConfigStoreImpl.Flags> flags;
 
     @Before
     public void setUp() throws IOException, GitAPIException {
@@ -54,14 +52,16 @@ public class ConfigStoreImplTest {
         attr.setFiles(files);
         getFilesResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
 
-        when(gitRulesRepo.getFiles()).thenReturn(getFilesResult);
-        when(gitReleasesRepo.getFiles()).thenReturn(getFilesResult);
+        when(gitRulesRepo.getConfigs()).thenReturn(getFilesResult);
+        when(gitRulesRepo.getTestCases()).thenReturn(getFilesResult);
+        when(gitReleasesRepo.getConfigs()).thenReturn(getFilesResult);
         when(gitRulesRepo.transactCopyAndCommit(any())).thenReturn(getFilesResult);
-
+        flags = EnumSet.noneOf(ConfigStoreImpl.Flags.class);
         ruleStore = new ConfigStoreImpl(gitRulesRepo,
                 gitReleasesRepo,
                 pullRequestService,
-                ruleInfoProvider);
+                ruleInfoProvider,
+                flags);
     }
 
     @After
@@ -70,7 +70,7 @@ public class ConfigStoreImplTest {
     }
 
     @Test
-    public void AddRuleOK() throws GitAPIException, IOException {
+    public void addRuleOK() throws GitAPIException, IOException {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(new HashMap<>());
         ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
@@ -83,7 +83,7 @@ public class ConfigStoreImplTest {
     }
 
     @Test
-    public void AddRuleNotNew() {
+    public void addRuleNotNew() {
         ruleInfo.setOldVersion(1);
         ruleInfo.setFilesContent(new HashMap<>());
         ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
@@ -93,7 +93,7 @@ public class ConfigStoreImplTest {
     }
 
     @Test
-    public void AddRuleExisting() {
+    public void addRuleExisting() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(filesContent);
         ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
@@ -103,7 +103,7 @@ public class ConfigStoreImplTest {
     }
 
     @Test
-    public void UpdateRuleOK() throws GitAPIException, IOException {
+    public void updateRuleOK() throws GitAPIException, IOException {
         ruleInfo.setOldVersion(1);
         ruleInfo.setFilesContent(filesContent);
         ConfigEditorResult ret = ruleStore.updateConfig("john", "UPDATE");
@@ -118,7 +118,7 @@ public class ConfigStoreImplTest {
     }
 
     @Test
-    public void UpdateNew() {
+    public void updateNew() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(filesContent);
         ConfigEditorResult ret = ruleStore.updateConfig("john", "UPDATE");
@@ -127,7 +127,7 @@ public class ConfigStoreImplTest {
     }
 
     @Test
-    public void UpdateNotExist() {
+    public void updateNotExist() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(new HashMap<>());
         ConfigEditorResult ret = ruleStore.updateConfig("john", "NEW");
@@ -146,12 +146,66 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void getTestCases() throws IOException, GitAPIException {
+        flags = EnumSet.of(ConfigStoreImpl.Flags.SUPPORT_TEST_CASE);
+        ruleStore = new ConfigStoreImpl(gitRulesRepo,
+                gitReleasesRepo,
+                pullRequestService,
+                ruleInfoProvider,
+                flags);
+        ConfigEditorResult ret = ruleStore.getTestCases();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertEquals(1, ret.getAttributes().getFiles().size());
+        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+    }
+
+    @Test
+    public void getTestCasesDisabled() {
+        ConfigEditorResult ret = ruleStore.getTestCases();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getFiles().isEmpty());
+    }
+
+    @Test
+    public void getTestCasesEnabled() throws IOException, GitAPIException {
+        flags.add(ConfigStoreImpl.Flags.SUPPORT_TEST_CASE);
+        when(gitRulesRepo.getTestCases()).thenReturn(getFilesResult);
+
+        ruleStore = new ConfigStoreImpl(gitRulesRepo,
+                gitReleasesRepo,
+                pullRequestService,
+                ruleInfoProvider,
+                flags);
+
+        ConfigEditorResult ret = ruleStore.getTestCases();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertEquals(1, ret.getAttributes().getFiles().size());
+        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+    }
+
+    @Test
+    public void addTestCasesDisabled() {
+        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getMessage().contains("Test cases are not supported"));
+    }
+
+    @Test
+    public void updateTestCasesDisabled() {
+        ConfigEditorResult ret = ruleStore.updateTestCase("john", "UPDATE");
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getMessage().contains("Test cases are not supported"));
+    }
+
+    @Test
     public void getRulesFiltered() throws IOException, GitAPIException {
         when(ruleInfoProvider.isStoreFile(any())).thenReturn(false);
         ruleStore = new ConfigStoreImpl(gitRulesRepo,
                 gitReleasesRepo,
                 pullRequestService,
-                ruleInfoProvider);
+                ruleInfoProvider, flags);
         ConfigEditorResult ret = ruleStore.getConfigs();
         verify(ruleInfoProvider, times(2)).isStoreFile("File.json");
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -161,7 +215,7 @@ public class ConfigStoreImplTest {
     public void getRulesRelease() throws IOException, GitAPIException {
         when(ruleInfoProvider.getReleaseVersion(any())).thenReturn(1234);
         ConfigEditorResult ret = ruleStore.getConfigsRelease();
-        verify(gitReleasesRepo).getFiles();
+        verify(gitReleasesRepo).getConfigs();
         verify(ruleInfoProvider).isReleaseFile("File.json");
         verify(ruleInfoProvider).getReleaseVersion(files);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
@@ -175,7 +229,7 @@ public class ConfigStoreImplTest {
     public void getRulesReleaseFiltered() throws IOException, GitAPIException {
         when(ruleInfoProvider.isReleaseFile(any())).thenReturn(false);
         ConfigEditorResult ret = ruleStore.getConfigsRelease();
-        verify(gitReleasesRepo).getFiles();
+        verify(gitReleasesRepo).getConfigs();
         verify(ruleInfoProvider).isReleaseFile("File.json");
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }

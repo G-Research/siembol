@@ -13,14 +13,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JsonConfigInfoProvider implements ConfigInfoProvider {
+    private static final String RULE_COMMIT_TEMPLATE_NEW = "Adding new %s: %s";
+    private static final String RULE_COMMIT_TEMPLATE_UPDATE = "Updating %s: %s to version: %d";
+    private static final String RULE_COMMIT_TEMPLATE_RELEASE = "%s released to version: %d";
     private static final ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() { });
     private static final String WRONG_RELEASE_FORMAT = "Wrong config release json file format";
     private static final String WRONG_CONFIG_FORMAT = "Wrong config json file format";
     private static final String MISSING_FILENAME_MSG = "Missing filename: %s";
     private static final String WRONG_FILENAME_MSG = "Wrong config name: %s";
+    private static final String PREFIX_NAME_FORMAT = "%s-%s";
+    private static final String PREFIX_NAME_CHECK_FORMAT = "%s_%s";
 
     private final String configNameField;
+    private String configNamePrefixField;
     private final String configAuthorField;
     private final String configVersionField;
     private final String configsVersionField;
@@ -56,6 +62,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         this.commitTemplateNew = builder.commitTemplateNew;
         this.commitTemplateUpdate = builder.commitTemplateUpdate;
         this.commitTemplateRelease = builder.commitTemplateRelease;
+        this.configNamePrefixField = builder.configNamePrefixField;
     }
 
     @Override
@@ -71,20 +78,24 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         if (metadata == null
                 || !(metadata.get(configVersionField) instanceof Number)
                 || !(metadata.get(configAuthorField) instanceof String)
-                || !(metadata.get(configNameField) instanceof String)) {
+                || !(metadata.get(configNameField) instanceof String)
+                || (configNamePrefixField != null && !(metadata.get(configNamePrefixField) instanceof String))) {
             throw new IllegalArgumentException(WRONG_CONFIG_FORMAT);
         }
 
-        String configName = (String)metadata.get(configNameField);
-        String configAuthor = (String)metadata.get(configAuthorField);
-        int configVersion = ((Number)metadata.get(configVersionField)).intValue();
-
-
-        Matcher nameMatcher = ruleNamePattern.matcher(configName);
+        String nameToCheck = String.format(PREFIX_NAME_CHECK_FORMAT,
+                metadata.get(configNameField), metadata.get(configNamePrefixField));
+        Matcher nameMatcher = ruleNamePattern.matcher(nameToCheck);
         if (!nameMatcher.matches()) {
             throw new IllegalArgumentException(
-                    String.format(WRONG_FILENAME_MSG, configName));
+                    String.format(WRONG_FILENAME_MSG, nameToCheck));
         }
+
+        String configName = configNamePrefixField == null
+                ? (String)metadata.get(configNameField)
+                : String.format(PREFIX_NAME_FORMAT, metadata.get(configNamePrefixField), metadata.get(configNameField));
+        String configAuthor = (String)metadata.get(configAuthorField);
+        int configVersion = ((Number)metadata.get(configVersionField)).intValue();
 
         int newConfigVersion = configVersion + 1;
         configInfo.setOldVersion(configVersion);
@@ -180,6 +191,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     }
 
     public static class Builder {
+        private static final String COMMIT_TEMPLATE_NEW = "Adding new %s: %%s";
+        private static final String COMMIT_TEMPLATE_UPDATE = "Updating %s: %%s to version: %%d";
+        private static final String COMMIT_TEMPLATE_RELEASE = "%s released to version: %%d";
         private static final String MISSING_ARGUMENTS = "Missing required argument for the builder";
         private static final String CONFIG_VERSION_REGEX_MSG = "\"%s\"\\s*:\\s*\\d+";
         private static final String RELEASE_VERSION_REGEX_MSG = "\"%s\"\\s*:\\s*\\d+";
@@ -187,7 +201,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         private static final String CONFIG_VERSION_FORMAT_MSG = "\"%s\": %%d";
         private static final String CONFIG_AUTHOR_FORMAT_MSG = "\"%s\": \"%%s\"";
         private static final String RELEASE_VERSION_FORMAT = "\"%s\": %%d";
+        private ConfigInfoType configType = ConfigInfoType.RULE;
         private String configNameField;
+        private String configNamePrefixField;
         private String configAuthorField;
         private String configVersionField;
         private String configsVersionField;
@@ -207,6 +223,11 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
 
         public Builder configNameField(String configNameField) {
             this.configNameField = configNameField;
+            return this;
+        }
+
+        public Builder configNamePrefixField(String configNamePrefixField) {
+            this.configNamePrefixField = configNamePrefixField;
             return this;
         }
 
@@ -235,11 +256,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
             return this;
         }
 
-        public Builder useConfigWordingInGitMessages() {
-            commitTemplateNew = CONFIG_COMMIT_TEMPLATE_NEW;
-            commitTemplateUpdate = CONFIG_COMMIT_TEMPLATE_UPDATE;
-            commitTemplateRelease = CONFIG_COMMIT_TEMPLATE_RELEASE;
-            return this;
+        public Builder setConfigInfoType(ConfigInfoType configType) {
+           this.configType = configType;
+           return this;
         }
 
         public JsonConfigInfoProvider build() {
@@ -259,6 +278,10 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
             ruleAuthorRegex = String.format(CONFIG_AUTHOR_REGEX_MSG, configAuthorField);
             ruleAuthorFormat = String.format(CONFIG_AUTHOR_FORMAT_MSG, configAuthorField);
             releaseVersionFormat = String.format(RELEASE_VERSION_FORMAT, configsVersionField);
+
+            commitTemplateNew = String.format(COMMIT_TEMPLATE_NEW, configType.getSingular());
+            commitTemplateUpdate = String.format(COMMIT_TEMPLATE_UPDATE, configType.getSingular());
+            commitTemplateRelease = String.format(COMMIT_TEMPLATE_RELEASE, configType.getPlural());
 
             return new JsonConfigInfoProvider(this);
         }

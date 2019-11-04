@@ -134,7 +134,7 @@ public class ModelHelper {
 
             if (orderedNames.isEmpty()) {
                 LOG.error(NO_FIELDS_ERROR_MSG);
-                throw new IllegalStateException(NO_FIELDS_ERROR_MSG);
+                //throw new IllegalStateException(NO_FIELDS_ERROR_MSG);
             }
             fieldNames.put(title, orderedNames);
             if (current.isEnum()) {
@@ -203,9 +203,11 @@ public class ModelHelper {
                     reorderFields(current, fieldNames.get(title));
                 }
 
-                for (Iterator<Map.Entry<String, JsonNode>> it = properties.fields(); it.hasNext(); ) {
-                    Map.Entry<String, JsonNode> property = it.next();
-                    stack.push((ObjectNode)property.getValue());
+                if (properties != null) {
+                    for (Iterator<Map.Entry<String, JsonNode>> it = properties.fields(); it.hasNext(); ) {
+                        Map.Entry<String, JsonNode> property = it.next();
+                        stack.push((ObjectNode) property.getValue());
+                    }
                 }
             }
         }

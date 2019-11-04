@@ -93,7 +93,7 @@ public class ParserFactoryImplTest {
 
     @Test
     public void testTestingGood() {
-        ParserFactoryResult result = factory.test(simpleGenericParser, message.getBytes());
+        ParserFactoryResult result = factory.test(simpleGenericParser, null, message.getBytes());
         Assert.assertTrue(result.getStatusCode() == ParserFactoryResult.StatusCode.OK);
         List<Map<String, Object>> parsed = result.getAttributes().getParserResult().getParsedMessages();
         Assert.assertEquals(1553712722732L, parsed.get(0).get("timestamp"));

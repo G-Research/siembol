@@ -97,14 +97,14 @@ public class ParserFactoryImpl implements ParserFactory {
     }
 
     @Override
-    public ParserFactoryResult test(String parserConfig, byte[] rawLog) {
+    public ParserFactoryResult test(String parserConfig, String metadata, byte[] rawLog) {
         ParserFactoryResult createResult = create(parserConfig);
         if (createResult.getStatusCode() != ParserFactoryResult.StatusCode.OK) {
             return createResult;
         }
 
         NortemParser parser = createResult.getAttributes().getNortemParser();
-        ParserResult parserResult = parser.parseToResult(rawLog);
+        ParserResult parserResult = parser.parseToResult(metadata, rawLog);
         ParserFactoryAttributes attributes = new ParserFactoryAttributes();
         attributes.setParserResult(parserResult);
         return new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, attributes);

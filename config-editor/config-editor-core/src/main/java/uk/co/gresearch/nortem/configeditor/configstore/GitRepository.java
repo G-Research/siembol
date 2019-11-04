@@ -31,9 +31,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class GitRepository implements Closeable {
     public static final String MAIN_BRANCH = "master";
+    private static final String TESTCASE_DISABLED = "Testcases are disabled for this repository";
     private final CredentialsProvider credentialsProvider;
     private final Git git;
     private final Path rulesPath;
+    private final Path testCasePath;
     private final String repoUri;
     private final ConfigEditorFile.ContentType contentType;
 
@@ -45,62 +47,77 @@ public class GitRepository implements Closeable {
         credentialsProvider = builder.credentialsProvider;
         git = builder.git;
         rulesPath = builder.rulesPath;
+        testCasePath = builder.testCasesPath;
         repoUri = builder.repoUri;
         contentType = builder.contentType;
     }
 
     public ConfigEditorResult transactCopyAndCommit(
-            ConfigInfo ruleInfo) throws GitAPIException, IOException {
+            ConfigInfo configInfo) throws GitAPIException, IOException {
+        Path currentPath = configInfo.getConfigInfoType() == ConfigInfoType.TEST_CASE ? testCasePath : rulesPath;
+        if (currentPath == null) {
+            throw new IllegalStateException(TESTCASE_DISABLED);
+        }
+
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
-        if (!MAIN_BRANCH.equals(ruleInfo.getBranchName())) {
-            git.branchCreate().setName(ruleInfo.getBranchName()).call();
-            git.checkout().setName(ruleInfo.getBranchName()).call();
+        if (!MAIN_BRANCH.equals(configInfo.getBranchName())) {
+            git.branchCreate().setName(configInfo.getBranchName()).call();
+            git.checkout().setName(configInfo.getBranchName()).call();
         }
 
-        if (ruleInfo.shouldCleanDirectory()) {
-            FileUtils.cleanDirectory(rulesPath.toFile());
+        if (configInfo.shouldCleanDirectory()) {
+            FileUtils.cleanDirectory(currentPath.toFile());
         }
 
-        for (Map.Entry<String, String> file : ruleInfo.getFilesContent().entrySet()) {
-            Path filePath = Paths.get(rulesPath.toString(), file.getKey());
+        for (Map.Entry<String, String> file : configInfo.getFilesContent().entrySet()) {
+            Path filePath = Paths.get(currentPath.toString(), file.getKey());
             Files.write(filePath, file.getValue().getBytes());
         }
 
         git.add()
-                .addFilepattern(rulesPath.getFileName().toString())
+                .addFilepattern(currentPath.getFileName().toString())
                 .call();
 
         git.commit()
                 .setAll(true)
-                .setAuthor(ruleInfo.getCommitter(), ruleInfo.getCommitterEmail())
-                .setMessage(ruleInfo.getCommitMessage())
+                .setAuthor(configInfo.getCommitter(), configInfo.getCommitterEmail())
+                .setMessage(configInfo.getCommitMessage())
                 .call();
 
         git.push()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
-        if (!MAIN_BRANCH.equals(ruleInfo.getBranchName())) {
-            ConfigEditorResult branchFiles = getFiles();
-            git.checkout()
-                    .setName(MAIN_BRANCH)
-                    .call();
-            return branchFiles;
-        }
+        ConfigEditorResult result = getFiles(currentPath);
 
-        return getFiles();
+        if (!MAIN_BRANCH.equals(configInfo.getBranchName())) {
+            git.checkout().setName(MAIN_BRANCH).call();
+        }
+        return result;
     }
 
-    public ConfigEditorResult getFiles() throws IOException, GitAPIException {
+    public ConfigEditorResult getConfigs() throws IOException, GitAPIException {
+        return getFiles(rulesPath);
+    }
+
+    public ConfigEditorResult getTestCases() throws IOException, GitAPIException {
+        if (testCasePath == null) {
+            throw new IllegalStateException(TESTCASE_DISABLED);
+        }
+
+        return getFiles(testCasePath);
+    }
+
+    private ConfigEditorResult getFiles(Path path) throws IOException, GitAPIException {
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
         Map<String, ConfigEditorFile> files = new HashMap<>();
-        try (Stream<Path> paths = Files.walk(rulesPath)) {
+        try (Stream<Path> paths = Files.walk(path)) {
             paths.filter(Files::isRegularFile)
                     .forEach(x -> {
                         try {
@@ -173,7 +190,9 @@ public class GitRepository implements Closeable {
         private String gitUrl;
         private String repoFolder;
         private Path rulesPath;
+        private Path testCasesPath;
         private String rulesDirectory = "";
+        private String testCaseDirectory;
         private CredentialsProvider credentialsProvider;
         private Git git;
         private ConfigEditorFile.ContentType contentType = ConfigEditorFile.ContentType.RAW_JSON_STRING;
@@ -188,8 +207,13 @@ public class GitRepository implements Closeable {
             return this;
         }
 
-        Builder rulesDirectory(String directory) {
-            this.rulesDirectory = directory;
+        Builder rulesDirectory(String rulesDirectory) {
+            this.rulesDirectory = rulesDirectory;
+            return this;
+        }
+
+        Builder testCaseDirectory(String testCaseDirectory) {
+            this.testCaseDirectory = testCaseDirectory;
             return this;
         }
 
@@ -232,6 +256,10 @@ public class GitRepository implements Closeable {
                     .call();
 
             rulesPath = Paths.get(repoFolder, rulesDirectory);
+            if (testCaseDirectory != null) {
+                testCasesPath = Paths.get(repoFolder, testCaseDirectory);
+            }
+
             if (git == null || !repoFolderDir.exists()) {
                 throw new IllegalStateException("Error during git rules repo initialisation");
             }

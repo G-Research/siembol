@@ -1,6 +1,7 @@
 package uk.co.gresearch.nortem.configeditor.service.parserconfig;
 
 import uk.co.gresearch.nortem.configeditor.configstore.ConfigInfoProvider;
+import uk.co.gresearch.nortem.configeditor.configstore.ConfigInfoType;
 import uk.co.gresearch.nortem.configeditor.configstore.JsonConfigInfoProvider;
 
 public class ParserConfigConfigInfoProvider {
@@ -16,7 +17,7 @@ public class ParserConfigConfigInfoProvider {
                 .configNameField(NAME_FIELD)
                 .configsVersionField(RELEASE_VERSION_FIELD)
                 .configVersionField(VERSION_FIELD)
-                .useConfigWordingInGitMessages()
+                .setConfigInfoType(ConfigInfoType.CONFIG)
                 .releaseFilename(PARSERS_FILENAME)
                 .build();
     }

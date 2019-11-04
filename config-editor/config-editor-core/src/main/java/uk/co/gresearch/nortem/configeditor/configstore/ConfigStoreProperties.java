@@ -9,6 +9,7 @@ public class ConfigStoreProperties {
     private String storeRepositoryPath;
     private String releaseRepositoryPath;
     private String storeDirectory;
+    private String testCaseDirectory;
     private String releaseDirectory;
 
     public String getGithubUrl() {
@@ -81,5 +82,13 @@ public class ConfigStoreProperties {
 
     public void setReleaseDirectory(String releaseDirectory) {
         this.releaseDirectory = releaseDirectory;
+    }
+
+    public String getTestCaseDirectory() {
+        return testCaseDirectory;
+    }
+
+    public void setTestCaseDirectory(String testCaseDirectory) {
+        this.testCaseDirectory = testCaseDirectory;
     }
 }

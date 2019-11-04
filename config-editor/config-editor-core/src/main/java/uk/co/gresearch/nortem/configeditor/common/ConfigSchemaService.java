@@ -15,11 +15,15 @@ public interface ConfigSchemaService extends HealthCheckable {
 
     default Health checkHealth() { return Health.up().build(); };
 
+    default ConfigEditorResult getTestSchema() {
+        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
+    }
+
     default ConfigEditorResult getFields() {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
 
-    default ConfigEditorResult testConfiguration(String configuration, String event ) {
+    default ConfigEditorResult testConfiguration(String configuration, String testSpecification ) {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
 

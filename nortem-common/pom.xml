@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>nortem</artifactId>
-        <version>1.10-SNAPSHOT</version>
+        <version>1.11-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>

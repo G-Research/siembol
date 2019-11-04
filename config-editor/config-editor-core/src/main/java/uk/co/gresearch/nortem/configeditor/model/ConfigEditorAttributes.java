@@ -49,6 +49,21 @@ public class ConfigEditorAttributes {
     @JsonProperty("test_result_complete")
     private Boolean testResultComplete;
 
+    @JsonProperty("test_case_result")
+    private ConfigEditorTestCaseResult testCaseResult;
+
+    @JsonProperty("test_schema")
+    @JsonRawValue
+    private String testSchema;
+
+    @JsonProperty("test_result_raw_output")
+    @JsonRawValue
+    private String testResultRawOutput;
+
+    @JsonProperty("test_specification")
+    @JsonRawValue
+    private String testSpecification;
+
     private String event;
 
     private List<ConfigEditorService> services;
@@ -184,5 +199,38 @@ public class ConfigEditorAttributes {
 
     public void setServices(List<ConfigEditorService> services) {
         this.services = services;
+    }
+
+    public ConfigEditorTestCaseResult getTestCaseResult() {
+        return testCaseResult;
+    }
+
+    public void setTestCaseResult(ConfigEditorTestCaseResult testCaseResult) {
+        this.testCaseResult = testCaseResult;
+    }
+
+    public String getTestSchema() {
+        return testSchema;
+    }
+
+    public void setTestSchema(String testSchema) {
+        this.testSchema = testSchema;
+    }
+
+    public String getTestResultRawOutput() {
+        return testResultRawOutput;
+    }
+
+    public void setTestResultRawOutput(String testResultRawOutput) {
+        this.testResultRawOutput = testResultRawOutput;
+    }
+
+    public String getTestSpecification() {
+        return testSpecification;
+    }
+
+    @JsonSetter("test_specification")
+    public void setTestSpecification(JsonNode testSpecification) {
+        this.testSpecification = testSpecification.toString();
     }
 }

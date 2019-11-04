@@ -170,7 +170,7 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals(1, info.getOldVersion());
         Assert.assertEquals(2, info.getVersion());
         Assert.assertEquals("steve", info.getCommitter());
-        Assert.assertEquals("Configuration released to version: 2", info.getCommitMessage());
+        Assert.assertEquals("Configurations released to version: 2", info.getCommitMessage());
 
         Assert.assertEquals("steve", info.getCommitter());
         Assert.assertEquals(user, info.getCommitterEmail());

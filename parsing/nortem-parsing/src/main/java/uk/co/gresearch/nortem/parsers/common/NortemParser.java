@@ -11,20 +11,6 @@ public interface NortemParser {
 
     List<Map<String, Object>> parse(byte[] message);
 
-    @Deprecated
-    default ParserResult parseToResult(byte[] message) {
-        ParserResult result = new ParserResult();
-        result.setSourceType(getSourceType());
-        try {
-            List<Map<String, Object>> parsed = parse(message);
-            parsed.forEach(x -> x.put(ParserFields.SENSOR_TYPE.toString(), getSourceType()));
-            result.setParsedMessages(parsed);
-        } catch (Throwable e) {
-            result.setException(e);
-        }
-        return result;
-    }
-
     default ParserResult parseToResult(String metadata, byte[] message) {
         ParserResult result = new ParserResult();
         result.setSourceType(getSourceType());

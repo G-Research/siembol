@@ -74,11 +74,13 @@ public class CentrifugeResponseDto {
     private Attributes attributes = new Attributes();
 
     public StatusCode getStatusCode() {return this.statusCode;}
+
     public Attributes getAttributes() {return this.attributes;}
 
     public void setStatusCode(StatusCode statusCode){
         this.statusCode = statusCode;
     }
+
     public void setAttributes(Attributes attributes){
         this.attributes = attributes;
     }
