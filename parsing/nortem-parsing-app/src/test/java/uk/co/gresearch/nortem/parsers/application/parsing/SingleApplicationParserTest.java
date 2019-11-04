@@ -134,6 +134,21 @@ public class SingleApplicationParserTest {
     }
 
     @Test
+    public void testParseOneMessageFiltered() throws Exception {
+        appParser = SingleApplicationParser.builder()
+                .parser(outputTopic, nortemParser)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .build();
+
+        parserResult.getParsedMessages().replaceAll(x-> new HashMap<>());
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        Assert.assertTrue(result.isEmpty());
+    }
+
+    @Test
     public void testExceptionParsing() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, nortemParser)

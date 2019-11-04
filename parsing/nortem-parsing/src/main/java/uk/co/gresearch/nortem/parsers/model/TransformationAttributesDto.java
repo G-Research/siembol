@@ -22,6 +22,10 @@ public class TransformationAttributesDto {
     @Attributes(description = "Filter for selecting the fields for the transformation")
     private FieldsFilterDto fieldsFilter;
 
+    @JsonProperty("message_filter")
+    @Attributes(description = "Filter for filtering the whole message")
+    private MessageFilterDto messageFilter;
+
     public String getStringReplaceTarget() {
         return stringReplaceTarget;
     }
@@ -52,5 +56,13 @@ public class TransformationAttributesDto {
 
     public void setFieldsFilter(FieldsFilterDto fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
+    }
+
+    public MessageFilterDto getMessageFilter() {
+        return messageFilter;
+    }
+
+    public void setMessageFilter(MessageFilterDto messageFilter) {
+        this.messageFilter = messageFilter;
     }
 }

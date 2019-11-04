@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.co.gresearch.nortem.parsers.model.MessageFilterDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationDto;
 
 import java.io.IOException;
@@ -40,6 +41,30 @@ public class TransformationsTest {
      **/
     @Multiline
     public static String transformationReplace;
+
+    /**
+     * {
+     *   "transformation_type": "filter_message",
+     *   "attributes": {
+     *     "message_filter" : {
+     *         "matchers" : [
+     *          {
+     *              "field_name" : "dummy field",
+     *              "pattern" : "abc",
+     *              "negated" : false
+     *          },
+     *          {
+     *              "field_name" : "secret_field",
+     *              "pattern" : "secret",
+     *              "negated" : true
+     *          }
+     *          ]
+     *     }
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String transformationFilter;
 
     /**
      * {
@@ -218,5 +243,49 @@ public class TransformationsTest {
         TransformationDto specification = JSON_TRANSFORMATION_READER.readValue(transformationRename);
         specification.getAttributes().setFieldRenameMap(null);
         transformation = factory.create(specification);
+    }
+
+    @Test
+    public void testGoodFilter() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationFilter));
+        Assert.assertTrue(transformation != null);
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals(0, transformed.size());
+
+    }
+
+    @Test
+    public void testGoodFilter2() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationFilter));
+        Assert.assertTrue(transformation != null);
+
+        log.put("secret_field", "wrong");
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals(0, transformed.size());
+    }
+
+    @Test
+    public void testGoodFilter3() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationFilter));
+        Assert.assertTrue(transformation != null);
+
+        log.put("secret_field", "secret");
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals(6, transformed.size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongFilter1() throws IOException {
+        TransformationDto specification = JSON_TRANSFORMATION_READER.readValue(transformationFilter);
+        specification.getAttributes().setMessageFilter(null);
+        factory.create(specification);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongFilter2() throws IOException {
+        TransformationDto specification = JSON_TRANSFORMATION_READER.readValue(transformationFilter);
+        specification.getAttributes().getMessageFilter().getMatchers().get(0).setFieldName(null);
+        factory.create(specification);
     }
 }

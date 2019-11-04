@@ -89,6 +89,7 @@ public abstract class ParsingApplicationParser implements Serializable {
                 }
 
                 List<Map<String, Object>> parsed = parserResult.getParsedMessages();
+                parsed.removeIf(x -> x.isEmpty());
                 if (parsed.isEmpty()) {
                     continue;
                 }

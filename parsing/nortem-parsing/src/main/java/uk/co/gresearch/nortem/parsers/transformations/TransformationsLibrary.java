@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.function.Function;
 
 public class TransformationsLibrary {
@@ -60,6 +61,16 @@ public class TransformationsLibrary {
     public static Map<String, Object> removeFields(Map<String, Object> log, PatternFilter filter) {
         log.keySet().removeIf(x -> filter.match(x));
         return log;
+    }
+
+    public static Map<String, Object> filterMassage(Map<String, Object> log, List<MessageFilterMatcher> matchers) {
+        for (MessageFilterMatcher matcher : matchers) {
+            if (!matcher.match(log)) {
+                return log;
+            }
+        }
+
+        return new HashMap<>();
     }
 
     public static Map<String, Object> transform(List<Transformation> transformations, Map<String, Object> map) {

@@ -1,11 +1,16 @@
 package uk.co.gresearch.nortem.parsers.transformations;
 
+import uk.co.gresearch.nortem.parsers.model.MessageFilterDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationAttributesDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationTypeDto;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TransformationFactory {
@@ -27,6 +32,8 @@ public class TransformationFactory {
                 return createRenameFieldTransformation(specification.getAttributes());
             case DELETE_FIELDS:
                 return createDeleteFieldsTransformation(specification.getAttributes());
+            case FILTER_MESSAGE:
+                return createFilterMessageTransformation(specification.getAttributes());
             case TRIM_VALUE:
                 return createValueTransformation(specification.getAttributes(), TransformationsLibrary::trim);
             case CHOMP_VALUE:
@@ -85,6 +92,26 @@ public class TransformationFactory {
                 attributes.getFieldsFilter().getIncludingFields(),
                 attributes.getFieldsFilter().getExcludingFields());
         return x -> TransformationsLibrary.valueTransformation(x, fun, fieldFilter);
+    }
+
+    private Transformation createFilterMessageTransformation(TransformationAttributesDto attributes) {
+        if (attributes == null
+                || attributes.getMessageFilter() == null
+                || attributes.getMessageFilter().getMatchers() == null
+                || attributes.getMessageFilter().getMatchers().isEmpty()) {
+            throw new IllegalArgumentException(MISSING_TRANSFORMATION_ATTRIBUTES);
+        }
+
+        final List<MessageFilterMatcher> matchers = attributes.getMessageFilter().getMatchers()
+                .stream()
+                .map(x -> new MessageFilterMatcher(x.getFieldName(),
+                        Pattern.compile(x.getPattern()),
+                        x.getNegated()
+                                ? EnumSet.of(MessageFilterMatcher.Flags.NEGATED)
+                                : EnumSet.noneOf(MessageFilterMatcher.Flags.class)))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return x -> TransformationsLibrary.filterMassage(x, matchers);
     }
 
 }
