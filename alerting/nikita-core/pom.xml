@@ -11,13 +11,13 @@
 	<parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.12-SNAPSHOT</version>
+        <version>1.14-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-common</artifactId>
-            <version>1.12-SNAPSHOT</version>
+            <version>1.14-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.adrianwalker</groupId>
@@ -76,16 +76,6 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com</pattern>
-                                    <shadedPattern>repackaged.com</shadedPattern>
-                                    <includes>
-                                        <include>com.fasterxml.jackson.*</include>
-                                        <include>com.github.*</include>
-                                    </includes>
-                                </relocation>
-                            </relocations>
                             <artifactSet>
                                 <excludes>
                                     <exclude>org.slf4j.impl*</exclude>

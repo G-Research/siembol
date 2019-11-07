@@ -1,7 +1,7 @@
 package uk.co.gresearch.nortem.spark;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import repackaged.com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Base64;
 

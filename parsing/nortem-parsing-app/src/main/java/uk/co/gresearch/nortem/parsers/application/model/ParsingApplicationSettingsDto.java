@@ -35,12 +35,12 @@ public class ParsingApplicationSettingsDto {
     private Integer outputParallelism;
 
     @JsonProperty("parse_metadata")
-    @Attributes(description = "Parsing metadata from input key records")
+    @Attributes(description = "Parsing json metadata from input key records")
     private Boolean parseMetadata = false;
 
     @JsonProperty("metadata_prefix")
     @Attributes(description = "Prefix used in metadata fields when parsing metadata is enabled")
-    private String metadataPrefix = "metadata";
+    private String metadataPrefix = "metadata_";
 
     public ParsingApplicationTypeDto getApplicationType() {
         return applicationType;

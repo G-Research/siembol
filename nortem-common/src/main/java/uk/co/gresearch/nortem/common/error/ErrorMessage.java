@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class ErrorMessage {
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -92,6 +94,10 @@ public class ErrorMessage {
 
     public void setSourceType(String sourceType) {
         this.sourceType = sourceType;
+    }
+
+    public void setRawMessage(byte[] message) {
+        rawMessage = new String(message, UTF_8);
     }
 
     @Override

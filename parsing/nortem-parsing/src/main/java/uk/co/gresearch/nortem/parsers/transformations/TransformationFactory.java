@@ -13,6 +13,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_STRING_REPLACE_ALL;
+
 public class TransformationFactory {
     private static final String MISSING_TRANSFORMATION_TYPE = "Missing transformation type";
     private static final String UNKNOWN_TRANSFORMATION_TYPE = "Unknown transformation type";
@@ -28,6 +30,9 @@ public class TransformationFactory {
             case FIELD_NAME_STRING_REPLACE:
             case FIELD_NAME_STRING_REPLACE_ALL:
                 return createStringReplaceTransformation(specification.getAttributes(), specification.getType());
+            case FIELD_NAME_STRING_DELETE_ALL:
+                specification.getAttributes().setStringReplaceReplacement("");
+                return createStringReplaceTransformation(specification.getAttributes(), FIELD_NAME_STRING_REPLACE_ALL);
             case RENAME_FIELDS:
                 return createRenameFieldTransformation(specification.getAttributes());
             case DELETE_FIELDS:

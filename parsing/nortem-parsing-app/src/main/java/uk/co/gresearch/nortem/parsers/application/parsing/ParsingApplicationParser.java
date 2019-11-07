@@ -33,11 +33,11 @@ public abstract class ParsingApplicationParser implements Serializable {
     private static final String ERROR_MESSAGE = "Exception during parsing, parsing_app: {} message: {}, " +
             "metadata: {}, exception: {}";
     private static final String MISSING_ARGUMENTS = "Missing arguments required for Parsing application parser";
-    private static final String METADATA_FORMAT_MSG = "%s:%s";
+
 
     private final EnumSet<Flags> flags;
     private final String name;
-    private final String metadataPrefix;
+    private final String metadataFormatMsg;
     private final String errorTopic;
     private final String sourceType;
     private final String processingTimeField;
@@ -45,7 +45,7 @@ public abstract class ParsingApplicationParser implements Serializable {
 
     protected ParsingApplicationParser(Builder<?> builder) {
         this.name = builder.name;
-        this.metadataPrefix = builder.metadataPrefix;
+        this.metadataFormatMsg = builder.metadataFormatMsg;
         this.errorTopic = builder.errorTopic;
         this.sourceType = builder.name;
         this.processingTimeField = builder.processingTimeField;
@@ -54,18 +54,18 @@ public abstract class ParsingApplicationParser implements Serializable {
         if (name == null
                 || errorTopic == null
                 || processingTimeField == null
-                || timeProvider == null
-                || (flags.contains(Flags.PARSE_METADATA) && metadataPrefix == null)) {
+                || timeProvider == null) {
             throw new IllegalArgumentException(MISSING_ARGUMENTS);
         }
     }
 
-    private String getErrorMessage(Throwable throwable, String sensorType) {
+    private String getErrorMessage(Throwable throwable, String sensorType, byte[] message) {
         ErrorMessage msg = new ErrorMessage();
         msg.setErrorType(ErrorType.PARSER_ERROR);
         msg.setMessage(throwable.getMessage());
         msg.setStackTrace(ExceptionUtils.getStackTrace(throwable));
         msg.setFailedSensorType(sensorType);
+        msg.setRawMessage(message);
         return msg.toString();
     }
 
@@ -75,7 +75,7 @@ public abstract class ParsingApplicationParser implements Serializable {
         ArrayList<ParsingApplicationResult> ret = new ArrayList<>();
         try {
             Map<String, Object> metadataObject = flags.contains(Flags.PARSE_METADATA)
-                    ? JSON_READER.readValue(metadata)
+                    ? JSON_READER.readValue(metadata.trim())
                     : null;
 
 
@@ -84,7 +84,7 @@ public abstract class ParsingApplicationParser implements Serializable {
                 if (parserResult.getException() != null) {
                     ret.add(new ParsingApplicationResult(
                             errorTopic,
-                            getErrorMessage(parserResult.getException(), parserResult.getSourceType())));
+                            getErrorMessage(parserResult.getException(), parserResult.getSourceType(), message)));
                     continue;
                 }
 
@@ -101,7 +101,7 @@ public abstract class ParsingApplicationParser implements Serializable {
 
                 if (metadataObject != null) {
                     parsed.forEach(x -> metadataObject.keySet().forEach(y -> x.put(
-                            String.format(METADATA_FORMAT_MSG, metadataPrefix, y), metadataObject.get(y))));
+                            String.format(metadataFormatMsg, y), metadataObject.get(y))));
                 }
 
                 ArrayList<String> serialised = parsed.stream()
@@ -118,7 +118,7 @@ public abstract class ParsingApplicationParser implements Serializable {
             return ret;
         } catch (Exception e) {
             LOG.error(ERROR_MESSAGE, name, new String(message), metadata, ExceptionUtils.getMessage(e));
-            ret.add(new ParsingApplicationResult(errorTopic, getErrorMessage(e, sourceType)));
+            ret.add(new ParsingApplicationResult(errorTopic, getErrorMessage(e, sourceType, message)));
             return ret;
         }
     }
@@ -128,9 +128,10 @@ public abstract class ParsingApplicationParser implements Serializable {
     }
 
     public static abstract class Builder<T extends ParsingApplicationParser> implements Serializable {
+        private static final String METADATA_FORMAT_MSG = "%s";
         protected EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
         protected String name;
-        protected String metadataPrefix;
+        protected String metadataFormatMsg = METADATA_FORMAT_MSG;
         protected String errorTopic;
         protected String processingTimeField = ParserFields.PARSING_TIME.toString();
         protected TimeProvider timeProvider = new TimeProvider();
@@ -148,7 +149,9 @@ public abstract class ParsingApplicationParser implements Serializable {
         }
 
         public Builder<T> metadataPrefix(String metadataPrefix) {
-            this.metadataPrefix = metadataPrefix;
+            if (metadataPrefix != null) {
+                this.metadataFormatMsg = metadataPrefix + METADATA_FORMAT_MSG;
+            }
             return this;
         }
 

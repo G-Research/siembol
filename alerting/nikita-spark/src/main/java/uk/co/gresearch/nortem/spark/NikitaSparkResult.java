@@ -1,10 +1,10 @@
 package uk.co.gresearch.nortem.spark;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import repackaged.com.fasterxml.jackson.core.JsonProcessingException;
-import repackaged.com.fasterxml.jackson.core.type.TypeReference;
-import repackaged.com.fasterxml.jackson.databind.ObjectMapper;
-import repackaged.com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.co.gresearch.nortem.nikita.common.NikitaResult;
 
 import java.io.Serializable;

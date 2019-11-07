@@ -79,6 +79,17 @@ public class TransformationsTest {
     public static String transformationReplaceAll;
 
     /**
+     * {
+     *   "transformation_type": "field_name_string_delete_all",
+     *   "attributes": {
+     *     "string_replace_target": " "
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String transformationDeleteAll;
+
+    /**
      *{
      *   "transformation_type": "trim_value",
      *   "attributes": {
@@ -164,6 +175,16 @@ public class TransformationsTest {
         Map<String, Object> transformed = transformation.apply(log);
         Assert.assertEquals("true", transformed.get("test_field_a"));
         Assert.assertEquals("abc", transformed.get("dummy_field"));
+    }
+
+    @Test
+    public void testDeleteAll() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationDeleteAll));
+        Assert.assertTrue(transformation != null);
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals("true", transformed.get("testfielda"));
+        Assert.assertEquals("abc", transformed.get("dummyfield"));
     }
 
     @Test(expected = IllegalArgumentException.class)

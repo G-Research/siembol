@@ -5,9 +5,9 @@ import com.github.reinert.jjschema.Attributes;
 
 @Attributes(title = "parserconfig test specification", description = "Specification for testing parser configurations")
 public class ParserConfingTestSpecificationDto {
-    @Attributes(required = true, description = "The encoding of the log for parsing")
+    @Attributes(description = "The encoding of the log for parsing")
     private LogEncodingDto encoding = LogEncodingDto.UTF8_STRING;
-    @Attributes(description = "The metadata usedfor parsing")
+    @Attributes(description = "The metadata used for parsing")
     private String metadata;
     @JsonProperty("log")
     @Attributes(required = true, description = "Log for parsing")

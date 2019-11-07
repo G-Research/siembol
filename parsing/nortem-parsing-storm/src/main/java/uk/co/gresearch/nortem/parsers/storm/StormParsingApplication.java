@@ -20,6 +20,7 @@ import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFact
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryResult;
 
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;

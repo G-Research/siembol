@@ -12,6 +12,7 @@ import uk.co.gresearch.nortem.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.nortem.common.jsonschema.NortemJsonSchemaValidator;
 import uk.co.gresearch.nortem.parsers.common.NortemParser;
 import uk.co.gresearch.nortem.parsers.common.ParserResult;
+import uk.co.gresearch.nortem.parsers.common.SerializableNortemParser;
 import uk.co.gresearch.nortem.parsers.generic.NortemGenericParser;
 import uk.co.gresearch.nortem.parsers.netflow.NortemNetflowParser;
 import uk.co.gresearch.nortem.parsers.syslog.NortemSyslogParser;
@@ -98,12 +99,13 @@ public class ParserFactoryImpl implements ParserFactory {
 
     @Override
     public ParserFactoryResult test(String parserConfig, String metadata, byte[] rawLog) {
-        ParserFactoryResult createResult = create(parserConfig);
-        if (createResult.getStatusCode() != ParserFactoryResult.StatusCode.OK) {
-            return createResult;
+        SerializableNortemParser parser;
+        try {
+            parser = new SerializableNortemParser(parserConfig);
+        } catch (Exception e) {
+            return ParserFactoryResult.fromErrorMessage(ExceptionUtils.getStackTrace(e));
         }
-
-        NortemParser parser = createResult.getAttributes().getNortemParser();
+        
         ParserResult parserResult = parser.parseToResult(metadata, rawLog);
         ParserFactoryAttributes attributes = new ParserFactoryAttributes();
         attributes.setParserResult(parserResult);

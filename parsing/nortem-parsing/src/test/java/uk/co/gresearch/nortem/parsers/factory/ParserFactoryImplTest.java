@@ -76,6 +76,7 @@ public class ParserFactoryImplTest {
         List<Map<String, Object>> parsed = result.getAttributes().getNortemParser().parse(message.getBytes());
         Assert.assertEquals(1553712722732L, parsed.get(0).get("timestamp"));
         Assert.assertEquals(true, parsed.get(0).get("test_field"));
+        Assert.assertNull(parsed.get(0).get("source.type"));
     }
 
     @Test
@@ -98,8 +99,6 @@ public class ParserFactoryImplTest {
         List<Map<String, Object>> parsed = result.getAttributes().getParserResult().getParsedMessages();
         Assert.assertEquals(1553712722732L, parsed.get(0).get("timestamp"));
         Assert.assertEquals(true, parsed.get(0).get("test_field"));
+        Assert.assertEquals("test", parsed.get(0).get("source.type"));
     }
-
-
-
 }

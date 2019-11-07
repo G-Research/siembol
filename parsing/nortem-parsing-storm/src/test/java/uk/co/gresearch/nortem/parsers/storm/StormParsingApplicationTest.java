@@ -191,7 +191,7 @@ public class StormParsingApplicationTest {
 
         testProducer.sendMessage("INVALID");
         for (int i = 1; i < 10; i++) {
-            testProducer.sendMessage(testMessage);
+            testProducer.sendMessage("test", testMessage);
         }
 
         for (int i = 1; i < 10; i++) {

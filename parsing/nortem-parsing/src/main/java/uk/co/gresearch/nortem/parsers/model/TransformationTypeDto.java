@@ -7,6 +7,7 @@ import com.github.reinert.jjschema.Attributes;
 public enum  TransformationTypeDto {
     @JsonProperty("field_name_string_replace") FIELD_NAME_STRING_REPLACE("field_name_string_replace"),
     @JsonProperty("field_name_string_replace_all") FIELD_NAME_STRING_REPLACE_ALL("field_name_string_replace_all"),
+    @JsonProperty("field_name_string_delete_all") FIELD_NAME_STRING_DELETE_ALL("field_name_string_delete_all"),
     @JsonProperty("rename_fields") RENAME_FIELDS("rename_fields"),
     @JsonProperty("delete_fields") DELETE_FIELDS("delete_fields"),
     @JsonProperty("trim_value") TRIM_VALUE("trim_value"),

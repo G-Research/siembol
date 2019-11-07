@@ -154,6 +154,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                     .parser(parsingSettingsDto.getSingleParser().getOutputTopic(),
                             new SerializableNortemParser(parsersMap
                                     .get(parsingSettingsDto.getSingleParser().getParserName())))
+                    .parseMetadata(appSettings.getParseMetadata())
                     .errorTopic(appSettings.getErrorTopic())
                     .metadataPrefix(appSettings.getMetadataPrefix())
                     .name(application.getParsingApplicationName())

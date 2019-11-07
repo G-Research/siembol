@@ -1,6 +1,6 @@
 package uk.co.gresearch.nortem.nikita.storm;
 
-import repackaged.com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 

@@ -1,8 +1,8 @@
 package uk.co.gresearch.nortem.spark;
 
-import repackaged.com.fasterxml.jackson.annotation.JsonProperty;
-import repackaged.com.fasterxml.jackson.annotation.JsonSetter;
-import repackaged.com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class NikitaSparkAttributes {
     @JsonProperty("source_type")

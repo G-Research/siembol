@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>parsing</artifactId>
+    <artifactId>config-editor</artifactId>
     <groupId>uk.co.gresearch.nortem</groupId>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.12-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>nortem-parsing</artifactId>
-  <name>nortem-parsing</name>
+  <artifactId>config-editor-services</artifactId>
+  <name>config-editor-services</name>
   <build>
     <plugins>
       <plugin>
@@ -54,11 +54,9 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.5.1</version>
         <configuration>
-          <forceJavacCompilerUse>true</forceJavacCompilerUse>
-          <source>${java_version}</source>
+          <source>1.8</source>
+          <target>1.8</target>
           <compilerArgument>-Xlint:unchecked</compilerArgument>
-          <target>${java_version}</target>
-          <showWarnings>true</showWarnings>
         </configuration>
       </plugin>
     </plugins>
@@ -77,10 +75,26 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.25</version>
-      <scope>compile</scope>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>objenesis</artifactId>
+          <groupId>org.objenesis</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
