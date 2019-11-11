@@ -41,6 +41,8 @@ public class NikitaStorm {
                 KAFKA_SPOUT_MAX_RETRIES,
                 KafkaSpoutRetryExponentialBackoff.TimeInterval.seconds(KAFKA_SPOUT_MAX_DELAY_SEC));
 
+        KafkaSpoutConfig.FirstPollOffsetStrategy pollStrategy = KafkaSpoutConfig.FirstPollOffsetStrategy
+                .valueOf(attributes.getFirstPollOffsetStrategy());
         KafkaSpoutConfig.Builder<String, String> builder =  new KafkaSpoutConfig.Builder<>(
                 attributes.getBootstrapServers(),
                 StringDeserializer.class,
@@ -48,7 +50,7 @@ public class NikitaStorm {
                 attributes.getNikitaInputTopic())
                 .setGroupId(attributes.getGroupId())
                 .setSecurityProtocol(attributes.getSecurityProtocol())
-                .setFirstPollOffsetStrategy(LATEST)
+                .setFirstPollOffsetStrategy(pollStrategy)
                 .setProp(SESSION_TIMEOUT_MS_CONFIG, attributes.getSessionTimeoutMs())
                 .setRetry(kafkaSpoutRetryService);
 

@@ -142,6 +142,7 @@ public class NikitaStormTest {
         attributes.setZkBaseSleepMs(1000);
         attributes.setZkMaxRetries(10);
         attributes.setNikitaEngine("nikita");
+        attributes.setFirstPollOffsetStrategy("UNCOMMITTED_LATEST");
 
         TestProducer testProducer = new TestProducer(attributes);
 

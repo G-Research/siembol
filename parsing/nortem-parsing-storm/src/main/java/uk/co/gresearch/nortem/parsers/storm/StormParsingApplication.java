@@ -55,6 +55,8 @@ public class StormParsingApplication {
                 KAFKA_SPOUT_MAX_RETRIES,
                 KafkaSpoutRetryExponentialBackoff.TimeInterval.seconds(KAFKA_SPOUT_MAX_DELAY_SEC));
 
+        KafkaSpoutConfig.FirstPollOffsetStrategy pollStrategy = KafkaSpoutConfig.FirstPollOffsetStrategy
+                .valueOf(stormAttributes.getFirstPollOffsetStrategy());
         return new KafkaSpoutConfig.Builder<>(
                 stormAttributes.getBootstrapServers(),
                 StringDeserializer.class,
@@ -62,7 +64,7 @@ public class StormParsingApplication {
                 parsingAttributes.getInputTopics())
                 .setGroupId(stormAttributes.getGroupId())
                 .setSecurityProtocol(stormAttributes.getSecurityProtocol())
-                .setFirstPollOffsetStrategy(LATEST)
+                .setFirstPollOffsetStrategy(pollStrategy)
                 .setProp(SESSION_TIMEOUT_MS_CONFIG, stormAttributes.getSessionTimeoutMs())
                 .setRetry(kafkaSpoutRetryService)
                 .setRecordTranslator(

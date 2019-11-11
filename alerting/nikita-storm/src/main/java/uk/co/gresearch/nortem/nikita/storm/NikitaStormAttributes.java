@@ -21,6 +21,8 @@ public class NikitaStormAttributes implements Serializable {
     private String topologyWorkerChildopts;
     @JsonProperty("client.id")
     private String clientId;
+    @JsonProperty("first.pool.offset.strategy")
+    private String firstPollOffsetStrategy;
     @JsonProperty("max.spout.pending")
     private Integer maxSpoutPending;
     @JsonProperty("nikita.input.topic")
@@ -224,5 +226,13 @@ public class NikitaStormAttributes implements Serializable {
 
     public void setZkMaxRetries(Integer zkMaxRetries) {
         this.zkMaxRetries = zkMaxRetries;
+    }
+
+    public String getFirstPollOffsetStrategy() {
+        return firstPollOffsetStrategy;
+    }
+
+    public void setFirstPollOffsetStrategy(String firstPollOffsetStrategy) {
+        this.firstPollOffsetStrategy = firstPollOffsetStrategy;
     }
 }

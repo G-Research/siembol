@@ -172,6 +172,7 @@ public class StormParsingApplicationTest {
         stormAttributes.setZkBaseSleepMs(1000);
         stormAttributes.setZkMaxRetries(10);
         stormAttributes.setWriterCompressionType("snappy");
+        stormAttributes.setFirstPollOffsetStrategy("UNCOMMITTED_LATEST");
 
         TestKafkaProducer testProducer = new TestKafkaProducer(sb.toString(), "secret");
 

@@ -19,6 +19,8 @@ public class StormParsingApplicationAttributes implements Serializable {
     private String topologyWorkerChildopts;
     @JsonProperty("client.id.prefix")
     private String clientIdPrefix;
+    @JsonProperty("first.pool.offset.strategy")
+    private String firstPollOffsetStrategy;
     @JsonProperty("writer.compression.type")
     private String writerCompressionType;
     @JsonIgnore
@@ -37,6 +39,7 @@ public class StormParsingApplicationAttributes implements Serializable {
     private Integer zkBaseSleepMs;
     @JsonProperty("zk.max.retries")
     private Integer zkMaxRetries;
+
 
     public String getBootstrapServers() {
         return bootstrapServers;
@@ -164,5 +167,13 @@ public class StormParsingApplicationAttributes implements Serializable {
 
     public void setWriterCompressionType(String writerCompressionType) {
         this.writerCompressionType = writerCompressionType;
+    }
+
+    public String getFirstPollOffsetStrategy() {
+        return firstPollOffsetStrategy;
+    }
+
+    public void setFirstPollOffsetStrategy(String firstPollOffsetStrategy) {
+        this.firstPollOffsetStrategy = firstPollOffsetStrategy;
     }
 }
