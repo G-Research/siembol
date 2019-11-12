@@ -11,7 +11,7 @@ import java.util.List;
 public class JsonRuleConfigInfoProviderTest {
     /**
      * {
-     *     "rule_name": "info_provider_test",
+     *     "rule_name": "info_provider-test",
      *     "rule_author": "john",
      *     "rule_version": 12345,
      *     "rule_description": "Test rule",
@@ -72,17 +72,17 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals(12346, info.getVersion());
         Assert.assertEquals("steve", info.getCommitter());
-        Assert.assertEquals("Updating rule: info_provider_test to version: 12346", info.getCommitMessage());
+        Assert.assertEquals("Updating rule: info_provider-test to version: 12346", info.getCommitMessage());
 
         Assert.assertEquals("steve", info.getCommitter());
         Assert.assertEquals(user, info.getCommitterEmail());
 
         Assert.assertEquals(1, info.getFilesContent().size());
-        Assert.assertTrue(info.getFilesContent().containsKey("info_provider_test.json"));
+        Assert.assertTrue(info.getFilesContent().containsKey("info_provider-test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider_test.json").indexOf("\"rule_version\": 12346,") > 0);
+                .get("info_provider-test.json").indexOf("\"rule_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider_test.json").indexOf("\"rule_author\": \"steve\",") > 0);
+                .get("info_provider-test.json").indexOf("\"rule_author\": \"steve\",") > 0);
         Assert.assertFalse(info.isNewConfig());
     }
 
@@ -91,14 +91,14 @@ public class JsonRuleConfigInfoProviderTest {
         ConfigInfo info = infoProvider.getConfigInfo("john@secret.net", testRule);
         Assert.assertEquals(info.getOldVersion(), 12345);
         Assert.assertEquals(info.getCommitter(), "john");
-        Assert.assertEquals(info.getCommitMessage(), "Updating rule: info_provider_test to version: 12346");
+        Assert.assertEquals(info.getCommitMessage(), "Updating rule: info_provider-test to version: 12346");
         Assert.assertEquals(info.getCommitterEmail(), "john@secret.net");
         Assert.assertEquals(info.getFilesContent().size(), 1);
-        Assert.assertEquals(info.getFilesContent().containsKey("info_provider_test.json"), true);
+        Assert.assertEquals(info.getFilesContent().containsKey("info_provider-test.json"), true);
         Assert.assertEquals(info.getFilesContent()
-                .get("info_provider_test.json").indexOf("\"rule_version\": 12346,") > 0, true);
+                .get("info_provider-test.json").indexOf("\"rule_version\": 12346,") > 0, true);
         Assert.assertEquals(info.getFilesContent()
-                .get("info_provider_test.json").indexOf("\"rule_author\": \"john\",") > 0, true);
+                .get("info_provider-test.json").indexOf("\"rule_author\": \"john\",") > 0, true);
         Assert.assertEquals(info.isNewConfig(), false);
 
     }

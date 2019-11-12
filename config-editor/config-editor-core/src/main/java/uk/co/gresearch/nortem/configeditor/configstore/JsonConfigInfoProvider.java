@@ -216,7 +216,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         private String ruleVersionFormat;
         private String ruleAuthorFormat;
         private String releaseVersionFormat;
-        private Pattern ruleNamePattern = Pattern.compile("^[a-zA-Z0-9_]+$");
+        private Pattern ruleNamePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
         private String commitTemplateNew = RULE_COMMIT_TEMPLATE_NEW;
         private String commitTemplateUpdate = RULE_COMMIT_TEMPLATE_UPDATE;
         private String commitTemplateRelease = RULE_COMMIT_TEMPLATE_RELEASE;
