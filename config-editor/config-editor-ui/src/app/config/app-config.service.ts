@@ -18,7 +18,7 @@ export class AppConfigService {
 
     // This gets called on startup and APP_INITIALIZER will wait for the promise to resolve
     public loadConfig(): Promise<any> {
-        return this.http.get('config.json')
+        return this.http.get('config/ui-config.json')
             .toPromise()
             .then((r: ConfigData) => {
                 // tslint:disable-next-line:no-console
@@ -28,7 +28,7 @@ export class AppConfigService {
     }
 
     public loadUiMetadata(): Promise<any> {
-        return this.http.get('assets/uiSetupConfig.json')
+        return this.http.get('config/ui-bootstrap.json')
             .toPromise()
             .then((r: UiMetadataMap) => {
                 // tslint:disable-next-line:no-console

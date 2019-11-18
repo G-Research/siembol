@@ -20,7 +20,8 @@
               { "glob": "**/*", "input": "node_modules/ngx-monaco-editor/assets/monaco", "output": "./assets/monaco/" },
               "src/assets",
               "src/favicon.ico",
-              "src/config.json"
+              "src/config/ui-config.json",
+              "src/config/ui-bootstrap.json"
             ],
             "styles": [
               "src/styles.scss"

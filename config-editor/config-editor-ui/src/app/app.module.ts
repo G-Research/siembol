@@ -30,6 +30,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { RouterStateSerializer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { FormlyModule } from '@ngx-formly/core';
+import {FormlyMaterialModule} from '@ngx-formly/material';
 import { environment } from 'environments/environment';
 import 'hammerjs';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search'
@@ -46,17 +47,17 @@ import { InputTypeComponent } from './ngx-formly/components/input.type.component
 import { NullTypeComponent } from './ngx-formly/components/null.type';
 import { ObjectTypeComponent } from './ngx-formly/components/object.type.component';
 import { PanelWrapperComponent } from './ngx-formly/components/panel-wrapper.component';
+import { SelectTypeComponent } from './ngx-formly/components/select.type.component';
 import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
 import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
+import { FormlySelectOptionsPipe } from './ngx-formly/pipe/select-options.pipe';
 import { HighlightVariablesPipe } from './pipes';
 import { HoverPopoverDirective } from './popover/hover-popover.directive';
 import { PopoverRendererComponent } from './popover/popover-renderer.component';
 import { PopoverService } from './popover/popover-service';
 import { PopupService } from './popup.service';
 import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
-
-import {FormlyMaterialModule} from '@ngx-formly/material';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfig();
@@ -110,6 +111,8 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     HighlightVariablesPipe,
     InputTypeComponent,
     FormFieldWrapperComponent,
+    SelectTypeComponent,
+    FormlySelectOptionsPipe,
   ],
   entryComponents: [
     ErrorDialogComponent,
@@ -151,7 +154,17 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
           { name: 'maxItems', message: 'Max items' },
         ],
         types: [
-          { name: 'string', component: TextAreaTypeComponent },
+          { name: 'text-area', component: TextAreaTypeComponent },
+          {
+            name: 'string',
+            component: InputTypeComponent,
+            wrappers: ['form-field'],
+            defaultOptions: {
+              templateOptions: {
+                type: 'text',
+              },
+            },
+          },
           {
             name: 'number',
             component: InputTypeComponent,
@@ -173,7 +186,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
             },
           },
           { name: 'boolean', extends: 'checkbox' },
-          { name: 'enum', extends: 'select' },
+          { name: 'enum', component: SelectTypeComponent, wrappers: ['form-field'] },
           { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
           { name: 'array', component: ArrayTypeComponent },
           { name: 'object', component: ObjectTypeComponent },
@@ -204,6 +217,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     RepoResolver,
     ConfigStoreGuard,
     HighlightVariablesPipe,
+    FormlySelectOptionsPipe,
     StripSuffixPipe,
     PopoverService,
   ],
