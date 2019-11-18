@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.nortem.parsers.common.NortemParser;
+import uk.co.gresearch.nortem.parsers.common.ParserResult;
 import uk.co.gresearch.nortem.parsers.factory.ParserFactory;
 import uk.co.gresearch.nortem.parsers.factory.ParserFactoryImpl;
 
@@ -44,6 +45,40 @@ public class NortemGenericParserTest {
     public static String simpleGenericParserConfig;
 
     /**
+     * {
+     *  "parser_attributes": {
+     *      "parser_type": "generic"
+     *   },
+     *   "parser_extractors" : [
+     *   {
+     *      "extractor_type": "pattern_extractor",
+     *      "name": "simple_message",
+     *      "field": "original_string",
+     *      "attributes": {
+     *         "regular_expressions": [
+     *           "^msg:\\s(?<secret_msg>.*)$"
+     *         ],
+     *         "should_remove_field" : false
+     *       }
+     *     }],
+     *     "transformations" : [
+     *      {
+     *          "transformation_type": "filter_message",
+     *           "attributes": {
+     *              "message_filter" : {
+     *                  "matchers" : [
+     *                  {
+     *                      "field_name" : "secret_msg",
+     *                      "pattern" : "secret",
+     *                      "negated" : false
+     *                }]
+     *           }}}]
+     *  }
+     **/
+    @Multiline
+    public static String simpleGenericParserFiltered;
+
+    /**
      * msg: secret
      **/
     @Multiline
@@ -65,5 +100,12 @@ public class NortemGenericParserTest {
 
         Assert.assertTrue(out.get("timestamp") instanceof Long);
         Assert.assertEquals(simpleMessage.trim(), out.get("original_string"));
+    }
+
+    @Test
+    public void goodSimpleMessageFiltered() {
+        genericParser = factory.create(simpleGenericParserFiltered).getAttributes().getNortemParser();
+        ParserResult result = genericParser.parseToResult(null, simpleMessage.trim().getBytes());
+        Assert.assertTrue(result.getParsedMessages().isEmpty());
     }
 }

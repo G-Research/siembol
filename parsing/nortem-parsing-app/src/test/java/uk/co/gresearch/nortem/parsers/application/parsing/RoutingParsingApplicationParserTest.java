@@ -148,6 +148,29 @@ public class RoutingParsingApplicationParserTest {
     }
 
     @Test
+    public void testParseOneMessageFiltered() throws Exception {
+        appParser = RoutingParsingApplicationParser.builder()
+                .routerParser(routerParser)
+                .defaultParser(outputTopic, defaultParser)
+                .routingConditionField(routingConditionField)
+                .routingMessageField(routingMessageField)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .build();
+
+        routerParserResult.setParsedMessages(new ArrayList<>());
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+
+
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(routerParser, times(1)).parseToResult(metadata, input);
+
+        Assert.assertTrue(result.isEmpty());
+    }
+
+    @Test
     public void testParseOneMessageGuidDefault() throws Exception {
         appParser = RoutingParsingApplicationParser.builder()
                 .routerParser(routerParser)

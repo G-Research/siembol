@@ -43,7 +43,7 @@ public class NortemGenericParser implements NortemParser {
                 parsed = TransformationsLibrary.transform(transformations, parsed);
             }
 
-            return Arrays.asList(parsed);
+            return parsed.isEmpty() ? new ArrayList<>() : Arrays.asList(parsed);
         } catch (Exception e) {
             String errorMessage = String.format(PARSING_ERROR_MSG, originalMessage, ExceptionUtils.getStackTrace(e));
             LOG.error(errorMessage);

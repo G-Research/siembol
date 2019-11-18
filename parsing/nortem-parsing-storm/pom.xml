@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>parsing</artifactId>
-        <version>1.17-SNAPSHOT</version>
+        <version>1.18-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-parsing-app</artifactId>
-            <version>1.17-SNAPSHOT</version>
+            <version>1.18-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

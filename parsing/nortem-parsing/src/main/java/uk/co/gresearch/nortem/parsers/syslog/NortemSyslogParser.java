@@ -120,6 +120,7 @@ public class NortemSyslogParser implements NortemParser {
 
             return ret.stream()
                     .map(x -> extractAndTransfrom(x))
+                    .filter(x -> !x.isEmpty())
                     .collect(Collectors.toList());
         } catch (Exception e) {
             String errorMessage = String.format("Unable to parse message: %s", originalMessage);
