@@ -148,6 +148,40 @@ public class RoutingParsingApplicationParserTest {
     }
 
     @Test
+    public void testParseOneMessageGuidDefault() throws Exception {
+        appParser = RoutingParsingApplicationParser.builder()
+                .routerParser(routerParser)
+                .defaultParser(outputTopic, defaultParser)
+                .routingConditionField(routingConditionField)
+                .routingMessageField(routingMessageField)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .addGuidToMessages(true)
+                .build();
+
+        routerParserResult.getParsedMessages().remove(1);
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(defaultParser.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
+
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(routerParser, times(1)).parseToResult(metadata, input);
+        verify(defaultParser, times(1)).parseToResult(metadata, "dummy".getBytes());
+        Assert.assertEquals(outputTopic, result.get(0).getTopic());
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(1, result.get(0).getMessages().size());
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
+                ParserFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+    }
+
+    @Test
     public void testParseOneMessageRouterException() throws Exception {
         appParser = RoutingParsingApplicationParser.builder()
                 .routerParser(routerParser)
@@ -302,6 +336,44 @@ public class RoutingParsingApplicationParserTest {
                 ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
                 ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+    }
+
+    @Test
+    public void testParseMessagesWithRoutedParsersMergedFieldsGuid() throws Exception {
+        appParser = RoutingParsingApplicationParser.builder()
+                .routerParser(routerParser)
+                .defaultParser(outputTopic, defaultParser)
+                .routingConditionField(routingConditionField)
+                .routingMessageField(routingMessageField)
+                .addParser("dummy1", routedParser1, "a")
+                .addParser("dummy2", routedParser2, "b")
+                .mergedFields(Arrays.asList("timestamp"))
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .addGuidToMessages(true)
+                .build();
+
+        when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
+        when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
+        when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
+
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
+        verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
+
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("dummy1", result.get(0).getTopic());
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+        Assert.assertEquals("dummy2", result.get(1).getTopic());
+        Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
+                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+        Assert.assertTrue(result.get(1).getMessages().get(0).contains(
+                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
+        Assert.assertTrue(result.get(1).getMessages().get(0).contains("guid" + "\":"));
     }
 
     @Test

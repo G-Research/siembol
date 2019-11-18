@@ -155,6 +155,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                             new SerializableNortemParser(parsersMap
                                     .get(parsingSettingsDto.getSingleParser().getParserName())))
                     .parseMetadata(appSettings.getParseMetadata())
+                    .addGuidToMessages(true)
                     .errorTopic(appSettings.getErrorTopic())
                     .metadataPrefix(appSettings.getMetadataPrefix())
                     .name(application.getParsingApplicationName())
@@ -197,6 +198,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
 
         builder.errorTopic(appSettings.getErrorTopic())
                 .parseMetadata(appSettings.getParseMetadata())
+                .addGuidToMessages(true)
                 .metadataPrefix(appSettings.getMetadataPrefix())
                 .name(application.getParsingApplicationName());
 

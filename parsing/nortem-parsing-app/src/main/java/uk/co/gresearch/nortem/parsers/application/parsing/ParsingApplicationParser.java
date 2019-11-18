@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 
 public abstract class ParsingApplicationParser implements Serializable {
     public enum Flags implements Serializable {
-        PARSE_METADATA
+        PARSE_METADATA,
+        ADD_GUID_TO_MESSAGES
     }
 
     private static final Logger LOG = LoggerFactory
@@ -97,6 +98,9 @@ public abstract class ParsingApplicationParser implements Serializable {
                 parsed.forEach(x -> {
                     x.put(processingTimeField, timestamp);
                     x.put(ParserFields.SENSOR_TYPE.toString(), parserResult.getSourceType());
+                    if (flags.contains(Flags.ADD_GUID_TO_MESSAGES)) {
+                        x.put(ParserFields.GUID.toString(), UUID.randomUUID().toString());
+                    }
                 });
 
                 if (metadataObject != null) {
@@ -144,6 +148,13 @@ public abstract class ParsingApplicationParser implements Serializable {
         public Builder<T> parseMetadata(boolean parseMetadata) {
             if (parseMetadata) {
                 flags.add(Flags.PARSE_METADATA);
+            }
+            return this;
+        }
+
+        public Builder<T> addGuidToMessages(boolean addGuidToMessages) {
+            if (addGuidToMessages) {
+                flags.add(Flags.ADD_GUID_TO_MESSAGES);
             }
             return this;
         }

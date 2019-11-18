@@ -129,6 +129,33 @@ public class SingleApplicationParserTest {
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+        Assert.assertFalse(result.get(0).getMessages().get(0).contains("guid" + "\":"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
+                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+    }
+
+    @Test
+    public void testParseOneMessageGuid() throws Exception {
+        appParser = SingleApplicationParser.builder()
+                .parser(outputTopic, nortemParser)
+                .addGuidToMessages(true)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .build();
+
+        parserResult.getParsedMessages().remove(1);
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(1, result.get(0).getMessages().size());
+        Assert.assertEquals(outputTopic, result.get(0).getTopic());
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
                 ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
     }
@@ -245,6 +272,45 @@ public class SingleApplicationParserTest {
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
                 ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+    }
+
+    @Test
+    public void testParseTwoMessagesGuidMetadata() throws Exception {
+        appParser = SingleApplicationParser.builder()
+                .parser(outputTopic, nortemParser)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .parseMetadata(true)
+                .metadataPrefix("test_metadata:")
+                .addGuidToMessages(true)
+                .build();
+
+        when(nortemParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(nortemParser, times(1)).parseToResult(metadata, input);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(2, result.get(0).getMessages().size());
+        Assert.assertEquals(outputTopic, result.get(0).getTopic());
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:a" + "\":\"string\""));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:b" + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:c" + "\":true"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
+                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:a" + "\":\"string\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:b" + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:c" + "\":true"));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(
+                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains("guid" + "\":"));
     }
 
     @Test
