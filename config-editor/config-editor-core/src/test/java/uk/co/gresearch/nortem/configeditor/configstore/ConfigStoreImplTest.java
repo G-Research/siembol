@@ -23,11 +23,13 @@ public class ConfigStoreImplTest {
     private GitRepository gitReleasesRepo;
     private ReleasePullRequestService pullRequestService;
     private ConfigInfoProvider ruleInfoProvider;
+    private ConfigInfoProvider testCaseInfoProvider;
     private ConfigStoreImpl ruleStore;
     private Map<String, String> filesContent = new HashMap<>();
     private List<ConfigEditorFile> files;
     private ConfigEditorResult getFilesResult;
     private ConfigInfo ruleInfo = new ConfigInfo();
+    private ConfigInfo testCaseInfo = new ConfigInfo();
     private EnumSet<ConfigStoreImpl.Flags> flags;
 
     @Before
@@ -36,13 +38,16 @@ public class ConfigStoreImplTest {
         gitReleasesRepo = Mockito.mock(GitRepository.class);
         pullRequestService = Mockito.mock(ReleasePullRequestService.class);
         ruleInfoProvider = Mockito.mock(ConfigInfoProvider.class);
+        testCaseInfoProvider = Mockito.mock(ConfigInfoProvider.class);
+        when(testCaseInfoProvider.isStoreFile(any())).thenReturn(true);
 
         when(ruleInfoProvider.getConfigInfo(any(), any())).thenReturn(ruleInfo);
+        when(testCaseInfoProvider.getConfigInfo(any(), any())).thenReturn(testCaseInfo);
         when(ruleInfoProvider.getReleaseInfo(any(), any())).thenReturn(ruleInfo);
         when(ruleInfoProvider.isReleaseFile(any())).thenReturn(true);
         when(ruleInfoProvider.isStoreFile(any())).thenReturn(true);
-        when(ruleInfoProvider.getFileContentType()).thenReturn(ConfigEditorFile.ContentType.STRING);
 
+        when(ruleInfoProvider.getFileContentType()).thenReturn(ConfigEditorFile.ContentType.STRING);
         filesContent.put("File.json", "DUMMY_CONTENT");
         files = new ArrayList<>();
         files.add(new ConfigEditorFile("File.json",
@@ -61,6 +66,7 @@ public class ConfigStoreImplTest {
                 gitReleasesRepo,
                 pullRequestService,
                 ruleInfoProvider,
+                testCaseInfoProvider,
                 flags);
     }
 
@@ -83,6 +89,29 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void addTestCaseOK() throws GitAPIException, IOException {
+        flags = EnumSet.of(ConfigStoreImpl.Flags.SUPPORT_TEST_CASE);
+        ruleStore = new ConfigStoreImpl(gitRulesRepo,
+                gitReleasesRepo,
+                pullRequestService,
+                ruleInfoProvider,
+                testCaseInfoProvider,
+                flags);
+
+        testCaseInfo.setOldVersion(0);
+        testCaseInfo.setFilesContent(new HashMap<>());
+        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
+        verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
+
+        verify(gitRulesRepo).transactCopyAndCommit(testCaseInfo);
+
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertEquals(1, ret.getAttributes().getFiles().size());
+        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+    }
+
+    @Test
     public void addRuleNotNew() {
         ruleInfo.setOldVersion(1);
         ruleInfo.setFilesContent(new HashMap<>());
@@ -93,11 +122,47 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void addTestCaseNotNew() throws GitAPIException, IOException {
+        flags = EnumSet.of(ConfigStoreImpl.Flags.SUPPORT_TEST_CASE);
+        ruleStore = new ConfigStoreImpl(gitRulesRepo,
+                gitReleasesRepo,
+                pullRequestService,
+                ruleInfoProvider,
+                testCaseInfoProvider,
+                flags);
+
+        testCaseInfo.setOldVersion(1);
+        testCaseInfo.setFilesContent(new HashMap<>());
+        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
+        verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getMessage().contains("wrong version"));
+    }
+
+    @Test
     public void addRuleExisting() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(filesContent);
         ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
         verify(ruleInfoProvider).getConfigInfo("john", "NEW");
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getMessage().contains("already exists"));
+    }
+
+    @Test
+    public void addTestCaseExisting() throws GitAPIException, IOException {
+        flags = EnumSet.of(ConfigStoreImpl.Flags.SUPPORT_TEST_CASE);
+        ruleStore = new ConfigStoreImpl(gitRulesRepo,
+                gitReleasesRepo,
+                pullRequestService,
+                ruleInfoProvider,
+                testCaseInfoProvider,
+                flags);
+
+        testCaseInfo.setOldVersion(0);
+        testCaseInfo.setFilesContent(filesContent);
+        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
+        verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("already exists"));
     }
@@ -116,6 +181,29 @@ public class ConfigStoreImplTest {
         Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
         Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
     }
+
+    @Test
+    public void updateTestCaseOK() throws GitAPIException, IOException {
+        flags = EnumSet.of(ConfigStoreImpl.Flags.SUPPORT_TEST_CASE);
+        ruleStore = new ConfigStoreImpl(gitRulesRepo,
+                gitReleasesRepo,
+                pullRequestService,
+                ruleInfoProvider,
+                testCaseInfoProvider,
+                flags);
+
+        testCaseInfo.setOldVersion(1);
+        testCaseInfo.setFilesContent(filesContent);
+        ConfigEditorResult ret = ruleStore.updateTestCase("john", "UPDATE");
+        verify(testCaseInfoProvider).getConfigInfo("john", "UPDATE");
+        verify(gitRulesRepo).transactCopyAndCommit(testCaseInfo);
+
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertEquals(1, ret.getAttributes().getFiles().size());
+        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+    }
+
 
     @Test
     public void updateNew() {
@@ -152,6 +240,7 @@ public class ConfigStoreImplTest {
                 gitReleasesRepo,
                 pullRequestService,
                 ruleInfoProvider,
+                testCaseInfoProvider,
                 flags);
         ConfigEditorResult ret = ruleStore.getTestCases();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
@@ -176,6 +265,7 @@ public class ConfigStoreImplTest {
                 gitReleasesRepo,
                 pullRequestService,
                 ruleInfoProvider,
+                testCaseInfoProvider,
                 flags);
 
         ConfigEditorResult ret = ruleStore.getTestCases();
@@ -205,7 +295,9 @@ public class ConfigStoreImplTest {
         ruleStore = new ConfigStoreImpl(gitRulesRepo,
                 gitReleasesRepo,
                 pullRequestService,
-                ruleInfoProvider, flags);
+                ruleInfoProvider,
+                testCaseInfoProvider,
+                flags);
         ConfigEditorResult ret = ruleStore.getConfigs();
         verify(ruleInfoProvider, times(2)).isStoreFile("File.json");
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());

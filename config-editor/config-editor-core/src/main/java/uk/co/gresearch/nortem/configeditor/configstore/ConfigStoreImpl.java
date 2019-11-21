@@ -57,17 +57,19 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     private final ReleasePullRequestService pullRequestService;
     private final ConfigInfoProvider configInfoProvider;
     private final EnumSet<Flags> flags;
-    private final ConfigInfoProvider testCaseInfoProvider = new TestCaseInfoProvider();
+    private final ConfigInfoProvider testCaseInfoProvider;
 
     public ConfigStoreImpl(GitRepository gitStoreRepo,
                            GitRepository gitReleasesRepo,
                            ReleasePullRequestService pullRequestService,
                            ConfigInfoProvider configInfoProvider,
+                           ConfigInfoProvider testCaseInfoProvider,
                            EnumSet<Flags> flags) throws IOException, GitAPIException {
         this.gitStoreRepo = gitStoreRepo;
         this.gitReleasesRepo = gitReleasesRepo;
         this.pullRequestService = pullRequestService;
         this.configInfoProvider = configInfoProvider;
+        this.testCaseInfoProvider = testCaseInfoProvider;
         this.flags = flags;
         //NOTE: we would like to init rules cache
         initConfigs();
@@ -167,7 +169,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
         LOG.info(String.format("User %s requested to add a configuration", user));
         ConfigInfo configInfo;
         try {
-            configInfo = configInfoProvider.getConfigInfo(user, newConfig);
+            configInfo = provider.getConfigInfo(user, newConfig);
             Set<String> intersection = cache.get().stream().map(x -> x.getFileName()).collect(Collectors.toSet());
             intersection.retainAll(configInfo.getFilesContent().keySet());
             if (!configInfo.isNewConfig()
@@ -442,6 +444,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
                 gitReleasesRepo,
                 pullRequestService,
                 ruleInfoProvider,
+                new TestCaseInfoProvider(),
                 flags);
     }
 
