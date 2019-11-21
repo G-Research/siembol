@@ -107,7 +107,7 @@ public class TestCaseConfigInfoProviderTest {
      */
     @Multiline
     public static String maliciousTestCase;
-
+    
     public static String user = "steve@secret.net";
     private final TestCaseInfoProvider infoProvider = new TestCaseInfoProvider();
 
@@ -129,6 +129,7 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertTrue(info.getFilesContent()
                 .get("syslog-test_case.json").indexOf("\"author\": \"steve\",") > 0);
         Assert.assertFalse(info.isNewConfig());
+        Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
 
 
@@ -146,6 +147,7 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertTrue(info.getFilesContent()
                 .get("syslog-test_case.json").indexOf("\"author\": \"john\",") > 0);
         Assert.assertFalse(info.isNewConfig());
+        Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
 
 
@@ -163,6 +165,7 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertTrue(info.getFilesContent()
                 .get("syslog-test_case.json").indexOf("\"author\": \"steve\",") > 0);
         Assert.assertTrue(info.isNewConfig());
+        Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)

@@ -84,6 +84,7 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertTrue(info.getFilesContent()
                 .get("info_provider-test.json").indexOf("\"rule_author\": \"steve\",") > 0);
         Assert.assertFalse(info.isNewConfig());
+        Assert.assertEquals(ConfigInfoType.RULE, info.getConfigInfoType());
     }
 
     @Test
@@ -100,7 +101,7 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(info.getFilesContent()
                 .get("info_provider-test.json").indexOf("\"rule_author\": \"john\",") > 0, true);
         Assert.assertEquals(info.isNewConfig(), false);
-
+        Assert.assertEquals(ConfigInfoType.RULE, info.getConfigInfoType());
     }
 
     @Test

@@ -43,6 +43,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private final String commitTemplateUpdate;
     private final String commitTemplateRelease;
     private final Pattern ruleNamePattern;
+    private final ConfigInfoType configType;
 
     JsonConfigInfoProvider(Builder builder) {
         this.configNameField = builder.configNameField;
@@ -63,6 +64,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         this.commitTemplateUpdate = builder.commitTemplateUpdate;
         this.commitTemplateRelease = builder.commitTemplateRelease;
         this.configNamePrefixField = builder.configNamePrefixField;
+        this.configType = builder.configType;
     }
 
     @Override
@@ -118,6 +120,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
 
         files.put(String.format(configFilenameFormat, configName), updatedRule);
         configInfo.setFilesContent(files);
+
+        configInfo.setConfigInfoType(configType);
         return configInfo;
     }
 
