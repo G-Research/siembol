@@ -13,7 +13,7 @@ public class Rule extends AbstractRule {
     private final List<RuleMatcher> matchers;
     private final EnumSet<RuleFlags> flags;
 
-    private Rule(Builder<?> builder) {
+    protected Rule(Builder<?> builder) {
         super(builder);
         this.matchers = builder.matchers;
         this.flags = builder.flags;
@@ -51,6 +51,23 @@ public class Rule extends AbstractRule {
             this.matchers = matchers;
             return this;
         }
+
+        public Builder<T> flags(EnumSet<RuleFlags> flags) {
+            this.flags = EnumSet.copyOf(flags);
+            return this;
+        }
+
+        protected void prepareBuild() {
+            if (matchers == null || matchers.isEmpty()) {
+                throw new IllegalArgumentException(MISSING_MATCHERS);
+            }
+            for (RuleMatcher matcher : matchers) {
+                if (matcher.CanModifyEvent()) {
+                    flags.add(RuleFlags.CAN_MODIFY_EVENT);
+                    break;
+                }
+            }
+        }
     }
 
     public static Builder<Rule> builder() {
@@ -58,15 +75,7 @@ public class Rule extends AbstractRule {
         return new Builder<Rule>() {
             @Override
             protected Rule buildInternally() {
-                if (matchers == null || matchers.isEmpty()) {
-                    throw new IllegalArgumentException(MISSING_MATCHERS);
-                }
-                for (RuleMatcher matcher : matchers) {
-                    if (matcher.CanModifyEvent()) {
-                        flags.add(RuleFlags.CAN_MODIFY_EVENT);
-                        break;
-                    }
-                }
+                prepareBuild();
                 return new Rule(this);
             }
         };

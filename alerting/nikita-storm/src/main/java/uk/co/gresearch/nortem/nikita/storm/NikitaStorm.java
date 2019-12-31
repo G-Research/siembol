@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.Base64;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;
-import static org.apache.storm.kafka.spout.KafkaSpoutConfig.FirstPollOffsetStrategy.LATEST;
 
 public class NikitaStorm {
     private static final Logger LOG =

@@ -38,7 +38,8 @@ public class NikitaEngineImpl implements NikitaEngine {
         allSourceRules.forEach(x -> evaluateRuleInternally(x, event, outputEvents, exceptionsEvents));
 
         NikitaAttributes attributes = new NikitaAttributes();
-        attributes.setEvaluationResult(outputEvents.isEmpty() ? EvaluationResult.NO_MATCH
+        attributes.setEvaluationResult(outputEvents.isEmpty()
+                ? EvaluationResult.NO_MATCH
                 : EvaluationResult.MATCH);
 
         if (!exceptionsEvents.isEmpty()) {

@@ -1,0 +1,30 @@
+package uk.co.gresearch.nortem.enrichments.model;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.reinert.jjschema.Attributes;
+
+@Attributes(title = "tag", description = "The tags added to the event after joining the enrichment table")
+public class TagDto {
+    @JsonProperty("tag_name")
+    @Attributes(required = true, description = "The name of the tag")
+    private String tagName;
+    @JsonProperty("tag_value")
+    @Attributes(required = true, description = "The value of the tag")
+    private String tagValue;
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    public String getTagValue() {
+        return tagValue;
+    }
+
+    public void setTagValue(String tagValue) {
+        this.tagValue = tagValue;
+    }
+}

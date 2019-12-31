@@ -11,13 +11,13 @@
 	<parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.21-SNAPSHOT</version>
+        <version>1.25-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-common</artifactId>
-            <version>1.21-SNAPSHOT</version>
+            <version>1.25-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.adrianwalker</groupId>
@@ -28,12 +28,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito_version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

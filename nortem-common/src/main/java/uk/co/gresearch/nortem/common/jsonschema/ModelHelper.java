@@ -40,7 +40,7 @@ public class ModelHelper {
     private static final ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
     private static final String NO_TITLE_ERROR_MSG = "Can not find title annotation in Dto Class %s";
-    private static final String NO_FIELDS_ERROR_MSG = "Dto class without fields";
+    private static final String NO_FIELDS_WARN_MSG = "Dto class without fields";
     private static ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final String PROPERTIES_KEY = "properties";
     private static final String TITLE_KEY = "title";
@@ -133,8 +133,7 @@ public class ModelHelper {
             }
 
             if (orderedNames.isEmpty()) {
-                LOG.error(NO_FIELDS_ERROR_MSG);
-                //throw new IllegalStateException(NO_FIELDS_ERROR_MSG);
+                LOG.warn(NO_FIELDS_WARN_MSG);
             }
             fieldNames.put(title, orderedNames);
             if (current.isEnum()) {
