@@ -1,27 +1,17 @@
-import { ConfigTestDto, DeploymentWrapper } from './model/config-model';
-
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '@app/config';
-import { ConfigLoaderService } from '@app/config-loader.service';
-import {
-  ConfigData,
-  ConfigWrapper,
-  Deployment,
-  EditorResult,
-  ExceptionInfo,
-  GitFiles,
-  PullRequestInfo,
-  RepositoryLinks,
-  SchemaDto,
-  SensorFieldTemplate,
-  UserName
-} from '@app/model';
-import { Field, SensorFields } from '@app/model/sensor-fields';
-import { StripSuffixPipe } from '@app/pipes';
 import { Observable } from 'rxjs';
+import { AppConfigService } from './config';
+import { ConfigLoaderService } from './config-loader.service';
+import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, SchemaDto, SensorFields,
+    SensorFieldTemplate, UserName } from './model';
+import { ConfigTestDto, DeploymentWrapper, EditorResult, ExceptionInfo, SchemaInfo, TestCaseEvaluation } from './model/config-model';
+import { Field } from './model/sensor-fields';
+import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from './model/test-case';
+import { StripSuffixPipe } from './pipes';
 
 export interface IConfigLoaderService {
+  originalSchema;
   getConfigs(): Observable<ConfigWrapper<ConfigData>[]>;
   getConfigsFromFiles(files: any);
   getSchema(): Observable<SchemaDto>;
@@ -36,14 +26,24 @@ export interface IConfigLoaderService {
   getFields(): Observable<Field[]>
   testDeploymentConfig(config: any): Observable<EditorResult<any>>;
   testSingleConfig(config: ConfigTestDto): Observable<EditorResult<any>>;
+  getTestSpecificationSchema(): Observable<any>;
+  getTestCases(): Observable<TestCaseMap>;
+  submitTestCaseEdit(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>>;
+  submitNewTestCase(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>>;
+  produceOrderedJson(configData: ConfigData, path: string);
+  unwrapOptionalsFromArrays(obj: any);
 };
+
+export function replacer(key, value) {
+    return value === null ? undefined : value;
+}
 
 @Injectable({
     providedIn: 'root',
   })
 export class EditorService {
 
-  loaderServices: Map<string, ConfigLoaderService> = new Map();
+  loaderServices: Map<string, IConfigLoaderService> = new Map();
 
   constructor(
     private http: HttpClient,
@@ -81,7 +81,39 @@ export class EditorService {
     });
   }
 
-  public getLoader(serviceName: string): any {
+  public getTestCaseSchema(): Observable<any> {
+    // TODO cahnge back once augmenting the test schema is implemented in the backend
+    return this.http.get<EditorResult<SchemaInfo>>(`http://localhost:4200/assets/testStrategySchema.json`)
+        .map(x => x.attributes.rules_schema);
+    // return this.http.get<EditorResult<SchemaInfo>>(`${this.config.serviceRoot}api/v1/testcases/schema`)
+    //     .map(x => x.attributes.rules_schema);
+  }
+
+  public validateTestCase(testcase: TestCase): Observable<EditorResult<ExceptionInfo>> {
+    const outObj = {
+        files: [{
+            content: testcase,
+        }],
+    }
+
+    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/testcases/validate`, outObj);
+  }
+
+  public evaluateTestCase(testcase: TestCase, testResult: any): Observable<any> {
+    const outObj: TestCaseEvaluation = {
+        files: [{
+            content: testcase,
+        }],
+        test_result_raw_output: JSON.stringify(testResult.parsedMessages[0], (key, value) => {if (value !== null) {return value}}, 2),
+    }
+    const headers = new HttpHeaders();
+    headers.set('Content-Type', 'application/json; charset=utf-8');
+
+    return this.http.post<EditorResult<TestCaseResult>>(`${this.config.serviceRoot}api/v1/testcases/evaluate`, outObj)
+        .map(x => x.attributes);
+  }
+
+  public getLoader(serviceName: string): IConfigLoaderService {
     try {
         return this.loaderServices.get(serviceName);
     } catch {

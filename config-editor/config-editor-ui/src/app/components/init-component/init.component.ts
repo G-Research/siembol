@@ -33,6 +33,15 @@ export class InitComponent implements OnDestroy {
             path: 'edit/:id',
             canActivate: [fromGuards.ConfigStoreGuard],
         },
+        {
+            path: 'test',
+            redirectTo: 'test/0',
+        },
+        {
+            component: EditorViewComponent,
+            path: 'test/:id',
+            canActivate: [fromGuards.ConfigStoreGuard],
+        },
     ]
 
     private appRoutes: Routes = [

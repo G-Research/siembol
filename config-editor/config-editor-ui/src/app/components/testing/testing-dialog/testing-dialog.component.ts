@@ -2,15 +2,14 @@ import { Inject } from '@angular/core';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { AppConfigService } from '@app/config';
-import { EditorService } from '@app/editor.service';
+import { EditorService, IConfigLoaderService } from '@app/editor.service';
 import { ConfigData, Deployment, EditorResult } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
 import * as fromStore from 'app/store';
 import { of, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { ConfigLoaderService } from '../../config-loader.service';
-import { ConfigTestResult } from '../../model/config-model';
+import { ConfigTestResult } from '../../../model/config-model';
 
 @Component({
   selector: 're-testing-dialog',
@@ -24,7 +23,7 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
   EVENT_HELP: string;
   testSuccess = 'none';
   private ngUnsubscribe = new Subject();
-  private service: ConfigLoaderService;
+  private service: any;
   private env: string;
   isSingleConfig: boolean;
 

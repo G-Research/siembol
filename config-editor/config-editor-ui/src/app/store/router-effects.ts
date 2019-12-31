@@ -24,7 +24,7 @@ export class RouterEffects {
     withLatestFrom(this.store.select(fromStore.getBootstrapped), this.store.select(fromStore.getConfigs)),
     filter(([route, isBootstrapped, configs]) =>
       route.url.includes('edit') && (!isBootstrapped || parseInt(route.params['id'], 10) < configs.length)),
-    switchMap(([route, isBootstrapped, configs]) => of(new ProductActions.SelectConfig(parseInt(route.params['id'], 10)))),
+    switchMap(([route]) => of(new ProductActions.SelectConfig(parseInt(route.params['id'], 10)))),
     catchError(e => this.errorHandler(e, 'Failed to navigate to ', of()))
   );
 

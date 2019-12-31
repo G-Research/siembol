@@ -23,6 +23,7 @@ export class ConfigStoreGuard implements CanActivate {
             tap(([bootstrapped, configs]) => {
                 if (bootstrapped !== serviceName) {
                     this.store.dispatch(new fromStore.Bootstrap(serviceName));
+                    this.store.dispatch(new fromStore.LoadTestCases());
                 }
             }),
             filter(([bootstrapped, configs]) => bootstrapped === serviceName),

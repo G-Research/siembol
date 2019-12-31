@@ -1,0 +1,18 @@
+<div class="console">
+    <span class="title">
+        <h4>
+            <mat-icon class="left-icon">computer</mat-icon>Test Output
+        </h4>
+    </span>
+    <pre>{{ output }}</pre>
+</div>
+<button mat-raised-button class="button-group-end" color="accent" title="Run Test" (click)="runTest.emit(testCase)">Run Test<mat-icon>play_arrow</mat-icon></button>
+
+<form [formGroup]="form" *ngIf="fields">
+    <formly-form [model]="testCase" [fields]="fields" [options]="options" [form]="form"></formly-form>
+</form>
+
+<div mat-dialog-actions class="button-group-end">
+    <button mat-raised-button color="accent" [disabled]="!form.valid" (click)="submittedTest.emit(testCase)">Save Test Case</button>
+    <button mat-raised-button (click)="cancel.emit(false)">Cancel</button>
+</div>

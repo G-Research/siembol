@@ -1,9 +1,22 @@
 <div class="container">
-    <re-side-bar></re-side-bar>
+    <re-side-bar [configs]="configs$ | async" [selectedConfig]="selectedConfig$ | async" 
+        (onReturn)="changeRoute([serviceName])" (selectedIndex)="changeRoute([serviceName, routeType, $event])">
+    </re-side-bar>
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
-        <re-generic-editor
-        [testEnabled]="testEnabled" [sensorFieldsEnabled]="sensorFieldsEnabled" [editorType]="serviceName">
-        </re-generic-editor>
+        <mat-tab-group [dynamicHeight]="true">
+            <mat-tab label="Edit Config">
+                <re-generic-editor [configs$]="configs$" [selectedIndex$]="selectedConfig$" [fields]="fields"
+                [testEnabled]="testEnabled" [sensorFieldsEnabled]="sensorFieldsEnabled" [serviceName]="serviceName"
+                [user]="user$ | async" [dynamicFieldsMap]="dynamicFieldsMap$ | async">
+                </re-generic-editor>
+            </mat-tab>
+            <mat-tab label="Test Cases" [disabled]="!testCaseEnabled">
+                <re-test-centre [testCases]="testCases" [serviceName]="serviceName" 
+                    [selectedConfigIndex$]="selectedConfig$" [testCaseMap]="testCaseMap$"
+                    [selectedConfig]="(configs$ | async)[(selectedConfig$ | async)]" [user]="user$ | async">
+                </re-test-centre>
+            </mat-tab>
+        </mat-tab-group>
     </div>
 </div>

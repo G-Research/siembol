@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material';
 import { MatInput } from '@angular/material/input';
@@ -6,7 +7,7 @@ import { SensorFields } from '@app/model';
 import { FieldType } from '@ngx-formly/material/form-field';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, take, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -15,7 +16,7 @@ import { debounceTime, takeUntil, tap } from 'rxjs/operators';
     <div class="overlay-holder">
         <mat-form-field #formfield>
             <mat-label>{{ to.label }}</mat-label>
-            <textarea highlight matInput #textbox #autocompleteInput
+            <textarea class="text-area" highlight matInput #textbox #autocompleteInput cdkTextareaAutosize #autosize="cdkTextareaAutosize"
             [matAutocomplete]="auto"
             [class.hide-text]="true"
             [id]="id"
@@ -27,11 +28,12 @@ import { debounceTime, takeUntil, tap } from 'rxjs/operators';
             [placeholder]="to.placeholder"
             [tabindex]="to.tabindex || 0"
             [readonly]="to.readonly"
-            (ngModelChange)="resizeTextArea($event)"
             >
             </textarea>
-            <mat-autocomplete #auto="matAutocomplete" [autoActiveFirstOption]='true' (optionSelected)="autoCompleteSelected($event)">
-                <mat-optgroup *ngFor="let group of filteredList" [label]="group.sensor_name">
+            <mat-autocomplete
+                #auto="matAutocomplete" [autoActiveFirstOption]='true' (optionSelected)="autoCompleteSelected($event)"
+            >
+                <mat-optgroup *ngFor="let group of filteredList" [label]="group?.sensor_name">
                     <mat-option *ngFor="let field of group?.fields" [value]="field?.name">
                         {{field.name}}
                     </mat-option>
@@ -44,7 +46,7 @@ import { debounceTime, takeUntil, tap } from 'rxjs/operators';
     </div>
   `,
   styles: [`
-    textarea {
+    .text-area {
         resize: none;
         line-height: normal;
         overflow: hidden;
@@ -67,7 +69,7 @@ import { debounceTime, takeUntil, tap } from 'rxjs/operators';
 
     .highlighted-overlay {
         position: absolute;
-        top: 18px;
+        top: 21px;
         left: 0;
         z-index: 10;
     }
@@ -89,8 +91,8 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
 
   @ViewChild('textbox', {static: true}) textbox: ElementRef;
   @ViewChild('autocompleteInput', { read: MatAutocompleteTrigger, static: false }) autocomplete: MatAutocompleteTrigger;
-
   @ViewChild('formfield', {static: true}) formfield: FormControl;
+  @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
 
   public displayOverlay = true;
   public modelValue;
@@ -99,14 +101,16 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
     filteredList: SensorFields[] = [];
     sensorDataSource$: any;
     _value;
-    private _prevValue;
-
 
   private ngUnsubscribe: Subject<any> = new Subject();
   private readonly variableRegex = new RegExp(/\${([a-zA-Z_.:]*)(?![^ ]*})/);
 
-  constructor() {
+  constructor(private ngZone: NgZone) {
       super();
+  }
+
+  triggerResize() {
+    this.ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
   }
 
   ngOnDestroy() {
@@ -117,19 +121,18 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
   ngAfterViewInit() {
     // populate the model value with the current form value
     this.modelValue = this.value;
-    this.resizeTextArea(this.field.model[this.field.key]);
-    this.formControl.valueChanges.pipe(tap(v => this.modelValue = v), debounceTime(400), takeUntil(this.ngUnsubscribe)).subscribe(val => {
+    this.formControl.updateValueAndValidity();
+    this.formControl.valueChanges.pipe(tap(v => {this.modelValue = v}), debounceTime(400), takeUntil(this.ngUnsubscribe)).subscribe(val => {
         if (val === null || val === undefined || !this.options.formState.sensorFields) {
             return;
         }
-        this._prevValue = this._value;
         this._value = val;
         this.autoCompleteList = this.options.formState.sensorFields;
-        this.filteredList = cloneDeep(this.options.formState.sensorFields);
+        this.filteredList = cloneDeep(this.options.formState.sensorFields) || [];
         const matches = this.variableRegex.exec(val);
         if (matches != null && matches.length > 0) {
             for (let i = 0; i < this.options.formState.sensorFields.length; ++i) {
-              this.filteredList[i].fields = this.options.formState.sensorFields[i].fields
+                this.filteredList[i].fields = this.options.formState.sensorFields[i].fields
                 .filter(n => n.name.includes(matches[matches.length - 1]));
             }
             this.autocomplete.autocompleteDisabled = false;
@@ -141,17 +144,8 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
     });
   }
 
-  resizeTextArea(event) {
-    const textarea = this.textbox.nativeElement as HTMLTextAreaElement;
-    // scrollheight needs some persuading to tell us what the new height should be
-    textarea.style.height = '20px';
-    if (textarea.scrollHeight !== 0) {
-        textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  }
-
   public autoCompleteSelected($event: MatAutocompleteSelectedEvent) {
-    const replacementStr = this._prevValue.replace(this.variableRegex, '${' + $event.option.value + '}');
+    const replacementStr = this._value.replace(this.variableRegex, '${' + $event.option.value + '}');
     this.field.formControl.setValue(replacementStr);
   }
 }

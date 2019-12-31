@@ -31,7 +31,7 @@
                     <h2>Deployment</h2>
                     <span class="item-count">{{filteredDeployment.configs.length}} {{filteredDeployment.configs.length === 1 ? 'item': 'items'}}</span>
                 </div>
-                <a class="history-button" [hoverPopover]="deploymentHistory">
+                <a class="history-button" [FileHistoryPopover]="deploymentHistory">
                     <mat-icon>history</mat-icon>
                 </a>
                 <span *ngIf="!(pullRequestPending$ | async).pull_request_pending && !(releaseStatus$ | async).submitInFlight; else prMessage">
@@ -39,7 +39,7 @@
                 </span>
                 <ng-template #prMessage>
                     <span>
-                        <a mat-button color="accent" *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" href="{{(pullRequestPending$ | async).pull_request_url}}"
+                        <a mat-button color="accent" *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" href="{{(pullRequestPending$ | async)?.pull_request_url}}"
                             target="_blank">PR for release pending</a>
                         <button class="button" mat-button color="accent" title="refresh PR status" (click)="onRefreshPrStatus()">
                             <mat-icon>refresh</mat-icon>

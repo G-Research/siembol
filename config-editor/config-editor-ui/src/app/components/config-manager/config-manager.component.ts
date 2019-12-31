@@ -9,6 +9,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { EditorService } from '@app/editor.service';
 import { ConfigData, ConfigWrapper, Deployment, PullRequestInfo, SubmitStatus } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
@@ -18,7 +19,6 @@ import { Observable, Subject } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { DeployDialogComponent } from '../deploy-dialog/deploy-dialog.component';
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
-import { EditorService } from '@app/editor.service';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -181,7 +181,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
             }
             if (this.deployment.configs.find(r => r.name === item.name) === undefined) {
                 const updatedDeployment: Deployment<ConfigWrapper<ConfigData>> = cloneDeep(this.deployment);
-                updatedDeployment.configs.push(item);
+                updatedDeployment.configs.push(this.editorService.getLoader(this.serviceName).produceOrderedJson(item, '/'));
                 this.store.dispatch(new fromStore.UpdateDeployment(updatedDeployment));
             }
         }

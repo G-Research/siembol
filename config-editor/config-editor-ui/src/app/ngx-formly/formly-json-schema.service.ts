@@ -1,16 +1,10 @@
-import { AppConfigService } from '../config/app-config.service';
-
 import { TitleCasePipe } from '@angular/common';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { ɵreverseDeepMerge as reverseDeepMerge } from '@ngx-formly/core';
-import * as fromStore from 'app/store';
 import { JSONSchema7, JSONSchema7TypeName } from 'json-schema';
 import { cloneDeep } from 'lodash';
-import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
 
 export interface FormlyJsonschemaOptions {
   /**
@@ -30,23 +24,16 @@ interface IOptions extends FormlyJsonschemaOptions {
 }
 
 @Injectable({ providedIn: 'root' })
-export class FormlyJsonschema implements OnDestroy {
-  private dynamicFieldsMap: Map<string, string>;
-  private useTextarea = false;
-  private ngUnsubscribe = new Subject();
-
+export class FormlyJsonschema {
+  public dynamicFieldsMap: Map<string, string>;
+  public testSpec: FormlyFieldConfig;
   titleCasePipe: TitleCasePipe = new TitleCasePipe();
 
-  constructor(private store: Store<fromStore.State>, private appConfig: AppConfigService) {
-      this.store.select(fromStore.getServiceName).pipe(takeUntil(this.ngUnsubscribe)).subscribe(s =>
-        this.useTextarea = this.appConfig.getUiMetadata(s).enableSensorFields
-      );
-  }
+  constructor() {}
 
   toFieldConfig(schema: JSONSchema7, options?: FormlyJsonschemaOptions): FormlyFieldConfig {
     this.dynamicFieldsMap = new Map<string, string>();
     const fieldConfig = this._toFieldConfig(schema, { schema, ...(options || {}) }, []);
-    this.store.dispatch(new fromStore.UpdateDynamicFieldsMap(this.dynamicFieldsMap));
 
     return fieldConfig;
   }
@@ -114,9 +101,6 @@ export class FormlyJsonschema implements OnDestroy {
             field.templateOptions[prop] = schema[prop];
           }
         });
-        if (this.useTextarea) {
-            field.type = 'text-area';
-        }
         field.templateOptions.label = propKey[propKey.length - 1] !== '-'
             ? this.titleCasePipe.transform(propKey[propKey.length - 1].replace(/_/g, ' '))
             : '';
@@ -126,6 +110,18 @@ export class FormlyJsonschema implements OnDestroy {
         field.fieldGroup = [];
 
         const [propDeps, schemaDeps] = this.resolveDependencies(schema);
+
+        // TODO remove hard coded logic for generating the subschema
+        if (schema.properties === undefined) {
+            if (this.testSpec !== undefined) {
+                field = this.testSpec;
+                break;
+            } else {
+                field.type = 'rawobject';
+            }
+        }
+        // ***************
+
         Object.keys(schema.properties || {}).forEach(key => {
           const newPropKey = cloneDeep(propKey);
           newPropKey.push(key);
@@ -337,10 +333,5 @@ export class FormlyJsonschema implements OnDestroy {
   private addValidator(field: FormlyFieldConfig, name: string, validator: (control: AbstractControl) => boolean) {
     field.validators = field.validators || {};
     field.validators[name] = validator;
-  }
-
-  ngOnDestroy() {
-      this.ngUnsubscribe.next();
-      this.ngUnsubscribe.complete();
   }
 }

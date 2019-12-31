@@ -9,7 +9,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 export class ErrorDialogComponent {
     constructor(public dialogref: MatDialogRef<ErrorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-        console.log(data);
     }
 
     onClickClose() {

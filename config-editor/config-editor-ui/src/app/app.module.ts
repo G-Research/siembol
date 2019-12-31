@@ -13,7 +13,7 @@ import {
   ErrorDialogComponent, JsonViewerComponent, LandingPageComponent, NavBarComponent, SearchComponent, SideBarComponent,
   SubmitDialogComponent
 } from '@app/components';
-import { TestingDialogComponent } from '@app/components/testing-dialog/testing-dialog.component';
+import { TestingDialogComponent } from '@app/components/testing/testing-dialog/testing-dialog.component';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
 import { DeploymentTileComponent } from '@app/components/tile/deployment-tile.component';
 import { AppConfigService, ConfigModule } from '@app/config';
@@ -39,6 +39,10 @@ import { AppComponent } from './app.component';
 import { ChangeHistoryComponent } from './components/change-history/change-history.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { InitComponent } from './components/init-component/init.component';
+import { SubmitTestcaseDialogComponent } from './components/testing/submit-testcase-dialog/submit-testcase-dialog.component';
+import { TestCaseComponent } from './components/testing/test-case/test-case.component';
+import { TestCentreComponent } from './components/testing/test-centre/test-centre.component';
+import { TestResultsComponent } from './components/testing/test-results/test-results.component';
 import { ConfigStoreGuard } from './guards/config-store.guard';
 import { ArrayTypeComponent } from './ngx-formly/components/array.type';
 import { ExpansionPanelWrapperComponent } from './ngx-formly/components/expansion-panel-wrapper.component';
@@ -51,11 +55,14 @@ import { SelectTypeComponent } from './ngx-formly/components/select.type.compone
 import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
 import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
+import { JsonObjectTypeComponent } from './ngx-formly/json-object.type.component';
 import { FormlySelectOptionsPipe } from './ngx-formly/pipe/select-options.pipe';
 import { HighlightVariablesPipe } from './pipes';
+import { FileHistoryPopoverDirective } from './popover/file-history-popover.directive';
 import { HoverPopoverDirective } from './popover/hover-popover.directive';
 import { PopoverRendererComponent } from './popover/popover-renderer.component';
 import { PopoverService } from './popover/popover-service';
+import { TestResultsPopoverDirective } from './popover/test-results-popover.directive';
 import { PopupService } from './popup.service';
 import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
 
@@ -99,7 +106,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     EditorComponent,
     ChangeHistoryComponent,
     PopoverRendererComponent,
-    HoverPopoverDirective,
+    FileHistoryPopoverDirective,
     ObjectTypeComponent,
     ArrayTypeComponent,
     NullTypeComponent,
@@ -111,8 +118,16 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     HighlightVariablesPipe,
     InputTypeComponent,
     FormFieldWrapperComponent,
+    TestCentreComponent,
+    TestCaseComponent,
+    JsonObjectTypeComponent,
+    SubmitTestcaseDialogComponent,
+    TestResultsComponent,
+    TestResultsPopoverDirective,
+    TestingDialogComponent,
     SelectTypeComponent,
     FormlySelectOptionsPipe,
+    HoverPopoverDirective,
   ],
   entryComponents: [
     ErrorDialogComponent,
@@ -128,6 +143,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     EditorComponent,
     PopoverRendererComponent,
     ChangeHistoryComponent,
+    TestCaseComponent,
+    SubmitTestcaseDialogComponent,
+    TestResultsComponent,
   ],
   imports: [
     BrowserModule,
@@ -154,17 +172,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
           { name: 'maxItems', message: 'Max items' },
         ],
         types: [
-          { name: 'text-area', component: TextAreaTypeComponent },
-          {
-            name: 'string',
-            component: InputTypeComponent,
-            wrappers: ['form-field'],
-            defaultOptions: {
-              templateOptions: {
-                type: 'text',
-              },
-            },
-          },
+          { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
+          { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
+          { name: 'rawobject', component: JsonObjectTypeComponent },
           {
             name: 'number',
             component: InputTypeComponent,
@@ -217,7 +227,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     RepoResolver,
     ConfigStoreGuard,
     HighlightVariablesPipe,
-    FormlySelectOptionsPipe,
     StripSuffixPipe,
     PopoverService,
   ],

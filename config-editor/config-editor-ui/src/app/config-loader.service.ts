@@ -8,7 +8,7 @@ import {
     ConfigTestDto,
     ConfigTestResult,
     ConfigWrapper,
-    ContentRuleFile,
+    Content,
     Deployment,
     DeploymentWrapper,
     EditorResult,
@@ -18,11 +18,14 @@ import {
     RepositoryLinks,
     RepositoryLinksWrapper,
     SchemaInfo,
+    TestSchemaInfo,
 } from './model/config-model';
 import { Field } from './model/sensor-fields';
+import { TestCaseMap, TestCaseResultDefault, TestCaseWrapper, TestState } from './model/test-case';
 import { UiMetadataMap } from './model/ui-metadata-map';
 
 import { cloneDeep } from 'lodash';
+import { map, tap } from 'rxjs/operators';
 
 export class ConfigLoaderService implements IConfigLoaderService {
     private optionalObjects: string[] = [];
@@ -31,12 +34,12 @@ export class ConfigLoaderService implements IConfigLoaderService {
     public originalSchema;
     public modelOrder = {};
 
-  constructor(private http: HttpClient, private config: AppConfigService, private env: string) {
-    this.uiMetadata = this.config.getUiMetadata(this.env);
+  constructor(private http: HttpClient, private config: AppConfigService, private serviceName: string) {
+    this.uiMetadata = this.config.getUiMetadata(this.serviceName);
     try {
         this.labelsFunc = new Function('model', this.uiMetadata.labelsFunc);
     } catch {
-        console.error('unable to parse labels funciton');
+        console.error('unable to parse labels function');
         this.labelsFunc = () => [];
     }
   }
@@ -44,7 +47,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
   public getConfigs(): Observable<ConfigWrapper<ConfigData>[]> {
 
     return this.http.get<EditorResult<GitFiles<any>>>(
-      `${this.config.serviceRoot}api/v1/${this.env}/configstore/configs`)
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs`)
       .map(result => {
         if (result.attributes && result.attributes.files && result.attributes.files.length > 0) {
           return result.attributes.files.map(file => ({
@@ -66,7 +69,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
       });
   }
 
-  public getConfigsFromFiles(files: ContentRuleFile<any>[]): ConfigWrapper<ConfigData>[] {
+  public getConfigsFromFiles(files: Content<any>[]): ConfigWrapper<ConfigData>[] {
     const ret: ConfigWrapper<ConfigData>[] = [];
     for (const file of files) {
         ret.push({
@@ -95,8 +98,15 @@ export class ConfigLoaderService implements IConfigLoaderService {
     return subtree;
   }
 
+  public getTestSpecificationSchema(): Observable<any> {
+    return this.http.get<EditorResult<TestSchemaInfo>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testschema`)
+      .map(x =>
+          x.attributes.test_schema
+    );
+  }
+
   public getSchema(): Observable<SchemaDto> {
-    return this.http.get<EditorResult<SchemaInfo>>(`${this.config.serviceRoot}api/v1/${this.env}/configs/schema`)
+    return this.http.get<EditorResult<SchemaInfo>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`)
       .map(x => {
           this.originalSchema = x.attributes.rules_schema;
         try {
@@ -238,13 +248,15 @@ export class ConfigLoaderService implements IConfigLoaderService {
   }
 
   public getPullRequestStatus(): Observable<PullRequestInfo> {
-    return this.http.get<EditorResult<PullRequestInfo>>(`${this.config.serviceRoot}api/v1/${this.env}/configstore/release/status`)
-      .map(result => result.attributes);
+    return this.http.get<EditorResult<PullRequestInfo>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release/status`)
+      .pipe(
+          map(result => result.attributes)
+      )
   }
 
     public getRelease(): Observable<DeploymentWrapper> {
         return this.http.get<EditorResult<GitFiles<any>>>
-            (`${this.config.serviceRoot}api/v1/${this.env}/configstore/release`)
+            (`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`)
             .map(result => result.attributes.files[0])
             .map(result => (
                 {
@@ -269,51 +281,76 @@ export class ConfigLoaderService implements IConfigLoaderService {
 
   public getRepositoryLinks(): Observable<RepositoryLinks> {
     return this.http.get<EditorResult<RepositoryLinksWrapper>>(
-      `${this.config.serviceRoot}api/v1/${this.env}/configstore/repositories`)
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/repositories`)
       .map(result => ({
         ...result.attributes.rules_repositories,
-        rulesetName: this.env,
+        rulesetName: this.serviceName,
       }))
+  }
+
+  public getTestCases(): Observable<TestCaseMap> {
+    const testCaseMap: TestCaseMap = {};
+
+    return this.http.get<EditorResult<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`)
+        .map(result => {
+            if (result.attributes && result.attributes.files && result.attributes.files.length > 0) {
+                result.attributes.files.forEach(file => {
+                    if (!testCaseMap.hasOwnProperty(file.content.config_name)) {
+                        testCaseMap[file.content.config_name] = [];
+                    }
+                    const testCase: TestCaseWrapper = {
+                        testCase: file.content,
+                        testState: TestState.NOT_RUN,
+                        testResult: new TestCaseResultDefault(),
+                        fileHistory: file.file_history,
+                    }
+                    testCaseMap[file.content.config_name].push(testCase);
+                });
+            }
+
+            return testCaseMap;
+        });
+
   }
 
   public validateConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<ExceptionInfo>> {
     const json = JSON.stringify(this.unwrapOptionalsFromArrays(cloneDeep(config.configData)), null, 2);
 
     return this.http.post<EditorResult<ExceptionInfo>>(
-      `${this.config.serviceRoot}api/v1/${this.env}/configs/validate?singleConfig=true`, json);
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate?singleConfig=true`, json);
   }
 
   public validateRelease(deployment: Deployment<ConfigWrapper<ConfigData>>): Observable<EditorResult<ExceptionInfo>> {
     const validationFormat = this.marshalDeploymentFormat(deployment);
     const json = JSON.stringify(validationFormat, null, 2);
 
-    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/${this.env}/configs/validate`, json);
+    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate`, json);
   }
 
   public submitRelease(deployment: Deployment<ConfigWrapper<ConfigData>>): Observable<EditorResult<ExceptionInfo>> {
     const releaseFormat = this.marshalDeploymentFormat(deployment);
     const json = JSON.stringify(releaseFormat, null, 2);
 
-    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/${this.env}/configstore/release`, json);
+    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`, json);
   }
 
   public submitConfigEdit(config: ConfigWrapper<ConfigData>): Observable<EditorResult<GitFiles<ConfigData>>> {
     const json = JSON.stringify(this.unwrapOptionalsFromArrays(cloneDeep(config.configData)), null, 2);
 
     return this.http.put<EditorResult<GitFiles<ConfigData>>>(
-      `${this.config.serviceRoot}api/v1/${this.env}/configstore/configs`, json);
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs`, json);
   }
 
   public submitNewConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<GitFiles<ConfigData>>> {
     const json = JSON.stringify(this.unwrapOptionalsFromArrays(cloneDeep(config.configData)), null, 2);
 
     return this.http.post<EditorResult<GitFiles<ConfigData>>>(
-      `${this.config.serviceRoot}api/v1/${this.env}/configstore/configs`, json);
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs`, json);
   }
 
   public getFields(): Observable<Field[]> {
       return this.http.get<EditorResult<any>>(
-          `${this.config.serviceRoot}api/v1/${this.env}/configs/fields`)
+          `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/fields`)
           .map(f => f.attributes.fields);
   }
 
@@ -321,14 +358,28 @@ export class ConfigLoaderService implements IConfigLoaderService {
     testDto.files[0].content = this.marshalDeploymentFormat(testDto.files[0].content);
 
     return this.http.post<EditorResult<any>>(
-        `${this.config.serviceRoot}api/v1/${this.env}/configs/test?singleConfig=false`, testDto)
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/test?singleConfig=false`, testDto)
   }
 
   public testSingleConfig(testDto: ConfigTestDto): Observable<EditorResult<ConfigTestResult>> {
     testDto.files[0].content = this.unwrapOptionalsFromArrays(cloneDeep(testDto.files[0].content));
 
     return this.http.post<EditorResult<any>>(
-        `${this.config.serviceRoot}api/v1/${this.env}/configs/test?singleConfig=true`, testDto)
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/test?singleConfig=true`, testDto)
+  }
+
+  public submitTestCaseEdit(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>> {
+    const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
+
+    return this.http.put<EditorResult<GitFiles<ConfigData>>>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json);
+  }
+
+  public submitNewTestCase(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>> {
+    const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
+
+    return this.http.post<EditorResult<GitFiles<ConfigData>>>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json);
   }
 
   public marshalDeploymentFormat(deployment: Deployment<ConfigWrapper<ConfigData>>): any {

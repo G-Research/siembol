@@ -15,7 +15,7 @@ import * as fromStore from 'app/store';
 import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { TestingDialogComponent } from '../testing-dialog/testing-dialog.component';
+import { TestingDialogComponent } from '../testing/testing-dialog/testing-dialog.component';
 
 @Component({
     selector: 're-deploy-dialog',

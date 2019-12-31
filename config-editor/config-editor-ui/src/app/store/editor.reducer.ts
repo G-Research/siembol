@@ -4,6 +4,7 @@ import {
     FileHistory, PullRequestInfo, RepositoryLinks, SchemaDto, SensorFields, SubmitStatus,
 } from '@app/model';
 import { cloneDeep } from 'lodash';
+import { TestCaseMap } from '../model/test-case';
 import * as editor from './editor.actions';
 
 export interface State {
@@ -35,6 +36,9 @@ export interface State {
     serviceNames: string[];
     deploymentHistory: FileHistory[];
     dynamicFieldsMap: Map<string, string>;
+    testCaseSchema: any;
+    testCaseMap: TestCaseMap;
+    testSpecificationSchema: any;
 }
 
 export const initialState: State = {
@@ -66,6 +70,9 @@ export const initialState: State = {
     serviceNames: [],
     deploymentHistory: [],
     dynamicFieldsMap: new Map<string, string>(),
+    testCaseSchema: {},
+    testCaseMap: undefined,
+    testSpecificationSchema: undefined,
 }
 
 export function reducer(state = initialState, action: editor.Actions): State {
@@ -105,7 +112,6 @@ export function reducer(state = initialState, action: editor.Actions): State {
 
         case editor.SELECT_CONFIG:
             return Object.assign({}, state, {
-                configSchema: state.configSchema && Object.assign({}, state.configSchema),
                 selectedConfig: action.payload,
             });
 
@@ -137,11 +143,6 @@ export function reducer(state = initialState, action: editor.Actions): State {
                 pullRequestPending: action.payload,
             });
 
-        case editor.LOAD_PULL_REQUEST_STATUS_SUCCESS:
-            return Object.assign({}, state, {
-                pullRequestPending: action.payload,
-            });
-
         case editor.LOAD_REPOSITORIES_SUCCESS:
             return Object.assign({}, state, {
                 repositoryLinks: action.payload,
@@ -149,6 +150,8 @@ export function reducer(state = initialState, action: editor.Actions): State {
 
         case editor.SUBMIT_NEW_CONFIG:
         case editor.SUBMIT_CONFIG_EDIT:
+        case editor.SUBMIT_NEW_TESTCASE:
+        case editor.SUBMIT_TESTCASE_EDIT:
             return Object.assign({}, state, {
                 loading: true,
             });
@@ -165,6 +168,11 @@ export function reducer(state = initialState, action: editor.Actions): State {
                 storedDeployment: dep,
             });
 
+        case editor.SUBMIT_TESTCASE_EDIT_SUCCESS:
+        case editor.SUBMIT_NEW_TESTCASE_SUCCESS:
+
+        case editor.SUBMIT_NEW_TESTCASE_FAILURE:
+        case editor.SUBMIT_TESTCASE_EDIT_FAILURE:
         case editor.SUBMIT_NEW_CONFIG_FAILURE:
         case editor.SUBMIT_CONFIG_EDIT_FAILURE:
             return Object.assign({}, state, {
@@ -269,6 +277,38 @@ export function reducer(state = initialState, action: editor.Actions): State {
                 dynamicFieldsMap: action.payload,
             });
 
+        case editor.LOAD_TEST_CASES_SUCCESS:
+            return Object.assign({}, state, {
+                testCaseMap: action.payload,
+            });
+
+        case editor.LOAD_TEST_CASES_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload,
+            });
+
+        case editor.UPDATE_TEST_CASE_STATE:
+            const testCaseMap: TestCaseMap = cloneDeep(state.testCaseMap);
+            const index: number = testCaseMap[action.testCase.config_name].findIndex(
+                i => i.testCase.test_case_name === action.testCase.test_case_name);
+            testCaseMap[action.testCase.config_name][index].testState = action.testState;
+            testCaseMap[action.testCase.config_name][index].testResult = action.testCaseResult;
+
+            return Object.assign({}, state, {
+                testCaseMap: testCaseMap,
+            });
+
+        case editor.UPDATE_ALL_TEST_CASE_STATE:
+            const testCaseMap2: TestCaseMap = cloneDeep(state.testCaseMap);
+            for (let i = 0; i < testCaseMap2[action.configName].length; ++i) {
+                testCaseMap2[action.configName][i].testState = action.testState;
+                testCaseMap2[action.configName][i].testResult = action.testCaseResult;
+            }
+
+            return Object.assign({}, state, {
+                testCaseMap: testCaseMap2,
+            });
+
         default:
             return state;
     }
@@ -321,3 +361,6 @@ export const getFilterUpgradable = (state: State) => state.filterUpgradable;
 export const getServiceNames = (state: State) => state.serviceNames;
 export const getDeploymentHistory = (state: State) => state.deploymentHistory;
 export const getDynamicFieldsMap = (state: State) => state.dynamicFieldsMap;
+export const getTestCaseSchema = (state: State) => state.testCaseSchema;
+export const getTestSpecificationSchema = (state: State) => state.testSpecificationSchema;
+export const getTestCaseMap = (state: State) => state.testCaseMap;

@@ -1,6 +1,6 @@
 <div class="box" [class.selected-rule-box]="selected">
     <div class="inline">
-        <div class="column-fixed" [hoverPopover]="config">
+        <div class="column-fixed" [FileHistoryPopover]="config">
             <span class="chip-bag">
                 <span #versionChip class="chip" [ngClass]="{'warn': !config.savedInBackend}">v{{config.version || '0' }}</span>
             </span>

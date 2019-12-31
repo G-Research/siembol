@@ -84,6 +84,9 @@ export const getFilterUpgradable = createSelector(getEditorState, fromEditor.get
 export const getServiceNames = createSelector(getEditorState, fromEditor.getServiceNames);
 export const getDeploymentHistory = createSelector(getEditorState, fromEditor.getDeploymentHistory);
 export const getDynamicFieldsMap = createSelector(getEditorState, fromEditor.getDynamicFieldsMap);
+export const getTestCaseSchema = createSelector(getEditorState, fromEditor.getTestCaseSchema);
+export const getTestSpecificationSchema = createSelector(getEditorState, fromEditor.getTestSpecificationSchema);
+export const getTestCaseMap = createSelector(getEditorState, fromEditor.getTestCaseMap);
 
 export const getDeploymentFilteredBySearchTerm = createSelector(
     [getStoredDeployment, getSearchTerm, getFilterMyConfigs, getCurrentUser, getFilterUndeployed, getFilterUpgradable],

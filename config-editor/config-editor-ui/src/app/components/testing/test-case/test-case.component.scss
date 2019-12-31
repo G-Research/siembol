@@ -1,0 +1,31 @@
+.console {
+    display: block;
+    margin: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 5px;
+}
+
+pre {
+    width: 100%;
+    min-height: 400px;
+    max-height: 400px;
+    overflow-x: auto;
+    overflow-y: auto; 
+    background-color: black;
+    padding: 20px;
+}
+
+.title {
+    display: flex;
+    overflow: auto;
+}
+
+.left-icon {
+    margin: 0 10px 0 5px;
+}
+
+.button-group-end {
+    margin-left: auto;
+    margin-right: 0px;
+    display: flex;
+}

@@ -13,7 +13,8 @@ export interface UiMetadataMap {
 export interface TestConfig {
     perConfigTestEnabled: boolean,
     deploymentTestEnabled: boolean,
-    helpMessage: string
+    helpMessage: string,
+    testCaseEnabled: boolean,
 }
 
 export interface DeploymentConfig {

@@ -3,6 +3,7 @@ import { MatInput } from '@angular/material/input';
 import { FieldType } from '@ngx-formly/material/form-field';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'formly-field-mat-input',
   template: `
     <input *ngIf="type !== 'number'; else numberTmp"

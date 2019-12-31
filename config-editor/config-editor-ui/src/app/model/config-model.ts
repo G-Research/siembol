@@ -1,5 +1,6 @@
 import { SensorFields } from '@app/model';
 import { SchemaDto } from './schema';
+import { TestCase } from './test-case';
 
 export interface EditorResult<T> {
     status_code: string;
@@ -15,11 +16,16 @@ export interface GitFiles<T> extends ExceptionInfo {
     files: T[];
 }
 
-export interface GeneralRule {
-    file_name: string;
+export interface TestCaseEvaluation {
+    files: Content<TestCase>[];
+    test_result_raw_output: string;
 }
 
-export interface ContentRuleFile<T> extends GeneralRule {
+export interface GeneralRule {
+    file_name?: string;
+}
+
+export interface Content<T> extends GeneralRule {
     content: T;
 }
 
@@ -39,6 +45,10 @@ export interface RepositoryLinks {
 
 export interface SchemaInfo extends ExceptionInfo {
     rules_schema: any;
+}
+
+export interface TestSchemaInfo extends ExceptionInfo {
+    test_schema: any;
 }
 
 export interface PullRequestInfo extends ExceptionInfo {
@@ -68,7 +78,12 @@ export interface FileHistory {
 }
 
 export interface ConfigTestDto {
-    files: Deployment<ConfigData>,
+    files: Content<ConfigData>[],
+    event: string,
+}
+
+export interface EvaluateTestCaseDto {
+    files: Content<TestCase>[],
     event: string,
 }
 
@@ -87,6 +102,8 @@ export interface BootstrapData {
     storedDeployment:  Deployment<ConfigWrapper<ConfigData>>,
     sensorFields: SensorFields[],
     deploymentHistory?: FileHistory[],
+    testCaseSchema: any,
+    testSpecificationSchema: any,
 };
 
 export interface ConfigTestResult {

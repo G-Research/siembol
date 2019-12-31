@@ -1,0 +1,22 @@
+<div class="container" >
+    <h2 class="title">Test Results</h2>
+    <h4>Matched assertions: {{ testResult.number_matched_assertions }}</h4>
+    <h4>Failed assertions: {{ testResult.number_failed_assertions }}</h4>
+    <h4>Skipped assertions: {{ testResult.number_skipped_assertions }}</h4>
+
+
+    <table class="assertion-table">
+        <tr>
+            <td>Assertion Type</td>
+            <td>Expected Pattern</td>
+            <td>Actual Value</td>
+            <td>Match</td>
+        </tr>
+        <tr *ngFor="let result of testResult.assertion_results">
+            <td>{{ result.assertion_type }}</td>
+            <td>{{ result.expected_pattern }}</td>
+            <td>{{ result.actual_value }}</td>
+            <td>{{ result.match }}</td>
+        </tr>
+    </table>
+</div>

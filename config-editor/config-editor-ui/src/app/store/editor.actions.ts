@@ -1,3 +1,5 @@
+import { TestCase, TestCaseMap, TestCaseWrapper, TestState, TestCaseResult } from '../model/test-case';
+
 import { BootstrapData, ConfigData, ConfigWrapper, Deployment, EditorResult,
     ExceptionInfo, PullRequestInfo, RepositoryLinks } from '@app/model';
 import { Field } from '@app/model/sensor-fields';
@@ -22,6 +24,9 @@ export const VALIDATE_CONFIG = '[Configs] Validate Config';
 export const VALIDATE_CONFIGS = '[Configs] Validate Configs';
 export const VALIDATE_CONFIGS_SUCCESS = '[Configs] Validate Configs Success';
 export const VALIDATE_CONFIGS_FAILURE = '[Configs] Validate Configs Failure';
+export const VALIDATE_TESTCASE = '[Testcase] Validate Testcase';
+export const VALIDATE_TESTCASE_SUCCESS = '[Testcase] Validate Testcase Success';
+export const VALIDATE_TESTCASE_FAILURE = '[Testcase] Validate Testcase Failure';
 export const SUBMIT_RELEASE = '[Configs] Submit Release';
 export const SUBMIT_RELEASE_SUCCESS = '[Configs] Submit Release Success';
 export const SUBMIT_RELEASE_FAILURE = '[Configs] Submit Release Failure';
@@ -44,6 +49,17 @@ export const FILTER_MY_CONFIGS = '[Search] Filter My Configs';
 export const FILTER_UNDEPLOYED = '[Search] Filter Undeployed';
 export const FILTER_UPGRADABLE = '[Search] Filter Upgradable';
 export const UPDATE_DYNAMIC_FIELDS_MAP = '[schema] Update Dynamic Fields Map';
+export const LOAD_TEST_CASES = '[Test-Cases] Load Test Cases';
+export const LOAD_TEST_CASES_SUCCESS = '[Test-Cases] Load Test Cases Success';
+export const LOAD_TEST_CASES_FAILURE = '[Test-Cases] Load Test Cases Failure';
+export const SUBMIT_TESTCASE_EDIT = '[Testcase] Submit Testcase Edit';
+export const SUBMIT_TESTCASE_EDIT_SUCCESS = '[Testcase] Submit Testcase Edit Success';
+export const SUBMIT_TESTCASE_EDIT_FAILURE = '[Testcase] Submit Testcase Edit Failure';
+export const SUBMIT_NEW_TESTCASE = '[Testcase] Submit New Testcase';
+export const SUBMIT_NEW_TESTCASE_SUCCESS = '[Testcase] Submit New Testcase Success';
+export const SUBMIT_NEW_TESTCASE_FAILURE = '[Testcase] Submit New Testcase Failure';
+export const UPDATE_TEST_CASE_STATE = '[Testcase] Update Testcase State';
+export const UPDATE_ALL_TEST_CASE_STATE = '[Testcase] Update All Testcase State';
 
 export class SetServiceNames implements Action {
     readonly type = SET_SERVICE_NAMES;
@@ -82,6 +98,21 @@ export class ValidateConfigsSuccess implements Action {
 
 export class ValidateConfigsFailure implements Action {
     readonly type = VALIDATE_CONFIGS_FAILURE;
+    constructor(public payload: any) { }
+}
+
+export class ValidateTestcase implements Action {
+    readonly type = VALIDATE_TESTCASE;
+    constructor(public payload: TestCase) { }
+}
+
+export class ValidateTestcaseSuccess implements Action {
+    readonly type = VALIDATE_TESTCASE_SUCCESS;
+    constructor(public payload: EditorResult<ExceptionInfo>) { }
+}
+
+export class ValidateTestcaseFailure implements Action {
+    readonly type = VALIDATE_TESTCASE_FAILURE;
     constructor(public payload: any) { }
 }
 
@@ -172,6 +203,36 @@ export class SubmitConfigEditFailure implements Action {
     constructor(public payload: any) { }
 }
 
+export class SubmitTestCaseEdit implements Action {
+    readonly type = SUBMIT_TESTCASE_EDIT;
+    constructor(public payload: TestCaseWrapper) { }
+}
+
+export class SubmitTestCaseEditSuccess implements Action {
+    readonly type = SUBMIT_TESTCASE_EDIT_SUCCESS;
+    constructor(public payload: EditorResult<TestCase>) { }
+}
+
+export class SubmitTestCaseEditFailure implements Action {
+    readonly type = SUBMIT_TESTCASE_EDIT_FAILURE;
+    constructor(public payload: any) { }
+}
+
+export class SubmitNewTestCase implements Action {
+    readonly type = SUBMIT_NEW_TESTCASE;
+    constructor(public payload: TestCaseWrapper) { }
+}
+
+export class SubmitNewTestCaseSuccess implements Action {
+    readonly type = SUBMIT_NEW_TESTCASE_SUCCESS;
+    constructor(public payload: EditorResult<TestCase>) { }
+}
+
+export class SubmitNewTestCaseFailure implements Action {
+    readonly type = SUBMIT_NEW_TESTCASE_FAILURE;
+    constructor(public payload: any) { }
+}
+
 export class UpdateConfigs implements Action {
     readonly type = UPDATE_CONFIGS;
     constructor(public payload: ConfigWrapper<ConfigData>[]) { }
@@ -227,6 +288,30 @@ export class UpdateDynamicFieldsMap implements Action {
     constructor(public payload: object) { }
 }
 
+export class LoadTestCases implements Action {
+    readonly type = LOAD_TEST_CASES;
+}
+
+export class LoadTestCasesSuccess implements Action {
+    readonly type = LOAD_TEST_CASES_SUCCESS;
+    constructor(public payload: TestCaseMap) { }
+}
+
+export class LoadTestCasesFailure implements Action {
+    readonly type = LOAD_TEST_CASES_FAILURE;
+    constructor(public payload: any) { }
+}
+
+export class UpdateTestCaseState implements Action {
+    readonly type = UPDATE_TEST_CASE_STATE;
+    constructor(public testCase: TestCase, public testState: TestState, public testCaseResult: TestCaseResult) { }
+}
+
+export class UpdateAllTestCaseState implements Action {
+    readonly type = UPDATE_ALL_TEST_CASE_STATE;
+    constructor(public configName: string, public testState: TestState, public testCaseResult: TestCaseResult) { }
+}
+
 export type Actions
     = RouterAction<State>
     | UpdateConfigs
@@ -239,6 +324,12 @@ export type Actions
     | SubmitConfigEdit
     | SubmitConfigEditSuccess
     | SubmitConfigEditFailure
+    | SubmitNewTestCase
+    | SubmitNewTestCaseSuccess
+    | SubmitNewTestCaseFailure
+    | SubmitTestCaseEdit
+    | SubmitTestCaseEditSuccess
+    | SubmitTestCaseEditFailure
     | SelectConfig
     | UpdateDeployment
     | AddConfig
@@ -255,6 +346,9 @@ export type Actions
     | ValidateConfigs
     | ValidateConfigsSuccess
     | ValidateConfigsFailure
+    | ValidateTestcase
+    | ValidateTestcaseSuccess
+    | ValidateTestcaseFailure
     | Bootstrap
     | BootstrapSuccess
     | BootstrapFailure
@@ -265,4 +359,9 @@ export type Actions
     | FilterUpgradable
     | FilterUndeployed
     | UpdateDynamicFieldsMap
-    | SetServiceNames;
+    | SetServiceNames
+    | LoadTestCases
+    | LoadTestCasesSuccess
+    | LoadTestCasesFailure
+    | UpdateAllTestCaseState
+    | UpdateTestCaseState;

@@ -1,11 +1,11 @@
 <ng-scrollbar class="scrollbar">
     <div class="back-button">
-        <button mat-raised-button color="primary" (click)="onReturn()" class="back-button-text">
+        <button mat-raised-button color="primary" (click)="onReturn.emit()" class="back-button-text">
             <mat-icon>keyboard_arrow_left</mat-icon>Config Manager
         </button>
     </div>
     <mat-divider></mat-divider>
-    <re-config-tile *ngFor="let config of (configs$ | async); index as i" [selected]="i == (selectedConfig$ |async)" 
-        (click)="onSelect(i)" [config]="config" [disableButtons]="'True'">
+    <re-config-tile *ngFor="let config of configs; index as i" [selected]="i == selectedConfig" 
+        (click)="selectedIndex.emit(i)" [config]="config" [disableButtons]="'True'">
     </re-config-tile>
 </ng-scrollbar>

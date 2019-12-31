@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@a
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { AppConfigService } from '@app/config';
+import { EditorService } from '@app/editor.service';
 import { ConfigData, ConfigWrapper, SensorFields } from '@app/model';
+import { UiMetadataMap } from '@app/model/ui-metadata-map';
+import * as JsonPointer from '@app/ngx-formly/util/jsonpointer.functions';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -12,11 +15,7 @@ import * as omitEmpty from 'omit-empty';
 import { Observable, of, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { SubmitDialogComponent } from '..';
-import { EditorService } from '../../editor.service';
-import { UiMetadataMap } from '../../model/ui-metadata-map';
-import { FormlyJsonschema } from '../../ngx-formly/formly-json-schema.service';
-import * as JsonPointer from '../../ngx-formly/util/jsonpointer.functions';
-import { TestingDialogComponent } from '../testing-dialog/testing-dialog.component';
+import { TestingDialogComponent } from '../testing/testing-dialog/testing-dialog.component';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,8 +25,6 @@ import { TestingDialogComponent } from '../testing-dialog/testing-dialog.compone
 })
 export class EditorComponent implements OnInit, OnDestroy {
     public ngUnsubscribe = new Subject();
-    public configs$: Observable<ConfigWrapper<ConfigData>[]>;
-    public selectedIndex$: Observable<number>;
     public schema$: Observable<any>;
     public user$: Observable<string>;
     public configName: string;
@@ -37,15 +34,11 @@ export class EditorComponent implements OnInit, OnDestroy {
     public configData: ConfigData = {};
     public schema: any = {};
     public enabled = 0;
-    public user: string;
     public sensors$: Observable<SensorFields[]> = of([]);
     public selectedSensor$: Observable<string>;
     private metaDataMap: UiMetadataMap;
-    public fields: FormlyFieldConfig[];
     public options: FormlyFormOptions = {};
     public sensors: SensorFields[] = [];
-    private serviceName: string;
-    private dynamicFieldsMap: Map<string, string>;
 
     public form: FormGroup = new FormGroup({});
 
@@ -54,26 +47,22 @@ export class EditorComponent implements OnInit, OnDestroy {
     private readonly UNIQUE_NAME_MESSAGE = 'Config name must be unique';
     private readonly SPACE_IN_NAME_MESSAGE = 'Config names cannot contain spaces';
 
+    @Input() configs$: Observable<ConfigWrapper<ConfigData>[]>;
+    @Input() selectedIndex$: Observable<number>;
     @Input() testEnabled: boolean;
     @Input() sensorFieldsEnabled: boolean;
-    @Input() editorType: string;
+    @Input() serviceName: string;
+    @Input() fields: FormlyFieldConfig[];
+    @Input() user: string;
+    @Input() dynamicFieldsMap: Map<string, string>;
+
 
     constructor(public store: Store<fromStore.State>, public dialog: MatDialog, public snackbar: PopupService,
-        private appConfigService: AppConfigService, private formlyJsonschema: FormlyJsonschema, private editorService: EditorService) {
-        this.configs$ = this.store.select(fromStore.getConfigs);
-        this.selectedIndex$ = this.store.select(fromStore.getSelectedConfig);
-        this.schema$ = this.store.select(fromStore.getSchema);
-        this.user$ = this.store.select(fromStore.getCurrentUser);
-        this.store.select(fromStore.getBootstrapped).pipe(take(1)).subscribe(s => this.serviceName = s);
-        this.store.select(fromStore.getDynamicFieldsMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => this.dynamicFieldsMap = s);
+        private appConfigService: AppConfigService, private editorService: EditorService) {
     }
 
     ngOnInit() {
-        this.schema$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(
-            s => {
-                this.fields = [this.formlyJsonschema.toFieldConfig(s.schema)];
-        });
-        this.metaDataMap = this.appConfigService.getUiMetadata(this.editorType);
+        this.metaDataMap = this.appConfigService.getUiMetadata(this.serviceName);
 
         this.configs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
             this.configs = <ConfigWrapper<ConfigData>[]>r;
@@ -101,8 +90,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             };
         });
 
-        this.user$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(u => this.user = u);
-
         if (this.sensorFieldsEnabled) {
             this.sensors$ = this.store.select(fromStore.getSensorFields);
             this.store.dispatch(new fromStore.LoadCentrifugeFields());
@@ -115,9 +102,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         if (this.config) {
             this.store.select(fromStore.getServiceName).pipe(take(1))
                 .subscribe(serviceName => {
-                    if (serviceName === this.editorType) {
                         this.pushRuleUpdateToState();
-                    }
                 })
         }
         this.ngUnsubscribe.next();
@@ -162,7 +147,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     private removeFieldsWhichShouldBeHidden(functionsMap: Map<string, string>, cfg): ConfigData {
-        let data = cloneDeep(cfg);
+        const data = cloneDeep(cfg);
         const functionsMapKeys = [];
         const functionsMapItr = functionsMap.keys();
         for (let i = 0; i < functionsMap.size; ++i) {
@@ -277,6 +262,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     public onTest() {
+        this.store.dispatch(new fromStore.Go({
+            path: [this.serviceName, 'test', this.selectedIndex],
+        }));
         const currentConfig = this.pushRuleUpdateToState().configData;
         this.dialog.open(TestingDialogComponent, {
             data: {

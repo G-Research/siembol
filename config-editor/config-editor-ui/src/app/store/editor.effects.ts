@@ -19,12 +19,6 @@ export class EditorEffects {
     private readonly BOOTSTRAP_FAILED_MESSAGE = 'Failed to load all required data at app startup';
     private readonly REPOSITORY_LOAD_FAILED_MESSAGE = 'Failed to load repositories';
     private readonly RELEASE_STATUS_FAILED_MESSAGE = 'Failed to load release status';
-    private readonly RELEASE_SUCCESS_MESSAGE = 'Submitted release successfully!';
-    private readonly RELEASE_FAILED_MESSAGE = 'Failed to submit release to github';
-    private readonly NEW_CONFIG_SUCCESS_MESSAGE = 'Submitted new config successfully!';
-    private readonly NEW_CONFIG_FAILED_MESSAGE = 'Failed to submit new config to github';
-    private readonly EDIT_CONFIG_SUCCESS_MESSAGE = 'Submitted config edit successfully!';
-    private readonly EDIT_CONFIG_FAILED_MESSAGE = 'Failed to submit config edit to github';
 
 
     @Effect()
@@ -43,10 +37,17 @@ export class EditorEffects {
             this.editorService.getUser(),
             this.editorService.getLoader(action.payload).getPullRequestStatus(),
             this.editorService.getSensorFields(),
+            this.editorService.getTestCaseSchema(),
+            this.editorService.getLoader(action.payload).getTestSpecificationSchema(),
             ])
-            .map(([[configSchema, configs, [deploymentHistory, storedDeployment]], currentUser, pullRequestPending, sensorFields]: any) =>
-                new actions.BootstrapSuccess(
-                    { configs, configSchema, currentUser, pullRequestPending, storedDeployment, sensorFields, deploymentHistory }))
+            .map(([[configSchema, configs, [deploymentHistory, storedDeployment]],
+                currentUser, pullRequestPending, sensorFields, testCaseSchema, testSpecificationSchema]: any) => {
+                    this.store.dispatch(new actions.LoadTestCases());
+
+                    return new actions.BootstrapSuccess(
+                        { configs, configSchema, currentUser, pullRequestPending,
+                            storedDeployment, sensorFields, deploymentHistory, testCaseSchema, testSpecificationSchema })
+                })
             .catch(error =>
                 this.errorHandler(error, this.BOOTSTRAP_FAILED_MESSAGE, of(new fromStore.BootstrapFailure(error)))))
     );
@@ -79,6 +80,17 @@ export class EditorEffects {
     );
 
     @Effect()
+    loadTestCases$ = this.actions$.pipe(
+        ofType<actions.LoadTestCases>(actions.LOAD_TEST_CASES),
+        withLatestFrom(this.store.select(fromStore.getServiceName)),
+        switchMap(([action, serviceName]) =>
+            this.editorService.getLoader(serviceName).getTestCases()
+                .map((result) => new actions.LoadTestCasesSuccess(result))
+                .catch(error => this.errorHandler(
+                    error, this.RELEASE_STATUS_FAILED_MESSAGE, of(new actions.LoadTestCasesFailure(error)))))
+    );
+
+    @Effect()
     addConfig$: Observable<Action> = this.actions$.pipe(
         ofType<actions.AddConfig>(actions.ADD_CONFIG),
         withLatestFrom(this.store.select(fromStore.getServiceName), this.store.select(fromStore.getConfigs)),
@@ -95,13 +107,13 @@ export class EditorEffects {
         switchMap(([action, serviceName]) =>
             this.editorService.getLoader(serviceName).submitRelease(action.payload)
                 .map(result => {
-                    this.displayNotification(this.RELEASE_SUCCESS_MESSAGE);
+                    this.displayNotification(this.newSuccessMessage('release'));
                     this.store.dispatch(new actions.LoadPullRequestStatus());
 
                     return new actions.SubmitReleaseSuccess(result);
                 })
                 .catch(error =>
-                    this.errorHandler(error, this.RELEASE_FAILED_MESSAGE, of(new actions.SubmitReleaseFailure(error)))))
+                    this.errorHandler(error, this.newFailureMessage('release'), of(new actions.SubmitReleaseFailure(error)))))
     );
 
     @Effect()
@@ -111,14 +123,14 @@ export class EditorEffects {
         switchMap(([action, serviceName]) =>
             this.editorService.getLoader(serviceName).submitNewConfig(action.payload)
                 .map(result => {
-                    this.displayNotification(this.NEW_CONFIG_SUCCESS_MESSAGE);
+                    this.displayNotification(this.newSuccessMessage('config'));
 
                     return new actions.SubmitNewConfigSuccess(
                         this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
                     );
                 })
                 .catch(error => this.errorHandler(
-                    error, this.NEW_CONFIG_FAILED_MESSAGE, of(new actions.SubmitNewConfigFailure(error)))))
+                    error, this.newFailureMessage('config'), of(new actions.SubmitNewConfigFailure(error)))))
     );
 
     @Effect()
@@ -140,7 +152,17 @@ export class EditorEffects {
             this.editorService.getLoader(serviceName).validateRelease(action.payload)
                 .map(result => new actions.ValidateConfigsSuccess(result))
                 .catch(error => this.errorHandler(
-                    error, this.VALIDATION_FAILED_MESSAGE, of(new actions.ValidateConfigsFailure(error)))))
+                    error, this.validationFaliedMessage('config'), of(new actions.ValidateConfigsFailure(error)))))
+    );
+
+    @Effect()
+    validateTestcase$ = this.actions$.pipe(
+        ofType<actions.ValidateTestcase>(actions.VALIDATE_TESTCASE),
+        switchMap((action) =>
+            this.editorService.validateTestCase(action.payload)
+                .map(result => new actions.ValidateTestcaseSuccess(result))
+                .catch(error => this.errorHandler(
+                    error, this.validationFaliedMessage('testcase'), of(new actions.ValidateTestcaseFailure(error)))))
     );
 
     @Effect()
@@ -150,14 +172,48 @@ export class EditorEffects {
         switchMap(([action, serviceName]) =>
             this.editorService.getLoader(serviceName).submitConfigEdit(action.payload)
                 .map(result => {
-                    this.displayNotification(this.EDIT_CONFIG_SUCCESS_MESSAGE);
+                    this.displayNotification(this.editSuccessMessage('config'));
 
                     return new actions.SubmitConfigEditSuccess(
                         this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
                     )
                 })
                 .catch(error => this.errorHandler(
-                    error, this.EDIT_CONFIG_FAILED_MESSAGE, of(new actions.SubmitConfigEditFailure(error)))))
+                    error, this.editFailureMessage('config'), of(new actions.SubmitConfigEditFailure(error)))))
+    );
+
+    @Effect()
+    submitNewTestCase$  = this.actions$.pipe(
+        ofType<actions.SubmitNewTestCase>(actions.SUBMIT_NEW_TESTCASE),
+        withLatestFrom(this.store.select(fromStore.getServiceName)),
+        switchMap(([action, serviceName]) =>
+            this.editorService.getLoader(serviceName).submitNewTestCase(action.payload)
+                .map(result => {
+                    this.displayNotification(this.newSuccessMessage('testcase'));
+
+                    return new actions.SubmitNewTestCaseSuccess(
+                        this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
+                    );
+                })
+                .catch(error => this.errorHandler(
+                    error, this.newFailureMessage('testcase'), of(new actions.SubmitNewTestCaseFailure(error)))))
+    );
+
+    @Effect()
+    submitTestCaseEdit$ = this.actions$.pipe(
+        ofType<actions.SubmitTestCaseEdit>(actions.SUBMIT_TESTCASE_EDIT),
+        withLatestFrom(this.store.select(fromStore.getServiceName)),
+        switchMap(([action, serviceName]) =>
+            this.editorService.getLoader(serviceName).submitTestCaseEdit(action.payload)
+                .map(result => {
+                    this.displayNotification(this.editSuccessMessage('testcase'));
+
+                    return new actions.SubmitTestCaseEditSuccess(
+                        this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
+                    )
+                })
+                .catch(error => this.errorHandler(
+                    error, this.editFailureMessage('testcase'), of(new actions.SubmitTestCaseEditFailure(error)))))
     );
 
     constructor(
@@ -175,5 +231,25 @@ export class EditorEffects {
 
     public displayNotification(description: string) {
         this.snackBar.openNotification(description);
+    }
+
+    private editSuccessMessage(fileType: string): string {
+        return `Submitted ${fileType} edit successfully!`;
+    }
+
+    private newSuccessMessage(fileType: string): string {
+        return `Submitted new ${fileType} successfully!`;
+    }
+
+    private newFailureMessage(fileType: string): string {
+        return `Failed to submit new ${fileType} to github`;
+    }
+
+    private editFailureMessage(fileType: string): string {
+        return `Failed to submit ${fileType} edit to github`;
+    }
+
+    private validationFaliedMessage(fileType: string): string {
+        return `Failed to validate ${fileType} with backend`;
     }
 }

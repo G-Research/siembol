@@ -7,9 +7,6 @@ const appRoutes: Routes = [
   {
     component: InitComponent,
     path: '**',
-    resolve: {
-        message: ViewResolver,
-    },
   },
 ];
 
