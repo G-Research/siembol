@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.25-SNAPSHOT</version>
+        <version>1.26-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-common</artifactId>
-            <version>1.25-SNAPSHOT</version>
+            <version>1.26-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

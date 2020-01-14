@@ -1,11 +1,11 @@
 package uk.co.gresearch.nortem.configeditor.service.parserconfig;
 
-import com.google.common.io.BaseEncoding;
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import uk.co.gresearch.nortem.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.nortem.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.nortem.parsers.common.ParserResult;
 import uk.co.gresearch.nortem.parsers.factory.ParserFactory;
@@ -13,6 +13,7 @@ import uk.co.gresearch.nortem.parsers.factory.ParserFactoryAttributes;
 import uk.co.gresearch.nortem.parsers.factory.ParserFactoryResult;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -38,9 +39,11 @@ public class ParserConfigSchemaServiceImplTest {
 
     private ParserConfigSchemaServiceImpl parserConfigSchemaService;
     private final String schema = "dummmy schema";
+    private final String testSchema = "dummmy schema";
     private final String testConfig = "dummmy parser config";
     private final String testConfigs = "dummmy parser configs";
     private final String testLog = "dummy log";
+    private final String dummyUiLayout = "{\"layout\" : {}}";
 
     private ParserFactory parserFactory;
     private ParserFactoryResult parserFactoryResult;
@@ -48,9 +51,9 @@ public class ParserConfigSchemaServiceImplTest {
     private ParserResult parserResult;
 
     @Before
-    public void Setup() throws Exception {
+    public void setup() throws Exception {
         parserFactory = Mockito.mock(ParserFactory.class);
-        this.parserConfigSchemaService = new ParserConfigSchemaServiceImpl(parserFactory, schema);
+        this.parserConfigSchemaService = new ParserConfigSchemaServiceImpl(parserFactory, schema, testSchema);
         parserFactoryAttributes = new ParserFactoryAttributes();
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, parserFactoryAttributes);
         parserResult = new ParserResult();
@@ -82,8 +85,6 @@ public class ParserConfigSchemaServiceImplTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
     }
 
-
-
     @Test
     public void validateConfigurationsError() {
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
@@ -99,7 +100,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void ValidateRulesError() {
+    public void validateRulesError() {
         parserFactoryAttributes.setMessage("error");
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
         Mockito.when(parserFactory.validateConfigurations(any())).thenReturn(parserFactoryResult);
@@ -110,7 +111,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void ValidateRuleError() {
+    public void validateRuleError() {
         parserFactoryAttributes.setMessage("error");
         
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
@@ -122,7 +123,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void TestConfigurationOK() {
+    public void testConfigurationOK() {
         parserResult.setParsedMessages(new ArrayList<>());
         parserFactoryAttributes.setParserResult(parserResult);
         ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logUtf8);
@@ -132,7 +133,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void TestConfigurationHexOK() {
+    public void testConfigurationHexOK() {
         parserResult.setParsedMessages(new ArrayList<>());
         parserFactoryAttributes.setParserResult(parserResult);
         ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logHex);
@@ -144,7 +145,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void TestConfigurationHexError() {
+    public void testConfigurationHexError() {
         parserResult.setParsedMessages(new ArrayList<>());
         parserFactoryAttributes.setParserResult(parserResult);
         ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig,
@@ -154,7 +155,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void TestConfigurationsError() {
+    public void testConfigurationsError() {
         parserFactoryAttributes.setMessage("error");
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
         Mockito.when(parserFactory.test(testConfigs, null, testLog.getBytes())).thenReturn(parserFactoryResult);
@@ -164,7 +165,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void TestConfigurationError() {
+    public void testConfigurationError() {
         parserFactoryAttributes.setMessage("error");
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
         Mockito.when(parserFactory.test(testConfig, null, testLog.getBytes())).thenReturn(parserFactoryResult);
@@ -177,7 +178,7 @@ public class ParserConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void TestConfigurationParserResultError() {
+    public void testConfigurationParserResultError() {
         parserResult.setException(new IllegalStateException("dummy"));
         parserFactoryAttributes.setParserResult(parserResult);
 
@@ -189,5 +190,37 @@ public class ParserConfigSchemaServiceImplTest {
                 testLog.getBytes());
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("dummy"));
+    }
+
+    @Test
+    public void createSchemaEmptyTestConfigs() throws Exception {
+        ConfigSchemaService service  = ParserConfigSchemaServiceImpl
+                .createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout), Optional.empty());
+        Assert.assertNotNull(service.getSchema());
+        Assert.assertNotNull(service.getTestSchema());
+    }
+
+    @Test
+    public void createSchemaConfigs() throws Exception {
+        ConfigSchemaService service  = ParserConfigSchemaServiceImpl
+                .createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout),
+                        Optional.of(dummyUiLayout));
+        Assert.assertNotNull(service.getSchema());
+        Assert.assertNotNull(service.getTestSchema());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void createSchemaEmptyUiConfigs() throws Exception {
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.empty(), Optional.of(dummyUiLayout));
+    }
+
+    @Test(expected = Exception.class)
+    public void createSchemaWrongUiConfigs() throws Exception {
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of("{}"), Optional.empty());
+    }
+
+    @Test(expected = Exception.class)
+    public void createSchemaWrongTestUiConfigs() throws Exception {
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout), Optional.of("{}"));
     }
 }

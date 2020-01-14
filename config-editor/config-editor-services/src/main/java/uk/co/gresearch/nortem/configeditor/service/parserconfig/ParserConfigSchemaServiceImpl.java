@@ -47,12 +47,15 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
 
     private final ParserFactory parserFactory;
     private final String schema;
+    private final String testSchema;
     private final NortemJsonSchemaValidator testSchemaValidator;
 
     ParserConfigSchemaServiceImpl(ParserFactory parserFactory,
-                                  String schema) throws Exception {
+                                  String schema,
+                                  String testSchema) throws Exception {
         this.parserFactory = parserFactory;
         this.schema = schema;
+        this.testSchema = testSchema;
         this.testSchemaValidator = new NortemJsonSchemaValidator(ParserConfingTestSpecificationDto.class);
     }
 
@@ -73,7 +76,8 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
         return fromParserFactoryValidateResult(parserResult);
     }
 
-    public static ConfigSchemaService createParserConfigSchemaServiceImpl(Optional<String> uiConfig ) throws Exception {
+    public static ConfigSchemaService createParserConfigSchemaServiceImpl(Optional<String> uiConfig,
+                                                                          Optional<String> testUiConfig) throws Exception {
         LOG.info("Initialising parser config schema service");
 
         ParserFactory parserFactory = ParserFactoryImpl.createParserFactory();
@@ -94,8 +98,20 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
+        String testValidationSchema = new NortemJsonSchemaValidator(ParserConfingTestSpecificationDto.class)
+                .getJsonSchema().getAttributes().getJsonSchema();
+
+        Optional<String> testSchema = testUiConfig.isPresent()
+                ? ConfigEditorUtils.computeRulesSchema(testValidationSchema, testUiConfig.get())
+                : Optional.of(testValidationSchema);
+
+        if (!computedSchema.isPresent() || !testSchema.isPresent()) {
+            LOG.error(SCHEMA_INIT_ERROR);
+            throw new IllegalStateException(SCHEMA_INIT_ERROR);
+        }
+
         LOG.info("Initialising parser config schema service completed");
-        return new ParserConfigSchemaServiceImpl(parserFactory, computedSchema.get());
+        return new ParserConfigSchemaServiceImpl(parserFactory, computedSchema.get(), testSchema.get());
     }
 
     @Override
@@ -157,7 +173,7 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
     @Override
     public ConfigEditorResult getTestSchema() {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        attr.setTestSchema(testSchemaValidator.getJsonSchema().getAttributes().getJsonSchema());
+        attr.setTestSchema(testSchema);
         return new ConfigEditorResult(OK, attr);
     }
 }
