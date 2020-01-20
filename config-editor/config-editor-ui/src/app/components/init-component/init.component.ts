@@ -10,6 +10,7 @@ import * as fromGuards from '../../guards';
 import { RepoResolver, ViewResolver } from '../../guards';
 import * as fromStore from '../../store';
 import { SetServiceNames } from '../../store';
+import { TestCaseHelpComponent } from '../testing/test-case-help/test-case-help.component';
 
 @Component({
     template: '',

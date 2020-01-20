@@ -51,6 +51,7 @@ a {
     margin: 0 6px;
     background: white;
     content: 'O';
+    vertical-align: middle;
   }
 }
 .test-success {
@@ -58,6 +59,7 @@ a {
   &::before {
     color: #85d685;
     content: '✓';
+    vertical-align: middle;
   }
 }
 .test-fail {
@@ -65,13 +67,16 @@ a {
   &::before {
     color: #d68585;
     content: '✗';
+    vertical-align: middle;
   }
 }
 .test-skipped {
   background: #e2c521;
   &::before {
-    color: #41552a;
+    color: #e4ac29;
     content: '?';
+    font-size: 14pt;
+    vertical-align: middle;
   }
 }
 .test-error {
@@ -91,6 +96,7 @@ a {
     color: #333;
     content: '—';
     font-size: 13pt;
+    vertical-align: middle;
   }
 }
 .test-running {
@@ -274,4 +280,10 @@ mat-divider {
     margin-top: 5px;
     display: flex;
     pointer-events: none;
+}
+
+
+.test-icon {
+    font-size: 13pt;
+    vertical-align: sub;
 }

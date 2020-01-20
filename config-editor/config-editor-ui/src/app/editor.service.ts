@@ -83,7 +83,7 @@ export class EditorService {
 
   public getTestCaseSchema(): Observable<any> {
     // TODO cahnge back once augmenting the test schema is implemented in the backend
-    return this.http.get<EditorResult<SchemaInfo>>(`http://localhost:4200/assets/testStrategySchema.json`)
+    return this.http.get<EditorResult<SchemaInfo>>(`${window.location.origin}/assets/testStrategySchema.json`)
         .map(x => x.attributes.rules_schema);
     // return this.http.get<EditorResult<SchemaInfo>>(`${this.config.serviceRoot}api/v1/testcases/schema`)
     //     .map(x => x.attributes.rules_schema);
@@ -95,8 +95,9 @@ export class EditorService {
             content: testcase,
         }],
     }
+    const json = JSON.parse(JSON.stringify(outObj, replacer, 2));
 
-    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/testcases/validate`, outObj);
+    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/testcases/validate`, json);
   }
 
   public evaluateTestCase(testcase: TestCase, testResult: any): Observable<any> {
@@ -104,7 +105,7 @@ export class EditorService {
         files: [{
             content: testcase,
         }],
-        test_result_raw_output: JSON.stringify(testResult.parsedMessages[0], (key, value) => {if (value !== null) {return value}}, 2),
+        test_result_raw_output: JSON.stringify(testResult.parsedMessages[0], replacer, 2),
     }
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'application/json; charset=utf-8');

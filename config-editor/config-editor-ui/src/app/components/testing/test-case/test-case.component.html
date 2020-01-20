@@ -6,13 +6,17 @@
     </span>
     <pre>{{ output }}</pre>
 </div>
-<button mat-raised-button class="button-group-end" color="accent" title="Run Test" (click)="runTest.emit(testCase)">Run Test<mat-icon>play_arrow</mat-icon></button>
+<div class="button-group-end">
+    <a mat-button color="none" [routerLink]="['/help/testcase']" target="_blank"><mat-icon>help_outline</mat-icon></a>
+    <button mat-raised-button color="accent" title="Test Config" (click)="testConfig.emit(outputTestCase)">Test Config<mat-icon>play_arrow</mat-icon></button>
+    <button mat-raised-button color="accent" title="Run Test Case" (click)="runTestCase.emit(outputTestCase)">Run Test Case<mat-icon>play_arrow</mat-icon></button>
+</div>
 
 <form [formGroup]="form" *ngIf="fields">
-    <formly-form [model]="testCase" [fields]="fields" [options]="options" [form]="form"></formly-form>
+    <formly-form #formly [model]="testCase" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
 </form>
 
 <div mat-dialog-actions class="button-group-end">
-    <button mat-raised-button color="accent" [disabled]="!form.valid" (click)="submittedTest.emit(testCase)">Save Test Case</button>
+    <button mat-raised-button color="accent" [disabled]="!form.valid" (click)="submittedTest.emit(outputTestCase)">Save Test Case</button>
     <button mat-raised-button (click)="cancel.emit(false)">Cancel</button>
 </div>

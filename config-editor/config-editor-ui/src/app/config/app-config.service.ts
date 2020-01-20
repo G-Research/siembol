@@ -56,4 +56,8 @@ export class AppConfigService {
     public get serviceRoot(): string {
         return this.config.serviceRoot;
     }
+
+    public get testStrategySchemaLocation(): string {
+        return this.config.testStrategySchemaLocation;
+    }
 }

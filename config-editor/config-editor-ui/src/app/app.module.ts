@@ -40,6 +40,7 @@ import { ChangeHistoryComponent } from './components/change-history/change-histo
 import { EditorComponent } from './components/editor/editor.component';
 import { InitComponent } from './components/init-component/init.component';
 import { SubmitTestcaseDialogComponent } from './components/testing/submit-testcase-dialog/submit-testcase-dialog.component';
+import { TestCaseHelpComponent } from './components/testing/test-case-help/test-case-help.component';
 import { TestCaseComponent } from './components/testing/test-case/test-case.component';
 import { TestCentreComponent } from './components/testing/test-centre/test-centre.component';
 import { TestResultsComponent } from './components/testing/test-results/test-results.component';
@@ -128,6 +129,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     SelectTypeComponent,
     FormlySelectOptionsPipe,
     HoverPopoverDirective,
+    TestCaseHelpComponent,
   ],
   entryComponents: [
     ErrorDialogComponent,
@@ -207,7 +209,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
             { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
             { name: 'form-field', component: FormFieldWrapperComponent },
         ],
-        extras: { checkExpressionOn: 'modelChange' },
+        extras: { checkExpressionOn: 'modelChange', immutable: true },
       }),
     ReactiveFormsModule,
     FormlyMaterialModule,

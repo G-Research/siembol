@@ -3,17 +3,16 @@
         <h2>Test Suite</h2>
         <div class="button-group-end">
             <button mat-icon-button color="primary" title="Add New Test Case" (click)="addTestCase()"><mat-icon>add</mat-icon></button>
-            <button mat-raised-button color="accent" title="Run Test Suite" (click)="onRunTestSuite()">Run Test Suite</button>
+            <button mat-raised-button color="accent" title="Run Test Suite" (click)="onRunTestSuite()" [disabled]="testCases.length === 0">Run Test Suite</button>
         </div>
     </mat-card-title>
     <mat-card-title  *ngIf="addNewTest">
         <button mat-raised-button title="Test Suite" (click)="onCancel()"><</button>
         <h2>{{ testCase?.testCase?.test_case_name }}</h2>
         <div class="test-status-badge" *ngIf="selectedTest !== undefined && isSubmitted" [ngClass]="setTestBadge(testCases[selectedTest])" [TestResultsPopover]="testCases[selectedTest]">
-            {{testCases[selectedTest]?.testResult?.number_matched_assertions}} : {{testCases[selectedTest]?.testResult?.number_failed_assertions}} : {{testCases[selectedTest]?.testResult?.number_skipped_assertions}}
+            {{testCases[selectedTest]?.testResult?.number_matched_assertions}}<mat-icon class="test-icon">done</mat-icon>{{testCases[selectedTest]?.testResult?.number_failed_assertions}}<mat-icon class="test-icon">clear</mat-icon>{{testCases[selectedTest]?.testResult?.number_skipped_assertions}}<strong>?</strong>
         </div>
         <button mat-raised-button color="primary" title="Clone Test Case" (click)="onCloneTestCase(testCase)">Clone</button>
-        <button mat-raised-button color="accent" title="Run Test Case" [disabled]="!isSubmitted" (click)="runTestCase(testCase.testCase)">Check against Assertions<mat-icon>play_arrow</mat-icon></button>
     </mat-card-title>
     <div *ngIf="!addNewTest; else newTestCase">
         <div class="box" *ngFor="let testCase of testCases; index as i">
@@ -39,7 +38,7 @@
                         </span>
                         <span>
                             <div class="test-status-badge" [ngClass]="setTestBadge(testCase)" [TestResultsPopover]="testCase">
-                                {{testCase?.testResult?.number_matched_assertions}} : {{testCase?.testResult?.number_failed_assertions}} : {{testCase?.testResult?.number_skipped_assertions}}
+                                {{testCase?.testResult?.number_matched_assertions}}<mat-icon class="test-icon">done</mat-icon>{{testCase?.testResult?.number_failed_assertions}}<mat-icon class="test-icon">clear</mat-icon>{{testCase?.testResult?.number_skipped_assertions}}<strong>?</strong>
                             </div>
                         </span>
                     </div>
@@ -50,7 +49,7 @@
     <ng-template #newTestCase>
         <re-test-case  
             [fields]="fields" [testCase]="testCase.testCase" [output]="output[testCase.testCase.test_case_name] || ''" [options]="options"
-            (submittedTest)="onSubmitTestCase($event)" (cancel)="onCancel()" (runTest)="runSingleTest($event)">
+            (submittedTest)="onSubmitTestCase($event)" (cancel)="onCancel()" (testConfig)="runSingleTest($event)" (runTestCase)="runTestCase($event)">
         </re-test-case>
     </ng-template>
 </mat-card>

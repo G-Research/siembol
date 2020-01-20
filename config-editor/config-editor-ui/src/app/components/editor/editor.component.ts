@@ -277,4 +277,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     public onSelectDataSource(dataSource: string) {
         this.store.dispatch(new fromStore.SelectDataSource(dataSource));
     }
+
+    updateOutput(event: ConfigData) {
+        this.configData = event;
+    }
 }

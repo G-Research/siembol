@@ -201,15 +201,25 @@ export class ConfigLoaderService implements IConfigLoaderService {
             const isObject = thingy.type === 'object';
             if (!isRequired && isObject) {
                 this.optionalObjects.push(property);
+                if (thingy.default) {
+                    delete thingy.default;
+                }
                 const sub = {...thingy};
                 thingy.type = 'array';
                 delete thingy.required;
                 delete thingy.properties;
                 delete thingy.title;
                 delete thingy.description;
-                if (sub['x-schema-form'] !== undefined) {
+
+                // tabs is not compatible with the array type so delete it if it is at the parent level but keep it on the sub level
+                if (sub['x-schema-form'] !== undefined && sub['x-schema-form']['type'] !== 'tabs') {
                     delete sub['x-schema-form'];
                 }
+                if (thingy['x-schema-form'] !== undefined && thingy['x-schema-form']['type'] === 'tabs' && thingy['type'] === 'array') {
+                    delete thingy['x-schema-form'];
+                }
+                // ***********************
+
                 thingy.items = sub;
                 thingy.maxItems = 1;
                 this.wrapOptionalsInSchema(thingy.items, property, path);

@@ -128,4 +128,8 @@ export class DeployDialogComponent {
     onClickClose() {
         this.dialogref.close();
     }
+
+    updateOutput(event) {
+        this.extrasData = event;
+    }
 }
