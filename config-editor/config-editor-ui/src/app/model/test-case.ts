@@ -1,5 +1,7 @@
 import { FileHistory } from './';
 
+export const TEST_CASE_TAB_NAME = 'Test Cases';
+
 export interface TestCaseMap {
     [configName: string]: TestCaseWrapper[];
 }

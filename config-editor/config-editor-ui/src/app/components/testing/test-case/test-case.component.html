@@ -13,7 +13,7 @@
 </div>
 
 <form [formGroup]="form" *ngIf="fields">
-    <formly-form #formly [model]="testCase" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
+    <formly-form immutable [model]="testCase" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
 </form>
 
 <div mat-dialog-actions class="button-group-end">

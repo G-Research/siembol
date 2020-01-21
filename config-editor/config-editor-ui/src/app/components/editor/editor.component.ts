@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatTabChangeEvent } from '@angular/material';
 import { AppConfigService } from '@app/config';
 import { EditorService } from '@app/editor.service';
 import { ConfigData, ConfigWrapper, SensorFields } from '@app/model';
+import { TEST_CASE_TAB_NAME } from '@app/model/test-case';
 import { UiMetadataMap } from '@app/model/ui-metadata-map';
 import * as JsonPointer from '@app/ngx-formly/util/jsonpointer.functions';
 import { PopupService } from '@app/popup.service';
@@ -13,7 +14,7 @@ import * as fromStore from 'app/store';
 import { cloneDeep } from 'lodash';
 import * as omitEmpty from 'omit-empty';
 import { Observable, of, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import { SubmitDialogComponent } from '..';
 import { TestingDialogComponent } from '../testing/testing-dialog/testing-dialog.component';
 
@@ -24,6 +25,7 @@ import { TestingDialogComponent } from '../testing/testing-dialog/testing-dialog
     templateUrl: './editor.component.html',
 })
 export class EditorComponent implements OnInit, OnDestroy {
+    private readonly TEST_CASE_TAB_NAME = TEST_CASE_TAB_NAME;
     public ngUnsubscribe = new Subject();
     public schema$: Observable<any>;
     public user$: Observable<string>;
@@ -55,47 +57,55 @@ export class EditorComponent implements OnInit, OnDestroy {
     @Input() fields: FormlyFieldConfig[];
     @Input() user: string;
     @Input() dynamicFieldsMap: Map<string, string>;
+    @Input() onClickTestCase$: Observable<MatTabChangeEvent>;
 
 
     constructor(public store: Store<fromStore.State>, public dialog: MatDialog, public snackbar: PopupService,
         private appConfigService: AppConfigService, private editorService: EditorService) {
-    }
+        }
 
-    ngOnInit() {
-        this.metaDataMap = this.appConfigService.getUiMetadata(this.serviceName);
+        ngOnInit() {
+            this.metaDataMap = this.appConfigService.getUiMetadata(this.serviceName);
 
-        this.configs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
-            this.configs = <ConfigWrapper<ConfigData>[]>r;
-            if (this.config && this.selectedIndex) {
-                this.config = this.configs[this.selectedIndex];
-            }
-        });
+            this.configs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
+                this.configs = <ConfigWrapper<ConfigData>[]>r;
+                if (this.config && this.selectedIndex) {
+                    this.config = this.configs[this.selectedIndex];
+                }
+            });
 
-        this.store.select(fromStore.getSensorListFromDataSource).pipe(takeUntil(this.ngUnsubscribe)).subscribe(
-            s => this.sensors = s
-        );
-
-        this.selectedIndex$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
-            this.store.dispatch(new fromStore.SelectDataSource(undefined));
-            if (this.config && this.configData) {
-                this.pushRuleUpdateToState();
-            }
-            this.selectedIndex = r;
-            this.config = this.configs[r];
-            this.configData = cloneDeep(this.config.configData) || {};
-            this.configName = this.config.name;
-            this.options.formState = {
+            this.selectedIndex$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
+                this.store.dispatch(new fromStore.SelectDataSource(undefined));
+                if (this.config && this.configData) {
+                    this.pushRuleUpdateToState();
+                }
+                this.selectedIndex = r;
+                this.config = this.configs[r];
+                this.configData = cloneDeep(this.config.configData) || {};
+                this.configName = this.config.name;
+                this.options.formState = {
                     mainModel: this.configData,
                     sensorFields: this.sensors,
-            };
-        });
+                };
+            });
 
-        if (this.sensorFieldsEnabled) {
-            this.sensors$ = this.store.select(fromStore.getSensorFields);
-            this.store.dispatch(new fromStore.LoadCentrifugeFields());
-            this.selectedSensor$ = this.store.select(fromStore.getDataSource);
-            this.selectedSensor$.subscribe(s => this.options.formState.sensorFields = this.sensors)
-        }
+            this.store.select(fromStore.getSensorListFromDataSource).pipe(takeUntil(this.ngUnsubscribe)).subscribe(
+                s => this.sensors = s
+            );
+
+            this.onClickTestCase$.pipe(
+                takeUntil(this.ngUnsubscribe),
+                filter(f => f.tab.textLabel === TEST_CASE_TAB_NAME)
+            ).subscribe(s => {
+                this.pushRuleUpdateToState();
+            });
+
+            if (this.sensorFieldsEnabled) {
+                this.sensors$ = this.store.select(fromStore.getSensorFields);
+                this.store.dispatch(new fromStore.LoadCentrifugeFields());
+                this.selectedSensor$ = this.store.select(fromStore.getDataSource);
+                this.selectedSensor$.subscribe(s => this.options.formState.sensorFields = this.sensors)
+            }
     }
 
     ngOnDestroy() {
@@ -276,9 +286,5 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     public onSelectDataSource(dataSource: string) {
         this.store.dispatch(new fromStore.SelectDataSource(dataSource));
-    }
-
-    updateOutput(event: ConfigData) {
-        this.configData = event;
     }
 }

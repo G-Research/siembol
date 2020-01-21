@@ -111,7 +111,6 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   }
 
   onSubmitTestCase($event: TestCase) {
-      console.log($event);
     const index = this.testCases.findIndex(a => a.testCase.test_case_name === $event.test_case_name);
     if (index >= 0 && $event.version === 0) {
         this.snackbar.openNotification(this.UNIQUE_NAME_MESSAGE);

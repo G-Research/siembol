@@ -4,14 +4,14 @@
     </re-side-bar>
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
-        <mat-tab-group [dynamicHeight]="true">
+        <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onClickTestCase$.next($event)">
             <mat-tab label="Edit Config">
                 <re-generic-editor [configs$]="configs$" [selectedIndex$]="selectedConfig$" [fields]="fields"
                 [testEnabled]="testEnabled" [sensorFieldsEnabled]="sensorFieldsEnabled" [serviceName]="serviceName"
-                [user]="user$ | async" [dynamicFieldsMap]="dynamicFieldsMap$ | async">
+                [user]="user$ | async" [dynamicFieldsMap]="dynamicFieldsMap$ | async" [onClickTestCase$]="onClickTestCase$">
                 </re-generic-editor>
             </mat-tab>
-            <mat-tab label="Test Cases" [disabled]="!testCaseEnabled">
+            <mat-tab [label]="TEST_CASE_TAB_NAME" [disabled]="!testCaseEnabled">
                 <re-test-centre [testCases]="testCases" [serviceName]="serviceName" 
                     [selectedConfigIndex$]="selectedConfig$" [testCaseMap]="testCaseMap$"
                     [selectedConfig]="(configs$ | async)[(selectedConfig$ | async)]" [user]="user$ | async">

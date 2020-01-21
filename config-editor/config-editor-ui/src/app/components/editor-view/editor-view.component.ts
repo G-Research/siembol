@@ -4,7 +4,9 @@ import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
 
 import { ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material';
 import { ConfigData, ConfigWrapper } from '@app/model';
+import { TEST_CASE_TAB_NAME } from '@app/model/test-case';
 import * as fromStore from '@app/store';
 import { Store } from '@ngrx/store';
 import { FormlyFieldConfig } from '@ngx-formly/core';
@@ -19,6 +21,7 @@ import { takeUntil } from 'rxjs/operators';
     templateUrl: './editor-view.component.html',
 })
 export class EditorViewComponent implements OnInit {
+    private readonly TEST_CASE_TAB_NAME = TEST_CASE_TAB_NAME;
     ngUnsubscribe = new Subject();
     bootstrapped$: Observable<string>;
     selectedConfig$: Observable<number>;
@@ -32,6 +35,7 @@ export class EditorViewComponent implements OnInit {
     selectedConfigIndex: number = undefined;
     fields: FormlyFieldConfig[] = [];
 
+    onClickTestCase$: Subject<MatTabChangeEvent> = new Subject();
     selectedConfigName: string;
 
     testCaseMap: any = {};

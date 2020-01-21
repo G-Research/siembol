@@ -209,7 +209,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
             { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
             { name: 'form-field', component: FormFieldWrapperComponent },
         ],
-        extras: { checkExpressionOn: 'modelChange', immutable: true },
+        extras: { checkExpressionOn: 'modelChange', immutable: false },
       }),
     ReactiveFormsModule,
     FormlyMaterialModule,
