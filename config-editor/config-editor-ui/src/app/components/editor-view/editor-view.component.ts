@@ -21,7 +21,7 @@ import { takeUntil } from 'rxjs/operators';
     templateUrl: './editor-view.component.html',
 })
 export class EditorViewComponent implements OnInit {
-    private readonly TEST_CASE_TAB_NAME = TEST_CASE_TAB_NAME;
+    readonly TEST_CASE_TAB_NAME = TEST_CASE_TAB_NAME;
     ngUnsubscribe = new Subject();
     bootstrapped$: Observable<string>;
     selectedConfig$: Observable<number>;
