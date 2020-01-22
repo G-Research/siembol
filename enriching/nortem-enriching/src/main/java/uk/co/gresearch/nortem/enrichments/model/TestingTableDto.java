@@ -29,6 +29,10 @@ public class TestingTableDto {
         this.tableMappingContent = tableMapping.toString();
     }
 
+    public JsonRawStringDto getTableMapping() {
+        return tableMapping;
+    }
+
     @JsonIgnore
     public String getTableMappingContent() {
         return tableMappingContent;
