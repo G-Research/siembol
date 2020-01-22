@@ -3,7 +3,7 @@ package uk.co.gresearch.nortem.parsers.storm;
 public enum ParsingApplicationTuples {
     METADATA("metadata"),
     LOG("log"),
-    PARSING_RESULTS("parsing_results");
+    PARSING_MESSAGES("messages");
 
     private final String name;
     ParsingApplicationTuples(String name) {

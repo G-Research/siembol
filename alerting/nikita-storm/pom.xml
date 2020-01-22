@@ -9,9 +9,29 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.26-SNAPSHOT</version>
+        <version>1.27-SNAPSHOT</version>
     </parent>
     <dependencies>
+        <dependency>
+            <groupId>uk.co.gresearch.nortem</groupId>
+            <artifactId>nikita-core</artifactId>
+            <version>1.27-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka_version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-kafka-client</artifactId>
@@ -22,16 +42,6 @@
             <artifactId>storm-core</artifactId>
             <version>${storm_version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-kafka</artifactId>
-            <version>${storm_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka_version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -50,27 +60,6 @@
             <artifactId>kafka_2.11</artifactId>
             <version>${kafka_version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.salesforce.kafka.test</groupId>
-            <artifactId>kafka-junit4</artifactId>
-            <version>3.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>uk.co.gresearch.nortem</groupId>
-            <artifactId>nikita-core</artifactId>
-            <version>1.26-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -103,8 +92,13 @@
             <artifactId>curator-recipes</artifactId>
             <version>${curator_version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.charithe</groupId>
+            <artifactId>kafka-junit</artifactId>
+            <version>${kafka_junit_version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

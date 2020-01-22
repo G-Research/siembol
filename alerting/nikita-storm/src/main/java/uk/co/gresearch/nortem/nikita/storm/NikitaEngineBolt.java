@@ -14,6 +14,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.nortem.common.utils.ZookeperAttributes;
 import uk.co.gresearch.nortem.common.utils.ZookeperConnector;
 import uk.co.gresearch.nortem.nikita.common.EvaluationResult;
 import uk.co.gresearch.nortem.nikita.common.NikitaEngine;
@@ -27,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NikitaEngineBolt extends BaseRichBolt {
     private static final String EXCEPTION_MSG_FORMAT = "Nikita Engine exception: %s during evaluating event: %s";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Nikita Engine exception: %s during initialising nikita engine";
-    protected static final String COMPILER_EXCEPTION_MSG_FORMAT = "Exception during nikita rules compilation: %s";
     private static final String UPDATE_EXCEPTION_LOG = "Exception during nikita rules update: {}";
     private static final String ENGINE_INIT_MESSAGE = "Nikita Engine exception: Engine initialisation error";
     private static final String ENGINE_INIT_START = "Nikita Engine initialisation start";
@@ -40,13 +40,15 @@ public class NikitaEngineBolt extends BaseRichBolt {
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
             .writerFor(new TypeReference<Map<String, Object>>() { });
 
+    protected static final String COMPILER_EXCEPTION_MSG_FORMAT = "Exception during nikita rules compilation: %s";
     protected final AtomicReference<NikitaEngine> nikitaEngine = new AtomicReference<>();
+
     private OutputCollector collector;
     private ZookeperConnector zookeperConnector;
-    private final NikitaStormAttributes attributes;
+    private final ZookeperAttributes zookeperAttributes;
 
     public NikitaEngineBolt(NikitaStormAttributes attributes) {
-        this.attributes = attributes;
+        this.zookeperAttributes = attributes.getZookeperAttributes();
     }
 
     @Override
@@ -55,10 +57,10 @@ public class NikitaEngineBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_INIT_START);
             zookeperConnector = new ZookeperConnector.Builder()
-                    .zkServer(attributes.getZkUrl())
-                    .path(attributes.getZkPathNikitaRules())
-                    .baseSleepTimeMs(attributes.getZkBaseSleepMs())
-                    .maxRetries(attributes.getZkMaxRetries())
+                    .zkServer(zookeperAttributes.getZkUrl())
+                    .path(zookeperAttributes.getZkPath())
+                    .baseSleepTimeMs(zookeperAttributes.getZkBaseSleepMs())
+                    .maxRetries(zookeperAttributes.getZkMaxRetries())
                     .build();
 
             updateRules();
@@ -124,8 +126,8 @@ public class NikitaEngineBolt extends BaseRichBolt {
             return;
         }
 
-        ArrayList<NikitaAlert> matches = new ArrayList<>();
-        ArrayList<String> exceptions = new ArrayList<>();
+        NikitaAlerts matches = new NikitaAlerts();
+        NikitaExceptions exceptions = new NikitaExceptions();
 
         if (ret.getStatusCode() != NikitaResult.StatusCode.OK) {
             exceptions.add(String.format(EXCEPTION_MSG_FORMAT,

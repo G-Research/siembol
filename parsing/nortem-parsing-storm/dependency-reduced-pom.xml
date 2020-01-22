@@ -3,7 +3,7 @@
   <parent>
     <artifactId>parsing</artifactId>
     <groupId>uk.co.gresearch.nortem</groupId>
-    <version>1.26-SNAPSHOT</version>
+    <version>1.27-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>nortem-parsing-storm</artifactId>
@@ -72,6 +72,38 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_2.11</artifactId>
+      <version>0.10.2.2</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>metrics-core</artifactId>
+          <groupId>com.yammer.metrics</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>scala-library</artifactId>
+          <groupId>org.scala-lang</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>zkclient</artifactId>
+          <groupId>com.101tec</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>scala-parser-combinators_2.11</artifactId>
+          <groupId>org.scala-lang.modules</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.apache.storm</groupId>
       <artifactId>storm-core</artifactId>
@@ -153,54 +185,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.11</artifactId>
-      <version>2.0.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>metrics-core</artifactId>
-          <groupId>com.yammer.metrics</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>scala-library</artifactId>
-          <groupId>org.scala-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>scala-reflect</artifactId>
-          <groupId>org.scala-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>scala-logging_2.11</artifactId>
-          <groupId>com.typesafe.scala-logging</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zkclient</artifactId>
-          <groupId>com.101tec</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.salesforce.kafka.test</groupId>
-      <artifactId>kafka-junit4</artifactId>
-      <version>3.1.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>kafka-junit-core</artifactId>
-          <groupId>com.salesforce.kafka.test</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-test</artifactId>
       <version>2.12.0</version>
@@ -209,6 +193,18 @@
         <exclusion>
           <artifactId>javassist</artifactId>
           <groupId>org.javassist</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.charithe</groupId>
+      <artifactId>kafka-junit</artifactId>
+      <version>3.0.4</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>

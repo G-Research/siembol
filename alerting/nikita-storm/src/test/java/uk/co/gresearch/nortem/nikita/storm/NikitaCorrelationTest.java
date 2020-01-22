@@ -1,29 +1,25 @@
 package uk.co.gresearch.nortem.nikita.storm;
 
-import com.salesforce.kafka.test.KafkaBrokers;
-import com.salesforce.kafka.test.junit4.SharedKafkaTestResource;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.charithe.kafka.EphemeralKafkaBroker;
+import com.github.charithe.kafka.KafkaJunitRule;
 import org.adrianwalker.multilinestring.Multiline;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.test.TestingServer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
 import org.apache.zookeeper.CreateMode;
 import org.junit.*;
+
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.admin.AdminClientConfig.SECURITY_PROTOCOL_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG;
-import static org.apache.kafka.common.security.auth.SecurityProtocol.PLAINTEXT;
-import static uk.co.gresearch.nortem.nikita.storm.NikitaEngineBolt.*;
-import static uk.co.gresearch.nortem.nikita.storm.NikitaStorm.*;
 
 public class NikitaCorrelationTest {
     /**
@@ -120,10 +116,41 @@ public class NikitaCorrelationTest {
     @Multiline
     public static String alertKeyD;
 
+    /**
+     * {
+     *   "nikita.engine": "nikita-correlation",
+     *   "nikita.input.topic": "correlation.alerts",
+     *   "nikita.correlation.output.topic": "nortem.alerts",
+     *   "kafka.error.topic": "errors",
+     *   "nikita.output.topic": "nortem.alerts",
+     *   "nikita.engine.clean.interval.sec" : 100,
+     *   "storm.attributes": {
+     *     "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
+     *     "kafka.spout.properties": {
+     *       "group.id": "nikita.correlation.reader",
+     *       "security.protocol": "PLAINTEXT"
+     *     }
+     *   },
+     *   "kafka.spout.num.executors": 1,
+     *   "nikita.engine.bolt.num.executors": 3,
+     *   "kafka.writer.bolt.num.executors": 1,
+     *   "kafka.producer.properties": {
+     *     "compression.type": "snappy",
+     *     "security.protocol": "PLAINTEXT",
+     *     "client.id": "test_producer"
+     *   },
+     *   "zookeeper.attributes": {
+     *     "zk.path": "/correlated",
+     *     "zk.base.sleep.ms": 1000,
+     *     "zk.max.retries": 10
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String testConfig;
+
     @ClassRule
-    public static final SharedKafkaTestResource sharedKafkaTestResource =
-            new SharedKafkaTestResource()
-                    .withBrokerProperty("auto.create.topics.enable", "true");
+    public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     @Ignore
     @Test
@@ -142,37 +169,16 @@ public class NikitaCorrelationTest {
         }
 
         zkClient.setData().forPath("/correlated", dummyRule.getBytes(UTF_8));
-        KafkaBrokers brokers = sharedKafkaTestResource.getKafkaBrokers();
 
-        StringBuilder sb = new StringBuilder();
-        brokers.forEach(x -> {
-            sb.append("127.0.0.1");
-            sb.append(x.getConnectString().substring(x.getConnectString().lastIndexOf(':')));
-        });
+        String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
+        NikitaStormAttributes attributes = new ObjectMapper()
+                .readerFor(NikitaStormAttributes.class)
+                .readValue(testConfig);
 
-        NikitaStormAttributes attributes = new NikitaStormAttributes();
-        attributes.setNikitaInputTopic("nortem.correlation.alerts");
-        attributes.setGroupId("nikita-test");
-        attributes.setBootstrapServers(sb.toString());
-        attributes.setSecurityProtocol(PLAINTEXT.toString());
-        attributes.setNikitaOutputTopic("nortem.alerts");
-        attributes.setNikitaCorrelationOutputTopic("nortem.correlation.alerts");
-        attributes.setKafkaErrorTopic("errors");
+        attributes.getKafkaProducerProperties().put("bootstrap.servers", bootstrapServer);
+        attributes.getStormAttributes().setBootstrapServers(bootstrapServer);
+        attributes.getZookeperAttributes().setZkUrl(zkServer.getConnectString());
 
-        attributes.setKafkaSpoutNumExecutors(1);
-        attributes.setNikitaEngineBoltNumExecutors(3);
-        attributes.setKafkaWriterBoltNumExecutors(1);
-
-        attributes.setSessionTimeoutMs(300000);
-        attributes.setClientId("my_client_id");
-        attributes.setZkUrl(zkServer.getConnectString());
-        attributes.setZkPathNikitaRules("/correlated");
-        attributes.setZkBaseSleepMs(1000);
-        attributes.setZkMaxRetries(10);
-        attributes.setNikitaEngine("nikita-correlation");
-
-        attributes.setNikitaEngineCleanIntervalSec(100);
-        TestProducer testProducer = new TestProducer(attributes);
 
         StormTopology topology = NikitaStorm.createNikitaCorrelationTopology(attributes);
         LocalCluster cluster = new LocalCluster();
@@ -182,44 +188,46 @@ public class NikitaCorrelationTest {
 
         cluster.submitTopology("nikita-correlation", config, topology);
         TimeUnit.SECONDS.sleep(50);
+        KafkaProducer<String, String> testProducer = kafkaRule.helper().createProducer(new StringSerializer(),
+                new StringSerializer(),
+                new Properties());
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("A", alertKeyA);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","A", alertKeyA));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("D", alertKeyD);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","D", alertKeyD));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("B", alertKeyB);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","B", alertKeyB));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("C", alertKeyC);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","C", alertKeyC));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("B", alertKeyB);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","B", alertKeyB));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("C", alertKeyC);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","C", alertKeyC));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("A", alertKeyA);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","A", alertKeyA));
         }
 
         for (int i = 1; i < 3; i++) {
-            testProducer.sendMessage("D", alertKeyD);
+            testProducer.send(new ProducerRecord<>("correlation.alerts","D", alertKeyD));
         }
 
-        testProducer.sendMessage("INVALID");
+        testProducer.send(new ProducerRecord<>("correlation.alerts","INVALID"));
         TimeUnit.MINUTES.sleep(100);
         zkClient.close();
         zkServer.close();
         System.exit(0);
-
     }
 }

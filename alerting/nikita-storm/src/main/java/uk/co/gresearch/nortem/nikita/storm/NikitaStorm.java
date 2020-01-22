@@ -1,70 +1,49 @@
 package uk.co.gresearch.nortem.nikita.storm;
 
-import org.apache.kafka.common.serialization.*;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.kafka.spout.KafkaSpout;
 import org.apache.storm.kafka.spout.KafkaSpoutConfig;
-import org.apache.storm.kafka.spout.KafkaSpoutRetryExponentialBackoff;
-import org.apache.storm.kafka.spout.KafkaSpoutRetryService;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.co.gresearch.nortem.common.storm.StormAttributes;
+import uk.co.gresearch.nortem.common.storm.StormHelper;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.Base64;
 
-import static org.apache.kafka.clients.consumer.ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
 
 public class NikitaStorm {
-    private static final Logger LOG =
-            LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    public static final int KAFKA_SPOUT_INIT_DELAY_MICRO_SEC = 500;
-    public static final int KAFKA_SPOUT_DELAY_PERIOD_MILLI_SEC = 2;
-    public static final int KAFKA_SPOUT_MAX_RETRIES = Integer.MAX_VALUE;
-    public static final int KAFKA_SPOUT_MAX_DELAY_SEC = 10;
-    public static final String KAFKA_SPOUT = "kafka-spout";
-    public static final String KAFKA_WRITER = "kafka-writer";
-
-    public static final int EXPECTED_ARG_SIZE = 1;
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final String KAFKA_SPOUT = "kafka-spout";
+    private static final String KAFKA_WRITER = "kafka-writer";
+    private static final int EXPECTED_ARG_SIZE = 1;
+    private static final int ATTRIBUTES_ARG_INDEX = 0;
     private static final String WRONG_ARGUMENT_MSG =  "Wrong arguments. The application expects Base64 encoded attributes";
 
     private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(NikitaStormAttributes attributes) {
-        KafkaSpoutRetryService kafkaSpoutRetryService =  new KafkaSpoutRetryExponentialBackoff(
-                KafkaSpoutRetryExponentialBackoff.TimeInterval.microSeconds(KAFKA_SPOUT_INIT_DELAY_MICRO_SEC),
-                KafkaSpoutRetryExponentialBackoff.TimeInterval.milliSeconds(KAFKA_SPOUT_DELAY_PERIOD_MILLI_SEC),
-                KAFKA_SPOUT_MAX_RETRIES,
-                KafkaSpoutRetryExponentialBackoff.TimeInterval.seconds(KAFKA_SPOUT_MAX_DELAY_SEC));
-
-        KafkaSpoutConfig.FirstPollOffsetStrategy pollStrategy = KafkaSpoutConfig.FirstPollOffsetStrategy
-                .valueOf(attributes.getFirstPollOffsetStrategy());
-        KafkaSpoutConfig.Builder<String, String> builder =  new KafkaSpoutConfig.Builder<>(
-                attributes.getBootstrapServers(),
-                StringDeserializer.class,
-                StringDeserializer.class,
-                attributes.getNikitaInputTopic())
-                .setGroupId(attributes.getGroupId())
-                .setSecurityProtocol(attributes.getSecurityProtocol())
-                .setFirstPollOffsetStrategy(pollStrategy)
-                .setProp(SESSION_TIMEOUT_MS_CONFIG, attributes.getSessionTimeoutMs())
-                .setRetry(kafkaSpoutRetryService);
+        StormAttributes stormAttributes = attributes.getStormAttributes();
+        stormAttributes.setKafkaTopics(Arrays.asList(attributes.getNikitaInputTopic()));
+        stormAttributes.getKafkaSpoutProperties().put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        stormAttributes.getKafkaSpoutProperties().put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         if (NikitaEngineType.valueOfName(attributes.getNikitaEngine()) == NikitaEngineType.NIKITA) {
-            builder
-                    .setRecordTranslator(
-                            r -> new Values(r.value()), new Fields(TupleFieldNames.EVENT.toString()));
+            return StormHelper.createKafkaSpoutConfig(stormAttributes,
+                    r -> new Values(r.value()), new Fields(TupleFieldNames.EVENT.toString()));
         } else {
-            builder
-                    .setRecordTranslator(
-                            r -> new Values(r.key(), r.value()),
-                            new Fields(TupleFieldNames.CORRELATION_KEY.toString(), TupleFieldNames.EVENT.toString()));
+            return StormHelper.createKafkaSpoutConfig(stormAttributes,
+                    r -> new Values(r.key(), r.value()),
+                    new Fields(TupleFieldNames.CORRELATION_KEY.toString(), TupleFieldNames.EVENT.toString()));
         }
-
-        return builder.build();
     }
 
     public static StormTopology createTopology(NikitaStormAttributes attributes) {
@@ -109,7 +88,7 @@ public class NikitaStorm {
             throw new IllegalArgumentException(WRONG_ARGUMENT_MSG);
         }
 
-        String input = new String(Base64.getDecoder().decode(args[0]));
+        String input = new String(Base64.getDecoder().decode(args[ATTRIBUTES_ARG_INDEX]));
         NikitaStormAttributes attributes = new ObjectMapper()
                 .readerFor(NikitaStormAttributes.class)
                 .readValue(input);
@@ -117,15 +96,15 @@ public class NikitaStorm {
         NikitaEngineType engineType = NikitaEngineType.valueOfName(attributes.getNikitaEngine());
 
         Config config = new Config();
-        config.setNumWorkers(attributes.getNumWorkers());
-        config.setMaxSpoutPending(attributes.getMaxSpoutPending());
-        config.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, attributes.getTopologyMessageTimeoutSecs());
-        config.put(Config.TOPOLOGY_WORKER_CHILDOPTS, attributes.getTopologyWorkerChildopts());
+        config.putAll(attributes.getStormAttributes().getStormConfig());
 
         StormTopology topology = engineType == NikitaEngineType.NIKITA
                 ? createTopology(attributes)
                 : createNikitaCorrelationTopology(attributes);
-        StormSubmitter.submitTopology(engineType.toString(), config, topology);
+        String topologyName = attributes.getNikitaTopologyName() != null
+                ? attributes.getNikitaTopologyName()
+                : engineType.toString();
+        StormSubmitter.submitTopology(topologyName, config, topology);
     }
 }
 

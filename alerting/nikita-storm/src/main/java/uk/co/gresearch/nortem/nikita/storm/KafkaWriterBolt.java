@@ -5,12 +5,9 @@ import java.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.errors.AuthorizationException;
-import org.apache.kafka.common.errors.OutOfOrderSequenceException;
-import org.apache.kafka.common.errors.ProducerFencedException;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -25,14 +22,11 @@ import uk.co.gresearch.nortem.nikita.common.NikitaResult;
 import uk.co.gresearch.nortem.nikita.protection.RuleProtectionSystem;
 import uk.co.gresearch.nortem.nikita.protection.RuleProtectionSystemImpl;
 
-
-import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.*;
-
 public class KafkaWriterBolt extends BaseRichBolt {
     private static final Logger LOG =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final String WRONG_ALERTS_FIELD_MESSAGE = "Wrong alerts type in tuple";
+    private static final String WRONG_EXCEPTION_FIELD_MESSAGE = "Wrong exceptions type in tuple";
 
     private final String errorSensorType;
     private final Properties props;
@@ -45,12 +39,7 @@ public class KafkaWriterBolt extends BaseRichBolt {
 
     public KafkaWriterBolt(NikitaStormAttributes attributes) {
         this.props = new Properties();
-        props.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(BOOTSTRAP_SERVERS_CONFIG, attributes.getBootstrapServers());
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, attributes.getClientId());
-        props.put(SECURITY_PROTOCOL_CONFIG, attributes.getSecurityProtocol());
-
+        attributes.getKafkaProducerProperties().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
         this.outputTopic = attributes.getNikitaOutputTopic();
         this.errorTopic = attributes.getKafkaErrorTopic();
         this.correlationTopic = attributes.getNikitaCorrelationOutputTopic();
@@ -60,59 +49,61 @@ public class KafkaWriterBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        ArrayList<NikitaAlert> matches = (ArrayList<NikitaAlert>)tuple.getValueByField(
-                TupleFieldNames.NIKITA_MATCHES.toString());
+        Object matchesObject = tuple.getValueByField(TupleFieldNames.NIKITA_MATCHES.toString());
+        if (!(matchesObject instanceof NikitaAlerts)) {
+            LOG.error(WRONG_ALERTS_FIELD_MESSAGE);
+            throw new IllegalStateException(WRONG_ALERTS_FIELD_MESSAGE);
+        }
+        NikitaAlerts matches = (NikitaAlerts)matchesObject;
 
-        ArrayList<String> exceptions = (ArrayList<String>)tuple.getValueByField(
-                TupleFieldNames.NIKITA_EXCEPTIONS.toString());
+        Object exceptionsObject = tuple.getValueByField(TupleFieldNames.NIKITA_EXCEPTIONS.toString());
+        if (!(exceptionsObject instanceof NikitaExceptions)) {
+            LOG.error(WRONG_EXCEPTION_FIELD_MESSAGE);
+            throw new IllegalStateException(WRONG_EXCEPTION_FIELD_MESSAGE);
+        }
+        NikitaExceptions exceptions = (NikitaExceptions)exceptionsObject;
 
         try {
-            if (matches != null) {
-                for (NikitaAlert match : matches) {
-                    NikitaResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
-                    int hourlyMatches = matchesInfo.getAttributes().getHourlyMatches();
-                    int dailyMatches = matchesInfo.getAttributes().getDailyMatches();
+            for (NikitaAlert match : matches) {
+                NikitaResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
+                int hourlyMatches = matchesInfo.getAttributes().getHourlyMatches();
+                int dailyMatches = matchesInfo.getAttributes().getDailyMatches();
 
-                    if (match.getMaxHourMatches().intValue() < hourlyMatches
-                            || match.getMaxDayMatches().intValue() < dailyMatches) {
-                        String msg = String.format(
-                                "The rule: %s reaches the limit\n hourly matches: %d, daily matches: %d, alert: %s",
-                                match.getFullRuleName(), hourlyMatches, dailyMatches, match.getAlertJson());
-                        LOG.debug(msg);
-                        exceptions = exceptions == null ? new ArrayList<>() : exceptions;
-                        exceptions.add(msg);
-                        continue;
-                    }
-
-                    if (match.isVisibleAlert()) {
-                        LOG.debug("Sending message {}\n to output topic", match.getAlertJson());
-                        producer.send(new ProducerRecord<>(outputTopic,
-                                String.valueOf(match.getAlertJson().hashCode()),
-                                match.getAlertJson()));
-                    }
-
-                    if (match.isCorrelationAlert()) {
-                        LOG.debug("Sending message {}\n to correlation alerts topic", match.getAlertJson());
-                        producer.send(new ProducerRecord<>(correlationTopic,
-                                match.getCorrelationKey().get(),
-                                match.getAlertJson()));
-                    }
+                if (match.getMaxHourMatches().intValue() < hourlyMatches
+                        || match.getMaxDayMatches().intValue() < dailyMatches) {
+                    String msg = String.format(
+                            "The rule: %s reaches the limit\n hourly matches: %d, daily matches: %d, alert: %s",
+                            match.getFullRuleName(), hourlyMatches, dailyMatches, match.getAlertJson());
+                    LOG.debug(msg);
+                    exceptions.add(msg);
+                    continue;
                 }
-                producer.flush();
+
+                if (match.isVisibleAlert()) {
+                    LOG.debug("Sending message {}\n to output topic", match.getAlertJson());
+                    producer.send(new ProducerRecord<>(outputTopic,
+                            String.valueOf(match.getAlertJson().hashCode()),
+                            match.getAlertJson()));
+                }
+
+                if (match.isCorrelationAlert()) {
+                    LOG.debug("Sending message {}\n to correlation alerts topic", match.getAlertJson());
+                    producer.send(new ProducerRecord<>(correlationTopic,
+                            match.getCorrelationKey().get(),
+                            match.getAlertJson()));
+                }
             }
 
-            if (exceptions != null) {
-                for (String errorMsg :  exceptions) {
-                    String errorMsgToSend = getErrorMessageToSend(errorMsg);
-                    LOG.debug("Sending message {}\n to error topic", errorMsgToSend);
-                    producer.send(new ProducerRecord<>(errorTopic,
-                            String.valueOf(errorMsgToSend.hashCode()),
-                            errorMsgToSend));
-                }
-                producer.flush();
+            for (String errorMsg : exceptions) {
+                String errorMsgToSend = getErrorMessageToSend(errorMsg);
+                LOG.debug("Sending message {}\n to error topic", errorMsgToSend);
+                producer.send(new ProducerRecord<>(errorTopic,
+                        String.valueOf(errorMsgToSend.hashCode()),
+                        errorMsgToSend));
             }
 
-            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
+            producer.flush();
+        } catch (AuthorizationException e) {
                 LOG.error("Exception {} during writing messages to the kafka",
                         ExceptionUtils.getStackTrace(e));
                 producer.close();
@@ -132,7 +123,7 @@ public class KafkaWriterBolt extends BaseRichBolt {
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
         ruleProtection = new RuleProtectionSystemImpl();
-        producer = new KafkaProducer<>(props);
+        producer = new KafkaProducer<>(props, new StringSerializer(), new StringSerializer());
     }
 
     @Override

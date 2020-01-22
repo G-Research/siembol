@@ -1,7 +1,9 @@
 package uk.co.gresearch.nortem.parsers.storm;
 
-import com.salesforce.kafka.test.KafkaBrokers;
-import com.salesforce.kafka.test.junit4.SharedKafkaTestResource;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.github.charithe.kafka.EphemeralKafkaBroker;
+import com.github.charithe.kafka.KafkaJunitRule;
 import org.adrianwalker.multilinestring.Multiline;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -12,16 +14,15 @@ import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
 import org.apache.zookeeper.CreateMode;
 import org.junit.*;
-import uk.co.gresearch.nortem.common.utils.TestKafkaProducer;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryResult;
 
 import java.util.concurrent.TimeUnit;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.kafka.common.security.auth.SecurityProtocol.PLAINTEXT;
 
 public class StormParsingApplicationTest {
+    private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
+            .readerFor(StormParsingApplicationAttributes.class);
     /**
      * {
      *   "parsing_app_name": "test",
@@ -117,6 +118,36 @@ public class StormParsingApplicationTest {
     public static String testParsersConfigs;
 
     /**
+     * {
+     *   "client.id.prefix": "test_client",
+     *   "group.id.prefix": "test_group",
+     *   "zookeeper.attributes": {
+     *     "zk.path": "/nortem/parserconfigs",
+     *     "zk.base.sleep.ms": 1000,
+     *     "zk.max.retries": 10
+     *   },
+     *   "kafka.batch.writer.attributes": {
+     *     "batch.size": 1,
+     *     "producer.properties": {
+     *       "compression.type": "snappy",
+     *       "security.protocol": "PLAINTEXT"
+     *     }
+     *   },
+     *   "storm.attributes": {
+     *     "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
+     *     "kafka.spout.properties": {
+     *       "security.protocol": "PLAINTEXT"
+     *     },
+     *     "storm.config" : {
+     *         "session.timeout.ms": 100000
+     *     }
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String testAppStormConfigs;
+
+    /**
      * {"command" : "secret", "msg" : "secret message"}
      **/
     @Multiline
@@ -129,87 +160,63 @@ public class StormParsingApplicationTest {
     public static String testMessage;
 
     @ClassRule
-    public static final SharedKafkaTestResource sharedKafkaTestResource =
-            new SharedKafkaTestResource()
-                    .withBrokerProperty("auto.create.topics.enable", "true");
+    public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     @Ignore
     @Test
     public void initTestProducer() throws Exception {
         TestingServer zkServer = new TestingServer(6666, true);
-
         CuratorFramework zkClient = CuratorFrameworkFactory
                 .newClient(zkServer.getConnectString(), new RetryNTimes(3, 1000));
         zkClient.start();
-
         if (zkClient.checkExists().forPath("/nortem/parserconfigs") == null) {
             zkClient.create()
                     .creatingParentsIfNeeded()
                     .withMode(CreateMode.PERSISTENT)
                     .forPath("/nortem/parserconfigs", testParsersConfigs.getBytes(UTF_8));
         }
-
         zkClient.setData().forPath("/nortem/parserconfigs", testParsersConfigs.getBytes(UTF_8));
 
-        KafkaBrokers brokers = sharedKafkaTestResource.getKafkaBrokers();
+        StormParsingApplicationAttributes parsingAppAttributes = JSON_PARSERS_CONFIG_READER
+                .readValue(testAppStormConfigs);
 
-        StringBuilder sb = new StringBuilder();
-        brokers.forEach(x -> {
-            sb.append("127.0.0.1");
-            sb.append(x.getConnectString().substring(x.getConnectString().lastIndexOf(':')));
-        });
+        String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
+        parsingAppAttributes.getStormAttributes().setBootstrapServers(bootstrapServer);
+        parsingAppAttributes.getKafkaBatchWriterAttributes().getProducerProperties()
+                .put("bootstrap.servers", bootstrapServer);
 
-
-        StormParsingApplicationAttributes stormAttributes = new StormParsingApplicationAttributes();
-        stormAttributes.setGroupId("parsing-test");
-        stormAttributes.setBootstrapServers(sb.toString());
-        stormAttributes.setSecurityProtocol(PLAINTEXT.toString());
-
-        stormAttributes.setSessionTimeoutMs(300000);
-        stormAttributes.setClientId("my_client_id");
-        stormAttributes.setZkUrl(zkServer.getConnectString());
-        stormAttributes.setZkPathParserConfigs("/nortem/parserconfigs");
-        stormAttributes.setZkBaseSleepMs(1000);
-        stormAttributes.setZkMaxRetries(10);
-        stormAttributes.setWriterCompressionType("snappy");
-        stormAttributes.setFirstPollOffsetStrategy("UNCOMMITTED_LATEST");
-
-        TestKafkaProducer testProducer = new TestKafkaProducer(sb.toString(), "secret");
+        parsingAppAttributes.getZookeperAttributes().setZkUrl(zkServer.getConnectString());
 
         ParsingApplicationFactoryResult result = new ParsingApplicationFactoryImpl()
                 .create(simpleRoutingApplicationParser);
         Assert.assertTrue(result.getStatusCode() == ParsingApplicationFactoryResult.StatusCode.OK);
 
-        StormTopology topology =  StormParsingApplication.createTopology(stormAttributes, result.getAttributes());
-
+        StormTopology topology =  StormParsingApplication.createTopology(parsingAppAttributes, result.getAttributes());
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();
         config.put(Config.TOPOLOGY_DEBUG, true);
         config.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 5);
 
         cluster.submitTopology("test", config, topology);
-        TimeUnit.SECONDS.sleep(50);
+        TimeUnit.SECONDS.sleep(5);
 
-        testProducer.sendMessage("INVALID");
+        kafkaRule.helper().produceStrings("secret","INVALID");
         for (int i = 1; i < 10; i++) {
-            testProducer.sendMessage("test", testMessage);
+            kafkaRule.helper().produceStrings("test", testMessage);
         }
 
         for (int i = 1; i < 10; i++) {
-            testProducer.sendMessage(testSecretMessage);
+            kafkaRule.helper().produceStrings("secret", testSecretMessage);
         }
-
 
         zkClient.setData().forPath("/nortem/parserconfigs", "INVALID".getBytes());
         TimeUnit.MINUTES.sleep(10);
         for (int i = 1; i < 10; i++) {
-            testProducer.sendMessage(testMessage);
+            kafkaRule.helper().produceStrings("test", testMessage);
         }
 
         zkClient.close();
         zkServer.close();
         System.exit(0);
-
     }
 }
-

@@ -10,6 +10,9 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterMessage;
+import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterMessages;
+import uk.co.gresearch.nortem.common.utils.ZookeperAttributes;
 import uk.co.gresearch.nortem.common.utils.ZookeperConnector;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryAttributes;
@@ -18,14 +21,12 @@ import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFact
 import uk.co.gresearch.nortem.parsers.application.parsing.ParsingApplicationParser;
 import uk.co.gresearch.nortem.parsers.application.parsing.ParsingApplicationResult;
 
-
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ParsingApplicationBolt extends BaseRichBolt {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private static final String PARSERCONFIG_UPDATE_TRY_MSG_FORMAT = "Trying to update parsing app: %s, " +
             "by parser configs: %s, ";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Parsing application exception: %s during initialising";
@@ -38,14 +39,15 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String PARSERS_UPDATE_COMPLETED = "Parser config update completed";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
+    private final ZookeperAttributes zookeperAttributes;
+    private final String parsingAppSpecification;
+
     private OutputCollector collector;
     private ZookeperConnector zookeperConnector;
-    private final StormParsingApplicationAttributes stormAttributes;
-    private final String parsingAppSpecification;
 
     public ParsingApplicationBolt(StormParsingApplicationAttributes attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this.stormAttributes = attributes;
+        this.zookeperAttributes = attributes.getZookeperAttributes();
         this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
     }
 
@@ -56,10 +58,10 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             LOG.info(INIT_START);
 
             zookeperConnector = new ZookeperConnector.Builder()
-                    .zkServer(stormAttributes.getZkUrl())
-                    .path(stormAttributes.getZkPathParserConfigs())
-                    .baseSleepTimeMs(stormAttributes.getZkBaseSleepMs())
-                    .maxRetries(stormAttributes.getZkMaxRetries())
+                    .zkServer(zookeperAttributes.getZkUrl())
+                    .path(zookeperAttributes.getZkPath())
+                    .baseSleepTimeMs(zookeperAttributes.getZkBaseSleepMs())
+                    .maxRetries(zookeperAttributes.getZkMaxRetries())
                     .build();
 
             updateParsers();
@@ -109,7 +111,10 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
         ArrayList<ParsingApplicationResult> results = currentParser.parse(metadata, log);
         if (!results.isEmpty()) {
-            collector.emit(tuple, new Values(results));
+            KafkaBatchWriterMessages kafkaBatchWriterMessages = new KafkaBatchWriterMessages();
+            results.forEach(x -> x.getMessages().forEach(y ->
+                    kafkaBatchWriterMessages.add(new KafkaBatchWriterMessage(x.getTopic(), y))));
+            collector.emit(tuple, new Values(kafkaBatchWriterMessages));
         }
 
         collector.ack(tuple);
@@ -117,6 +122,6 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields(ParsingApplicationTuples.PARSING_RESULTS.toString()));
+        declarer.declare(new Fields(ParsingApplicationTuples.PARSING_MESSAGES.toString()));
     }
 }

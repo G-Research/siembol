@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>nortem</artifactId>
-        <version>1.26-SNAPSHOT</version>
+        <version>1.27-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -21,6 +21,18 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-kafka-client</artifactId>
+            <version>${storm_version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-core</artifactId>
+            <version>${storm_version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
