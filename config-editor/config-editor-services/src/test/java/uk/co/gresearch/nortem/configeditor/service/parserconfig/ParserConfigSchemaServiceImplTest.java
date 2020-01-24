@@ -188,8 +188,10 @@ public class ParserConfigSchemaServiceImplTest {
         Mockito.verify(parserFactory, times(1)).test(testConfig,
                 null,
                 testLog.getBytes());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getMessage().contains("dummy"));
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getTestResultComplete());
+        Assert.assertTrue(ret.getAttributes().getTestResultOutput().contains("dummy"));
+        Assert.assertTrue(ret.getAttributes().getTestResultRawOutput().contains("dummy"));
     }
 
     @Test

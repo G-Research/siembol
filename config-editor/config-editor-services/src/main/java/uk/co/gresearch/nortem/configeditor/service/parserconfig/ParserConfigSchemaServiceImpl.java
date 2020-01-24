@@ -151,15 +151,11 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
         }
 
         ParserResult result = parserFactoryResult.getAttributes().getParserResult();
-
-        if (result.getException() != null) {
-            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR,
-                    ExceptionUtils.getStackTrace(result.getException()));
-        }
-
         attr.setTestResultComplete(true);
         try {
-            String testOutput = JSON_WRITER_MESSAGES.writeValueAsString(result.getParsedMessages());
+            String testOutput = result.getException() == null
+                    ? JSON_WRITER_MESSAGES.writeValueAsString(result.getParsedMessages())
+                    : ExceptionUtils.getStackTrace(result.getException());
             attr.setTestResultOutput(testOutput);
             String rawTestResult = JSON_WRITER_RESULT.writeValueAsString(result);
             attr.setTestResultRawOutput(rawTestResult);
