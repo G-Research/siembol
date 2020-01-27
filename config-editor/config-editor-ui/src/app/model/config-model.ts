@@ -107,10 +107,11 @@ export interface BootstrapData {
 };
 
 export interface ConfigTestResult {
-    exception: string;
-    message: string;
-    test_result_output: string;
-    test_result_complete: boolean;
+    exception?: string;
+    message?: string;
+    test_result_output?: string;
+    test_result_complete?: boolean;
+    test_result_raw_output?: object;
 }
 
 export interface DeploymentWrapper {

@@ -30,7 +30,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { RouterStateSerializer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { FormlyModule } from '@ngx-formly/core';
-import {FormlyMaterialModule} from '@ngx-formly/material';
+import { FormlyMaterialModule } from '@ngx-formly/material';
 import { environment } from 'environments/environment';
 import 'hammerjs';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search'
@@ -45,6 +45,7 @@ import { TestCaseComponent } from './components/testing/test-case/test-case.comp
 import { TestCentreComponent } from './components/testing/test-centre/test-centre.component';
 import { TestResultsComponent } from './components/testing/test-results/test-results.component';
 import { ConfigStoreGuard } from './guards/config-store.guard';
+import { JsonTreeComponent } from './json-tree/json-tree.component';
 import { ArrayTypeComponent } from './ngx-formly/components/array.type';
 import { ExpansionPanelWrapperComponent } from './ngx-formly/components/expansion-panel-wrapper.component';
 import { FormFieldWrapperComponent } from './ngx-formly/components/form-field-wrapper.component';
@@ -130,6 +131,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     FormlySelectOptionsPipe,
     HoverPopoverDirective,
     TestCaseHelpComponent,
+    JsonTreeComponent,
   ],
   entryComponents: [
     ErrorDialogComponent,

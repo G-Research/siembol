@@ -21,9 +21,10 @@ import {
 } from '../../../model/config-model';
 import { TestCaseWrapper, TestCaseWrapperDefault } from '../../../model/test-case';
 import { SubmitTestcaseDialogComponent } from '../submit-testcase-dialog/submit-testcase-dialog.component';
+import { ErrorDialogComponent } from '@app/components';
 
 interface OutputDict {
-    [testCaseName: string]: string;
+    [testCaseName: string]: ConfigTestResult;
 }
 
 @Component({
@@ -236,23 +237,25 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     }
 
     return this.editorService.getLoader(this.serviceName).testSingleConfig(testDto).pipe(
-        map(b => {
-            if (b.status_code === 'OK') {
-                this.output[testcase.test_case_name] =
-                    b.attributes.test_result_output + '\n' + JSON.stringify(b.attributes.test_result_raw_output);
-
-                return b.attributes.test_result_raw_output;
-            } else {
-                if (b.attributes.message && b.attributes.exception) {
-                  this.output[testcase.test_case_name] = b.attributes.message + '\n' + b.attributes.exception;
-                } else if (b.attributes.message !== undefined) {
-                  this.output[testcase.test_case_name] = b.attributes.message;
-                } else if (b.attributes.exception !== undefined) {
-                  this.output[testcase.test_case_name] = b.attributes.exception;
-                }
-                this.store.dispatch(
-                    new fromStore.UpdateTestCaseState(testcase, TestState.ERROR, new TestCaseResultDefault()));
+        map((r: EditorResult<ConfigTestResult>) => {
+            this.output[testcase.test_case_name] = r.attributes;
+            if (r.status_code === 'OK') {
+                return r.attributes.test_result_raw_output;
             }
+            this.dialog.open(ErrorDialogComponent, {
+                data: {
+                    message: r.attributes.message,
+                    error: {
+                        attributes: {
+                            message: r.attributes.exception,
+                        },
+                    },
+                },
+            }).afterClosed().pipe(
+                tap(_ => this.store.dispatch(
+                    new fromStore.UpdateTestCaseState(testcase, TestState.ERROR, new TestCaseResultDefault()))
+                )
+            ).subscribe();
 
             return null;
         }),
