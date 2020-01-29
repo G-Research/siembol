@@ -172,7 +172,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     }
 
     public addToDeployment(id: number) {
-        const item: ConfigWrapper<ConfigData> = this.configs.find(r => r.name === this.filteredConfigs[id].name);
+        const item: ConfigWrapper<ConfigData> = cloneDeep(this.configs.find(r => r.name === this.filteredConfigs[id].name));
         if (item !== undefined) {
             if (!item.savedInBackend) {
                 alert(this.UNSAVED_ITEM_ALERT);
@@ -181,7 +181,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
             }
             if (this.deployment.configs.find(r => r.name === item.name) === undefined) {
                 const updatedDeployment: Deployment<ConfigWrapper<ConfigData>> = cloneDeep(this.deployment);
-                updatedDeployment.configs.push(this.editorService.getLoader(this.serviceName).produceOrderedJson(item, '/'));
+                const orderedItem: ConfigData = this.editorService.getLoader(this.serviceName).produceOrderedJson(item.configData, '/');
+                item.configData = orderedItem;
+                updatedDeployment.configs.push(item);
                 this.store.dispatch(new fromStore.UpdateDeployment(updatedDeployment));
             }
         }

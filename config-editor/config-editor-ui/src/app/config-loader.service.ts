@@ -132,7 +132,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
   // function to go through the output json and reorder the properties such that it is consistent with the schema
   public produceOrderedJson(configData: ConfigData, path: string) {
     if (this.modelOrder[path]) {
-        const currentCfg = cloneDeep(configData)
+        const currentCfg = cloneDeep(configData);
         configData = {};
         for (const key of this.modelOrder[path]) {
             configData[key] = currentCfg[key];
