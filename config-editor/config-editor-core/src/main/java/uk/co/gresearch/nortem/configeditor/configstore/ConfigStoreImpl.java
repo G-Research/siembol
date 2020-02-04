@@ -110,8 +110,12 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
             Callable<ConfigEditorResult> command =
                     () -> gitStoreRepo.transactCopyAndCommit(configInfo);
 
-            cache.set(getFiles(gitStoreService.submit(command).get(), configInfoProvider::isStoreFile));
-            return getConfigs();
+            List<ConfigEditorFile> files = getFiles(gitStoreService.submit(command).get(),
+                    configInfoProvider::isStoreFile);
+            cache.set(files);
+            ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+            attributes.setFiles(files);
+            return new ConfigEditorResult(OK, attributes);
         } catch (Exception e) {
             exception.set(e);
             String msg = String.format("Exception %s\n during storing a %s with a content %s in git",

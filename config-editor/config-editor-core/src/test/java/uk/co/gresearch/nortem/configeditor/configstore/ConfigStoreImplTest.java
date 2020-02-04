@@ -26,8 +26,11 @@ public class ConfigStoreImplTest {
     private ConfigInfoProvider testCaseInfoProvider;
     private ConfigStoreImpl ruleStore;
     private Map<String, String> filesContent = new HashMap<>();
+    private Map<String, String> filesTestCaseContent = new HashMap<>();
     private List<ConfigEditorFile> files;
     private ConfigEditorResult getFilesResult;
+    private List<ConfigEditorFile> filesTestCases;
+    private ConfigEditorResult filesTestCasesResult;
     private ConfigInfo ruleInfo = new ConfigInfo();
     private ConfigInfo testCaseInfo = new ConfigInfo();
     private EnumSet<ConfigStoreImpl.Flags> flags;
@@ -57,10 +60,21 @@ public class ConfigStoreImplTest {
         attr.setFiles(files);
         getFilesResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
 
+        filesTestCaseContent.put("TestCase.json", "DUMMY_CONTENT_TEST_CASE");
+        filesTestCases = new ArrayList<>();
+        filesTestCases.add(new ConfigEditorFile("TestCase.json",
+                "DUMMY_CONTENT_TEST_CASE",
+                ConfigEditorFile.ContentType.RAW_JSON_STRING));
+        ConfigEditorAttributes attrTestCases = new ConfigEditorAttributes();
+        attrTestCases.setFiles(filesTestCases);
+        filesTestCasesResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attrTestCases);
+
         when(gitRulesRepo.getConfigs()).thenReturn(getFilesResult);
-        when(gitRulesRepo.getTestCases()).thenReturn(getFilesResult);
+        when(gitRulesRepo.getTestCases()).thenReturn(filesTestCasesResult);
         when(gitReleasesRepo.getConfigs()).thenReturn(getFilesResult);
-        when(gitRulesRepo.transactCopyAndCommit(any())).thenReturn(getFilesResult);
+        when(gitRulesRepo.transactCopyAndCommit(ruleInfo)).thenReturn(getFilesResult);
+        when(gitRulesRepo.transactCopyAndCommit(testCaseInfo)).thenReturn(filesTestCasesResult);
+
         flags = EnumSet.noneOf(ConfigStoreImpl.Flags.class);
         ruleStore = new ConfigStoreImpl(gitRulesRepo,
                 gitReleasesRepo,
@@ -107,8 +121,8 @@ public class ConfigStoreImplTest {
 
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(1, ret.getAttributes().getFiles().size());
-        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
-        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+        Assert.assertEquals("TestCase.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT_TEST_CASE", ret.getAttributes().getFiles().get(0).getContentValue());
     }
 
     @Test
@@ -160,7 +174,7 @@ public class ConfigStoreImplTest {
                 flags);
 
         testCaseInfo.setOldVersion(0);
-        testCaseInfo.setFilesContent(filesContent);
+        testCaseInfo.setFilesContent(filesTestCaseContent);
         ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
         verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
@@ -193,15 +207,15 @@ public class ConfigStoreImplTest {
                 flags);
 
         testCaseInfo.setOldVersion(1);
-        testCaseInfo.setFilesContent(filesContent);
+        testCaseInfo.setFilesContent(filesTestCaseContent);
         ConfigEditorResult ret = ruleStore.updateTestCase("john", "UPDATE");
         verify(testCaseInfoProvider).getConfigInfo("john", "UPDATE");
         verify(gitRulesRepo).transactCopyAndCommit(testCaseInfo);
 
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(1, ret.getAttributes().getFiles().size());
-        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
-        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+        Assert.assertEquals("TestCase.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT_TEST_CASE", ret.getAttributes().getFiles().get(0).getContentValue());
     }
 
 
@@ -245,8 +259,8 @@ public class ConfigStoreImplTest {
         ConfigEditorResult ret = ruleStore.getTestCases();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(1, ret.getAttributes().getFiles().size());
-        Assert.assertEquals("File.json", ret.getAttributes().getFiles().get(0).getFileName());
-        Assert.assertEquals("DUMMY_CONTENT", ret.getAttributes().getFiles().get(0).getContentValue());
+        Assert.assertEquals("TestCase.json", ret.getAttributes().getFiles().get(0).getFileName());
+        Assert.assertEquals("DUMMY_CONTENT_TEST_CASE", ret.getAttributes().getFiles().get(0).getContentValue());
     }
 
     @Test
