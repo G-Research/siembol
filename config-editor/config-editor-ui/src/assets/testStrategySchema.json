@@ -1,133 +1,133 @@
 {
     "attributes": {
-      "rules_schema": {
-        "type": "object",
-        "description": "Test case for testing configurations",
-        "title": "test case",
-        "properties": {
-          "test_case_name": {
-            "type": "string",
-            "description": "The name of the test case",
-            "x-schema-form": {
-                "condition": {
-                    "hideExpression": "return (localFields.version !== 0)"
-                }
-            }
-          },
-          "version": {
-            "type": "integer",
-            "description": "Version of the test case",
-            "x-schema-form": {
-                "condition": {
-                    "hideExpression": "return true"
-                }
-            }
-          },
-          "author": {
-            "type": "string",
-            "description": "Author of the test case",
-            "x-schema-form": {
-                "condition": {
-                    "hideExpression": "return true"
-                }
-            }
-          },
-          "config_name": {
-            "type": "string",
-            "description": "Version of the test case",
-            "x-schema-form": {
-                "condition": {
-                    "hideExpression": "return true"
-                }
-            }
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of the test case",
-            "x-schema-form": {
-                "type": "textarea",
-                "wrappers": []
-            }
-          },
-          "test_specification": {
+        "rules_schema": {
             "type": "object",
-            "description": "Test specification",
-            "title": "json raw string"
-          },
-          "assertions": {
-            "type": "array",
-            "x-schema-form": {
-                "wrappers": [
-                    "expansion-panel"
-                ]
-            },
-            "items": {
-              "type": "object",
-              "description": "Test assertion used in test case",
-              "title": "test assertion",
-              "properties": {
-                "assertion_type": {
-                  "enum": [
-                    "path_and_value_matches",
-                    "only_if_path_exists"
-                  ],
-                  "type": "string",
-                  "description": "The type of assertion"
+            "description": "Test case for testing configurations",
+            "title": "test case",
+            "properties": {
+                "test_case_name": {
+                    "type": "string",
+                    "description": "The name of the test case",
+                    "x-schema-form": {
+                        "condition": {
+                            "hideExpression": "return (localFields.version !== 0)"
+                        }
+                    }
                 },
-                "json_path": {
-                  "type": "string",
-                  "description": "Json path for obtaing an actual value for assertion evaluation",
-                  "x-schema-form": {
-                    "type": "textarea",
-                    "wrappers": []
-                  }
+                "version": {
+                    "type": "integer",
+                    "description": "Version of the test case",
+                    "x-schema-form": {
+                        "condition": {
+                            "hideExpression": "return true"
+                        }
+                    }
                 },
-                "expected_pattern": {
-                  "type": "string",
-                  "description": "Regular expression pattern of expectedPattern value",
-                  "x-schema-form": {
-                    "type": "textarea",
-                    "wrappers": []
-                  }
+                "author": {
+                    "type": "string",
+                    "description": "Author of the test case",
+                    "x-schema-form": {
+                        "condition": {
+                            "hideExpression": "return true"
+                        }
+                    }
                 },
-                "negated_pattern": {
-                  "type": "boolean",
-                  "description": "The pattern is negatedPattern",
-                  "default": false
+                "config_name": {
+                    "type": "string",
+                    "description": "Version of the test case",
+                    "x-schema-form": {
+                        "condition": {
+                            "hideExpression": "return true"
+                        }
+                    }
                 },
                 "description": {
-                  "type": "string",
-                  "description": "The description of the assertion",
-                  "x-schema-form": {
-                    "type": "textarea",
-                    "wrappers": []
-                  }
+                    "type": "string",
+                    "description": "Description of the test case",
+                    "x-schema-form": {
+                        "type": "textarea",
+                        "wrappers": []
+                    }
                 },
-                "active": {
-                  "type": "boolean",
-                  "description": "The pattern is active and included in test case evaluation",
-                  "default": true
+                "test_specification": {
+                    "type": "object",
+                    "description": "Test specification",
+                    "title": "json raw string"
+                },
+                "assertions": {
+                    "type": "array",
+                    "x-schema-form": {
+                        "wrappers": [
+                            "expansion-panel"
+                        ]
+                    },
+                    "items": {
+                        "type": "object",
+                        "description": "Test assertion used in test case",
+                        "title": "test assertion",
+                        "properties": {
+                            "assertion_type": {
+                                "enum": [
+                                    "path_and_value_matches",
+                                    "only_if_path_exists"
+                                ],
+                                "type": "string",
+                                "description": "The type of assertion"
+                            },
+                            "json_path": {
+                                "type": "string",
+                                "description": "Json path for obtaing an actual value for assertion evaluation",
+                                "x-schema-form": {
+                                    "type": "textarea",
+                                    "wrappers": []
+                                }
+                            },
+                            "expected_pattern": {
+                                "type": "string",
+                                "description": "Regular expression pattern of expectedPattern value",
+                                "x-schema-form": {
+                                    "type": "textarea",
+                                    "wrappers": []
+                                }
+                            },
+                            "negated_pattern": {
+                                "type": "boolean",
+                                "description": "The pattern is negatedPattern",
+                                "default": false
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "The description of the assertion",
+                                "x-schema-form": {
+                                    "type": "textarea",
+                                    "wrappers": []
+                                }
+                            },
+                            "active": {
+                                "type": "boolean",
+                                "description": "The pattern is active and included in test case evaluation",
+                                "default": true
+                            }
+                        },
+                        "required": [
+                            "assertion_type",
+                            "expected_pattern",
+                            "json_path"
+                        ]
+                    },
+                    "description": "Test case assertions",
+                    "minItems": 1
                 }
-              },
-              "required": [
-                "assertion_type",
-                "expected_pattern",
-                "json_path"
-              ]
             },
-            "description": "Test case assertions",
-            "minItems": 1
-          }
-        },
-        "required": [
-          "assertions",
-          "author",
-          "config_name",
-          "test_case_name",
-          "test_specification",
-          "version"
-        ]
-      }
+            "required": [
+                "assertions",
+                "author",
+                "config_name",
+                "test_case_name",
+                "test_specification",
+                "version"
+            ]
+        }
     },
     "status_code": "OK"
-  }
+}

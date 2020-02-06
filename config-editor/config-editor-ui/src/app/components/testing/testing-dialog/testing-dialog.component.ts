@@ -43,7 +43,13 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.store.select(fromStore.getConfigTestingEvent).pipe(take(1)).subscribe(e => this.alert = e);
+    this.store.select(fromStore.getConfigTestingEvent).pipe(take(1)).subscribe(e => {
+        if (e === undefined || e === null || e === '') {
+            this.alert = this.appConfig.getUiMetadata(this.env).testing.eventHelper;
+        } else {
+            this.alert = e
+        }
+    });
   }
 
   public beginTest() {
@@ -75,7 +81,7 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
         content:
           this.deploymentConfig,
       }],
-      event: event,
+      [this.appConfig.getUiMetadata(this.env).testing.eventName]: event,
     };
 
     if (this.service) {

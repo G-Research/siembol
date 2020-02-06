@@ -81,7 +81,11 @@ export class EditorComponent implements OnInit, OnDestroy {
                 }
                 this.selectedIndex = r;
                 this.config = this.configs[r];
-                this.configData = cloneDeep(this.config.configData) || {};
+                if (this.config === undefined) {
+                    this.configData = {};
+                } else {
+                    this.configData = cloneDeep(this.config.configData);
+                }
                 this.configName = this.config.name;
                 this.options.formState = {
                     mainModel: this.configData,

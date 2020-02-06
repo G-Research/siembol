@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,7 +73,10 @@ export class EditorViewComponent implements OnInit {
 
         this.configs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(c => this.configs = c);
 
-        this.selectedConfig$.subscribe(s => {
+        this.selectedConfig$.pipe(
+            filter(f => f !== undefined),
+            takeUntil(this.ngUnsubscribe)
+        ).subscribe(s => {
             this.selectedConfigName = this.configs[s].name;
             this.testCases = cloneDeep(this.testCaseMap[this.selectedConfigName]) || [];
             this.selectedConfigIndex = s;

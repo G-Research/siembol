@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { ErrorDialogComponent } from '@app/components';
 import { AppConfigService } from '@app/config';
 import { TestCase, TestCaseMap, TestCaseResultDefault, TestState } from '@app/model/test-case';
 import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
@@ -21,7 +22,6 @@ import {
 } from '../../../model/config-model';
 import { TestCaseWrapper, TestCaseWrapperDefault } from '../../../model/test-case';
 import { SubmitTestcaseDialogComponent } from '../submit-testcase-dialog/submit-testcase-dialog.component';
-import { ErrorDialogComponent } from '@app/components';
 
 interface OutputDict {
     [testCaseName: string]: ConfigTestResult;
