@@ -1,4 +1,4 @@
-import { TestCase, TestCaseMap, TestCaseWrapper, TestState, TestCaseResult } from '../model/test-case';
+import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper, TestState } from '../model/test-case';
 
 import { BootstrapData, ConfigData, ConfigWrapper, Deployment, EditorResult,
     ExceptionInfo, PullRequestInfo, RepositoryLinks } from '@app/model';
@@ -210,7 +210,7 @@ export class SubmitTestCaseEdit implements Action {
 
 export class SubmitTestCaseEditSuccess implements Action {
     readonly type = SUBMIT_TESTCASE_EDIT_SUCCESS;
-    constructor(public payload: EditorResult<TestCase>) { }
+    constructor(public payload: TestCaseMap) { }
 }
 
 export class SubmitTestCaseEditFailure implements Action {
@@ -225,7 +225,7 @@ export class SubmitNewTestCase implements Action {
 
 export class SubmitNewTestCaseSuccess implements Action {
     readonly type = SUBMIT_NEW_TESTCASE_SUCCESS;
-    constructor(public payload: EditorResult<TestCase>) { }
+    constructor(public payload: TestCaseMap) { }
 }
 
 export class SubmitNewTestCaseFailure implements Action {

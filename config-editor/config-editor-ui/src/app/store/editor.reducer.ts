@@ -170,6 +170,10 @@ export function reducer(state = initialState, action: editor.Actions): State {
 
         case editor.SUBMIT_TESTCASE_EDIT_SUCCESS:
         case editor.SUBMIT_NEW_TESTCASE_SUCCESS:
+            return Object.assign({}, state, {
+                loading: false,
+                testCaseMap: action.payload,
+            })
 
         case editor.SUBMIT_NEW_TESTCASE_FAILURE:
         case editor.SUBMIT_TESTCASE_EDIT_FAILURE:

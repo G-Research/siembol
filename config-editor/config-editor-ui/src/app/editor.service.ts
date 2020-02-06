@@ -28,8 +28,8 @@ export interface IConfigLoaderService {
   testSingleConfig(config: ConfigTestDto): Observable<EditorResult<any>>;
   getTestSpecificationSchema(): Observable<any>;
   getTestCases(): Observable<TestCaseMap>;
-  submitTestCaseEdit(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>>;
-  submitNewTestCase(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>>;
+  submitTestCaseEdit(testCase: TestCaseWrapper): Observable<TestCaseMap>;
+  submitNewTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap>;
   produceOrderedJson(configData: ConfigData, path: string);
   unwrapOptionalsFromArrays(obj: any);
 };

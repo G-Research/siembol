@@ -21,11 +21,11 @@ import {
     TestSchemaInfo,
 } from './model/config-model';
 import { Field } from './model/sensor-fields';
-import { TestCaseMap, TestCaseResultDefault, TestCaseWrapper, TestState } from './model/test-case';
+import { TestCase, TestCaseMap, TestCaseResultDefault, TestCaseWrapper, TestState } from './model/test-case';
 import { UiMetadataMap } from './model/ui-metadata-map';
 
 import { cloneDeep } from 'lodash';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 export class ConfigLoaderService implements IConfigLoaderService {
     private optionalObjects: string[] = [];
@@ -299,28 +299,29 @@ export class ConfigLoaderService implements IConfigLoaderService {
   }
 
   public getTestCases(): Observable<TestCaseMap> {
+    return this.http.get<EditorResult<GitFiles<TestCase>>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`)
+        .map(result => this.testCaseFilesToMap(result));
+
+  }
+
+  private testCaseFilesToMap(result: EditorResult<GitFiles<TestCase>>): TestCaseMap {
     const testCaseMap: TestCaseMap = {};
-
-    return this.http.get<EditorResult<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`)
-        .map(result => {
-            if (result.attributes && result.attributes.files && result.attributes.files.length > 0) {
-                result.attributes.files.forEach(file => {
-                    if (!testCaseMap.hasOwnProperty(file.content.config_name)) {
-                        testCaseMap[file.content.config_name] = [];
-                    }
-                    const testCase: TestCaseWrapper = {
-                        testCase: file.content,
-                        testState: TestState.NOT_RUN,
-                        testResult: new TestCaseResultDefault(),
-                        fileHistory: file.file_history,
-                    }
-                    testCaseMap[file.content.config_name].push(testCase);
-                });
+    if (result.attributes && result.attributes.files && result.attributes.files.length > 0) {
+        result.attributes.files.forEach(file => {
+            if (!testCaseMap.hasOwnProperty(file.content.config_name)) {
+                testCaseMap[file.content.config_name] = [];
             }
-
-            return testCaseMap;
+            const testCase: TestCaseWrapper = {
+                testCase: file.content,
+                testState: TestState.NOT_RUN,
+                testResult: new TestCaseResultDefault(),
+                fileHistory: file.file_history,
+            }
+            testCaseMap[file.content.config_name].push(testCase);
         });
+    }
 
+    return testCaseMap;
   }
 
   public validateConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<ExceptionInfo>> {
@@ -378,18 +379,20 @@ export class ConfigLoaderService implements IConfigLoaderService {
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/test?singleConfig=true`, testDto)
   }
 
-  public submitTestCaseEdit(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>> {
+  public submitTestCaseEdit(testCase: TestCaseWrapper): Observable<TestCaseMap> {
     const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
 
-    return this.http.put<EditorResult<GitFiles<ConfigData>>>(
-      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json);
+    return this.http.put<EditorResult<GitFiles<TestCase>>>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json)
+      .map(result => this.testCaseFilesToMap(result));
   }
 
-  public submitNewTestCase(testCase: TestCaseWrapper): Observable<EditorResult<GitFiles<ConfigData>>> {
+  public submitNewTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap> {
     const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
 
-    return this.http.post<EditorResult<GitFiles<ConfigData>>>(
-      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json);
+    return this.http.post<EditorResult<GitFiles<TestCase>>>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json)
+      .map(result => this.testCaseFilesToMap(result));
   }
 
   public marshalDeploymentFormat(deployment: Deployment<ConfigWrapper<ConfigData>>): any {

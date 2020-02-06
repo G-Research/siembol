@@ -6,7 +6,7 @@ import { PopupService } from 'app/popup.service';
 import * as fromStore from 'app/store';
 import { forkJoin, Observable, of } from 'rxjs';
 import { withLatestFrom } from 'rxjs/internal/operators/withLatestFrom';
-import { exhaustMap, filter, switchMap } from 'rxjs/operators';
+import { catchError, exhaustMap, filter, map, switchMap, tap } from 'rxjs/operators';
 import { RepositoryLinks } from '../model/config-model';
 import * as actions from './editor.actions';
 
@@ -187,16 +187,16 @@ export class EditorEffects {
         ofType<actions.SubmitNewTestCase>(actions.SUBMIT_NEW_TESTCASE),
         withLatestFrom(this.store.select(fromStore.getServiceName)),
         switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitNewTestCase(action.payload)
-                .map(result => {
-                    this.displayNotification(this.newSuccessMessage('testcase'));
-
-                    return new actions.SubmitNewTestCaseSuccess(
-                        this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
-                    );
-                })
-                .catch(error => this.errorHandler(
-                    error, this.newFailureMessage('testcase'), of(new actions.SubmitNewTestCaseFailure(error)))))
+            this.editorService.getLoader(serviceName).submitNewTestCase(action.payload).pipe(
+                map(m => new actions.SubmitNewTestCaseSuccess(m)),
+                tap(_ => this.displayNotification(this.newSuccessMessage('testcase'))),
+                catchError(error =>
+                    this.errorHandler(
+                        error, this.newFailureMessage('testcase'), of(new actions.SubmitNewTestCaseFailure(error))
+                    )
+                )
+            )
+        )
     );
 
     @Effect()
@@ -204,16 +204,13 @@ export class EditorEffects {
         ofType<actions.SubmitTestCaseEdit>(actions.SUBMIT_TESTCASE_EDIT),
         withLatestFrom(this.store.select(fromStore.getServiceName)),
         switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitTestCaseEdit(action.payload)
-                .map(result => {
-                    this.displayNotification(this.editSuccessMessage('testcase'));
-
-                    return new actions.SubmitTestCaseEditSuccess(
-                        this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
-                    )
-                })
-                .catch(error => this.errorHandler(
-                    error, this.editFailureMessage('testcase'), of(new actions.SubmitTestCaseEditFailure(error)))))
+            this.editorService.getLoader(serviceName).submitTestCaseEdit(action.payload).pipe(
+                map(m => new actions.SubmitTestCaseEditSuccess(m)),
+                tap(_ => this.displayNotification(this.editSuccessMessage('testcase'))),
+                catchError(error => this.errorHandler(
+                        error, this.editFailureMessage('testcase'), of(new actions.SubmitTestCaseEditFailure(error))))
+            )
+        )
     );
 
     constructor(
