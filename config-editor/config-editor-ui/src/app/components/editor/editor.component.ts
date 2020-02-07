@@ -85,8 +85,8 @@ export class EditorComponent implements OnInit, OnDestroy {
                     this.configData = {};
                 } else {
                     this.configData = cloneDeep(this.config.configData);
+                    this.configName = this.config.name;
                 }
-                this.configName = this.config.name;
                 this.options.formState = {
                     mainModel: this.configData,
                     sensorFields: this.sensors,
@@ -133,10 +133,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     pushRuleUpdateToState(): ConfigWrapper<ConfigData> {
-        const cleanedConfigData = this.cleanConfigData(this.configData);
-
         const configToUpdate = cloneDeep(this.config);
-        configToUpdate.configData = cloneDeep(cleanedConfigData);
+        configToUpdate.configData = cloneDeep(this.configData);
         if (this.config.isNew) {
             configToUpdate.configData[this.metaDataMap.name] = configToUpdate.name = this.configName;
             configToUpdate.configData[this.metaDataMap.version] = configToUpdate.version = 0;
@@ -147,7 +145,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             configToUpdate.configData[this.metaDataMap.author] = configToUpdate.author = this.config.author;
         }
         configToUpdate.description = configToUpdate.configData[this.metaDataMap.description];
-
+        configToUpdate.configData = this.cleanConfigData(configToUpdate.configData);
         // check if rule has been changed, mark unsaved
         if (JSON.stringify(this.config.configData) !== JSON.stringify(configToUpdate.configData)) {
             configToUpdate.savedInBackend = false;

@@ -200,7 +200,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public onClickCreate() {
         this.store.dispatch(new fromStore.AddConfig({
             isNew: true,
-            configData: undefined,
+            configData: {},
             savedInBackend: false,
             name: `new_entry_${this.configs.length}`,
             version: 0,
