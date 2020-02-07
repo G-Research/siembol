@@ -2,7 +2,7 @@ package uk.co.gresearch.nortem.nikita.storm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.co.gresearch.nortem.common.storm.StormAttributes;
-import uk.co.gresearch.nortem.common.utils.ZookeperAttributes;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperAttributes;
 
 import java.io.Serializable;
 import java.util.Map;

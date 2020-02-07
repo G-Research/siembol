@@ -1,7 +1,6 @@
 package uk.co.gresearch.nortem.parsers.application.parsing;
 
 import uk.co.gresearch.nortem.parsers.common.NortemParser;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
 import uk.co.gresearch.nortem.parsers.common.ParserResult;
 import uk.co.gresearch.nortem.parsers.common.SerializableNortemParser;
 

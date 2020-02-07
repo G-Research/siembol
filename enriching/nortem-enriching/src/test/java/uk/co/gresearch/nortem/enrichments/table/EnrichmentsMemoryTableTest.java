@@ -60,12 +60,12 @@ public class EnrichmentsMemoryTableTest {
      **/
     @Multiline
     public static String simpleMixedFields;
-    private EnrichmentsMemoryTable table;
+    private EnrichmentMemoryTable table;
 
     @Test
     public void testGoodSimpleNoFields() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleEmptyFields.getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
         Assert.assertTrue(table.containsKey("1.2.3.1"));
         Assert.assertFalse(table.containsKey("1.2.3.8"));
@@ -84,7 +84,7 @@ public class EnrichmentsMemoryTableTest {
     @Test
     public void testGoodSimpleOneField() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleOneField.getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
 
         Assert.assertTrue(table.containsKey("1.2.3.1"));
@@ -106,7 +106,7 @@ public class EnrichmentsMemoryTableTest {
     @Test
     public void testGoodSimpleMixedFields() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
         Assert.assertTrue(table.containsKey("1.2.3.1"));
         Assert.assertFalse(table.containsKey("1.2.3.8"));
@@ -127,7 +127,7 @@ public class EnrichmentsMemoryTableTest {
     @Test
     public void testGoodSimpleMixedFieldsCommand() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
         EnrichmentCommand command = new EnrichmentCommand();
         command.setTags(new ArrayList<>(Arrays.asList(Pair.of("tag_key", "tag_value"))));
@@ -146,7 +146,7 @@ public class EnrichmentsMemoryTableTest {
     @Test
     public void testGoodSimpleMixedFieldsCommandMissing() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
         EnrichmentCommand command = new EnrichmentCommand();
         command.setTags(new ArrayList<>(Arrays.asList(Pair.of("tag_key", "tag_value"))));
@@ -160,21 +160,21 @@ public class EnrichmentsMemoryTableTest {
     @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
     public void testInvalidJson() throws IOException {
         try (InputStream is = new ByteArrayInputStream("INVALID".getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidJsonTable() throws IOException {
         try (InputStream is = new ByteArrayInputStream("[]".getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testUnsupportedFieldType() throws IOException {
         try (InputStream is = new ByteArrayInputStream(unsupportedFieldType.getBytes())) {
-            table = EnrichmentsMemoryTable.fromJsonStream(is);
+            table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 
@@ -183,7 +183,7 @@ public class EnrichmentsMemoryTableTest {
         String trimed = simpleOneField.trim();
         try (InputStream is = new ByteArrayInputStream(trimed
                 .substring(0, trimed.length() - 1).getBytes())) {
-            EnrichmentsMemoryTable table = EnrichmentsMemoryTable.fromJsonStream(is);
+            EnrichmentMemoryTable table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 

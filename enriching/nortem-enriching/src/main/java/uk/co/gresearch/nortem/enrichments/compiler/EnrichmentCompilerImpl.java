@@ -18,8 +18,8 @@ import uk.co.gresearch.nortem.enrichments.evaluation.EnrichmentEvaluator;
 import uk.co.gresearch.nortem.enrichments.evaluation.EnrichmentEvaluatorLibrary;
 import uk.co.gresearch.nortem.enrichments.evaluation.NikitaEnrichmentEvaluator;
 import uk.co.gresearch.nortem.enrichments.model.*;
-import uk.co.gresearch.nortem.enrichments.table.EnrichmentsMemoryTable;
-import uk.co.gresearch.nortem.enrichments.table.EnrichmentsTable;
+import uk.co.gresearch.nortem.enrichments.table.EnrichmentMemoryTable;
+import uk.co.gresearch.nortem.enrichments.table.EnrichmentTable;
 import uk.co.gresearch.nortem.nikita.engine.*;
 
 import java.io.ByteArrayInputStream;
@@ -105,16 +105,12 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return Pair.of(ruleDto.getSourceType(), rule);
     }
 
-    private Map<String, EnrichmentsTable> createTestingTables(List<TestingTableDto> tables) throws IOException {
-        Map<String, EnrichmentsTable> ret = new HashMap<>();
-
-        for (TestingTableDto table : tables) {
-            try (InputStream is = new ByteArrayInputStream(table.getTableMappingContent().getBytes())) {
-                EnrichmentsMemoryTable current = EnrichmentsMemoryTable.fromJsonStream(is);
-                ret.put(table.getTableName(), current);
-            }
+    private Map<String, EnrichmentTable> createTestingTable(TestingTableDto table) throws IOException {
+        Map<String, EnrichmentTable> ret = new HashMap<>();
+        try (InputStream is = new ByteArrayInputStream(table.getTableMappingContent().getBytes())) {
+            EnrichmentMemoryTable current = EnrichmentMemoryTable.fromJsonStream(is);
+            ret.put(table.getTableName(), current);
         }
-
         return ret;
     }
 
@@ -208,9 +204,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
 
         try {
             TestingSpecificationDto specification = JSON_TEST_SPEC_READER.readValue(testSpecification);
-            Map<String, EnrichmentsTable> tables = createTestingTables(specification.getTestingTables());
+            Map<String, EnrichmentTable> tables = createTestingTable(specification.getTestingTables());
 
-            EnrichmentResult result = evaluator.evaluateRules(specification.getEventContent());
+            EnrichmentResult result = evaluator.evaluate(specification.getEventContent());
             if(result.getAttributes().getEnrichmentCommands() == null) {
                 logger.appendMessage(TEST_EMPTY_ENRICHMENTS_COMMANDS);
                 attributes.setTestRawResult(specification.getEventContent());
@@ -226,7 +222,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
 
                 logger.appendMessage(TEST_ENRICHED_EVENT);
                 String enrichedEvent = EnrichmentEvaluatorLibrary
-                        .mergeEnrichments(enrichments, specification.getEventContent());
+                        .mergeEnrichments(specification.getEventContent(), enrichments, Optional.empty());
                 logger.appendMessage(enrichedEvent);
                 attributes.setTestRawResult(enrichedEvent);
             }

@@ -3,13 +3,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.parsers.common.NortemParser;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
-import static uk.co.gresearch.nortem.parsers.common.ParserFields.ORIGINAL;
-import static uk.co.gresearch.nortem.parsers.common.ParserFields.TIMESTAMP;
+import static uk.co.gresearch.nortem.common.constants.NortemMessageFields.ORIGINAL;
+import static uk.co.gresearch.nortem.common.constants.NortemMessageFields.TIMESTAMP;
 
 
 public class NortemNetflowParser implements NortemParser {

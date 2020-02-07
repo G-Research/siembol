@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterMessages;
-import uk.co.gresearch.nortem.common.utils.ZookeperAttributes;
-import uk.co.gresearch.nortem.common.utils.ZookeperConnector;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorImpl;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryImpl;
@@ -43,7 +43,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private final String parsingAppSpecification;
 
     private OutputCollector collector;
-    private ZookeperConnector zookeperConnector;
+    private ZookeperConnectorImpl zookeperConnectorImpl;
 
     public ParsingApplicationBolt(StormParsingApplicationAttributes attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
@@ -57,7 +57,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         try {
             LOG.info(INIT_START);
 
-            zookeperConnector = new ZookeperConnector.Builder()
+            zookeperConnectorImpl = new ZookeperConnectorImpl.Builder()
                     .zkServer(zookeperAttributes.getZkUrl())
                     .path(zookeperAttributes.getZkPath())
                     .baseSleepTimeMs(zookeperAttributes.getZkBaseSleepMs())
@@ -69,7 +69,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
                 throw new IllegalStateException(ERROR_INIT_MESSAGE);
             }
 
-            zookeperConnector.addCacheListener(this::updateParsers);
+            zookeperConnectorImpl.addCacheListener(this::updateParsers);
             LOG.info(INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -83,7 +83,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             ParsingApplicationFactory factory =  new ParsingApplicationFactoryImpl();
 
             LOG.info(PARSERS_UPDATE_START);
-            String parserConfigs = zookeperConnector.getData();
+            String parserConfigs = zookeperConnectorImpl.getData();
             LOG.info(String.format(PARSERCONFIG_UPDATE_TRY_MSG_FORMAT, parsingAppSpecification, parserConfigs));
             ParsingApplicationFactoryResult result = factory.create(parsingAppSpecification, parserConfigs);
             if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK) {

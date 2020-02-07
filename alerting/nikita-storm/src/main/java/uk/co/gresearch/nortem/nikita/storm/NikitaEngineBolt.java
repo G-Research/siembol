@@ -14,8 +14,8 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.nortem.common.utils.ZookeperAttributes;
-import uk.co.gresearch.nortem.common.utils.ZookeperConnector;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorImpl;
 import uk.co.gresearch.nortem.nikita.common.EvaluationResult;
 import uk.co.gresearch.nortem.nikita.common.NikitaEngine;
 import uk.co.gresearch.nortem.nikita.common.NikitaResult;
@@ -44,7 +44,7 @@ public class NikitaEngineBolt extends BaseRichBolt {
     protected final AtomicReference<NikitaEngine> nikitaEngine = new AtomicReference<>();
 
     private OutputCollector collector;
-    private ZookeperConnector zookeperConnector;
+    private ZookeperConnectorImpl zookeperConnectorImpl;
     private final ZookeperAttributes zookeperAttributes;
 
     public NikitaEngineBolt(NikitaStormAttributes attributes) {
@@ -56,7 +56,7 @@ public class NikitaEngineBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(ENGINE_INIT_START);
-            zookeperConnector = new ZookeperConnector.Builder()
+            zookeperConnectorImpl = new ZookeperConnectorImpl.Builder()
                     .zkServer(zookeperAttributes.getZkUrl())
                     .path(zookeperAttributes.getZkPath())
                     .baseSleepTimeMs(zookeperAttributes.getZkBaseSleepMs())
@@ -68,7 +68,7 @@ public class NikitaEngineBolt extends BaseRichBolt {
                 throw new IllegalStateException(ENGINE_INIT_MESSAGE);
             }
 
-            zookeperConnector.addCacheListener(this::updateRules);
+            zookeperConnectorImpl.addCacheListener(this::updateRules);
             LOG.info(ENGINE_INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -81,7 +81,7 @@ public class NikitaEngineBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_UPDATE_START);
 
-            String rules = zookeperConnector.getData();
+            String rules = zookeperConnectorImpl.getData();
             LOG.info(String.format(ENGINE_UPDATE_TRY_MSG_FORMAT, rules));
 
             NikitaEngine engine = getNikitaEngine(rules);

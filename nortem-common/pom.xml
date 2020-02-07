@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>nortem</artifactId>
-        <version>1.29-SNAPSHOT</version>
+        <version>1.30-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -129,6 +129,13 @@
             <version>${mockito_version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop_version}</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
    <build>
         <plugins>

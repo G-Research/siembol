@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.common.utils;
+package uk.co.gresearch.nortem.common.zookeper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;

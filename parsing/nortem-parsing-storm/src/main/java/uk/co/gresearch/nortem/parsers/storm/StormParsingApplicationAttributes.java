@@ -2,7 +2,7 @@ package uk.co.gresearch.nortem.parsers.storm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.co.gresearch.nortem.common.storm.StormAttributes;
-import uk.co.gresearch.nortem.common.utils.ZookeperAttributes;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperAttributes;
 import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterAttributes;
 
 import java.io.Serializable;
@@ -13,11 +13,11 @@ public class StormParsingApplicationAttributes implements Serializable {
     @JsonProperty("group.id.prefix")
     private String groupIdPrefix;
     @JsonProperty("zookeeper.attributes")
-    ZookeperAttributes zookeperAttributes;
+    private ZookeperAttributes zookeperAttributes;
     @JsonProperty("kafka.batch.writer.attributes")
-    KafkaBatchWriterAttributes kafkaBatchWriterAttributes;
+    private KafkaBatchWriterAttributes kafkaBatchWriterAttributes;
     @JsonProperty("storm.attributes")
-    StormAttributes stormAttributes;
+    private StormAttributes stormAttributes;
 
     public String getClientIdPrefix() {
         return clientIdPrefix;

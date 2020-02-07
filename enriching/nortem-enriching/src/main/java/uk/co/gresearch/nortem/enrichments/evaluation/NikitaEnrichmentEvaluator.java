@@ -41,7 +41,7 @@ public class NikitaEnrichmentEvaluator implements EnrichmentEvaluator {
     }
 
     @Override
-    public EnrichmentResult evaluateRules(String event) {
+    public EnrichmentResult evaluate(String event) {
         EnrichmentAttributes attr = new EnrichmentAttributes();
 
         NikitaResult result = nikitaEngine.evaluate(event);

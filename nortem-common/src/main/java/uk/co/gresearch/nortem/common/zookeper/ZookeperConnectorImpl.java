@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.common.utils;
+package uk.co.gresearch.nortem.common.zookeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -7,16 +7,15 @@ import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class ZookeperConnector implements Closeable {
+public class ZookeperConnectorImpl implements ZookeperConnector {
     private final CuratorFramework client;
     private final NodeCache cache;
 
-    ZookeperConnector(Builder builder) {
+    ZookeperConnectorImpl(Builder builder) {
         this.client = builder.client;
         this.cache = builder.cache;
     }
@@ -64,7 +63,7 @@ public class ZookeperConnector implements Closeable {
             return this;
         }
 
-        public ZookeperConnector build() throws Exception {
+        public ZookeperConnectorImpl build() throws Exception {
             if (zkServer == null
                     || path == null
                     || baseSleepTimeMs == null
@@ -78,7 +77,7 @@ public class ZookeperConnector implements Closeable {
             cache = new NodeCache(client, path);
             cache.start(true);
 
-            return new ZookeperConnector(this);
+            return new ZookeperConnectorImpl(this);
         }
     }
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static uk.co.gresearch.nortem.parsers.common.ParserFields.TIMESTAMP;
+import static uk.co.gresearch.nortem.common.constants.NortemMessageFields.TIMESTAMP;
 
 
 public class ParserExtractorLibrary {

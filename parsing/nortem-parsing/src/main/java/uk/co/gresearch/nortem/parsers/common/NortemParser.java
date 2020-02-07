@@ -1,5 +1,7 @@
 package uk.co.gresearch.nortem.parsers.common;
 
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ public interface NortemParser {
         result.setSourceType(getSourceType());
         try {
             List<Map<String, Object>> parsed = parse(metadata, message);
-            parsed.forEach(x -> x.put(ParserFields.SENSOR_TYPE.toString(), getSourceType()));
+            parsed.forEach(x -> x.put(NortemMessageFields.SENSOR_TYPE.toString(), getSourceType()));
             result.setParsedMessages(parsed);
         } catch (Throwable e) {
             result.setException(e);

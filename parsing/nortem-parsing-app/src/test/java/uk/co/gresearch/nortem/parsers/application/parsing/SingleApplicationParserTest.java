@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.nortem.common.utils.TimeProvider;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
 import uk.co.gresearch.nortem.parsers.common.ParserResult;
 import uk.co.gresearch.nortem.parsers.common.SerializableNortemParser;
 
@@ -97,16 +97,16 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
     }
 
     @Test
@@ -126,12 +126,12 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertFalse(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
     }
 
     @Test
@@ -152,12 +152,12 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
     }
 
     @Test
@@ -256,22 +256,22 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
     }
 
     @Test
@@ -293,7 +293,7 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:b" + "\":1"));
@@ -301,15 +301,15 @@ public class SingleApplicationParserTest {
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("guid" + "\":"));
     }
 
@@ -330,21 +330,21 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
     }
 }

@@ -1,6 +1,6 @@
-package uk.co.gresearch.nortem.parsers.common;
+package uk.co.gresearch.nortem.common.constants;
 
-public enum ParserFields {
+public enum NortemMessageFields {
     SRC_ADDR("ip_src_addr"),
     SRC_PORT("ip_src_port"),
     DST_ADDR("ip_dst_addr"),
@@ -10,10 +10,11 @@ public enum ParserFields {
     ORIGINAL("original_string"),
     GUID("guid"),
     SENSOR_TYPE("source.type"),
-    PARSING_TIME("nortem:parsing_time");
+    PARSING_TIME("nortem:parsing_time"),
+    ENRICHING_TIME("nortem:enriching_time");
 
     private final String name;
-    ParserFields(String name) {
+    NortemMessageFields(String name) {
         this.name = name;
     }
 

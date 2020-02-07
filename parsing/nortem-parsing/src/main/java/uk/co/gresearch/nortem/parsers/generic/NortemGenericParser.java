@@ -4,7 +4,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.parsers.common.NortemParser;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
 import uk.co.gresearch.nortem.parsers.extractors.ParserExtractor;
 import uk.co.gresearch.nortem.parsers.transformations.Transformation;
 import uk.co.gresearch.nortem.parsers.transformations.TransformationsLibrary;
@@ -32,8 +32,8 @@ public class NortemGenericParser implements NortemParser {
             originalMessage = new String(bytes, UTF_8);
 
             Map<String, Object> parsed = new HashMap<>();
-            parsed.put(ParserFields.ORIGINAL.toString(), originalMessage);
-            parsed.put(ParserFields.TIMESTAMP.toString(), System.currentTimeMillis());
+            parsed.put(NortemMessageFields.ORIGINAL.toString(), originalMessage);
+            parsed.put(NortemMessageFields.TIMESTAMP.toString(), System.currentTimeMillis());
 
             if (extractors != null) {
                 parsed = ParserExtractor.extract(extractors, parsed);

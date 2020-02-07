@@ -2,7 +2,7 @@ package uk.co.gresearch.nortem.parsers.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
 
 import java.util.Arrays;
 import java.util.List;
@@ -89,7 +89,7 @@ public class ExtractorAttributesDto {
 
     @JsonProperty("timestamp_field")
     @Attributes(description = "The field used in formatting timestamp")
-    private String timestampField = ParserFields.TIMESTAMP.toString();
+    private String timestampField = NortemMessageFields.TIMESTAMP.toString();
 
     @JsonProperty("string_replace_target")
     @Attributes(description = "Target that will be replaced by replacement")
@@ -100,7 +100,7 @@ public class ExtractorAttributesDto {
 
     @JsonProperty("conversion_exclusions")
     @Attributes(description = "List of fields excluded from string converting", minItems = 1)
-    private List<String> conversionExclusions = Arrays.asList(ParserFields.TIMESTAMP.toString());
+    private List<String> conversionExclusions = Arrays.asList(NortemMessageFields.TIMESTAMP.toString());
 
     public Boolean getShouldOverwrite() {
         return shouldOverwrite;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.UUID;
 
@@ -107,5 +108,13 @@ public class ErrorMessage {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static ErrorMessage createErrorMessage(Throwable throwable, ErrorType errorType) {
+        ErrorMessage msg = new ErrorMessage();
+        msg.setErrorType(errorType);
+        msg.setMessage(throwable.getMessage());
+        msg.setStackTrace(ExceptionUtils.getStackTrace(throwable));
+        return msg;
     }
 }

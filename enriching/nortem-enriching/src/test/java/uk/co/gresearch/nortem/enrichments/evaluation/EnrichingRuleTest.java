@@ -197,5 +197,4 @@ public class EnrichingRuleTest {
         Assert.assertEquals(NikitaResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(EvaluationResult.NO_MATCH, ret.getAttributes().getEvaluationResult());
     }
-
 }

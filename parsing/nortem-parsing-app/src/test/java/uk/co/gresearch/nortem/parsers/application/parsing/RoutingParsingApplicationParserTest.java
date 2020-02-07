@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.nortem.common.utils.TimeProvider;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
 import uk.co.gresearch.nortem.parsers.common.ParserResult;
 import uk.co.gresearch.nortem.parsers.common.SerializableNortemParser;
 
@@ -138,13 +138,13 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
     }
 
     @Test
@@ -194,14 +194,14 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
     }
 
     @Test
@@ -285,13 +285,13 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(ParserFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(NortemMessageFields.PARSING_TIME.toString() + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
     }
 
     @Test
@@ -320,10 +320,10 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("dummy1", result.get(0).getTopic());
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
     }
 
     @Test
@@ -356,9 +356,9 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
     }
 
     @Test
@@ -392,9 +392,9 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("guid" + "\":"));
     }
@@ -431,6 +431,6 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                ParserFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                NortemMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
     }
 }

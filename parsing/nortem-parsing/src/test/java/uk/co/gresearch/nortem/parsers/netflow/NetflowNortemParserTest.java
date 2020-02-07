@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static uk.co.gresearch.nortem.parsers.common.ParserFields.ORIGINAL;
+import static uk.co.gresearch.nortem.common.constants.NortemMessageFields.ORIGINAL;
 
 public class NetflowNortemParserTest {
 

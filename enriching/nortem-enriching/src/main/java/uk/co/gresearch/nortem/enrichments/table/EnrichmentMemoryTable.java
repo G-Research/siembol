@@ -10,14 +10,14 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class EnrichmentsMemoryTable implements EnrichmentsTable {
+public class EnrichmentMemoryTable implements EnrichmentTable {
     private static final String INVALID_JSON_TABLE_OBJECT = "Json table should be a json object";
     private static final String INVALID_JSON_TABLE_FIELD_MSG = "Invalid json table field: %s key: %s, " +
             "only strings fields are supported ";
 
     private final HashMap<String, ArrayList<Pair<String, String>>> table;
 
-    public EnrichmentsMemoryTable(HashMap<String, ArrayList<Pair<String, String>>> table) {
+    public EnrichmentMemoryTable(HashMap<String, ArrayList<Pair<String, String>>> table) {
         this.table = table;
     }
 
@@ -36,7 +36,7 @@ public class EnrichmentsMemoryTable implements EnrichmentsTable {
         return Optional.of(values.stream().filter(x -> field.contains(x.getKey())).collect(Collectors.toList()));
     }
 
-    public static EnrichmentsMemoryTable fromJsonStream(InputStream is) throws IOException {
+    public static EnrichmentMemoryTable fromJsonStream(InputStream is) throws IOException {
         HashMap<String, ArrayList<Pair<String, String>>> table = new HashMap<>();
         JsonFactory factory = new JsonFactory();
 
@@ -68,6 +68,6 @@ public class EnrichmentsMemoryTable implements EnrichmentsTable {
             }
         }
 
-        return new EnrichmentsMemoryTable(table);
+        return new EnrichmentMemoryTable(table);
     }
 }

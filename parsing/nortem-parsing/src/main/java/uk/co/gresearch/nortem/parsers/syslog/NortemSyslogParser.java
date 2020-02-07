@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.parsers.common.NortemParser;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
 import uk.co.gresearch.nortem.parsers.extractors.ParserDateFormat;
 import uk.co.gresearch.nortem.parsers.extractors.ParserExtractor;
 import uk.co.gresearch.nortem.parsers.transformations.Transformation;
@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static uk.co.gresearch.nortem.parsers.common.ParserFields.ORIGINAL;
+import static uk.co.gresearch.nortem.common.constants.NortemMessageFields.ORIGINAL;
 
 public class NortemSyslogParser implements NortemParser {
     public enum Flags {
@@ -26,7 +26,7 @@ public class NortemSyslogParser implements NortemParser {
     public static final String SYSLOG_HEADER_FACILITY = "syslog_facility";
     public static final String SYSLOG_HEADER_SEVERITY = "syslog_severity";
     public static final String SYSLOG_HEADER_PRIORITY = "syslog_priority";
-    public static final String SYSLOG_HEADER_TIMESTAMP = ParserFields.TIMESTAMP.toString();
+    public static final String SYSLOG_HEADER_TIMESTAMP = NortemMessageFields.TIMESTAMP.toString();
     public static final String SYSLOG_HEADER_HOSTNAME = "syslog_hostname";
     public static final String SYSLOG_HEADER_APP_NAME = "syslog_appname";
     public static final String SYSLOG_HEADER_PROC_ID = "syslog_proc_id";

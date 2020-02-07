@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.common.error.ErrorMessage;
 import uk.co.gresearch.nortem.common.error.ErrorType;
 import uk.co.gresearch.nortem.common.utils.TimeProvider;
-import uk.co.gresearch.nortem.parsers.common.ParserFields;
+import uk.co.gresearch.nortem.common.constants.NortemMessageFields;
 import uk.co.gresearch.nortem.parsers.common.ParserResult;
 
 import java.io.Serializable;
@@ -97,9 +97,9 @@ public abstract class ParsingApplicationParser implements Serializable {
 
                 parsed.forEach(x -> {
                     x.put(processingTimeField, timestamp);
-                    x.put(ParserFields.SENSOR_TYPE.toString(), parserResult.getSourceType());
+                    x.put(NortemMessageFields.SENSOR_TYPE.toString(), parserResult.getSourceType());
                     if (flags.contains(Flags.ADD_GUID_TO_MESSAGES)) {
-                        x.put(ParserFields.GUID.toString(), UUID.randomUUID().toString());
+                        x.put(NortemMessageFields.GUID.toString(), UUID.randomUUID().toString());
                     }
                 });
 
@@ -137,7 +137,7 @@ public abstract class ParsingApplicationParser implements Serializable {
         protected String name;
         protected String metadataFormatMsg = METADATA_FORMAT_MSG;
         protected String errorTopic;
-        protected String processingTimeField = ParserFields.PARSING_TIME.toString();
+        protected String processingTimeField = NortemMessageFields.PARSING_TIME.toString();
         protected TimeProvider timeProvider = new TimeProvider();
 
         public Builder<T> name(String name) {

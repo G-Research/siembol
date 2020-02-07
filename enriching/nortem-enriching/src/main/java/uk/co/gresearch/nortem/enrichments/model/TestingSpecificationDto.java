@@ -18,9 +18,9 @@ public class TestingSpecificationDto {
     @JsonIgnore
     @SchemaIgnore
     private String eventContent;
-    @JsonProperty("testing_tables")
+    @JsonProperty("testing_table")
     @Attributes(required = true, description = "Tables for testing an enriching rule", minItems = 1)
-    private List<TestingTableDto> testingTables;
+    private TestingTableDto testingTables;
 
     public JsonRawStringDto getEvent() {
         return event;
@@ -36,11 +36,19 @@ public class TestingSpecificationDto {
         return eventContent;
     }
 
-    public List<TestingTableDto> getTestingTables() {
+    public void setEvent(JsonRawStringDto event) {
+        this.event = event;
+    }
+
+    public void setEventContent(String eventContent) {
+        this.eventContent = eventContent;
+    }
+
+    public TestingTableDto getTestingTables() {
         return testingTables;
     }
 
-    public void setTestingTables(List<TestingTableDto> testingTables) {
+    public void setTestingTables(TestingTableDto testingTables) {
         this.testingTables = testingTables;
     }
 }

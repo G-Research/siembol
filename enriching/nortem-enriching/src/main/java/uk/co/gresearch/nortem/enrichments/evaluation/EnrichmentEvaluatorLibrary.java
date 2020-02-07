@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.co.gresearch.nortem.enrichments.common.EnrichmentCommand;
-import uk.co.gresearch.nortem.enrichments.table.EnrichmentsTable;
+import uk.co.gresearch.nortem.enrichments.table.EnrichmentTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ public class EnrichmentEvaluatorLibrary {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static ArrayList<Pair<String, String>> evaluateCommands(List<EnrichmentCommand> commands,
-                                                                   Map<String, EnrichmentsTable> tables) {
+                                                                   Map<String, EnrichmentTable> tables) {
         ArrayList<Pair<String, String>> ret = new ArrayList<>();
         for (EnrichmentCommand command : commands) {
-            EnrichmentsTable table =  tables.get(command.getTableName());
+            EnrichmentTable table =  tables.get(command.getTableName());
             if (table == null) {
                 continue;
             }
@@ -32,9 +32,14 @@ public class EnrichmentEvaluatorLibrary {
         return ret;
     }
 
-    public static String mergeEnrichments(List<Pair<String, String>> enrichments, String event) throws IOException {
+    public static String mergeEnrichments(String event,
+                                          List<Pair<String, String>> enrichments,
+                                          Optional<String> timestampField) throws IOException {
         ObjectNode node = (ObjectNode)OBJECT_MAPPER.readTree(event);
         enrichments.forEach(x -> node.put(x.getKey(), x.getValue()));
+        if (timestampField.isPresent()) {
+            node.put(timestampField.get(), System.currentTimeMillis());
+        }
         return node.toString();
     }
 }

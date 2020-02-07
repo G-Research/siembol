@@ -71,7 +71,7 @@ public class NikitaEnrichmentEvaluatorTest {
     @Test
     public void testEvaluateNoMatch() {
         nikitaAttributes.setEvaluationResult(EvaluationResult.NO_MATCH);
-        EnrichmentResult result = evaluator.evaluateRules(simpleEvent);
+        EnrichmentResult result = evaluator.evaluate(simpleEvent);
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNull(result.getAttributes().getEnrichmentCommands());
     }
@@ -81,7 +81,7 @@ public class NikitaEnrichmentEvaluatorTest {
         nikitaResult = new NikitaResult(NikitaResult.StatusCode.ERROR, nikitaAttributes);
         nikitaAttributes.setException("dummy");
         when(engine.evaluate(simpleEvent)).thenReturn(nikitaResult);
-        EnrichmentResult result = evaluator.evaluateRules(simpleEvent);
+        EnrichmentResult result = evaluator.evaluate(simpleEvent);
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertEquals("dummy", result.getAttributes().getMessage());
     }
@@ -90,7 +90,7 @@ public class NikitaEnrichmentEvaluatorTest {
     public void testEvaluateMatch() {
         nikitaAttributes.setOutputEvents(outputEevents);
         nikitaAttributes.setEvaluationResult(EvaluationResult.MATCH);
-        EnrichmentResult result = evaluator.evaluateRules(simpleEvent);
+        EnrichmentResult result = evaluator.evaluate(simpleEvent);
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getEnrichmentCommands());
         ArrayList<EnrichmentCommand> enrichmentCommands = result.getAttributes().getEnrichmentCommands();
@@ -113,7 +113,7 @@ public class NikitaEnrichmentEvaluatorTest {
         outputEevents.get(0).remove(EnrichmentFields.ENRICHMENT_COMMAND.toString());
         nikitaAttributes.setOutputEvents(outputEevents);
         nikitaAttributes.setEvaluationResult(EvaluationResult.MATCH);
-        EnrichmentResult result = evaluator.evaluateRules(simpleEvent);
+        EnrichmentResult result = evaluator.evaluate(simpleEvent);
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("Missing enrichment command"));
     }
