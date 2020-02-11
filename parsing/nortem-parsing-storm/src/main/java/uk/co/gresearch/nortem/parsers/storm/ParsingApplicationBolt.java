@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterMessages;
 import uk.co.gresearch.nortem.common.zookeper.ZookeperAttributes;
-import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorImpl;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnector;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryImpl;
@@ -37,18 +38,27 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String INIT_COMPLETED = "Parsing application initialisation completed";
     private static final String PARSERS_UPDATE_START = "Parser config update start";
     private static final String PARSERS_UPDATE_COMPLETED = "Parser config update completed";
+    private static final String INVALID_TYPE_IN_TUPLE = "Invalid type in tuple";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
     private final ZookeperAttributes zookeperAttributes;
     private final String parsingAppSpecification;
 
     private OutputCollector collector;
-    private ZookeperConnectorImpl zookeperConnectorImpl;
+    private ZookeperConnector zookeperConnector;
+    private final ZookeperConnectorFactory zookeperConnectorFactory;
+
+    ParsingApplicationBolt(StormParsingApplicationAttributes attributes,
+                           ParsingApplicationFactoryAttributes parsingAttributes,
+                           ZookeperConnectorFactory zookeperConnectorFactory) throws Exception {
+        this.zookeperAttributes = attributes.getZookeperAttributes();
+        this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
+        this.zookeperConnectorFactory = zookeperConnectorFactory;
+    }
 
     public ParsingApplicationBolt(StormParsingApplicationAttributes attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this.zookeperAttributes = attributes.getZookeperAttributes();
-        this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
+        this(attributes, parsingAttributes, new ZookeperConnectorFactory() {});
     }
 
     @Override
@@ -56,20 +66,13 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(INIT_START);
-
-            zookeperConnectorImpl = new ZookeperConnectorImpl.Builder()
-                    .zkServer(zookeperAttributes.getZkUrl())
-                    .path(zookeperAttributes.getZkPath())
-                    .baseSleepTimeMs(zookeperAttributes.getZkBaseSleepMs())
-                    .maxRetries(zookeperAttributes.getZkMaxRetries())
-                    .build();
+            zookeperConnector = zookeperConnectorFactory.createZookeperConnector(zookeperAttributes);
 
             updateParsers();
             if (parsingApplicationParser.get() == null) {
                 throw new IllegalStateException(ERROR_INIT_MESSAGE);
             }
-
-            zookeperConnectorImpl.addCacheListener(this::updateParsers);
+            zookeperConnector.addCacheListener(this::updateParsers);
             LOG.info(INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -83,7 +86,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             ParsingApplicationFactory factory =  new ParsingApplicationFactoryImpl();
 
             LOG.info(PARSERS_UPDATE_START);
-            String parserConfigs = zookeperConnectorImpl.getData();
+            String parserConfigs = zookeperConnector.getData();
             LOG.info(String.format(PARSERCONFIG_UPDATE_TRY_MSG_FORMAT, parsingAppSpecification, parserConfigs));
             ParsingApplicationFactoryResult result = factory.create(parsingAppSpecification, parserConfigs);
             if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK) {
@@ -107,8 +110,12 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         ParsingApplicationParser currentParser = parsingApplicationParser.get();
 
         String metadata = tuple.getStringByField(ParsingApplicationTuples.METADATA.toString());
-        byte[] log = (byte[])tuple.getValueByField(ParsingApplicationTuples.LOG.toString());
+        Object logObj = tuple.getValueByField(ParsingApplicationTuples.LOG.toString());
+        if (!(logObj instanceof byte[])) {
+            throw new IllegalArgumentException(INVALID_TYPE_IN_TUPLE);
+        }
 
+        byte[] log = (byte[])logObj;
         ArrayList<ParsingApplicationResult> results = currentParser.parse(metadata, log);
         if (!results.isEmpty()) {
             KafkaBatchWriterMessages kafkaBatchWriterMessages = new KafkaBatchWriterMessages();

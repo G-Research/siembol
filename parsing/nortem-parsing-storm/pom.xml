@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>parsing</artifactId>
-        <version>1.30-SNAPSHOT</version>
+        <version>1.31-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-parsing-app</artifactId>
-            <version>1.30-SNAPSHOT</version>
+            <version>1.31-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -78,12 +78,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
-            <version>${curator_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
             <artifactId>curator-client</artifactId>
             <version>${curator_version}</version>
         </dependency>
@@ -93,9 +87,21 @@
             <version>${curator_version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <version>${curator_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.charithe</groupId>
             <artifactId>kafka-junit</artifactId>
             <version>${kafka_junit_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito_version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -160,7 +160,6 @@ public class StormEnrichingApplicationTest {
     NortemFileSystem fileSystem;
     StormEnrichmentAttributes enrichmentAttributes;
     StormTopology topology;
-    LocalCluster cluster;
 
     @Before
     public void setUp() throws Exception {

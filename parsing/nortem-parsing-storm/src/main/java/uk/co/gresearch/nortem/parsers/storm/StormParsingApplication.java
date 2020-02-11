@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.common.storm.KafkaBatchWriterBolt;
 import uk.co.gresearch.nortem.common.storm.StormAttributes;
 import uk.co.gresearch.nortem.common.storm.StormHelper;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnector;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.nortem.parsers.application.factory.ParsingApplicationFactoryResult;
@@ -55,7 +58,8 @@ public class StormParsingApplication {
     }
 
     public static StormTopology createTopology(StormParsingApplicationAttributes stormAppAttributes,
-                                               ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
+                                               ParsingApplicationFactoryAttributes parsingAttributes,
+                                               ZookeperConnectorFactory zookeperConnectorFactory) throws Exception {
         stormAppAttributes.getStormAttributes().getKafkaSpoutProperties()
                 .put(GROUP_ID_CONFIG, String.format(KAFKA_PRINCIPAL_FORMAT_MSG,
                         stormAppAttributes.getGroupIdPrefix(), parsingAttributes.getName()));
@@ -71,7 +75,7 @@ public class StormParsingApplication {
                 parsingAttributes.getInputParallelism());
 
         builder.setBolt(parsingAttributes.getName(),
-                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes),
+                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zookeperConnectorFactory),
                 parsingAttributes.getParsingParallelism())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
@@ -106,7 +110,7 @@ public class StormParsingApplication {
 
         Config config = new Config();
         config.putAll(stormAttributes.getStormAttributes().getStormConfig());
-        StormTopology topology = createTopology(stormAttributes, parsingAttributes);
+        StormTopology topology = createTopology(stormAttributes, parsingAttributes, new ZookeperConnectorFactory() {});
         String topologyName = String.format(TOPOLOGY_NAME_FORMAT_MSG, parsingAttributes.getName());
         LOG.info(SUBMIT_INFO_LOG, topologyName, stormAttributesStr, parsingAttributesStr);
         StormSubmitter.submitTopology(topologyName, config, topology);
