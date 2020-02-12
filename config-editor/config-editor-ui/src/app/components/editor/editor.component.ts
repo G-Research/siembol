@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { MatDialog, MatTabChangeEvent } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { AppConfigService } from '@app/config';
 import { EditorService } from '@app/editor.service';
 import { ConfigData, ConfigWrapper, SensorFields } from '@app/model';

@@ -8,7 +8,7 @@ import {
     transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@app/editor.service';
 import { ConfigData, ConfigWrapper, Deployment, PullRequestInfo, SubmitStatus } from '@app/model';
 import { PopupService } from '@app/popup.service';

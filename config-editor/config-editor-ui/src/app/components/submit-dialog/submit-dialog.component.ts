@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StatusCode } from '@app/commons/status-code';
 import { ConfigData, ConfigWrapper, EditorResult, ExceptionInfo } from '@app/model';
 import { Store } from '@ngrx/store';

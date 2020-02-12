@@ -44,7 +44,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
   `,
 })
 export class SelectTypeComponent extends FieldType {
-  @ViewChild(MatSelect, <any> { static: true }) formFieldControl!: MatSelect;
+  @ViewChild(MatSelect, { static: true }) formFieldControl!: MatSelect;
 
   defaultOptions = {
     templateOptions: { options: [] },

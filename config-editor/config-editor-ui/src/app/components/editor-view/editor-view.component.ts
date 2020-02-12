@@ -4,7 +4,7 @@ import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
 
 import { ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
-import { MatTabChangeEvent } from '@angular/material';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ConfigData, ConfigWrapper } from '@app/model';
 import { TEST_CASE_TAB_NAME } from '@app/model/test-case';
 import * as fromStore from '@app/store';

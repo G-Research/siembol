@@ -1,8 +1,8 @@
 import { Inject } from '@angular/core';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AppConfigService } from '@app/config';
-import { EditorService, IConfigLoaderService } from '@app/editor.service';
+import { EditorService } from '@app/editor.service';
 import { ConfigData, Deployment, EditorResult } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';

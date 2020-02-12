@@ -1,11 +1,10 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { GestureConfig } from '@angular/material';
-import { BrowserModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule, CustomRouterStateSerializer } from '@app/app-routing';
 import {
@@ -22,7 +21,7 @@ import { CoreModule } from '@app/core';
 import { CredentialsInterceptor } from '@app/credentials-interceptor';
 import { RepoResolver, ViewResolver } from '@app/guards';
 import { StripSuffixPipe } from '@app/pipes';
-import { SharedModule } from '@app/shared';
+import { SharedModule } from '@app/shared/shared.module';
 import { metaReducers, reducers } from '@app/store';
 import { EditorEffects } from '@app/store/editor.effects';
 import { RouterEffects } from '@app/store/router-effects';
@@ -32,8 +31,6 @@ import { StoreModule } from '@ngrx/store';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
 import { environment } from 'environments/environment';
-import 'hammerjs';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search'
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { AppComponent } from './app.component';
 import { ChangeHistoryComponent } from './components/change-history/change-history.component';
@@ -133,24 +130,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     TestCaseHelpComponent,
     JsonTreeComponent,
   ],
-  entryComponents: [
-    ErrorDialogComponent,
-    JsonViewerComponent,
-    DeployDialogComponent,
-    SubmitDialogComponent,
-    TestingDialogComponent,
-    LandingPageComponent,
-    HomeComponent,
-    ConfigManagerComponent,
-    EditorViewComponent,
-    PageNotFoundComponent,
-    EditorComponent,
-    PopoverRendererComponent,
-    ChangeHistoryComponent,
-    TestCaseComponent,
-    SubmitTestcaseDialogComponent,
-    TestResultsComponent,
-  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -159,7 +138,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ConfigModule,
     CoreModule,
     AppRoutingModule,
-    NgxMatSelectSearchModule,
     DragDropModule,
     NgScrollbarModule,
     NgxTextDiffModule,
@@ -226,7 +204,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     PopupService,
     { provide: RouterStateSerializer, useClass: CustomRouterStateSerializer },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    { provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig },
     ViewResolver,
     RepoResolver,
     ConfigStoreGuard,

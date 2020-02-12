@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 import * as fromStore from '@app/store';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
 
 @Injectable({

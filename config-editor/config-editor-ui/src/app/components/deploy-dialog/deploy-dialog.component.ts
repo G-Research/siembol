@@ -1,7 +1,7 @@
 import { UiMetadataMap } from '../../model/ui-metadata-map';
 
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StatusCode } from '@app/commons';
 
 import { FormGroup } from '@angular/forms';
