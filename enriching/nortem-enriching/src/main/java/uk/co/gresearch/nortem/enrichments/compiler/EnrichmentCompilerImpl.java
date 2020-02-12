@@ -40,6 +40,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
     private static final String TEST_ENRICHED_MESSAGES = "Enriched pairs added to the event:";
     private static final String TEST_ENRICHED_EVENT = "Enriched event:";
     private static final String UNSUPPORTED_MATCHER = "Unsupported matcher %s in enrichments rules";
+    private static final String RULE_TAGS_ENRICHMENTS_EMPTY_MSG = "Both enriching fields and tags are empty";
 
     private static final ObjectReader JSON_RULES_READER = new ObjectMapper().readerFor(RulesDto.class);
     private static final ObjectReader JSON_RULE_READER = new ObjectMapper().readerFor(RuleDto.class);
@@ -80,17 +81,26 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
     }
 
     private Pair<String, Rule> createNikitaRule(RuleDto ruleDto) {
+        if (ruleDto.getTableMapping().getEnrichingFields() == null
+                && ruleDto.getTableMapping().getTags() == null) {
+            throw new IllegalArgumentException(RULE_TAGS_ENRICHMENTS_EMPTY_MSG);
+        }
+
         List<RuleMatcher> matchers = ruleDto.getMatchers().stream()
                 .map(x -> createNikitaMatcher(x))
                 .collect(Collectors.toList());
 
-        List<Pair<String, String>> enrichingFields = ruleDto.getTableMapping().getEnrichingFields().stream()
+        List<Pair<String, String>> enrichingFields = ruleDto.getTableMapping().getEnrichingFields() != null
+                ? ruleDto.getTableMapping().getEnrichingFields().stream()
                 .map(x -> Pair.of(x.getTableFieldName(), x.getEventFieldName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : new ArrayList<>();
 
-        List<Pair<String, String>> enrichingTags = ruleDto.getTableMapping().getTags().stream()
+        List<Pair<String, String>> enrichingTags = ruleDto.getTableMapping().getTags() != null
+                ? ruleDto.getTableMapping().getTags().stream()
                 .map(x -> Pair.of(x.getTagName(), x.getTagValue()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : new ArrayList<>();
 
         EnrichingRule rule = EnrichingRule.enrichingRuleBuilder()
                 .key(ruleDto.getTableMapping().getJoiningKey())
@@ -204,7 +214,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
 
         try {
             TestingSpecificationDto specification = JSON_TEST_SPEC_READER.readValue(testSpecification);
-            Map<String, EnrichmentTable> tables = createTestingTable(specification.getTestingTables());
+            Map<String, EnrichmentTable> tables = createTestingTable(specification.getTestingTable());
 
             EnrichmentResult result = evaluator.evaluate(specification.getEventContent());
             if(result.getAttributes().getEnrichmentCommands() == null) {

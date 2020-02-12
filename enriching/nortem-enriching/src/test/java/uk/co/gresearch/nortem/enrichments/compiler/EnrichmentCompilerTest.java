@@ -66,6 +66,108 @@ public class EnrichmentCompilerTest {
 
     /**
      *{
+     *   "rules_version": 1,
+     *   "rules": [
+     *     {
+     *       "rule_name": "nortem_enrichments_test",
+     *       "rule_version": 1,
+     *       "rule_author": "dummy",
+     *       "rule_description": "Test rule",
+     *       "source_type": "*",
+     *       "matchers": [
+     *         {
+     *           "matcher_type": "REGEX_MATCH",
+     *           "is_negated": false,
+     *           "field": "is_alert",
+     *           "data": "(?i)true"
+     *         }
+     *       ],
+     *       "table_mapping": {
+     *         "table_name": "test_table",
+     *         "joining_key": "${ip_src_addr}",
+     *         "tags": [
+     *           {
+     *             "tag_name": "is_test_tag",
+     *             "tag_value": "true"
+     *           }
+     *         ]
+     *       }
+     *     }
+     *   ]
+     * }
+     *
+     **/
+    @Multiline
+    public static String testRulesTagsOnly;
+
+    /**
+     *{
+     *   "rules_version": 1,
+     *   "rules": [
+     *     {
+     *       "rule_name": "nortem_enrichments_test",
+     *       "rule_version": 1,
+     *       "rule_author": "dummy",
+     *       "rule_description": "Test rule",
+     *       "source_type": "*",
+     *       "matchers": [
+     *         {
+     *           "matcher_type": "REGEX_MATCH",
+     *           "is_negated": false,
+     *           "field": "is_alert",
+     *           "data": "(?i)true"
+     *         }
+     *       ],
+     *       "table_mapping": {
+     *         "table_name": "test_table",
+     *         "joining_key": "${ip_src_addr}",
+     *         "enriching_fields": [
+     *           {
+     *             "table_field_name": "dns_name",
+     *             "event_field_name": "nortem:enrichments:dns"
+     *           }
+     *         ]
+     *       }
+     *     }
+     *   ]
+     * }
+     *
+     **/
+    @Multiline
+    public static String testRulesEnrichingFieldsOnly;
+
+    /**
+     *{
+     *   "rules_version": 1,
+     *   "rules": [
+     *     {
+     *       "rule_name": "nortem_enrichments_test",
+     *       "rule_version": 1,
+     *       "rule_author": "dummy",
+     *       "rule_description": "Test rule",
+     *       "source_type": "*",
+     *       "matchers": [
+     *         {
+     *           "matcher_type": "REGEX_MATCH",
+     *           "is_negated": false,
+     *           "field": "is_alert",
+     *           "data": "(?i)true"
+     *         }
+     *       ],
+     *       "table_mapping": {
+     *         "table_name": "test_table",
+     *         "joining_key": "${ip_src_addr}"
+     *       }
+     *     }
+     *   ]
+     * }
+     *
+     **/
+    @Multiline
+    public static String testRulesMissingTagsAndEnrichingFields;
+
+    /**
+     *{
      *   "rule_name": "nortem_enrichments_test",
      *   "rule_version": 1,
      *   "rule_author": "dummy",
@@ -250,5 +352,43 @@ public class EnrichmentCompilerTest {
         Assert.assertEquals("secret", rawResult.get("source.type"));
         Assert.assertEquals("false", rawResult.get("is_alert"));
         Assert.assertEquals("1.2.3.4", rawResult.get("ip_src_addr"));
+    }
+
+    @Test
+    public void testRulesTagsOnlyOK() throws IOException {
+        EnrichmentResult result = enrichmentCompiler.testConfigurations(testRulesTagsOnly, testSpecification);
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTestRawResult());
+        Assert.assertNotNull(result.getAttributes().getTestResult());
+        Map<String, Object> rawResult = JSON_MAP_READER.readValue(result.getAttributes().getTestRawResult());
+        Assert.assertEquals("secret", rawResult.get("source.type"));
+        Assert.assertEquals("true", rawResult.get("is_alert"));
+        Assert.assertEquals("1.2.3.4", rawResult.get("ip_src_addr"));
+        Assert.assertEquals("true", rawResult.get("is_test_tag"));
+        Assert.assertNull(rawResult.get("nortem:enrichments:dns"));
+    }
+
+    @Test
+    public void testRulesEnrichingFieldOnlyOK() throws IOException {
+        EnrichmentResult result = enrichmentCompiler.testConfigurations(testRulesEnrichingFieldsOnly, testSpecification);
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTestRawResult());
+        Assert.assertNotNull(result.getAttributes().getTestResult());
+        Map<String, Object> rawResult = JSON_MAP_READER.readValue(result.getAttributes().getTestRawResult());
+        Assert.assertEquals("secret", rawResult.get("source.type"));
+        Assert.assertEquals("true", rawResult.get("is_alert"));
+        Assert.assertEquals("1.2.3.4", rawResult.get("ip_src_addr"));
+        Assert.assertNull(rawResult.get("is_test_tag"));
+        Assert.assertEquals("secret.abc", rawResult.get("nortem:enrichments:dns"));
+    }
+
+    @Test
+    public void testRulesMissingTagsAndEnrichingFields() throws IOException {
+        EnrichmentResult result = enrichmentCompiler.testConfigurations(testRulesMissingTagsAndEnrichingFields,
+                testSpecification);
+        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("Both enriching fields and tags are empty"));
+
     }
 }

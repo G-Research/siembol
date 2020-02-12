@@ -16,11 +16,11 @@ public class TableMappingDto {
     private String joiningKey;
 
     @JsonProperty("tags")
-    @Attributes(required = true, description = "Tags added after matching the joining key")
+    @Attributes(description = "Tags added after matching the joining key", minItems = 1)
     private List<TagDto> tags;
 
     @JsonProperty("enriching_fields")
-    @Attributes(required = true, description = "Fields from the table added after matching the joining key")
+    @Attributes(description = "Fields from the table added after matching the joining key", minItems = 1)
     private List<EnrichingFieldDto> enrichingFields;
 
     public String getTableName() {

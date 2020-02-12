@@ -8,8 +8,6 @@ import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
 import uk.co.gresearch.nortem.common.jsonschema.JsonRawStringDto;
 
-import java.util.List;
-
 @Attributes(title = "enrichments test specification",
         description = "The specification for testing enrichments")
 public class TestingSpecificationDto {
@@ -19,8 +17,8 @@ public class TestingSpecificationDto {
     @SchemaIgnore
     private String eventContent;
     @JsonProperty("testing_table")
-    @Attributes(required = true, description = "Tables for testing an enriching rule", minItems = 1)
-    private TestingTableDto testingTables;
+    @Attributes(required = true, description = "Table for testing an enriching rule")
+    private TestingTableDto testingTable;
 
     public JsonRawStringDto getEvent() {
         return event;
@@ -44,11 +42,11 @@ public class TestingSpecificationDto {
         this.eventContent = eventContent;
     }
 
-    public TestingTableDto getTestingTables() {
-        return testingTables;
+    public TestingTableDto getTestingTable() {
+        return testingTable;
     }
 
-    public void setTestingTables(TestingTableDto testingTables) {
-        this.testingTables = testingTables;
+    public void setTestingTable(TestingTableDto testingTable) {
+        this.testingTable = testingTable;
     }
 }
