@@ -33,7 +33,7 @@ public class RuleDto {
     private List<MatcherDto> matchers;
 
     @JsonProperty("table_mapping")
-    @Attributes(required = true, description = "Mappings for enriching events", minItems = 1)
+    @Attributes(required = true, description = "Mappings for enriching events")
     private TableMappingDto tableMapping;
 
     public String getRuleName() {
