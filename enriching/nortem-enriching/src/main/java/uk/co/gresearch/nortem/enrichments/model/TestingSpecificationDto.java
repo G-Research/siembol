@@ -16,9 +16,40 @@ public class TestingSpecificationDto {
     @JsonIgnore
     @SchemaIgnore
     private String eventContent;
-    @JsonProperty("testing_table")
-    @Attributes(required = true, description = "Table for testing an enriching rule")
-    private TestingTableDto testingTable;
+
+    @JsonProperty("testing_table_name")
+    @Attributes(required = true, description = "Name of a testing table")
+    private String testingTableName;
+
+    @JsonProperty("testing_table_mapping")
+    @Attributes(required = true, description = "Mapping for a testing table")
+    private JsonRawStringDto testingTableMapping;
+
+    @JsonIgnore
+    @SchemaIgnore
+    private String testingTableMappingContent;
+
+    @JsonSetter
+    public void setTestingTableMapping(JsonNode testingTableMapping) {
+        this.testingTableMappingContent = testingTableMapping.toString();
+    }
+
+    public JsonRawStringDto getTestingTableMapping() {
+        return testingTableMapping;
+    }
+
+    @JsonIgnore
+    public String getTestingTableMappingContent() {
+        return testingTableMappingContent;
+    }
+
+    public String getTestingTableName() {
+        return testingTableName;
+    }
+
+    public void setTestingTableName(String testingTableName) {
+        this.testingTableName = testingTableName;
+    }
 
     public JsonRawStringDto getEvent() {
         return event;
@@ -42,11 +73,4 @@ public class TestingSpecificationDto {
         this.eventContent = eventContent;
     }
 
-    public TestingTableDto getTestingTable() {
-        return testingTable;
-    }
-
-    public void setTestingTable(TestingTableDto testingTable) {
-        this.testingTable = testingTable;
-    }
 }

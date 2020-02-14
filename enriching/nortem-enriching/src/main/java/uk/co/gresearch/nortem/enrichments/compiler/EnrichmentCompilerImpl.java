@@ -115,11 +115,11 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return Pair.of(ruleDto.getSourceType(), rule);
     }
 
-    private Map<String, EnrichmentTable> createTestingTable(TestingTableDto table) throws IOException {
+    private Map<String, EnrichmentTable> createTestingTable(TestingSpecificationDto test) throws IOException {
         Map<String, EnrichmentTable> ret = new HashMap<>();
-        try (InputStream is = new ByteArrayInputStream(table.getTableMappingContent().getBytes())) {
+        try (InputStream is = new ByteArrayInputStream(test.getTestingTableMappingContent().getBytes())) {
             EnrichmentMemoryTable current = EnrichmentMemoryTable.fromJsonStream(is);
-            ret.put(table.getTableName(), current);
+            ret.put(test.getTestingTableName(), current);
         }
         return ret;
     }
@@ -214,7 +214,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
 
         try {
             TestingSpecificationDto specification = JSON_TEST_SPEC_READER.readValue(testSpecification);
-            Map<String, EnrichmentTable> tables = createTestingTable(specification.getTestingTable());
+            Map<String, EnrichmentTable> tables = createTestingTable(specification);
 
             EnrichmentResult result = evaluator.evaluate(specification.getEventContent());
             if(result.getAttributes().getEnrichmentCommands() == null) {

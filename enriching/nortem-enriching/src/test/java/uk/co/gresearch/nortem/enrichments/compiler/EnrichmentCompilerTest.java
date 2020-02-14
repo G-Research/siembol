@@ -211,14 +211,13 @@ public class EnrichmentCompilerTest {
      *     "is_alert": "true",
      *     "ip_src_addr": "1.2.3.4"
      *   },
-     *   "testing_table": {
-     *     "table_name": "test_table",
-     *     "table_mapping": {
+     *   "testing_table_name": "test_table",
+     *   "testing_table_mapping": {
      *       "1.2.3.4": {
      *         "dns_name": "secret.abc"
      *       }
      *     }
-     *   }
+     *
      * }
      **/
     @Multiline
@@ -231,12 +230,10 @@ public class EnrichmentCompilerTest {
      *     "is_alert": "false",
      *     "ip_src_addr": "1.2.3.4"
      *   },
-     *   "testing_table": {
-     *     "table_name": "test_table",
-     *     "table_mapping": {
-     *       "1.2.3.4": {
-     *         "dns_name": "secret.abc"
-     *       }
+     *   "testing_table_name": "test_table",
+     *   "testing_table_mapping": {
+     *     "1.2.3.4": {
+     *       "dns_name": "secret.abc"
      *     }
      *   }
      * }
