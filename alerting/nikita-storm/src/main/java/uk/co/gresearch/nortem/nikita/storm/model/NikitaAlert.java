@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.nikita.storm;
+package uk.co.gresearch.nortem.nikita.storm.model;
 
 import uk.co.gresearch.nortem.nikita.common.NikitaFields;
 import uk.co.gresearch.nortem.nikita.common.NikitaTags;

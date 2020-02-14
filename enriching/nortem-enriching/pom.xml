@@ -11,18 +11,18 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>enriching</artifactId>
-        <version>1.33-SNAPSHOT</version>
+        <version>1.34-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-common</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nikita-core</artifactId>
-            <version>1.33-SNAPSHOT</version>
+            <version>1.34-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.adrianwalker</groupId>

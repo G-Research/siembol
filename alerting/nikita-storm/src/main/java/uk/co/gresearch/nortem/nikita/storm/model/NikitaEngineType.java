@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.nikita.storm;
+package uk.co.gresearch.nortem.nikita.storm.model;
 
 import java.io.Serializable;
 

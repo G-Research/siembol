@@ -1,4 +1,4 @@
-package uk.co.gresearch.nortem.nikita.storm;
+package uk.co.gresearch.nortem.nikita.storm.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.co.gresearch.nortem.common.storm.StormAttributes;

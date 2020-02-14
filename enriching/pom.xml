@@ -11,7 +11,7 @@
 	 <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>nortem</artifactId>
-        <version>1.33-SNAPSHOT</version>
+        <version>1.34-SNAPSHOT</version>
     </parent>
     <modules>
         <module>nortem-enriching</module>

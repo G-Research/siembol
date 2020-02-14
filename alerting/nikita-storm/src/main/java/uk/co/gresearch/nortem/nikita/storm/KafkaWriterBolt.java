@@ -21,6 +21,7 @@ import uk.co.gresearch.nortem.common.error.ErrorType;
 import uk.co.gresearch.nortem.nikita.common.NikitaResult;
 import uk.co.gresearch.nortem.nikita.protection.RuleProtectionSystem;
 import uk.co.gresearch.nortem.nikita.protection.RuleProtectionSystemImpl;
+import uk.co.gresearch.nortem.nikita.storm.model.*;
 
 public class KafkaWriterBolt extends BaseRichBolt {
     private static final Logger LOG =

@@ -4,9 +4,12 @@ import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.nortem.nikita.common.NikitaEngine;
 import uk.co.gresearch.nortem.nikita.common.NikitaResult;
 import uk.co.gresearch.nortem.nikita.compiler.NikitaCorrelationRulesCompiler;
+import uk.co.gresearch.nortem.nikita.storm.model.NikitaStormAttributes;
+
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import static org.apache.storm.utils.TupleUtils.isTick;
@@ -16,8 +19,9 @@ public class NikitaCorrelationEngineBolt extends NikitaEngineBolt {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final int cleanIntervalSec;
 
-    public NikitaCorrelationEngineBolt(NikitaStormAttributes attributes) {
-        super(attributes);
+    public NikitaCorrelationEngineBolt(NikitaStormAttributes attributes,
+                                       ZookeperConnectorFactory zookeperConnectorFactory) {
+        super(attributes, zookeperConnectorFactory);
         cleanIntervalSec = attributes.getNikitaEngineCleanIntervalSec();
     }
 

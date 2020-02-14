@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.gresearch.nortem.common.storm.StormAttributes;
 import uk.co.gresearch.nortem.common.storm.StormHelper;
+import uk.co.gresearch.nortem.common.zookeper.ZookeperConnectorFactory;
+import uk.co.gresearch.nortem.nikita.storm.model.NikitaEngineType;
+import uk.co.gresearch.nortem.nikita.storm.model.NikitaStormAttributes;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
@@ -28,7 +31,7 @@ public class NikitaStorm {
     private static final String KAFKA_WRITER = "kafka-writer";
     private static final int EXPECTED_ARG_SIZE = 1;
     private static final int ATTRIBUTES_ARG_INDEX = 0;
-    private static final String WRONG_ARGUMENT_MSG =  "Wrong arguments. The application expects Base64 encoded attributes";
+    private static final String WRONG_ARGUMENT_MSG = "Wrong arguments. The application expects Base64 encoded attributes";
 
     private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(NikitaStormAttributes attributes) {
         StormAttributes stormAttributes = attributes.getStormAttributes();
@@ -46,7 +49,8 @@ public class NikitaStorm {
         }
     }
 
-    public static StormTopology createTopology(NikitaStormAttributes attributes) {
+    public static StormTopology createTopology(NikitaStormAttributes attributes,
+                                               ZookeperConnectorFactory zookeperConnectorFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout(KAFKA_SPOUT,
@@ -54,7 +58,7 @@ public class NikitaStorm {
                 attributes.getKafkaSpoutNumExecutors());
 
         builder.setBolt(NikitaEngineType.NIKITA.getEngineName(),
-                new NikitaEngineBolt(attributes), attributes.getNikitaEngineBoltNumExecutors())
+                new NikitaEngineBolt(attributes, zookeperConnectorFactory), attributes.getNikitaEngineBoltNumExecutors())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(KAFKA_WRITER,
@@ -64,7 +68,8 @@ public class NikitaStorm {
         return builder.createTopology();
     }
 
-    public static StormTopology createNikitaCorrelationTopology(NikitaStormAttributes attributes) {
+    public static StormTopology createNikitaCorrelationTopology(NikitaStormAttributes attributes,
+                                                                ZookeperConnectorFactory zookeperConnectorFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout(KAFKA_SPOUT,
@@ -72,7 +77,8 @@ public class NikitaStorm {
                 attributes.getKafkaSpoutNumExecutors());
 
         builder.setBolt(NikitaEngineType.NIKITA_CORRELATION.getEngineName(),
-                new NikitaCorrelationEngineBolt(attributes), attributes.getNikitaEngineBoltNumExecutors())
+                new NikitaCorrelationEngineBolt(attributes, zookeperConnectorFactory),
+                attributes.getNikitaEngineBoltNumExecutors())
                 .fieldsGrouping(KAFKA_SPOUT, new Fields(TupleFieldNames.CORRELATION_KEY.toString()));
 
         builder.setBolt(KAFKA_WRITER,
@@ -97,10 +103,12 @@ public class NikitaStorm {
 
         Config config = new Config();
         config.putAll(attributes.getStormAttributes().getStormConfig());
+        ZookeperConnectorFactory zookeperConnectorFactory = new ZookeperConnectorFactory() {};
+
 
         StormTopology topology = engineType == NikitaEngineType.NIKITA
-                ? createTopology(attributes)
-                : createNikitaCorrelationTopology(attributes);
+                ? createTopology(attributes, zookeperConnectorFactory)
+                : createNikitaCorrelationTopology(attributes, zookeperConnectorFactory);
         String topologyName = attributes.getNikitaTopologyName() != null
                 ? attributes.getNikitaTopologyName()
                 : engineType.toString();
