@@ -12,9 +12,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_LOWERCASE;
-import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_STRING_REPLACE_ALL;
-import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_UPPERCASE;
+import static uk.co.gresearch.nortem.parsers.model.CaseTypeDto.LOWERCASE;
+import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.*;
 
 public class TransformationFactory {
     private static final String MISSING_TRANSFORMATION_TYPE = "Missing transformation type";
@@ -34,9 +33,8 @@ public class TransformationFactory {
             case FIELD_NAME_STRING_DELETE_ALL:
                 specification.getAttributes().setStringReplaceReplacement("");
                 return createStringReplaceTransformation(specification.getAttributes(), FIELD_NAME_STRING_REPLACE_ALL);
-            case FIELD_NAME_LOWERCASE:
-            case FIELD_NAME_UPPERCASE:
-                return createCaseFieldTransformation(specification.getType());
+            case FIELD_NAME_CHANGE_CASE:
+                return createCaseFieldTransformation(specification.getAttributes());
             case RENAME_FIELDS:
                 return createRenameFieldTransformation(specification.getAttributes());
             case DELETE_FIELDS:
@@ -86,12 +84,12 @@ public class TransformationFactory {
         return x -> TransformationsLibrary.fieldTransformation(x, y -> renameMap.getOrDefault(y, y));
     }
 
-    private Transformation createCaseFieldTransformation(TransformationTypeDto type) {
-        if (type != FIELD_NAME_LOWERCASE && type != FIELD_NAME_UPPERCASE) {
-            throw new IllegalArgumentException(UNSUPPORTED_FIELD_NAME_CASE_TYPE);
+    private Transformation createCaseFieldTransformation(TransformationAttributesDto attributes) {
+        if (attributes == null || attributes.getCaseType() == null) {
+            throw new IllegalArgumentException(MISSING_TRANSFORMATION_ATTRIBUTES);
         }
 
-        final Function<String, String> fun = type == FIELD_NAME_LOWERCASE
+        final Function<String, String> fun = attributes.getCaseType() == LOWERCASE
                 ? x -> x.toLowerCase()
                 : x -> x.toUpperCase();
 

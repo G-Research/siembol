@@ -26,6 +26,11 @@ public class TransformationAttributesDto {
     @Attributes(description = "Filter for filtering the whole message")
     private MessageFilterDto messageFilter;
 
+    @JsonProperty("case_type")
+    @Attributes(description = "The type of case")
+    private CaseTypeDto caseType = CaseTypeDto.LOWERCASE;
+
+
     public String getStringReplaceTarget() {
         return stringReplaceTarget;
     }
@@ -64,5 +69,13 @@ public class TransformationAttributesDto {
 
     public void setMessageFilter(MessageFilterDto messageFilter) {
         this.messageFilter = messageFilter;
+    }
+
+    public CaseTypeDto getCaseType() {
+        return caseType;
+    }
+
+    public void setCaseType(CaseTypeDto caseType) {
+        this.caseType = caseType;
     }
 }

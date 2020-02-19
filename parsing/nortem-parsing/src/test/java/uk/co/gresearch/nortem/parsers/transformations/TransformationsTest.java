@@ -151,7 +151,10 @@ public class TransformationsTest {
 
     /**
      *{
-     *   "transformation_type": "field_name_uppercase"
+     *   "transformation_type": "field_name_change_case",
+     *   "attributes": {
+     *      "case_type" : "uppercase"
+     *   }
      * }
      **/
     @Multiline
@@ -159,8 +162,9 @@ public class TransformationsTest {
 
     /**
      *{
-     *   "transformation_type": "field_name_lowercase",
+     *   "transformation_type": "field_name_change_case",
      *   "attributes": {
+     *      "case_type" : "lowercase"
      *   }
      * }
      **/
