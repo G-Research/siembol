@@ -7,7 +7,7 @@ public class TransformationDto {
     @JsonProperty("transformation_type")
     @Attributes(required = true, description = "The type of the transformation")
     private TransformationTypeDto type;
-    @Attributes(required = true, description = "The attributes of the transformation")
+    @Attributes(description = "The attributes of the transformation")
     private TransformationAttributesDto attributes;
 
     public TransformationTypeDto getType() {

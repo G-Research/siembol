@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.gresearch.nortem.parsers.model.MessageFilterDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationDto;
 
 import java.io.IOException;
@@ -149,6 +148,51 @@ public class TransformationsTest {
      **/
     @Multiline
     public static String transformationRename;
+
+    /**
+     *{
+     *   "transformation_type": "field_name_uppercase"
+     * }
+     **/
+    @Multiline
+    public static String transformationFieldNameUpperCase;
+
+    /**
+     *{
+     *   "transformation_type": "field_name_lowercase",
+     *   "attributes": {
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String transformationFieldLowerCase;
+
+    /**
+     *{
+     *   "transformation_type": "lowercase_value",
+     *   "attributes": {
+     *     "fields_filter": {
+     *      "including_fields": ["timestamp", "chomp_field"]
+     *     }
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String transformationLowerCase;
+
+    /**
+     *{
+     *   "transformation_type": "uppercase_value",
+     *   "attributes": {
+     *     "fields_filter": {
+     *      "including_fields": ["timestamp", "chomp_field"]
+     *     }
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String transformationUpperCase;
+
 
 
     /**
@@ -296,6 +340,42 @@ public class TransformationsTest {
         Assert.assertEquals(6, transformed.size());
     }
 
+    @Test
+    public void testGoodFieldNameUpperCase() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationFieldNameUpperCase));
+        Assert.assertTrue(transformation != null);
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals(5, transformed.size());
+        Assert.assertEquals(12345, transformed.get("TIMESTAMP"));
+        Assert.assertEquals("true", transformed.get("TEST FIELD A"));
+        Assert.assertEquals("   message     ", transformed.get("TRIM_FIELD"));
+        Assert.assertEquals("message\n", transformed.get("CHOMP_FIELD"));
+        Assert.assertEquals("abc", transformed.get("DUMMY FIELD"));
+    }
+
+    @Test
+    public void testGoodFieldNameLowerCase() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationFieldLowerCase));
+        Assert.assertTrue(transformation != null);
+
+        log.put("TestInGLoweRcase1", true);
+        log.put("TestInGLoweRcase2", "true");
+        log.put("TestInGLoweRcase3", 1);
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals(8, transformed.size());
+        Assert.assertEquals(true, transformed.get("testinglowercase1"));
+        Assert.assertEquals("true", transformed.get("testinglowercase2"));
+        Assert.assertEquals(1, transformed.get("testinglowercase3"));
+
+        Assert.assertEquals(12345, transformed.get("timestamp"));
+        Assert.assertEquals("true", transformed.get("test field a"));
+        Assert.assertEquals("   message     ", transformed.get("trim_field"));
+        Assert.assertEquals("message\n", transformed.get("chomp_field"));
+        Assert.assertEquals("abc", transformed.get("dummy field"));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testWrongFilter1() throws IOException {
         TransformationDto specification = JSON_TRANSFORMATION_READER.readValue(transformationFilter);
@@ -309,4 +389,26 @@ public class TransformationsTest {
         specification.getAttributes().getMessageFilter().getMatchers().get(0).setFieldName(null);
         factory.create(specification);
     }
+
+    @Test
+    public void testGoodLowercaseValue() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationLowerCase));
+        Assert.assertTrue(transformation != null);
+        log.put("chomp_field", "LowerCaseTest");
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals("lowercasetest", transformed.get("chomp_field"));
+        Assert.assertEquals(12345, transformed.get("timestamp"));
+    }
+
+    @Test
+    public void testGoodUpperCaseValue() throws IOException {
+        transformation = factory.create(JSON_TRANSFORMATION_READER.readValue(transformationUpperCase));
+        Assert.assertTrue(transformation != null);
+
+        Map<String, Object> transformed = transformation.apply(log);
+        Assert.assertEquals("MESSAGE\n", transformed.get("chomp_field"));
+        Assert.assertEquals(12345, transformed.get("timestamp"));
+    }
+
 }

@@ -1,6 +1,5 @@
 package uk.co.gresearch.nortem.parsers.transformations;
 
-import uk.co.gresearch.nortem.parsers.model.MessageFilterDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationAttributesDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationDto;
 import uk.co.gresearch.nortem.parsers.model.TransformationTypeDto;
@@ -13,13 +12,15 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_LOWERCASE;
 import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_STRING_REPLACE_ALL;
+import static uk.co.gresearch.nortem.parsers.model.TransformationTypeDto.FIELD_NAME_UPPERCASE;
 
 public class TransformationFactory {
     private static final String MISSING_TRANSFORMATION_TYPE = "Missing transformation type";
     private static final String UNKNOWN_TRANSFORMATION_TYPE = "Unknown transformation type";
     private static final String MISSING_TRANSFORMATION_ATTRIBUTES = "Missing transformation attributes";
-
+    private static final String UNSUPPORTED_FIELD_NAME_CASE_TYPE = "Unsupported field name case transformation";
 
     public Transformation create(TransformationDto specification) {
         if(specification.getType() == null) {
@@ -33,6 +34,9 @@ public class TransformationFactory {
             case FIELD_NAME_STRING_DELETE_ALL:
                 specification.getAttributes().setStringReplaceReplacement("");
                 return createStringReplaceTransformation(specification.getAttributes(), FIELD_NAME_STRING_REPLACE_ALL);
+            case FIELD_NAME_LOWERCASE:
+            case FIELD_NAME_UPPERCASE:
+                return createCaseFieldTransformation(specification.getType());
             case RENAME_FIELDS:
                 return createRenameFieldTransformation(specification.getAttributes());
             case DELETE_FIELDS:
@@ -43,6 +47,10 @@ public class TransformationFactory {
                 return createValueTransformation(specification.getAttributes(), TransformationsLibrary::trim);
             case CHOMP_VALUE:
                 return createValueTransformation(specification.getAttributes(), TransformationsLibrary::chomp);
+            case LOWERCASE_VALUE:
+                return createValueTransformation(specification.getAttributes(), TransformationsLibrary::toLowerCase);
+            case UPPERCASE_VALUE:
+                return createValueTransformation(specification.getAttributes(), TransformationsLibrary::toUpperCase);
         }
 
         throw new IllegalArgumentException(UNKNOWN_TRANSFORMATION_TYPE);
@@ -76,6 +84,18 @@ public class TransformationFactory {
                 .collect(Collectors.toMap(x -> x.getFieldToRename(), x -> x.getNewName()));
 
         return x -> TransformationsLibrary.fieldTransformation(x, y -> renameMap.getOrDefault(y, y));
+    }
+
+    private Transformation createCaseFieldTransformation(TransformationTypeDto type) {
+        if (type != FIELD_NAME_LOWERCASE && type != FIELD_NAME_UPPERCASE) {
+            throw new IllegalArgumentException(UNSUPPORTED_FIELD_NAME_CASE_TYPE);
+        }
+
+        final Function<String, String> fun = type == FIELD_NAME_LOWERCASE
+                ? x -> x.toLowerCase()
+                : x -> x.toUpperCase();
+
+        return x -> TransformationsLibrary.fieldTransformation(x, fun);
     }
 
     private Transformation createDeleteFieldsTransformation(TransformationAttributesDto attributes) {
@@ -118,5 +138,4 @@ public class TransformationFactory {
 
         return x -> TransformationsLibrary.filterMassage(x, matchers);
     }
-
 }

@@ -58,6 +58,22 @@ public class TransformationsLibrary {
         return StringUtils.chomp((String) obj);
     }
 
+    public static Object toLowerCase(Object obj) {
+        if (!(obj instanceof String)) {
+            return obj;
+        }
+
+        return ((String) obj).toLowerCase();
+    }
+
+    public static Object toUpperCase(Object obj) {
+        if (!(obj instanceof String)) {
+            return obj;
+        }
+
+        return ((String) obj).toUpperCase();
+    }
+
     public static Map<String, Object> removeFields(Map<String, Object> log, PatternFilter filter) {
         log.keySet().removeIf(x -> filter.match(x));
         return log;
