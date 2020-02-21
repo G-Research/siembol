@@ -1,5 +1,6 @@
 package uk.co.gresearch.nortem.enrichments.storm;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
@@ -36,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader TABLES_UPDATE_READER = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .readerFor(TablesUpdate.class);
 
     private static final String TABLES_INIT_START = "Initialisation of enrichment tables started";
@@ -43,7 +45,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final String TABLES_UPDATES_START = "Updating enrichment tables";
     private static final String TABLES_UPDATES_COMPLETED = "Updating enrichment tables completed";
     private static final String TABLES_UPDATE_MESSAGE_FORMAT = "Updating enrichment tables: %s";
-    private static final String TABLES_UPDATE_EXCEPTION_FORMAT = "Exception during update of enrichment tables: %s";
+    private static final String TABLES_UPDATE_EXCEPTION_FORMAT = "Exception during update of enrichment tables: {}";
     private static final String TABLE_INIT_START = "Trying to initialise enrichment table: {} from the file: {}";
     private static final String TABLE_INIT_COMPLETED = "Initialisation of enrichment table: {} completed";
     private static final String TABLES_UPDATE_EMPTY_TABLES = "No enrichment tables provided";
@@ -109,7 +111,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
                     try (InputStream is = fs.openInputStream(table.getPath())) {
                         tables.put(table.getName(), EnrichmentMemoryTable.fromJsonStream(is));
                     }
-                    LOG.info(TABLE_INIT_COMPLETED);
+                    LOG.info(TABLE_INIT_COMPLETED, table.getName());
                 }
             }
             enrichmentTables.set(tables);

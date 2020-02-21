@@ -70,6 +70,11 @@ public class EnrichingRule extends Rule {
         return result;
     }
 
+    @Override
+    public boolean canModifyEvent() {
+        return true;
+    }
+
     public static abstract class Builder<T extends EnrichingRule> extends Rule.Builder<T> {
         protected String tableName;
         protected String key;

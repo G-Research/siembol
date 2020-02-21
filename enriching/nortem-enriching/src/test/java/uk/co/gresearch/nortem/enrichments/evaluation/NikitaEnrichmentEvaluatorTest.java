@@ -109,6 +109,43 @@ public class NikitaEnrichmentEvaluatorTest {
     }
 
     @Test
+    public void testEvaluateMatchMultipleCommands() {
+        outputEevents.add(new HashMap<>());
+        outputEevents.get(1).put(EnrichmentFields.ENRICHMENT_COMMAND.toString(), command);
+
+        nikitaAttributes.setOutputEvents(outputEevents);
+        nikitaAttributes.setEvaluationResult(EvaluationResult.MATCH);
+        EnrichmentResult result = evaluator.evaluate(simpleEvent);
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getEnrichmentCommands());
+        ArrayList<EnrichmentCommand> enrichmentCommands = result.getAttributes().getEnrichmentCommands();
+        Assert.assertEquals(2, enrichmentCommands.size());
+        Assert.assertEquals("dummy_key", enrichmentCommands.get(1).getKey());
+        Assert.assertEquals("dummy_table", enrichmentCommands.get(1).getTableName());
+
+        Assert.assertTrue(enrichmentCommands.get(1).getTags().contains(Pair.of("a", "b")));
+        Assert.assertTrue(enrichmentCommands.get(1).getTags().contains(Pair.of("c", "d")));
+
+        Assert.assertTrue(enrichmentCommands.get(1).getEnrichmentFields().contains(Pair.of("g", "h")));
+        Assert.assertTrue(enrichmentCommands.get(1).getEnrichmentFields().contains(Pair.of("e", "f")));
+
+        Assert.assertTrue(enrichmentCommands.get(1).getTableFields().contains("g"));
+        Assert.assertTrue(enrichmentCommands.get(1).getTableFields().contains("e"));
+
+        Assert.assertEquals("dummy_key", enrichmentCommands.get(1).getKey());
+        Assert.assertEquals("dummy_table", enrichmentCommands.get(1).getTableName());
+
+        Assert.assertTrue(enrichmentCommands.get(1).getTags().contains(Pair.of("a", "b")));
+        Assert.assertTrue(enrichmentCommands.get(1).getTags().contains(Pair.of("c", "d")));
+
+        Assert.assertTrue(enrichmentCommands.get(1).getEnrichmentFields().contains(Pair.of("g", "h")));
+        Assert.assertTrue(enrichmentCommands.get(1).getEnrichmentFields().contains(Pair.of("e", "f")));
+
+        Assert.assertTrue(enrichmentCommands.get(1).getTableFields().contains("g"));
+        Assert.assertTrue(enrichmentCommands.get(1).getTableFields().contains("e"));
+    }
+
+    @Test
     public void testEvaluateMatchMissingCommand() {
         outputEevents.get(0).remove(EnrichmentFields.ENRICHMENT_COMMAND.toString());
         nikitaAttributes.setOutputEvents(outputEevents);

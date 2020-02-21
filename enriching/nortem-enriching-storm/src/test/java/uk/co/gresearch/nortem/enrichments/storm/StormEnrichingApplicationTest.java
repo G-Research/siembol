@@ -90,20 +90,21 @@ public class StormEnrichingApplicationTest {
     /**
      *
      * {
-     *   "1.2.3.4" : { "dns_name" : "secret.unknown" }
+     *   "1.2.3.4" : { "dns_name" : "secret.unknown" },
+     *   "1.2.3.5" : { "dns_name" : "secret.known" }
      * }
      **/
     @Multiline
     public static String simpleOneField;
 
     /**
-     *{"ip_src_addr":"1.2.3.4","b":1,"is_alert":"true","source.type":"test","is_test_tag":"true","nortem:enrichments:dns":"secret.unknown","nortem:enriching_time":
+     *{"ip_src_addr":"1.2.3.4","ip_dst_addr":"1.2.3.5","b":1,"is_alert":"true","source.type":"test","is_test_tag_first":"true","src_dns_name":"secret.unknown","is_test_tag_second":"true","dst_dns_name":"secret.known","nortem:enriching_time":
      **/
     @Multiline
     public static String expectedEvent;
 
     /**
-     * {"ip_src_addr" : "1.2.3.4", "b" : 1, "is_alert" : "true", "source.type" : "test"}
+     * {"ip_src_addr" : "1.2.3.4", "ip_dst_addr" : "1.2.3.5", "b" : 1, "is_alert" : "true", "source.type" : "test"}
      **/
     @Multiline
     public static String event;
@@ -113,7 +114,7 @@ public class StormEnrichingApplicationTest {
      *   "rules_version": 1,
      *   "rules": [
      *     {
-     *       "rule_name": "test_rule",
+     *       "rule_name": "test_rule_first",
      *       "rule_version": 1,
      *       "rule_author": "john",
      *       "rule_description": "Test rule",
@@ -131,20 +132,51 @@ public class StormEnrichingApplicationTest {
      *         "joining_key": "${ip_src_addr}",
      *         "tags": [
      *           {
-     *             "tag_name": "is_test_tag",
+     *             "tag_name": "is_test_tag_first",
      *             "tag_value": "true"
      *           }
      *         ],
      *         "enriching_fields": [
      *           {
      *             "table_field_name": "dns_name",
-     *             "event_field_name": "nortem:enrichments:dns"
+     *             "event_field_name": "src_dns_name"
+     *           }
+     *         ]
+     *       }
+     *     },
+     *     {
+     *       "rule_name": "test_rule_second",
+     *       "rule_version": 1,
+     *       "rule_author": "john",
+     *       "rule_description": "Test rule",
+     *       "source_type": "*",
+     *       "matchers": [
+     *         {
+     *           "matcher_type": "REGEX_MATCH",
+     *           "is_negated": false,
+     *           "field": "is_alert",
+     *           "data": "(?i)true"
+     *         }
+     *       ],
+     *       "table_mapping": {
+     *         "table_name": "test_table",
+     *         "joining_key": "${ip_dst_addr}",
+     *         "tags": [
+     *           {
+     *             "tag_name": "is_test_tag_second",
+     *             "tag_value": "true"
+     *           }
+     *         ],
+     *         "enriching_fields": [
+     *           {
+     *             "table_field_name": "dns_name",
+     *             "event_field_name": "dst_dns_name"
      *           }
      *         ]
      *       }
      *     }
      *   ]
-     *   }
+     * }
      **/
     @Multiline
     public static String testRules;
