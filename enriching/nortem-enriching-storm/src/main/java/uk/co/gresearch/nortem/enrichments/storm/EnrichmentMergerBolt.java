@@ -72,7 +72,7 @@ public class EnrichmentMergerBolt extends BaseRichBolt {
             exceptions.add(ErrorMessage.createErrorMessage(e, ErrorType.ENRICHMENT_ERROR).toString());
         }
 
-        LOG.info(EVENT_INFO_LOG, event);
+        LOG.debug(EVENT_INFO_LOG, event);
         KafkaBatchWriterMessages messages = new KafkaBatchWriterMessages();
         messages.add(new KafkaBatchWriterMessage(outputTopic, event));
         exceptions.forEach(x -> messages.add(new KafkaBatchWriterMessage(errorTopic, x)));
