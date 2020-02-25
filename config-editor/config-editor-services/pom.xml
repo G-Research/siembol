@@ -10,33 +10,33 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.38-SNAPSHOT</version>
+        <version>1.39-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-common</artifactId>
-            <version>1.38-SNAPSHOT</version>
+            <version>1.39-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>config-editor-core</artifactId>
-            <version>1.38-SNAPSHOT</version>
+            <version>1.39-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nikita-core</artifactId>
-            <version>1.38-SNAPSHOT</version>
+            <version>1.39-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-parsing-app</artifactId>
-            <version>1.38-SNAPSHOT</version>
+            <version>1.39-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-enriching</artifactId>
-            <version>1.38-SNAPSHOT</version>
+            <version>1.39-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

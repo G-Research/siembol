@@ -3,7 +3,7 @@
   <parent>
     <artifactId>alerting</artifactId>
     <groupId>uk.co.gresearch.nortem</groupId>
-    <version>1.37-SNAPSHOT</version>
+    <version>1.39-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>nikita-spark</artifactId>

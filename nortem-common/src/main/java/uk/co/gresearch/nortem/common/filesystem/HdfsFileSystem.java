@@ -18,7 +18,7 @@ public class HdfsFileSystem implements NortemFileSystem {
     private final FileSystem fs;
 
     public HdfsFileSystem(String uri, Configuration configuration) throws IOException {
-        this.fs = FileSystem.get(URI.create(uri), configuration);
+        this.fs = FileSystem.newInstance(URI.create(uri), configuration);
     }
 
     public HdfsFileSystem(String uri) throws IOException {
