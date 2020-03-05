@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.nortem</groupId>
         <artifactId>enriching</artifactId>
-        <version>1.39-SNAPSHOT</version>
+        <version>1.40-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>uk.co.gresearch.nortem</groupId>
             <artifactId>nortem-enriching</artifactId>
-            <version>1.39-SNAPSHOT</version>
+            <version>1.40-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

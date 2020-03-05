@@ -245,7 +245,7 @@ public class BasicSyslogNortemParserTest {
         Assert.assertEquals("CP-GW", out.get("syslog_appname"));
         Assert.assertEquals("Alert", out.get("syslog_msg_id"));
         Assert.assertEquals("5", out.get("Confidence Level"));
-        Assert.assertEquals(1526954737000L, out.get("timestamp"));
+        Assert.assertEquals(1526958337000L, out.get("timestamp"));
         Assert.assertEquals("Fields@1.3.6.1.4.1.2620", out.get("syslog_sd_id"));
     }
 
@@ -261,7 +261,7 @@ public class BasicSyslogNortemParserTest {
         Assert.assertEquals("CP-GW", out.get("syslog_appname"));
         Assert.assertEquals("Alert", out.get("syslog_msg_id"));
         Assert.assertEquals("Packet\\\" \\] Sanity", out.get("Protection Name"));
-        Assert.assertEquals(1526954737000L, out.get("timestamp"));
+        Assert.assertEquals(1526958337000L, out.get("timestamp"));
         Assert.assertEquals("Fields@1.3.6.1.4.1.2620", out.get("syslog_sd_id"));
     }
 

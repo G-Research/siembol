@@ -103,20 +103,20 @@ public class SyslogDefaultTimeFormat {
         DateTime dateTime;
         try {
             if (ISODateFormatZPattern.matcher(message).matches()) {
-                dateTime = DateTime.parse(message, ISODateFormatterZ);
+                dateTime = DateTime.parse(message, ISODateFormatterZ.withZone(dateTimeZone));
             } else if (ISODateFormatPattern.matcher(message).matches()) {
-                dateTime = DateTime.parse(message, ISODateFormatter);
+                dateTime = DateTime.parse(message, ISODateFormatter.withZone(dateTimeZone));
             } else if (ISODateFormatPatternMS.matcher(message).matches()) {
-                dateTime = DateTime.parse(message, ISODateFormatterMS);
+                dateTime = DateTime.parse(message, ISODateFormatterMS.withZone(dateTimeZone));
             } else if (ISODateFormatPatternMSZ.matcher(message).matches()) {
-                dateTime = DateTime.parse(message, ISODateFormatterMSZ);
+                dateTime = DateTime.parse(message, ISODateFormatterMSZ.withZone(dateTimeZone));
             } else {
                 //NOTE: unssupported default time format from RFC 5424
                 throw new IllegalStateException(
                         String.format("unsupported syslog RFC 5424 timestamp: %s",
                                 message));
             }
-            return dateTime.withZone(dateTimeZone).getMillis();
+            return dateTime.getMillis();
         } catch (Exception e) {
             throw new IllegalStateException(
                     String.format("unsupported syslog RFC 5424 timestamp: %s",
