@@ -3,6 +3,7 @@ package uk.co.gresearch.nortem.nikita.engine;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.co.gresearch.nortem.common.testing.InactiveTestingLogger;
+import uk.co.gresearch.nortem.common.utils.EvaluationLibrary;
 import uk.co.gresearch.nortem.nikita.common.NikitaResult;
 import uk.co.gresearch.nortem.common.testing.TestingLogger;
 
@@ -38,7 +39,7 @@ public abstract class AbstractRule {
     public void addOutputFieldsToEvent(Map<String, Object> event) {
         outputFields.forEach(x -> event.put(x.getKey(), x.getValue()));
         for (Pair<String, String> variableOutputField : variableOutputFields) {
-            Optional<String> value = NikitaEngineLibrary.substitute(event, variableOutputField.getValue());
+            Optional<String> value = EvaluationLibrary.substitute(event, variableOutputField.getValue());
             if (value.isPresent()) {
                 event.put(variableOutputField.getKey(), value.get());
             }
@@ -69,7 +70,7 @@ public abstract class AbstractRule {
             fullRuleName = String.format("%s_v%d", ruleName, ruleVersion);
 
             for (Pair<String, String> tag : tags) {
-                if (NikitaEngineLibrary.containsVariables(tag.getValue())) {
+                if (EvaluationLibrary.containsVariables(tag.getValue())) {
                     variableOutputFields.add(ImmutablePair.of(tag.getLeft(), tag.getRight()));
                 } else {
                     outputFields.add(ImmutablePair.of(tag.getLeft(), tag.getRight()));

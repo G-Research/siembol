@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.nortem.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.nortem.nikita.common.EvaluationResult;
 import uk.co.gresearch.nortem.nikita.common.NikitaResult;
-import uk.co.gresearch.nortem.nikita.engine.NikitaEngineLibrary;
+import uk.co.gresearch.nortem.common.utils.EvaluationLibrary;
 import uk.co.gresearch.nortem.nikita.engine.Rule;
 
 import java.lang.invoke.MethodHandles;
@@ -33,7 +33,7 @@ public class EnrichingRule extends Rule {
     }
 
     private Optional<EnrichmentCommand> createEnrichmentCommand(Map<String, Object> log) {
-        Optional<String> currentKey = NikitaEngineLibrary.substitute(log, key);
+        Optional<String> currentKey = EvaluationLibrary.substitute(log, key);
         if (!currentKey.isPresent()) {
             return Optional.empty();
         }

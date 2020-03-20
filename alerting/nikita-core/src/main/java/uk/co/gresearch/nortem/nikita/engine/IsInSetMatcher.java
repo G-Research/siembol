@@ -1,5 +1,6 @@
 package uk.co.gresearch.nortem.nikita.engine;
 
+import uk.co.gresearch.nortem.common.utils.EvaluationLibrary;
 import uk.co.gresearch.nortem.nikita.common.EvaluationResult;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public class IsInSetMatcher extends RuleMatcher {
 
         boolean matchedVariable = false;
         for (String variableString : variableStrings) {
-            Optional<String> substituted = NikitaEngineLibrary.substitute(map, variableString);
+            Optional<String> substituted = EvaluationLibrary.substitute(map, variableString);
             if (!substituted.isPresent()) {
                 continue;
             }
@@ -52,7 +53,7 @@ public class IsInSetMatcher extends RuleMatcher {
                 }
 
                 constantStrings = words.stream()
-                        .filter(x -> !NikitaEngineLibrary.containsVariables(x))
+                        .filter(x -> !EvaluationLibrary.containsVariables(x))
                         .map(x -> caseInsensitiveCompare ? x.toLowerCase() : x)
                         .collect(Collectors.toCollection(HashSet::new));
 
