@@ -1,13 +1,9 @@
 package uk.co.gresearch.nortem.response.common;
 import java.util.Map;
 
-public interface RespondingEvaluatorFactory {
+public interface RespondingEvaluatorFactory extends RespondingEvaluatorValidator {
 
     RespondingResult createInstance(String attributes);
-
-    RespondingResult getType();
-
-    RespondingResult getAttributesJsonSchema();
 
     default RespondingResult validateAttributes(String attributes) {
         try {

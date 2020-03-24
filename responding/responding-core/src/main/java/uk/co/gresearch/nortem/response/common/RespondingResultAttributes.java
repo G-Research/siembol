@@ -14,6 +14,7 @@ public class RespondingResultAttributes {
     private String evaluatorType;
     private ResponseEngine responseEngine;
     private List<RespondingEvaluatorFactory> respondingEvaluatorFactories;
+    private List<RespondingEvaluatorValidator> respondingEvaluatorValidators;
 
     public ResponseEvaluationResult getResult() {
         return result;
@@ -85,5 +86,13 @@ public class RespondingResultAttributes {
 
     public void setResponseEngine(ResponseEngine responseEngine) {
         this.responseEngine = responseEngine;
+    }
+
+    public List<RespondingEvaluatorValidator> getRespondingEvaluatorValidators() {
+        return respondingEvaluatorValidators;
+    }
+
+    public void setRespondingEvaluatorValidators(List<RespondingEvaluatorValidator> respondingEvaluatorValidators) {
+        this.respondingEvaluatorValidators = respondingEvaluatorValidators;
     }
 }

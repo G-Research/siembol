@@ -147,10 +147,12 @@ public class RespondingCompilerImplTest {
         when(evaluatorFactory.getType()).thenReturn(evaluatorTypeResult);
         when(evaluatorFactory.getAttributesJsonSchema()).thenReturn(evaluatorSchemaResult);
         when(evaluatorFactory.createInstance(any())).thenReturn(evaluatorResult);
+        when(evaluatorFactory.validateAttributes(any())).thenReturn(evaluatorResult);
 
         evaluatorFactoryNext = Mockito.mock(RespondingEvaluatorFactory.class);
         when(evaluatorFactoryNext.getType()).thenReturn(evaluatorNextTypeResult);
         when(evaluatorFactoryNext.getAttributesJsonSchema()).thenReturn(evaluatorNextSchemaResult);
+        when(evaluatorFactoryNext.validateAttributes(any())).thenReturn(evaluatorResult);
         when(evaluatorFactoryNext.createInstance(any())).thenReturn(evaluatorResult);
     }
 
@@ -188,6 +190,18 @@ public class RespondingCompilerImplTest {
     }
 
     @Test
+    public void testGetEvaluatorValidators() throws Exception {
+        builder.addRespondingEvaluatorFactory(evaluatorFactory);
+        builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
+        compiler = builder.build();
+        RespondingResult result = compiler.getRespondingEvaluatorValidators();
+        Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getRespondingEvaluatorValidators());
+        Assert.assertEquals(2, result.getAttributes().getRespondingEvaluatorValidators().size());
+    }
+
+    @Test
     public void testCompileRules() throws Exception {
         builder.addRespondingEvaluatorFactory(evaluatorFactory);
         builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
@@ -199,6 +213,31 @@ public class RespondingCompilerImplTest {
     }
 
     @Test
+    public void testCompileRulesUnsupportedEvaluator() throws Exception {
+        builder.addRespondingEvaluatorFactory(evaluatorFactory);
+        compiler = builder.build();
+        RespondingResult result = compiler.compile(testingRules);
+        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void testCompileRulesFactoryCreateInstanceFails() throws Exception {
+        builder.addRespondingEvaluatorFactory(evaluatorFactory);
+        builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
+        when(evaluatorFactoryNext.createInstance(any()))
+                .thenReturn(RespondingResult.fromException(new IllegalStateException()));
+
+        compiler = builder.build();
+        RespondingResult result = compiler.compile(testingRules);
+        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+
+    @Test
     public void testValidateRules() throws Exception {
         builder.addRespondingEvaluatorFactory(evaluatorFactory);
         builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
@@ -206,7 +245,6 @@ public class RespondingCompilerImplTest {
         RespondingResult result = compiler.validateConfigurations(testingRules);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getResponseEngine());
     }
 
     @Test
@@ -217,7 +255,6 @@ public class RespondingCompilerImplTest {
         RespondingResult result = compiler.validateConfiguration(testingRule);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getResponseEngine());
     }
 
     @Test
@@ -226,6 +263,31 @@ public class RespondingCompilerImplTest {
         builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
         compiler = builder.build();
         RespondingResult result = compiler.compile("INVALID");
+        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void testValidateRulesValidatorFails() throws Exception {
+        builder.addRespondingEvaluatorFactory(evaluatorFactory);
+        builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
+        when(evaluatorFactoryNext.validateAttributes(any()))
+                .thenReturn(RespondingResult.fromException(new IllegalStateException()));
+
+        compiler = builder.build();
+        RespondingResult result = compiler.validateConfigurations(testingRules);
+        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void testValidateRulesUnsupportedEvaluator() throws Exception {
+        builder.addRespondingEvaluatorFactory(evaluatorFactory);
+
+        compiler = builder.build();
+        RespondingResult result = compiler.validateConfigurations(testingRules);
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());

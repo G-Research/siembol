@@ -9,10 +9,7 @@ import uk.co.gresearch.nortem.common.jsonschema.UnionJsonType;
 import uk.co.gresearch.nortem.common.jsonschema.UnionJsonTypeOption;
 import uk.co.gresearch.nortem.common.result.NortemResult;
 import uk.co.gresearch.nortem.common.testing.TestingLogger;
-import uk.co.gresearch.nortem.response.common.MetricFactory;
-import uk.co.gresearch.nortem.response.common.RespondingEvaluatorFactory;
-import uk.co.gresearch.nortem.response.common.RespondingResult;
-import uk.co.gresearch.nortem.response.common.RespondingResultAttributes;
+import uk.co.gresearch.nortem.response.common.*;
 import uk.co.gresearch.nortem.response.engine.ResponseEngine;
 import uk.co.gresearch.nortem.response.engine.ResponseRule;
 import uk.co.gresearch.nortem.response.engine.RulesEngine;
@@ -29,13 +26,16 @@ public class RespondingCompilerImpl implements RespondingCompiler {
     private static final String EVALUATOR_TITLE = "response evaluator";
     private static final ObjectReader RULES_READER = new ObjectMapper().readerFor(RulesDto.class);
     private static final String RULES_WRAP_MSG = "{\"rules_version\":1, \"rules\":[%s]}";
+    private static final String UNSUPPORTED_EVALUATOR_TYPE_MSG = "Unsupported response evaluator type %s";
     private final Map<String, RespondingEvaluatorFactory> respondingEvaluatorFactoriesMap;
+    private final Map<String, RespondingEvaluatorValidator> respondingEvaluatorValidatorsMap;
     private final String rulesJsonSchemaStr;
     private final JsonSchemaValidator rulesSchemaValidator;
     private final MetricFactory metricFactory;
 
     public RespondingCompilerImpl(Builder builder) {
         this.respondingEvaluatorFactoriesMap = builder.respondingEvaluatorFactoriesMap;
+        this.respondingEvaluatorValidatorsMap = builder.respondingEvaluatorValidatorsMap;
         this.rulesJsonSchemaStr = builder.rulesJsonSchemaStr;
         this.rulesSchemaValidator = builder.rulesSchemaValidator;
         this.metricFactory = builder.metricFactory;
@@ -53,7 +53,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             String evaluatorType = evaluatorDto.getEvaluatorType();
             if (!respondingEvaluatorFactoriesMap.containsKey(evaluatorType)) {
                 throw new IllegalArgumentException(String.format(
-                        "Unsupported response evaluator type %s", evaluatorType));
+                        UNSUPPORTED_EVALUATOR_TYPE_MSG, evaluatorType));
             }
             RespondingResult evaluatorResult = respondingEvaluatorFactoriesMap.get(evaluatorType)
                     .createInstance(evaluatorDto.getEvaluatorAttributesContent());
@@ -67,9 +67,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
 
     @Override
     public RespondingResult compile(String rules, TestingLogger logger) {
-        NortemResult validationResult = rulesSchemaValidator.validate(rules);
-        if (validationResult.getStatusCode() != NortemResult.StatusCode.OK) {
-            return RespondingResult.fromNortemResult(validationResult);
+        RespondingResult validationResult = validateConfigurations(rules);
+        if (validationResult.getStatusCode() != OK) {
+            return validationResult;
         }
 
         try {
@@ -116,20 +116,63 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return new RespondingResult(OK, attributes);
     }
 
+    @Override
+    public RespondingResult getRespondingEvaluatorValidators() {
+        RespondingResultAttributes attributes = new RespondingResultAttributes();
+        attributes.setRespondingEvaluatorValidators(respondingEvaluatorValidatorsMap.values().stream()
+                .collect(Collectors.toList()));
+        return new RespondingResult(OK, attributes);
+    }
+
     private String wrapRuleToRules(String ruleStr) {
         return String.format(RULES_WRAP_MSG, ruleStr);
+    }
+
+    @Override
+    public RespondingResult validateConfigurations(String rules) {
+        NortemResult validationResult = rulesSchemaValidator.validate(rules);
+        if (validationResult.getStatusCode() != NortemResult.StatusCode.OK) {
+            return RespondingResult.fromNortemResult(validationResult);
+        }
+
+        try {
+            RulesDto rulesDto = RULES_READER.readValue(rules);
+            for (RuleDto ruleDto : rulesDto.getRules()) {
+                for (ResponseEvaluatorDto evaluatorDto : ruleDto.getEvaluators()) {
+                    String evaluatorType = evaluatorDto.getEvaluatorType();
+                    if (!respondingEvaluatorValidatorsMap.containsKey(evaluatorType)) {
+                        throw new IllegalArgumentException(String.format(
+                                UNSUPPORTED_EVALUATOR_TYPE_MSG, evaluatorType));
+                    }
+                    RespondingResult validationAttributesResult = respondingEvaluatorValidatorsMap.get(evaluatorType)
+                            .validateAttributes(evaluatorDto.getEvaluatorAttributesContent());
+                    if (validationAttributesResult.getStatusCode() != OK) {
+                        return validationAttributesResult;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return RespondingResult.fromException(e);
+        }
+        return new RespondingResult(OK, new RespondingResultAttributes());
     }
 
     public static class Builder {
         private static final String EVALUATOR_DUPLICATE_TYPE = "Evaluator type: %s already registered";
         private static final String EMPTY_EVALUATORS = "Response evaluators are empty";
         private Map<String, RespondingEvaluatorFactory> respondingEvaluatorFactoriesMap = new HashMap<>();
+        private Map<String, RespondingEvaluatorValidator> respondingEvaluatorValidatorsMap = new HashMap<>();
         private String rulesJsonSchemaStr;
         private JsonSchemaValidator rulesSchemaValidator;
         private MetricFactory metricFactory;
 
         public Builder metricFactory(MetricFactory metricFactory) {
             this.metricFactory = metricFactory;
+            return this;
+        }
+
+        public Builder addRespondingEvaluatorFactories(List<RespondingEvaluatorFactory> factories) {
+            factories.forEach(this::addRespondingEvaluatorFactory);
             return this;
         }
 
@@ -142,17 +185,28 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             return this;
         }
 
+        public Builder addRespondingEvaluatorValidator(RespondingEvaluatorValidator validator) {
+            if (respondingEvaluatorValidatorsMap.containsKey(validator.getType().getAttributes().getEvaluatorType())) {
+                throw new IllegalArgumentException(String.format(EVALUATOR_DUPLICATE_TYPE, validator.getType()));
+            }
+
+            respondingEvaluatorValidatorsMap.put(validator.getType().getAttributes().getEvaluatorType(), validator);
+            return this;
+        }
+
         public RespondingCompilerImpl build() throws Exception {
-            if (respondingEvaluatorFactoriesMap.isEmpty()) {
+            if (respondingEvaluatorFactoriesMap.isEmpty() && respondingEvaluatorValidatorsMap.isEmpty()) {
                 throw new IllegalArgumentException(EMPTY_EVALUATORS);
             }
 
-            List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorFactoriesMap.keySet().stream()
+            respondingEvaluatorFactoriesMap.forEach((k, v) -> addRespondingEvaluatorValidator(v));
+
+            List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorValidatorsMap.keySet().stream()
                     .map(x ->
                             new UnionJsonTypeOption(
-                                    respondingEvaluatorFactoriesMap.get(x).getType()
+                                    respondingEvaluatorValidatorsMap.get(x).getType()
                                             .getAttributes().getEvaluatorType(),
-                                    respondingEvaluatorFactoriesMap.get(x).getAttributesJsonSchema()
+                                    respondingEvaluatorValidatorsMap.get(x).getAttributesJsonSchema()
                                             .getAttributes().getAttributesSchema()))
                     .collect(Collectors.toList());
 
