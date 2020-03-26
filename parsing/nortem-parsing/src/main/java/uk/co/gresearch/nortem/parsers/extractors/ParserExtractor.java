@@ -6,6 +6,9 @@ import java.util.function.Function;
 import static uk.co.gresearch.nortem.parsers.extractors.ParserExtractor.ParserExtractorFlags.*;
 
 public abstract class ParserExtractor  {
+    private static final String EMPTY_MSG_FOR_EXTRACTION_MSG = "Empty message for extraction";
+    private static final String DUPLICATE_FORMAT_MSG = "duplicate_%s_%d";
+
     public enum ParserExtractorFlags {
         SHOULD_REMOVE_FIELD,
         SHOULD_OVERWRITE_FIELDS,
@@ -27,7 +30,6 @@ public abstract class ParserExtractor  {
     private final EnumSet<ParserExtractorFlags> parserExtractorFlags;
     private final Function<String, String> preProcessing;
     private final List<Function<Map<String, Object>, Map<String, Object>>> postProcessing;
-
 
     protected abstract Map<String, Object> extractInternally(String message);
 
@@ -66,7 +68,7 @@ public abstract class ParserExtractor  {
 
         if (message == null) {
             if (shouldThrowExceptionOnError()) {
-                new IllegalStateException("Empty message for extraction");
+                new IllegalStateException(EMPTY_MSG_FOR_EXTRACTION_MSG);
             }
             return new HashMap<>();
         }
@@ -138,22 +140,28 @@ public abstract class ParserExtractor  {
             List<ParserExtractor> extractors,
             Map<String, Object> messageObject) {
         Map<String, Object> current = messageObject;
+        DuplicatesFieldMap duplicatesMap = new DuplicatesFieldMap();
 
         for (ParserExtractor extractor : extractors) {
             String field = extractor.getField();
-
             if (!(current.get(field) instanceof String)) {
                 continue;
+            }
+
+            if (!extractor.shouldOverwiteFields()) {
+                duplicatesMap.clear();
             }
 
             String message = (String)current.get(field);
             Map<String, Object> parsed = extractor.extract(message);
             for (String key : parsed.keySet()) {
                 if (current.putIfAbsent(key, parsed.get(key)) != null) {
-                    String newName = extractor.shouldOverwiteFields()
-                            ? key
-                            : String.format("%s_%s", extractor.getName(), key);
-                    current.put(newName, parsed.get(key));
+                    String currentName = key;
+                    if(!extractor.shouldOverwiteFields()) {
+                        int duplicateIndex = duplicatesMap.getIndex(key);
+                        currentName = String.format(DUPLICATE_FORMAT_MSG, key, duplicateIndex);
+                    }
+                    current.put(currentName, parsed.get(key));
                 }
             }
 

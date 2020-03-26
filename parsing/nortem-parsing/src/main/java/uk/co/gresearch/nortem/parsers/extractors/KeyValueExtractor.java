@@ -10,7 +10,7 @@ import static uk.co.gresearch.nortem.parsers.extractors.KeyValueExtractor.KeyVal
 public class KeyValueExtractor extends ParserExtractor {
 
     private static final String EXTRACTOR_ERROR_PREFIX = "kv_error";
-    private final static String DUPLICATE_KEY_PREFIX = "duplicate";
+    private final static String DUPLICATE_FORMAT_MSG = "duplicate_%s_%d";
 
     public enum KeyValueExtractorFlags {
         QUOTA_VALUE_HANDLING,
@@ -36,6 +36,8 @@ public class KeyValueExtractor extends ParserExtractor {
     protected Map<String, Object> extractInternally(String message){
         Map<String, Object> extracted = new HashMap<>();
         int offset = 0;
+        DuplicatesFieldMap duplicatesMap = flags.contains(KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS)
+                ? new DuplicatesFieldMap() : null;
 
         while (offset < message.length()) {
             KeyValueIndices indices = indexOf.apply(message, offset);
@@ -54,7 +56,8 @@ public class KeyValueExtractor extends ParserExtractor {
             if (extracted.containsKey(key)
                     && flags.contains(KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS))
             {
-                key = String.format("%s_%s", DUPLICATE_KEY_PREFIX, key);
+                int index = duplicatesMap.getIndex(key);
+                key = String.format(DUPLICATE_FORMAT_MSG, key, index);
             }
 
             extracted.put(key, getValue(value));

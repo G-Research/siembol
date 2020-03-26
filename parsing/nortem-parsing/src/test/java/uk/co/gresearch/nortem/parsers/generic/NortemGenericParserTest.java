@@ -26,7 +26,8 @@ public class NortemGenericParserTest {
      *      "field": "original_string",
      *      "attributes": {
      *         "regular_expressions": [
-     *           "^msg:\\s(?<secret_msg>.*)$"
+     *           "^msg:\\s(?<secret_msg>.*)$",
+     *           "^msg2:\\s(?<timestamp>.*)$"
      *         ],
      *         "should_remove_field" : false
      *       }
@@ -100,6 +101,17 @@ public class NortemGenericParserTest {
 
         Assert.assertTrue(out.get("timestamp") instanceof Long);
         Assert.assertEquals(simpleMessage.trim(), out.get("original_string"));
+    }
+
+    @Test
+    public void goodSimpleMessageDuplicates() {
+        String message = "msg2: abc";
+        Map<String, Object> out = genericParser.parse(message.getBytes()).get(0);
+
+        Assert.assertEquals(3, out.size());
+        Assert.assertEquals("abc", out.get("duplicate_timestamp_1"));
+        Assert.assertTrue(out.get("timestamp") instanceof Long);
+        Assert.assertEquals(message, out.get("original_string"));
     }
 
     @Test

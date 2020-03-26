@@ -272,6 +272,29 @@ public class KeyValueExtractorTest {
     }
 
     @Test
+    public void testDuplicateValuesRename() {
+        extractorFlags.add(
+                ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS);
+
+        KeyValueExtractor extractor = KeyValueExtractor.builder()
+                .keyValueExtractorFlags(keyValueFlags)
+                .extractorFlags(extractorFlags)
+                .name(name)
+                .field(field)
+                .build();
+
+        Map<String, Object> out = extractor.extract("a=1 a=2 b=3 b=4 a=5");
+        Assert.assertEquals(5, out.size());
+        Assert.assertEquals("1", out.get("a"));
+        Assert.assertEquals("2", out.get("duplicate_a_1"));
+        Assert.assertEquals("5", out.get("duplicate_a_2"));
+        Assert.assertEquals("3", out.get("b"));
+        Assert.assertEquals("4", out.get("duplicate_b_1"));
+
+    }
+
+    @Test
     public void testDuplicateValueRename() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
@@ -287,7 +310,7 @@ public class KeyValueExtractorTest {
         Map<String, Object> out = extractor.extract("a=1 a=2");
         Assert.assertEquals(2, out.size());
         Assert.assertEquals("1", out.get("a"));
-        Assert.assertEquals("2", out.get("duplicate_a"));
+        Assert.assertEquals("2", out.get("duplicate_a_1"));
     }
 
     @Test
@@ -302,9 +325,10 @@ public class KeyValueExtractorTest {
                 .field(field)
                 .build();
 
-        Map<String, Object> out = extractor.extract("a=1 a=2");
-        Assert.assertEquals(1, out.size());
-        Assert.assertEquals("2", out.get("a"));
+        Map<String, Object> out = extractor.extract("a=1 a=2 a=3 b=1 b=2");
+        Assert.assertEquals(2, out.size());
+        Assert.assertEquals("3", out.get("a"));
+        Assert.assertEquals("2", out.get("b"));
     }
 
     @Test
