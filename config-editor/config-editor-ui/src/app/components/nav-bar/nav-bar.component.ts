@@ -4,6 +4,8 @@ import { AppConfigService } from '@app/config/app-config.service';
 import { Store } from '@ngrx/store';
 import * as fromStore from 'app/store';
 import { Observable } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog.component';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,7 +20,7 @@ export class NavBarComponent {
     serviceNames$: Observable<string[]>;
     environment: string;
 
-    constructor(private store: Store<fromStore.State>, private config: AppConfigService) {
+    constructor(private store: Store<fromStore.State>, private config: AppConfigService, private dialog: MatDialog) {
         this.user$ = this.store.select(fromStore.getCurrentUser);
         this.loading$ = this.store.select(fromStore.getLoading);
         this.serviceName$ = this.store.select(fromStore.getServiceName);
@@ -34,5 +36,9 @@ export class NavBarComponent {
             path: ['id', view],
             query: {},
         }));
+    }
+
+    public showAboutApp() {
+        this.dialog.open(BuildInfoDialogComponent, {data: this.config.getBuildInfo}).afterClosed().subscribe();
     }
 }

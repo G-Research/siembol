@@ -48,7 +48,7 @@
     </div>
     <ng-template #newTestCase>
         <re-test-case  
-            [fields]="fields" [testCase]="testCase.testCase" [output]="output[testCase.testCase.test_case_name] || ''" [options]="options"
+            [fields]="fields" [testCase]="testCase.testCase" [output]="output[testCase.testCase.test_case_name] || ''" [options]="options" [isNewTestCase]= "!isSubmitted"
             (submittedTest)="onSubmitTestCase($event)" (cancel)="onCancel()" (testConfig)="runSingleTest($event)" (runTestCase)="runTestCase($event)">
         </re-test-case>
     </ng-template>

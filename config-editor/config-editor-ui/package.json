@@ -1,7 +1,7 @@
 {
   "name": "rule-editor.ui",
-  "version": "1.2.11",
-  "nortem-snapshot": "",
+  "version": "1.2.16",
+  "siembolCompileTimeVersion": "1.43-SNAPSHOT",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -43,7 +43,7 @@
     "core-js": "^3.6.4",
     "diff-match-patch": "^1.0.4",
     "json-ptr": "^1.2.0",
-    "ngx-scrollbar": "^5.0.1",
+    "ngx-scrollbar": "^7.2.1-beta.0",
     "omit-empty": "^1.0.0",
     "rxjs": "^6.5.4",
     "rxjs-compat": "^6.5.4",

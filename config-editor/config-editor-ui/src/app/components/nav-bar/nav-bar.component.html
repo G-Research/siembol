@@ -12,7 +12,7 @@
           {{ serviceName | titlecase }}
         </mat-button-toggle>
       </mat-button-toggle-group>
-      <mat-icon>account_box</mat-icon>
+      <mat-icon (click)="showAboutApp()">account_box</mat-icon>
       <h3>{{ user$ | async }}</h3>
     </div>
   </mat-toolbar-row>

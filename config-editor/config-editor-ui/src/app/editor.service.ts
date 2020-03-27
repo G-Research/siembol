@@ -110,7 +110,7 @@ export class EditorService {
         files: [{
             content: testcase,
         }],
-        test_result_raw_output: JSON.stringify(testResult.parsedMessages[0], replacer, 2),
+        test_result_raw_output: JSON.stringify(testResult, replacer, 2),
     }
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'application/json; charset=utf-8');

@@ -8,6 +8,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
   template: `
     <input *ngIf="type !== 'number'; else numberTmp"
       matInput
+      spellcheck="false"
       [name]="to.title"
       [id]="id"
       [readonly]="to.readonly"
@@ -19,6 +20,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
       [placeholder]="to.placeholder">
     <ng-template #numberTmp>
       <input matInput
+             spellcheck="false"
              [id]="id"
              type="number"
              [readonly]="to.readonly"

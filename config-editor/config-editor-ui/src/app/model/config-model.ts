@@ -79,7 +79,7 @@ export interface FileHistory {
 
 export interface ConfigTestDto {
     files: Content<ConfigData>[],
-    event: string,
+    test_specification: string,
 }
 
 export interface EvaluateTestCaseDto {

@@ -118,6 +118,7 @@ export class FormlyJsonschema {
                 break;
             } else {
                 field.type = 'rawobject';
+                break;
             }
         }
         // ***************

@@ -23,3 +23,8 @@ mat-card-content {
     flex: 2;
     overflow-y: auto;
 }
+
+.scrollbar {
+    --scrollbar-thumb-color: #868686;
+    --scrollbar-thumb-hover-color: #a1a1a1;
+}

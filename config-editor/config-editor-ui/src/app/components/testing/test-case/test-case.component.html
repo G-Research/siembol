@@ -28,15 +28,15 @@
 
 <div class="button-group-end">
     <a mat-button color="none" [routerLink]="['/help/testcase']" target="_blank"><mat-icon>help_outline</mat-icon></a>
-    <button mat-raised-button color="accent" title="Test Config" (click)="testConfig.emit(outputTestCase)">Test Config<mat-icon>play_arrow</mat-icon></button>
-    <button mat-raised-button color="accent" title="Run Test Case" (click)="runTestCase.emit(outputTestCase)">Run Test Case<mat-icon>play_arrow</mat-icon></button>
+    <button mat-raised-button color="accent" title="Test Config" [disabled]="!(form.valid && !isNewTestCase)" (click)="testConfig.emit(formatOutput())">Test Config<mat-icon>play_arrow</mat-icon></button>
+    <button mat-raised-button color="accent" title="Run Test Case" [disabled]="!(form.valid && !isNewTestCase)" (click)="runTestCase.emit(formatOutput())">Run Test Case<mat-icon>play_arrow</mat-icon></button>
 </div>
 
-<form [formGroup]="form" *ngIf="fields">
-    <formly-form immutable [model]="testCase" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
+<form [formGroup]="form">
+    <formly-form #formly immutable [model]="testCase" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
 </form>
 
 <div mat-dialog-actions class="button-group-end">
-    <button mat-raised-button color="accent" [disabled]="!form.valid" (click)="submittedTest.emit(outputTestCase)">Save Test Case</button>
+    <button mat-raised-button color="accent" [disabled]="!form.valid" (click)="submittedTest.emit(formatOutput())">Save Test Case</button>
     <button mat-raised-button (click)="cancel.emit(false)">Cancel</button>
 </div>

@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { FormlyFieldConfig } from '@ngx-formly/core/lib/core';
 import * as fromStore from 'app/store';
 import { cloneDeep } from 'lodash';
+import * as omitEmpty from 'omit-empty';
 import { from, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, delay, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { EditorService } from '../../../editor.service';
@@ -75,6 +76,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
         this.service.getTestSpecificationSchema().pipe(takeUntil(this.ngUnsubscribe)).subscribe(l => {
                 this.options.formState = {
                     mainModel: this.testCase,
+                    rawObjects: {},
                 };
                 const subschema = new FormlyJsonschema().toFieldConfig(l);
                 const schemaConverter = new FormlyJsonschema();
@@ -107,6 +109,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     this.testCase.testCase.test_case_name = '';
     this.options.formState = {
         mainModel: this.testCase,
+        rawObjects: {},
     };
     this.isSubmitted = false;
   }
@@ -130,7 +133,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
 
         return;
     }
-
+    $event = omitEmpty($event);
     this.dialog.open(SubmitTestcaseDialogComponent, {
         data: {
             ...$event,
@@ -162,6 +165,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
       this.addNewTest = true;
       this.options.formState = {
         mainModel: this.testCase,
+        rawObjects: {},
       };
       this.isSubmitted = true;
   }
@@ -175,6 +179,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     this.testCase.testCase.test_case_name += '_clone';
     this.options.formState = {
         mainModel: this.testCase,
+        rawObjects: {},
     };
     this.isSubmitted = false;
   }
@@ -233,7 +238,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
         files: [{
             content: this.selectedConfig.configData,
         }],
-        event: JSON.parse(JSON.stringify(testcase.test_specification, this.replacer)),
+        test_specification: JSON.parse(JSON.stringify(testcase.test_specification, this.replacer)),
     }
 
     return this.editorService.getLoader(this.serviceName).testSingleConfig(testDto).pipe(

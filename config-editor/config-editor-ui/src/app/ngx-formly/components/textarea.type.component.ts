@@ -17,6 +17,7 @@ import { debounceTime, take, takeUntil, tap } from 'rxjs/operators';
         <mat-form-field #formfield>
             <mat-label>{{ to.label }}</mat-label>
             <textarea class="text-area" highlight matInput #textbox #autocompleteInput cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+            spellcheck="false"
             [matAutocomplete]="auto"
             [class.hide-text]="true"
             [id]="id"

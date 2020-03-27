@@ -5,6 +5,7 @@ import 'rxjs/add/operator/toPromise';
 import { ConfigData } from '../model/config-model';
 import { UiMetadataMap } from '../model/ui-metadata-map';
 import { EditorConfig } from './editor-config';
+import { BuildInfo } from '@app/model/build-info';
 
 @Injectable({
     providedIn: 'root',
@@ -13,6 +14,7 @@ export class AppConfigService {
 
     private config: EditorConfig;
     private uiMetadata: UiMetadataMap;
+    private buildInfo: BuildInfo;
 
     constructor(private http: HttpClient) { }
 
@@ -37,6 +39,15 @@ export class AppConfigService {
             })
     }
 
+    public loadBuildInfo(): Promise<any> {
+        return this.http.get('assets/build-info.json')
+        .toPromise()
+        .then((r: BuildInfo) => {
+            console.info('loaded app metadata', r);
+            this.buildInfo = r;
+        }).catch(err => console.info('could not load build info'));
+    }
+
     public getServiceList(): string[] {
         return Object.keys(this.uiMetadata);
     }
@@ -47,6 +58,10 @@ export class AppConfigService {
 
     public getConfig(): EditorConfig {
         return this.config;
+    }
+
+    public get getBuildInfo(): BuildInfo {
+        return this.buildInfo;
     }
 
     public get environment(): string {

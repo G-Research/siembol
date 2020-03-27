@@ -47,6 +47,7 @@ import { ArrayTypeComponent } from './ngx-formly/components/array.type';
 import { ExpansionPanelWrapperComponent } from './ngx-formly/components/expansion-panel-wrapper.component';
 import { FormFieldWrapperComponent } from './ngx-formly/components/form-field-wrapper.component';
 import { InputTypeComponent } from './ngx-formly/components/input.type.component';
+import { JsonObjectTypeComponent } from './ngx-formly/components/json-object.type.component';
 import { NullTypeComponent } from './ngx-formly/components/null.type';
 import { ObjectTypeComponent } from './ngx-formly/components/object.type.component';
 import { PanelWrapperComponent } from './ngx-formly/components/panel-wrapper.component';
@@ -54,7 +55,6 @@ import { SelectTypeComponent } from './ngx-formly/components/select.type.compone
 import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
 import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
-import { JsonObjectTypeComponent } from './ngx-formly/json-object.type.component';
 import { FormlySelectOptionsPipe } from './ngx-formly/pipe/select-options.pipe';
 import { HighlightVariablesPipe } from './pipes';
 import { FileHistoryPopoverDirective } from './popover/file-history-popover.directive';
@@ -64,6 +64,7 @@ import { PopoverService } from './popover/popover-service';
 import { TestResultsPopoverDirective } from './popover/test-results-popover.directive';
 import { PopupService } from './popup.service';
 import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
+import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfig();
@@ -73,9 +74,14 @@ export function uiMetadataServiceFactory(config: AppConfigService) {
   return () => config.loadUiMetadata();
 }
 
+export function buildInfoServiceFactory(config: AppConfigService) {
+  return () => config.loadBuildInfo();
+}
+
 const PROD_PROVIDERS = [
     { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService], multi: true },
     { provide: APP_INITIALIZER, useFactory: uiMetadataServiceFactory, deps: [AppConfigService], multi: true },
+    { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true },
 ];
 
@@ -129,6 +135,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     HoverPopoverDirective,
     TestCaseHelpComponent,
     JsonTreeComponent,
+    BuildInfoDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -152,11 +159,12 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
           { name: 'max', message: 'Max is' },
           { name: 'minItems', message: 'Min items required' },
           { name: 'maxItems', message: 'Max items' },
+          { name: 'invalidJson', message: 'Json is not valid'},
         ],
         types: [
           { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
           { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
-          { name: 'rawobject', component: JsonObjectTypeComponent },
+          { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
           {
             name: 'number',
             component: InputTypeComponent,
