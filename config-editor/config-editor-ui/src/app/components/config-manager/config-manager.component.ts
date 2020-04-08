@@ -9,7 +9,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EditorService } from '@app/editor.service';
+import { EditorService } from '@services/editor.service';
 import { ConfigData, ConfigWrapper, Deployment, PullRequestInfo, SubmitStatus } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
@@ -155,9 +155,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
         this.dialog.open(JsonViewerComponent, {
             data: {
                 config1: releaseId === undefined ? undefined
-                    : this.editorService.getLoader(this.serviceName)
-                        .unwrapOptionalsFromArrays(cloneDeep(this.filteredDeployment.configs[releaseId])),
-                config2: this.editorService.getLoader(this.serviceName).unwrapOptionalsFromArrays(cloneDeep(this.filteredConfigs[id])),
+                    : this.editorService.configWrapper
+                        .unwrapOptionalsFromArrays(cloneDeep(this.filteredDeployment.configs[releaseId].configData)),
+                config2: this.editorService.configWrapper.unwrapConfig(cloneDeep(this.filteredConfigs[id].configData)),
             },
         });
     }
@@ -181,8 +181,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
             }
             if (this.deployment.configs.find(r => r.name === item.name) === undefined) {
                 const updatedDeployment: Deployment<ConfigWrapper<ConfigData>> = cloneDeep(this.deployment);
-                const orderedItem: ConfigData = this.editorService.getLoader(this.serviceName).produceOrderedJson(item.configData, '/');
-                item.configData = orderedItem;
+                const orderedItem: ConfigData = this.editorService.configWrapper.produceOrderedJson(item.configData, '/');
+                item.configData = this.editorService.configWrapper.unwrapConfig(orderedItem);
                 updatedDeployment.configs.push(item);
                 this.store.dispatch(new fromStore.UpdateDeployment(updatedDeployment));
             }

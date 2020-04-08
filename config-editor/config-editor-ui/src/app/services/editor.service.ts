@@ -2,14 +2,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AppConfigService } from './config';
+import { AppConfigService } from '../config';
+import { StripSuffixPipe } from '../pipes';
 import { ConfigLoaderService } from './config-loader.service';
+import { ConfigWrapperService } from './config-wrapper-service';
 import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, SchemaDto, SensorFields,
-    SensorFieldTemplate, UserName } from './model';
-import { ConfigTestDto, DeploymentWrapper, EditorResult, ExceptionInfo, SchemaInfo, TestCaseEvaluation } from './model/config-model';
-import { Field } from './model/sensor-fields';
-import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from './model/test-case';
-import { StripSuffixPipe } from './pipes';
+    SensorFieldTemplate, UserName, RepositoryLinksWrapper } from '@model';
+import { ConfigTestDto, DeploymentWrapper, EditorResult, ExceptionInfo, SchemaInfo, TestCaseEvaluation } from '@model/config-model';
+import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
+import { Field } from '@model/sensor-fields';
 
 export interface IConfigLoaderService {
   originalSchema;
@@ -18,7 +19,6 @@ export interface IConfigLoaderService {
   getSchema(): Observable<SchemaDto>;
   getPullRequestStatus(): Observable<PullRequestInfo>;
   getRelease(): Observable<DeploymentWrapper>;
-  getRepositoryLinks(): Observable<RepositoryLinks>;
   validateConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<ExceptionInfo>>;
   validateRelease(deployment: Deployment<ConfigWrapper<ConfigData>>): Observable<EditorResult<ExceptionInfo>>;
   submitNewConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<GitFiles<ConfigData>>>;
@@ -31,8 +31,6 @@ export interface IConfigLoaderService {
   getTestCases(): Observable<TestCaseMap>;
   submitTestCaseEdit(testCase: TestCaseWrapper): Observable<TestCaseMap>;
   submitNewTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap>;
-  produceOrderedJson(configData: ConfigData, path: string);
-  unwrapOptionalsFromArrays(obj: any);
 };
 
 export function replacer(key, value) {
@@ -45,6 +43,8 @@ export function replacer(key, value) {
 export class EditorService {
 
   loaderServices: Map<string, IConfigLoaderService> = new Map();
+  public configLoader: ConfigLoaderService;
+    configWrapper: ConfigWrapperService;
 
   constructor(
     private http: HttpClient,
@@ -79,10 +79,19 @@ export class EditorService {
     )
   }
 
-  public createLoaders() {
-    this.config.getServiceList().forEach(element => {
-        this.loaderServices.set(element, new ConfigLoaderService(this.http, this.config, element));
-    });
+  public getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
+    return this.http.get<EditorResult<RepositoryLinksWrapper>>(
+      `${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`).pipe(
+        map(result => ({
+            ...result.attributes.rules_repositories,
+            rulesetName: serviceName,
+        }))
+      )
+  }
+
+  public createLoader(serviceName: string) {
+      this.configWrapper = new ConfigWrapperService(this.config.getUiMetadata(serviceName));
+      this.configLoader = new ConfigLoaderService(this.http, this.config, serviceName, this.configWrapper);
   }
 
   public getTestCaseSchema(): Observable<any> {
@@ -118,13 +127,5 @@ export class EditorService {
     return this.http.post<EditorResult<TestCaseResult>>(`${this.config.serviceRoot}api/v1/testcases/evaluate`, outObj).pipe(
         map(x => x.attributes)
     )
-  }
-
-  public getLoader(serviceName: string): IConfigLoaderService {
-    try {
-        return this.loaderServices.get(serviceName);
-    } catch {
-        throw new DOMException('Invalid service name - can\'t do nothing');
-    }
   }
 }

@@ -48,10 +48,12 @@ import { ExpansionPanelWrapperComponent } from './ngx-formly/components/expansio
 import { FormFieldWrapperComponent } from './ngx-formly/components/form-field-wrapper.component';
 import { InputTypeComponent } from './ngx-formly/components/input.type.component';
 import { JsonObjectTypeComponent } from './ngx-formly/components/json-object.type.component';
+import { UnionTypeComponent } from './ngx-formly/components/union.type.component';
 import { NullTypeComponent } from './ngx-formly/components/null.type';
 import { ObjectTypeComponent } from './ngx-formly/components/object.type.component';
 import { PanelWrapperComponent } from './ngx-formly/components/panel-wrapper.component';
 import { SelectTypeComponent } from './ngx-formly/components/select.type.component';
+import { TabArrayTypeComponent } from './ngx-formly/components/tab-array.type.component';
 import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
 import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
@@ -135,6 +137,8 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     HoverPopoverDirective,
     TestCaseHelpComponent,
     JsonTreeComponent,
+    UnionTypeComponent,
+    TabArrayTypeComponent,
     BuildInfoDialogComponent,
   ],
   imports: [
@@ -186,18 +190,20 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
             },
           },
           { name: 'boolean', extends: 'checkbox' },
-          { name: 'enum', component: SelectTypeComponent, wrappers: ['form-field'] },
+          { name: 'enum', extends: 'select' },
           { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
           { name: 'array', component: ArrayTypeComponent },
           { name: 'object', component: ObjectTypeComponent },
           { name: 'tabs', component: TabsetTypeComponent},
+          { name: 'union', component: UnionTypeComponent },
+          { name: 'tab-array', component: TabArrayTypeComponent },
         ],
         wrappers: [
             { name: 'panel', component: PanelWrapperComponent },
             { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
             { name: 'form-field', component: FormFieldWrapperComponent },
         ],
-        extras: { checkExpressionOn: 'modelChange', immutable: false },
+        extras: { checkExpressionOn: 'changeDetectionCheck', immutable: false },
       }),
     ReactiveFormsModule,
     FormlyMaterialModule,

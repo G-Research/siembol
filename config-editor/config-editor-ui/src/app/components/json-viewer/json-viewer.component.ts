@@ -21,8 +21,8 @@ export interface DiffContent {
   templateUrl: './json-viewer.component.html',
 })
 export class JsonViewerComponent {
-  public leftContent: ConfigWrapper<ConfigData>;
-  public rightContent: ConfigWrapper<ConfigData>;
+  public leftContent: ConfigData;
+  public rightContent: ConfigData;
 
   constructor(public dialogRef: MatDialogRef<JsonViewerComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {

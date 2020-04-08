@@ -1,7 +1,6 @@
 import { AppConfigService } from '@app/config/app-config.service';
 import { TestCase, TestCaseMap } from '@app/model/test-case';
 import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
-
 import { ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
@@ -34,6 +33,7 @@ export class EditorViewComponent implements OnInit {
     schema$: Observable<any> = new Observable();
     selectedConfigIndex: number = undefined;
     fields: FormlyFieldConfig[] = [];
+    formlyOptions: any = {autoClear: true}
 
     onClickTestCase$: Subject<MatTabChangeEvent> = new Subject();
     selectedConfigName: string;
@@ -46,6 +46,7 @@ export class EditorViewComponent implements OnInit {
     dynamicFieldsMap$: Observable<Map<string, string>>;
     configs: ConfigWrapper<ConfigData>[];
     testCaseMap$: Observable<TestCaseMap>;
+    schema: any;
 
     constructor(private store: Store<fromStore.State>, private config: AppConfigService, private formlyJsonschema: FormlyJsonschema) {
         this.store.select(fromStore.getServiceName).pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
@@ -67,7 +68,8 @@ export class EditorViewComponent implements OnInit {
     ngOnInit() {
         this.schema$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(
             s => {
-                this.fields = [this.formlyJsonschema.toFieldConfig(s.schema)];
+                this.schema = s.schema;
+                this.fields = [this.formlyJsonschema.toFieldConfig(cloneDeep(s.schema), this.formlyOptions)];
                 this.store.dispatch(new fromStore.UpdateDynamicFieldsMap(this.formlyJsonschema.dynamicFieldsMap));
         });
 
@@ -77,6 +79,10 @@ export class EditorViewComponent implements OnInit {
             filter(f => f !== undefined),
             takeUntil(this.ngUnsubscribe)
         ).subscribe(s => {
+            // due to how oneOf changes the displayed fields we need to provide a freshly generated form when a rule is selected
+            if (this.schema) {
+                this.fields = [this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema))];
+            }
             this.selectedConfigName = this.configs[s].name;
             this.testCases = cloneDeep(this.testCaseMap[this.selectedConfigName]) || [];
             this.selectedConfigIndex = s;

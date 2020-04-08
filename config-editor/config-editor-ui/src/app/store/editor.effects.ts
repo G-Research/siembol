@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EditorService } from '@app/editor.service';
+import { EditorService } from '@services/editor.service';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { PopupService } from 'app/popup.service';
@@ -26,21 +26,23 @@ export class EditorEffects {
         ofType<actions.Bootstrap>(actions.BOOTSTRAP),
         withLatestFrom(this.store.select(fromStore.getBootstrapped)),
         filter(([action, bootStrapped]) => bootStrapped !== action.payload),
-        exhaustMap(([action, isBootStrapped]) => forkJoin([
-            this.editorService.getLoader(action.payload).getSchema().pipe(
+        tap(([action, _]) => this.editorService.createLoader(action.payload)),
+        exhaustMap((_) => forkJoin([
+
+            this.editorService.configLoader.getSchema().pipe(
                 switchMap(schema => forkJoin([
                     of(schema),
-                    this.editorService.getLoader(action.payload).getConfigs(),
-                    this.editorService.getLoader(action.payload).getRelease().pipe(
+                    this.editorService.configLoader.getConfigs(),
+                    this.editorService.configLoader.getRelease().pipe(
                         map(result => [result.deploymentHistory, result.storedDeployment])
                     ),
                 ]))
             ),
             this.editorService.getUser(),
-            this.editorService.getLoader(action.payload).getPullRequestStatus(),
+            this.editorService.configLoader.getPullRequestStatus(),
             this.editorService.getSensorFields(),
             this.editorService.getTestCaseSchema(),
-            this.editorService.getLoader(action.payload).getTestSpecificationSchema(),
+            this.editorService.configLoader.getTestSpecificationSchema(),
             ]).pipe(
                 map(([[configSchema, configs, [deploymentHistory, storedDeployment]],
                     currentUser, pullRequestPending, sensorFields, testCaseSchema, testSpecificationSchema]: any) => {
@@ -61,9 +63,9 @@ export class EditorEffects {
     loadRepositories$: Observable<Action> = this.actions$.pipe(
         ofType<actions.LoadRepositories>(actions.LOAD_REPOSITORIES),
         withLatestFrom(this.store.select(fromStore.getServiceNames)),
-        exhaustMap(([action, serviceNames]) => {
+        exhaustMap(([_, serviceNames]) => {
             return forkJoin(serviceNames.
-                map(serviceName => this.editorService.getLoader(serviceName).getRepositoryLinks())
+                map(serviceName => this.editorService.getRepositoryLinks(serviceName))
             ).pipe(
                 map((result: RepositoryLinks[]) => new actions.LoadRepositoriesSuccess(result)),
                 catchError(error => this.errorHandler(
@@ -76,9 +78,8 @@ export class EditorEffects {
     @Effect()
     loadPullRequestStatus$ = this.actions$.pipe(
         ofType<actions.LoadPullRequestStatus>(actions.LOAD_PULL_REQUEST_STATUS),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).getPullRequestStatus().pipe(
+        switchMap(() =>
+            this.editorService.configLoader.getPullRequestStatus().pipe(
                 map((result) => new actions.LoadPullRequestStatusSuccess(result)),
                 catchError(error => this.errorHandler(
                     error, this.RELEASE_STATUS_FAILED_MESSAGE, of(new actions.LoadPullRequestStatusFailure(error)))
@@ -90,9 +91,8 @@ export class EditorEffects {
     @Effect()
     loadTestCases$ = this.actions$.pipe(
         ofType<actions.LoadTestCases>(actions.LOAD_TEST_CASES),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).getTestCases().pipe(
+        switchMap(() =>
+            this.editorService.configLoader.getTestCases().pipe(
                 map((result) => new actions.LoadTestCasesSuccess(result)),
                 catchError(error => this.errorHandler(
                     error, this.RELEASE_STATUS_FAILED_MESSAGE, of(new actions.LoadTestCasesFailure(error))))
@@ -113,9 +113,8 @@ export class EditorEffects {
     @Effect()
     submitRelease$ = this.actions$.pipe(
         ofType<actions.SubmitRelease>(actions.SUBMIT_RELEASE),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitRelease(action.payload).pipe(
+        switchMap(action =>
+            this.editorService.configLoader.submitRelease(action.payload).pipe(
                 map(result => {
                     this.displayNotification(this.newSuccessMessage('release'));
                     this.store.dispatch(new actions.LoadPullRequestStatus());
@@ -131,14 +130,13 @@ export class EditorEffects {
     @Effect()
     submitNewConfig$  = this.actions$.pipe(
         ofType<actions.SubmitNewConfig>(actions.SUBMIT_NEW_CONFIG),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitNewConfig(action.payload).pipe(
+        switchMap(action =>
+            this.editorService.configLoader.submitNewConfig(action.payload).pipe(
                 map(result => {
                     this.displayNotification(this.newSuccessMessage('config'));
 
                     return new actions.SubmitNewConfigSuccess(
-                        this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
+                        this.editorService.configLoader.getConfigsFromFiles(result.attributes.files)
                     );
                 }),
                 catchError(error => this.errorHandler(
@@ -149,9 +147,8 @@ export class EditorEffects {
     @Effect()
     validateConfig$ = this.actions$.pipe(
         ofType<actions.ValidateConfig>(actions.VALIDATE_CONFIG),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).validateConfig(action.payload).pipe(
+        switchMap(action =>
+            this.editorService.configLoader.validateConfig(action.payload).pipe(
                 map(result => new actions.ValidateConfigsSuccess(result)),
                 catchError(error => this.errorHandler(
                     error, this.VALIDATION_FAILED_MESSAGE, of(new actions.ValidateConfigsFailure(error))))
@@ -162,9 +159,8 @@ export class EditorEffects {
     @Effect()
     validateConfigs$ = this.actions$.pipe(
         ofType<actions.ValidateConfigs>(actions.VALIDATE_CONFIGS),
-        withLatestFrom(this.store.select(fromStore.getStoredDeployment), this.store.select(fromStore.getServiceName)),
-        switchMap(([action, deployment, serviceName]) =>
-            this.editorService.getLoader(serviceName).validateRelease(action.payload).pipe(
+        switchMap(action =>
+            this.editorService.configLoader.validateRelease(action.payload).pipe(
                 map(result => new actions.ValidateConfigsSuccess(result)),
                 catchError(error => this.errorHandler(
                     error, this.validationFaliedMessage('config'), of(new actions.ValidateConfigsFailure(error)))))
@@ -185,14 +181,13 @@ export class EditorEffects {
     @Effect()
     submitRuleEdit$ = this.actions$.pipe(
         ofType<actions.SubmitConfigEdit>(actions.SUBMIT_CONFIG_EDIT),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitConfigEdit(action.payload).pipe(
+        tap(action =>
+            this.editorService.configLoader.submitConfigEdit(action.payload).pipe(
                 map(result => {
                     this.displayNotification(this.editSuccessMessage('config'));
 
                     return new actions.SubmitConfigEditSuccess(
-                        this.editorService.getLoader(serviceName).getConfigsFromFiles(result.attributes.files)
+                        this.editorService.configLoader.getConfigsFromFiles(result.attributes.files)
                     )
                 }),
                 catchError(error => this.errorHandler(
@@ -203,9 +198,8 @@ export class EditorEffects {
     @Effect()
     submitNewTestCase$  = this.actions$.pipe(
         ofType<actions.SubmitNewTestCase>(actions.SUBMIT_NEW_TESTCASE),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitNewTestCase(action.payload).pipe(
+        tap(action =>
+            this.editorService.configLoader.submitNewTestCase(action.payload).pipe(
                 map(m => new actions.SubmitNewTestCaseSuccess(m)),
                 tap(_ => this.displayNotification(this.newSuccessMessage('testcase'))),
                 catchError(error =>
@@ -220,9 +214,8 @@ export class EditorEffects {
     @Effect()
     submitTestCaseEdit$ = this.actions$.pipe(
         ofType<actions.SubmitTestCaseEdit>(actions.SUBMIT_TESTCASE_EDIT),
-        withLatestFrom(this.store.select(fromStore.getServiceName)),
-        switchMap(([action, serviceName]) =>
-            this.editorService.getLoader(serviceName).submitTestCaseEdit(action.payload).pipe(
+        tap(action =>
+            this.editorService.configLoader.submitTestCaseEdit(action.payload).pipe(
                 map(m => new actions.SubmitTestCaseEditSuccess(m)),
                 tap(_ => this.displayNotification(this.editSuccessMessage('testcase'))),
                 catchError(error => this.errorHandler(

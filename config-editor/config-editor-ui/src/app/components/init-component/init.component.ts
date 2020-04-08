@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { delay, filter, map, switchMap, takeUntil, withLatestFrom } from 'rxjs/operators';
 import { ConfigManagerComponent, EditorViewComponent, LandingPageComponent } from '..';
 import { HomeComponent, PageNotFoundComponent } from '../../containers';
-import { EditorService } from '../../editor.service';
+import { EditorService } from '@services/editor.service';
 import * as fromGuards from '../../guards';
 import { RepoResolver, ViewResolver } from '../../guards';
 import * as fromStore from '../../store';
@@ -74,7 +74,6 @@ export class InitComponent implements OnDestroy {
             });
             this.router.resetConfig(routes);
             this.store.dispatch(new SetServiceNames(serviceList));
-            this.service.createLoaders();
         })
 
         this.store.select(fromStore.getServiceNames).pipe(

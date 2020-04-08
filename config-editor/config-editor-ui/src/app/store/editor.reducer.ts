@@ -2,9 +2,9 @@ import { StatusCode } from '@app/commons';
 import {
     ConfigData, ConfigWrapper, Deployment, EditorResult, ExceptionInfo,
     FileHistory, PullRequestInfo, RepositoryLinks, SchemaDto, SensorFields, SubmitStatus,
-} from '@app/model';
+} from '@model';
 import { cloneDeep } from 'lodash';
-import { TestCaseMap } from '../model/test-case';
+import { TestCaseMap } from '@model/test-case';
 import * as editor from './editor.actions';
 
 export interface State {
@@ -39,6 +39,7 @@ export interface State {
     testCaseSchema: any;
     testCaseMap: TestCaseMap;
     testSpecificationSchema: any;
+    modelOrder: object;
 }
 
 export const initialState: State = {
@@ -73,6 +74,7 @@ export const initialState: State = {
     testCaseSchema: {},
     testCaseMap: undefined,
     testSpecificationSchema: undefined,
+    modelOrder: {},
 }
 
 export function reducer(state = initialState, action: editor.Actions): State {
@@ -311,6 +313,11 @@ export function reducer(state = initialState, action: editor.Actions): State {
 
             return Object.assign({}, state, {
                 testCaseMap: testCaseMap2,
+            });
+
+        case editor.SET_MODEL_ORDER:
+            return Object.assign({}, state, {
+                modelOrder: action.payload,
             });
 
         default:

@@ -2,7 +2,7 @@ import { Inject } from '@angular/core';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AppConfigService } from '@app/config';
-import { EditorService } from '@app/editor.service';
+import { EditorService } from '@services/editor.service';
 import { ConfigData, Deployment, EditorResult } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
@@ -23,7 +23,6 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
   EVENT_HELP: string;
   testSuccess = 'none';
   private ngUnsubscribe = new Subject();
-  private service: any;
   private env: string;
   isSingleConfig: boolean;
 
@@ -35,7 +34,6 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
     private appConfig: AppConfigService) {
     this.store.select(fromStore.getServiceName).pipe(take(1)).subscribe(r => {
       this.env = r;
-      this.service = this.editorService.getLoader(r);
       this.EVENT_HELP = this.appConfig.getUiMetadata(this.env).testing.helpMessage;
     })
     this.deploymentConfig = data.configDto;
@@ -84,9 +82,9 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
       [this.appConfig.getUiMetadata(this.env).testing.eventName]: event,
     };
 
-    if (this.service) {
+    if (this.editorService.configLoader) {
       if (this.isSingleConfig) {
-        this.service.testSingleConfig(testDto).pipe(takeUntil(this.ngUnsubscribe))
+        this.editorService.configLoader.testSingleConfig(testDto).pipe(takeUntil(this.ngUnsubscribe))
           .map(r => r)
           .catch(err => {
             this.ngUnsubscribe.next();
@@ -112,7 +110,7 @@ export class TestingDialogComponent implements OnDestroy, OnInit {
           }
           )
       } else {
-        this.service.testDeploymentConfig(testDto).pipe(takeUntil(this.ngUnsubscribe))
+        this.editorService.configLoader.testDeploymentConfig(testDto).pipe(takeUntil(this.ngUnsubscribe))
           .map(r => r)
           .catch(err => {
             this.ngUnsubscribe.next();

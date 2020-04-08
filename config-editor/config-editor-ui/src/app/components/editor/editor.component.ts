@@ -3,10 +3,10 @@ import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { AppConfigService } from '@app/config';
-import { EditorService } from '@app/editor.service';
+import { EditorService } from '@services/editor.service';
 import { ConfigData, ConfigWrapper, SensorFields } from '@app/model';
-import { TEST_CASE_TAB_NAME } from '@app/model/test-case';
-import { UiMetadataMap } from '@app/model/ui-metadata-map';
+import { TEST_CASE_TAB_NAME } from '@model/test-case';
+import { UiMetadataMap } from '@model/ui-metadata-map';
 import * as JsonPointer from '@app/ngx-formly/util/jsonpointer.functions';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
@@ -125,11 +125,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     private cleanConfigData(configData: ConfigData): ConfigData {
-        let cfg = this.removeFieldsWhichShouldBeHidden(this.dynamicFieldsMap, configData);
-        cfg = this.editorService.getLoader(this.serviceName).produceOrderedJson(cfg, '/');
+        //let cfg = this.removeFieldsWhichShouldBeHidden(this.dynamicFieldsMap, configData);
+        let cfg = this.editorService.configWrapper.produceOrderedJson(configData, '/');
         // recursively removes null, undefined, empty objects, empty arrays from the object
         cfg = omitEmpty(cfg);
-
         return cfg;
     }
 
@@ -148,7 +147,8 @@ export class EditorComponent implements OnInit, OnDestroy {
         configToUpdate.description = configToUpdate.configData[this.metaDataMap.description];
         configToUpdate.configData = this.cleanConfigData(configToUpdate.configData);
         // check if rule has been changed, mark unsaved
-        if (JSON.stringify(this.config.configData) !== JSON.stringify(configToUpdate.configData)) {
+        if (JSON.stringify(cloneDeep(this.config.configData)) !== 
+            JSON.stringify(configToUpdate.configData)) { 
             configToUpdate.savedInBackend = false;
         }
         const newConfigs = Object.assign(this.configs.slice(), {

@@ -1,7 +1,7 @@
 <div class="viewer">
     <td-ngx-text-diff 
-        [left]="(leftContent === undefined ? rightContent?.configData : leftContent?.configData) | json"
-        [right]="rightContent?.configData | json"
+        [left]="(leftContent === undefined ? rightContent : leftContent) | json"
+        [right]="rightContent | json"
         [loading]="false"
         [format]="leftContent === undefined ? 'LineByLine' : 'SideBySide'"
         [compareRowsStyle]="{'max-height': '1000px', 'overflow': 'auto'}"

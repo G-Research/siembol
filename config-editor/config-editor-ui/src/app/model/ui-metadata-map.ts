@@ -8,6 +8,7 @@ export interface UiMetadataMap {
     enableSensorFields: boolean,
     perConfigSchemaPath: string,
     deployment: DeploymentConfig,
+    unionType?: UnionType,
 }
 
 export interface TestConfig {
@@ -23,4 +24,9 @@ export interface DeploymentConfig {
     version: string,
     config_array: string,
     extras?: string[],
+}
+
+export interface UnionType {
+    unionPath: string;
+    unionSelectorName: string;
 }

@@ -61,6 +61,14 @@ export const SUBMIT_NEW_TESTCASE_FAILURE = '[Testcase] Submit New Testcase Failu
 export const UPDATE_TEST_CASE_STATE = '[Testcase] Update Testcase State';
 export const UPDATE_ALL_TEST_CASE_STATE = '[Testcase] Update All Testcase State';
 
+export const SET_MODEL_ORDER = '[Schema] Set Model Order';
+
+
+export class SetModelOrder implements Action {
+    readonly type = SET_MODEL_ORDER;
+    constructor(public payload: object) { }
+}
+
 export class SetServiceNames implements Action {
     readonly type = SET_SERVICE_NAMES;
     constructor(public payload: string[]) { }
@@ -180,7 +188,7 @@ export class SubmitNewConfig implements Action {
 
 export class SubmitNewConfigSuccess implements Action {
     readonly type = SUBMIT_NEW_CONFIG_SUCCESS;
-    constructor(public payload: ConfigWrapper<ConfigData>) { }
+    constructor(public payload: ConfigWrapper<ConfigData>[]) { }
 }
 
 export class SubmitNewConfigFailure implements Action {
@@ -195,7 +203,7 @@ export class SubmitConfigEdit implements Action {
 
 export class SubmitConfigEditSuccess implements Action {
     readonly type = SUBMIT_CONFIG_EDIT_SUCCESS;
-    constructor(public payload: EditorResult<ConfigData>) { }
+    constructor(public payload: ConfigWrapper<ConfigData>[]) { }
 }
 
 export class SubmitConfigEditFailure implements Action {
@@ -364,4 +372,5 @@ export type Actions
     | LoadTestCasesSuccess
     | LoadTestCasesFailure
     | UpdateAllTestCaseState
-    | UpdateTestCaseState;
+    | UpdateTestCaseState
+    | SetModelOrder;

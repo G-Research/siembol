@@ -4,24 +4,24 @@ import { MatDialog } from '@angular/material/dialog';
 import { ErrorDialogComponent } from '@app/components';
 import { AppConfigService } from '@app/config';
 import { TestCase, TestCaseMap, TestCaseResultDefault, TestState } from '@app/model/test-case';
-import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
 import { PopupService } from '@app/popup.service';
 import { Store } from '@ngrx/store';
+import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
 import { FormlyFieldConfig } from '@ngx-formly/core/lib/core';
 import * as fromStore from 'app/store';
 import { cloneDeep } from 'lodash';
 import * as omitEmpty from 'omit-empty';
 import { from, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, delay, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import { EditorService } from '../../../editor.service';
+import { EditorService } from '@services/editor.service';
 import {
     ConfigData,
     ConfigTestDto,
     ConfigTestResult,
     ConfigWrapper,
     EditorResult,
-} from '../../../model/config-model';
-import { TestCaseWrapper, TestCaseWrapperDefault } from '../../../model/test-case';
+} from '@model/config-model';
+import { TestCaseWrapper, TestCaseWrapperDefault } from '@model/test-case';
 import { SubmitTestcaseDialogComponent } from '../submit-testcase-dialog/submit-testcase-dialog.component';
 
 interface OutputDict {
@@ -39,7 +39,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   EVENT_HELP: string;
   private ngUnsubscribe = new Subject();
   public fields: FormlyFieldConfig[] = [];
-  public options: any = {};
+  public options: any = {autoClear: false};
   public testCase: TestCaseWrapper = new TestCaseWrapperDefault();
   public alert: string;
   public form: FormGroup = new FormGroup({});
@@ -70,20 +70,23 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     private dialog: MatDialog) {}
 
   ngOnInit() {
-    this.service = this.editorService.getLoader(this.serviceName);
     this.store.select(fromStore.getConfigTestingEvent).pipe(take(1)).subscribe(e => this.alert = e);
-    this.store.select(fromStore.getTestCaseSchema).pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
-        this.service.getTestSpecificationSchema().pipe(takeUntil(this.ngUnsubscribe)).subscribe(l => {
+    if (this.appConfig.getUiMetadata(this.serviceName).testing.testCaseEnabled) {
+        this.store.select(fromStore.getTestCaseSchema).pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
+        this.editorService.configLoader.getTestSpecificationSchema().pipe(takeUntil(this.ngUnsubscribe)).subscribe(l => {
                 this.options.formState = {
                     mainModel: this.testCase,
                     rawObjects: {},
+
                 };
                 const subschema = new FormlyJsonschema().toFieldConfig(l);
                 const schemaConverter = new FormlyJsonschema();
                 schemaConverter.testSpec = subschema;
-                this.fields = [schemaConverter.toFieldConfig(s, this.options)];
+                this.fields = [schemaConverter.toFieldConfig(cloneDeep(s), this.options)];
             })
-        })
+        })    
+    }
+    
     this.selectedConfigIndex$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
         this.addNewTest = false;
         this.changeDetector.markForCheck();
@@ -241,7 +244,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
         test_specification: JSON.parse(JSON.stringify(testcase.test_specification, this.replacer)),
     }
 
-    return this.editorService.getLoader(this.serviceName).testSingleConfig(testDto).pipe(
+    return this.editorService.configLoader.testSingleConfig(testDto).pipe(
         map((r: EditorResult<ConfigTestResult>) => {
             this.output[testcase.test_case_name] = r.attributes;
             if (r.status_code === 'OK') {

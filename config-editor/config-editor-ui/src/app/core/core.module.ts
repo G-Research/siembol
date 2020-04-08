@@ -1,5 +1,5 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
-import { EditorService } from 'app/editor.service';
+import { EditorService } from '@services/editor.service';
 
 @NgModule({
   providers: [

@@ -1,6 +1,8 @@
 
 import { Component } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
+import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/utility.functions';
+import { cloneDeep } from 'lodash';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -120,9 +122,26 @@ export class ArrayTypeComponent extends FieldArrayType {
         }
     }
 
-    reorder (oldIndex, newIndex) {
+    reorder (oldIndex: number, newIndex: number) {
         const temp = this.model[oldIndex];
         this.remove(oldIndex);
         this.add(newIndex, temp);
+    }
+
+    add(i?: number, initialModel?: any, { markAsDirty } = { markAsDirty: true }) {
+        i = isNullOrUndefined(i) ? this.field.fieldGroup.length : i;
+        if (!this.model) {
+          assignModelValue(this.field.parent.model, getKeyPath(this.field), []);
+        }
+        let originalModel = cloneDeep(this.model);
+        
+        this.model.splice(i, 0, initialModel ? clone(initialModel) : undefined);
+    
+        (<any> this.options)._buildForm(true);
+        originalModel.push(this.model[this.model.length - 1]);
+        for (let i=0; i < this.model.length; i++) {
+            this.model[i] = originalModel[i];
+        }
+        markAsDirty && this.formControl.markAsDirty();
     }
 }

@@ -3,7 +3,7 @@ import { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StatusCode } from '@app/commons/status-code';
-import { EditorService } from '@app/editor.service';
+import { EditorService } from '@services/editor.service';
 import { EditorResult, ExceptionInfo } from '@app/model';
 import { TestCase } from '@app/model/test-case';
 import { ValidationState } from '@app/model/validation-status';

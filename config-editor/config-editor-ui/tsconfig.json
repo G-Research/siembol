@@ -23,7 +23,10 @@
     ],
     "paths": {
       "@app/*": ["app/*"],
-      "@env/*": ["environments/*"]
+      "@env/*": ["environments/*"],
+      "@model/*": ["app/model/*"],
+      "@model": ["app/model/index"],
+      "@services/*": ["app/services/*"],
     }
   }
 }

@@ -6,11 +6,11 @@ import { StatusCode } from '@app/commons';
 
 import { FormGroup } from '@angular/forms';
 import { AppConfigService } from '@app/config';
-import { EditorService } from '@app/editor.service';
+import { EditorService } from '@services/editor.service';
 import { ConfigData, ConfigWrapper, Deployment } from '@app/model';
-import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
 import { Store } from '@ngrx/store';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import * as fromStore from 'app/store';
 import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs';
@@ -57,7 +57,7 @@ export class DeployDialogComponent {
             if (this.uiMetadata.deployment.extras !== undefined) {
                 this.fields = [this.formlyJsonSchema.toFieldConfig(this.createDeploymentSchema(r))];
             } else {
-                this.service.getLoader(this.serviceName).validateRelease(data).pipe(take(1))
+                this.service.configLoader.validateRelease(data).pipe(take(1))
                     .subscribe(s => {
                     if (s !== undefined) {
                         this.statusCode = s.status_code;
@@ -78,7 +78,7 @@ export class DeployDialogComponent {
     }
 
     private createDeploymentSchema(serviceName: string): string {
-        const depSchema = this.service.getLoader(serviceName).originalSchema;
+        const depSchema = this.service.configLoader.originalSchema;
         depSchema.properties[this.uiMetadata.deployment.config_array] = {};
         delete depSchema.properties[this.uiMetadata.deployment.config_array];
         delete depSchema.properties[this.uiMetadata.deployment.version];
@@ -95,7 +95,7 @@ export class DeployDialogComponent {
 
     onValidate() {
         this.deployment = {...this.deployment, ...this.extrasData};
-        this.service.getLoader(this.serviceName)
+        this.service.configLoader
             .validateRelease(this.deployment).pipe(take(1)).subscribe(s => {
                 if (s !== undefined) {
                     this.statusCode = s.status_code;
