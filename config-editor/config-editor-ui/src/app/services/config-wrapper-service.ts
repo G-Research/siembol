@@ -9,8 +9,10 @@ export class ConfigWrapperService {
     selectorName: string;
 
     constructor(private uiMetadata: UiMetadataMap) {
-        this.unionPath = uiMetadata.unionType.unionPath;
-        this.selectorName = uiMetadata.unionType.unionSelectorName;
+        if (uiMetadata.unionType) {
+            this.unionPath = uiMetadata.unionType.unionPath ?? undefined;
+            this.selectorName = uiMetadata.unionType.unionSelectorName ?? undefined;
+        }
     }
 
 // function to go through the output json and reorder the properties such that it is consistent with the schema
