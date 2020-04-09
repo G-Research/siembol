@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { AbstractControl, FormControl } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { ɵreverseDeepMerge as reverseDeepMerge } from '@ngx-formly/core';
-import { FormlyFieldConfigCache } from '@ngx-formly/core/lib/models';
 import { JSONSchema7, JSONSchema7TypeName } from 'json-schema';
 import { cloneDeep } from 'lodash';
+import { FormlyFieldConfigCache } from '@ngx-formly/core/lib/components/formly.field.config';
 
 
 export interface FormlyJsonschemaOptions {
