@@ -15,7 +15,6 @@ import * as actions from './editor.actions';
   })
 export class EditorEffects {
 
-    private readonly VALIDATION_FAILED_MESSAGE = 'Failed to validate config with backend';
     private readonly BOOTSTRAP_FAILED_MESSAGE = 'Failed to load all required data at app startup';
     private readonly REPOSITORY_LOAD_FAILED_MESSAGE = 'Failed to load repositories';
     private readonly RELEASE_STATUS_FAILED_MESSAGE = 'Failed to load release status';
@@ -44,14 +43,13 @@ export class EditorEffects {
             this.editorService.getTestCaseSchema(),
             this.editorService.configLoader.getTestSpecificationSchema(),
             ]).pipe(
+                tap(_ => this.store.dispatch(new actions.LoadTestCases())),
                 map(([[configSchema, configs, [deploymentHistory, storedDeployment]],
-                    currentUser, pullRequestPending, sensorFields, testCaseSchema, testSpecificationSchema]: any) => {
-                        this.store.dispatch(new actions.LoadTestCases());
-
-                        return new actions.BootstrapSuccess(
+                    currentUser, pullRequestPending, sensorFields, testCaseSchema, testSpecificationSchema]: any) =>
+                        new actions.BootstrapSuccess(
                             { configs, configSchema, currentUser, pullRequestPending,
                                 storedDeployment, sensorFields, deploymentHistory, testCaseSchema, testSpecificationSchema })
-                }),
+                ),
                 catchError(err => this.errorHandler(
                     err, this.BOOTSTRAP_FAILED_MESSAGE, of(new fromStore.BootstrapFailure(err)))
                 )
@@ -115,12 +113,9 @@ export class EditorEffects {
         ofType<actions.SubmitRelease>(actions.SUBMIT_RELEASE),
         switchMap(action =>
             this.editorService.configLoader.submitRelease(action.payload).pipe(
-                map(result => {
-                    this.displayNotification(this.newSuccessMessage('release'));
-                    this.store.dispatch(new actions.LoadPullRequestStatus());
-
-                    return new actions.SubmitReleaseSuccess(result);
-                }),
+                map(result => new actions.SubmitReleaseSuccess(result)),
+                tap(_ => this.store.dispatch(new actions.LoadPullRequestStatus())),
+                tap(_ => this.displayNotification(this.newSuccessMessage('release'))),
                 catchError(error =>
                     this.errorHandler(error, this.newFailureMessage('release'), of(new actions.SubmitReleaseFailure(error))))
                 )
@@ -132,13 +127,11 @@ export class EditorEffects {
         ofType<actions.SubmitNewConfig>(actions.SUBMIT_NEW_CONFIG),
         switchMap(action =>
             this.editorService.configLoader.submitNewConfig(action.payload).pipe(
-                map(result => {
-                    this.displayNotification(this.newSuccessMessage('config'));
-
-                    return new actions.SubmitNewConfigSuccess(
+                map(result => new actions.SubmitNewConfigSuccess(
                         this.editorService.configLoader.getConfigsFromFiles(result.attributes.files)
-                    );
-                }),
+                    )
+                ),
+                tap(_ => this.displayNotification(this.newSuccessMessage('config'))),
                 catchError(error => this.errorHandler(
                     error, this.newFailureMessage('config'), of(new actions.SubmitNewConfigFailure(error)))))
             )
@@ -151,7 +144,7 @@ export class EditorEffects {
             this.editorService.configLoader.validateConfig(action.payload).pipe(
                 map(result => new actions.ValidateConfigsSuccess(result)),
                 catchError(error => this.errorHandler(
-                    error, this.VALIDATION_FAILED_MESSAGE, of(new actions.ValidateConfigsFailure(error))))
+                    error, this.validationFaliedMessage('config'), of(new actions.ValidateConfigsFailure(error))))
                 )
             )
     );
@@ -181,15 +174,13 @@ export class EditorEffects {
     @Effect()
     submitRuleEdit$ = this.actions$.pipe(
         ofType<actions.SubmitConfigEdit>(actions.SUBMIT_CONFIG_EDIT),
-        tap(action =>
+        switchMap(action =>
             this.editorService.configLoader.submitConfigEdit(action.payload).pipe(
-                map(result => {
-                    this.displayNotification(this.editSuccessMessage('config'));
-
-                    return new actions.SubmitConfigEditSuccess(
+                map(result => new actions.SubmitConfigEditSuccess(
                         this.editorService.configLoader.getConfigsFromFiles(result.attributes.files)
                     )
-                }),
+                ),
+                tap(_ => this.displayNotification(this.editSuccessMessage('config'))),
                 catchError(error => this.errorHandler(
                     error, this.editFailureMessage('config'), of(new actions.SubmitConfigEditFailure(error)))))
             )
@@ -198,7 +189,7 @@ export class EditorEffects {
     @Effect()
     submitNewTestCase$  = this.actions$.pipe(
         ofType<actions.SubmitNewTestCase>(actions.SUBMIT_NEW_TESTCASE),
-        tap(action =>
+        switchMap(action =>
             this.editorService.configLoader.submitNewTestCase(action.payload).pipe(
                 map(m => new actions.SubmitNewTestCaseSuccess(m)),
                 tap(_ => this.displayNotification(this.newSuccessMessage('testcase'))),
@@ -214,7 +205,7 @@ export class EditorEffects {
     @Effect()
     submitTestCaseEdit$ = this.actions$.pipe(
         ofType<actions.SubmitTestCaseEdit>(actions.SUBMIT_TESTCASE_EDIT),
-        tap(action =>
+        switchMap(action =>
             this.editorService.configLoader.submitTestCaseEdit(action.payload).pipe(
                 map(m => new actions.SubmitTestCaseEditSuccess(m)),
                 tap(_ => this.displayNotification(this.editSuccessMessage('testcase'))),
