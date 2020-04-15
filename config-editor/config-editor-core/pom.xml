@@ -7,15 +7,15 @@
     <name>config-editor-core</name>
     <packaging>jar</packaging>
     <parent>
-        <groupId>uk.co.gresearch.nortem</groupId>
+        <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.43-SNAPSHOT</version>
+        <version>1.44-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
-            <groupId>uk.co.gresearch.nortem</groupId>
-            <artifactId>nortem-common</artifactId>
-            <version>1.43-SNAPSHOT</version>
+            <groupId>uk.co.gresearch.siembol</groupId>
+            <artifactId>siembol-common</artifactId>
+            <version>1.44-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

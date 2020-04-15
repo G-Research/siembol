@@ -1,7 +1,7 @@
 {
   "dummy1": {
     "order": 0,
-    "template": "nortem-dummy1*",
+    "template": "siembol-dummy1*",
     "settings": {
       "index": {
         "routing": {
@@ -61,7 +61,7 @@
   },
   "dummy2": {
     "order": 0,
-    "template": "nortem-dummy2*",
+    "template": "siembol-dummy2*",
     "settings": {
       "index": {
         "routing": {

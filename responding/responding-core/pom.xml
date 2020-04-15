@@ -9,20 +9,20 @@
     <properties>
     </properties>
     <parent>
-        <groupId>uk.co.gresearch.nortem</groupId>
+        <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>responding</artifactId>
-        <version>1.43-SNAPSHOT</version>
+        <version>1.44-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
-            <groupId>uk.co.gresearch.nortem</groupId>
-            <artifactId>nortem-common</artifactId>
-            <version>1.43-SNAPSHOT</version>
+            <groupId>uk.co.gresearch.siembol</groupId>
+            <artifactId>siembol-common</artifactId>
+            <version>1.44-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>uk.co.gresearch.nortem</groupId>
-            <artifactId>nikita-core</artifactId>
-            <version>1.43-SNAPSHOT</version>
+            <groupId>uk.co.gresearch.siembol</groupId>
+            <artifactId>alerting-core</artifactId>
+            <version>1.44-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>

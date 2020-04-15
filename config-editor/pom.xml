@@ -9,9 +9,9 @@
     <properties>
     </properties>
 	 <parent>
-        <groupId>uk.co.gresearch.nortem</groupId>
-        <artifactId>nortem</artifactId>
-        <version>1.43-SNAPSHOT</version>
+        <groupId>uk.co.gresearch.siembol</groupId>
+        <artifactId>siembol</artifactId>
+        <version>1.44-SNAPSHOT</version>
     </parent>
     <modules>
         <module>config-editor-core</module>

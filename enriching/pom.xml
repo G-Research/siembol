@@ -9,13 +9,13 @@
     <properties>
     </properties>
 	 <parent>
-        <groupId>uk.co.gresearch.nortem</groupId>
-        <artifactId>nortem</artifactId>
-        <version>1.43-SNAPSHOT</version>
+        <groupId>uk.co.gresearch.siembol</groupId>
+        <artifactId>siembol</artifactId>
+        <version>1.44-SNAPSHOT</version>
     </parent>
     <modules>
-        <module>nortem-enriching</module>
-        <module>nortem-enriching-storm</module>
+        <module>enriching-core</module>
+        <module>enriching-storm</module>
     </modules>
     <dependencies>
     </dependencies>
