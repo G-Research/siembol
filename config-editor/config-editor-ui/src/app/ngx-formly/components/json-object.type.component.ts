@@ -27,10 +27,14 @@ import { debounceTime, take } from 'rxjs/operators';
 
     textarea {
         width: 70%;
+        padding: 5px;
+        font-family: monospace;
+        box-sizing: content-box;
     }
 
     re-json-tree {
         padding-left: 20px;
+        max-width: 500px;
     }
 
     .row {
