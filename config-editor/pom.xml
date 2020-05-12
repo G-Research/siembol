@@ -11,11 +11,12 @@
 	 <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.44-SNAPSHOT</version>
+        <version>1.45-SNAPSHOT</version>
     </parent>
     <modules>
         <module>config-editor-core</module>
         <module>config-editor-services</module>
+        <module>config-editor-rest</module>
     </modules>
     <dependencies>
     </dependencies>
