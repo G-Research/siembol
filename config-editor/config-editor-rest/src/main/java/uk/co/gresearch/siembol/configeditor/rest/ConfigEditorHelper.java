@@ -46,5 +46,9 @@ public class ConfigEditorHelper {
                 : Optional.ofNullable(attributes.getFiles().get(0).getContentValue());
     }
 
+    public static String wrapEventAsTestSpecification(String service, String event) {
+        //NOTE: temporary wrapper for incompatible UI, remove this when UI supports test_specification
+        return "parserconfig".equalsIgnoreCase(service) ? event : String.format("{\"event\":%s}", event);
+    }
 }
 

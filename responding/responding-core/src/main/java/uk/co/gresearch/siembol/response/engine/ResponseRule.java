@@ -115,15 +115,15 @@ public class ResponseRule implements Evaluable {
 
             fullRuleName = String.format(FULL_RULE_NAME_FORMAT_MSG, ruleName, ruleVersion);
             this.matchesCounter = metricFactory.createCounter(
-                    MetricNames.RULE_MATCHES.getNameWithSuffix(fullRuleName),
+                    MetricNames.RULE_MATCHES.getNameWithSuffix(ruleName),
                     MetricNames.RULE_MATCHES.getDescription());
 
             this.filtersCounter = metricFactory.createCounter(
-                    MetricNames.RULE_FILTERS.getNameWithSuffix(fullRuleName),
+                    MetricNames.RULE_FILTERS.getNameWithSuffix(ruleName),
                     MetricNames.RULE_FILTERS.getDescription());
 
             this.errorsCounter = metricFactory.createCounter(
-                    MetricNames.RULE_ERROR_MATCHES.getNameWithSuffix(fullRuleName),
+                    MetricNames.RULE_ERROR_MATCHES.getNameWithSuffix(ruleName),
                     MetricNames.RULE_ERROR_MATCHES.getDescription());
 
             return new ResponseRule(this);

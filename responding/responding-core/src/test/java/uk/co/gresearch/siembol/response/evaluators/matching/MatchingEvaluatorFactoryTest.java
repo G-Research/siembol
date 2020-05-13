@@ -32,7 +32,6 @@ public class MatchingEvaluatorFactoryTest {
     public static String attributes;
 
     private MatchingEvaluatorFactory factory;
-    private ResponseAlert alert = new ResponseAlert();
 
     @Before
     public void setUp() throws Exception {

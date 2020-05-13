@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.getFileContent;
 import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.getUserNameFromAuthentication;
+import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.wrapEventAsTestSpecification;
 
 @RestController
 public class ConfigSchemaController {
@@ -84,7 +85,9 @@ public class ConfigSchemaController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        String testSpecification = attributes.getTestSpecification();
+        String testSpecification = attributes.getTestSpecification() != null
+                ? attributes.getTestSpecification()
+                : wrapEventAsTestSpecification(serviceName, attributes.getEvent()); //TODO: remove when UI will use test specification
         ConfigSchemaService service = serviceAggregator.getConfigSchema(
                 getUserNameFromAuthentication(authentication), serviceName);
         return new ResponseEntity<>(singleConfig

@@ -12,9 +12,13 @@ import uk.co.gresearch.siembol.response.common.RespondingEvaluatorValidator;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
+import uk.co.gresearch.siembol.response.evaluators.arrayreducers.ArrayReducerEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.assignment.AssignmentEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.fixed.FixedEvaluatorFactory;
+import uk.co.gresearch.siembol.response.evaluators.markdowntable.ArrayTableFormatterEvaluatorFactory;
+import uk.co.gresearch.siembol.response.evaluators.markdowntable.TableFormatterEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.matching.MatchingEvaluatorFactory;
+import uk.co.gresearch.siembol.response.evaluators.throttling.AlertThrottlingEvaluatorFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -73,7 +77,11 @@ public class ResponseSchemaService implements ConfigSchemaService {
         public Builder() throws Exception {
             providedFactories = Arrays.asList(new FixedEvaluatorFactory(),
                     new AssignmentEvaluatorFactory(),
-                    new MatchingEvaluatorFactory());
+                    new MatchingEvaluatorFactory(),
+                    new TableFormatterEvaluatorFactory(),
+                    new ArrayTableFormatterEvaluatorFactory(),
+                    new AlertThrottlingEvaluatorFactory(),
+                    new ArrayReducerEvaluatorFactory());
         }
 
         public Builder uiConfigSchema(String uiConfigSchema) {

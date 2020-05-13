@@ -1,7 +1,8 @@
 package uk.co.gresearch.siembol.response.common;
 
 public enum ResponseFields {
-    RULE_NAME("response_rule_name");
+    ALERT_ID("siembol_response_alert_id"),
+    RULE_NAME("siembol_response_rule_name");
 
     private final String name;
     ResponseFields(String name) {

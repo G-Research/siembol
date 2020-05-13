@@ -68,8 +68,11 @@ public class EvaluationLibrary {
     public static Object substituteBean(Object obj, Map<String, Object> event) throws Exception {
         //NOTE: currently we have beans with primitive types, Bean or List<Beans>
         if (obj instanceof String) {
-            return substitute(event, (String)obj);
-        } else if (obj instanceof List) {
+            return substitute(event, (String)obj).orElse(null);
+        } else if (obj instanceof Enum) {
+            return obj;
+        }
+        else if (obj instanceof List) {
             List list = (List)obj;
             for (int i = 0; i < list.size(); i++) {
                 list.set(i, substituteBean(list.get(i), event));

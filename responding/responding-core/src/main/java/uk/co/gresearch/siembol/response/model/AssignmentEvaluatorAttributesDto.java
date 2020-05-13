@@ -3,8 +3,6 @@ package uk.co.gresearch.siembol.response.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
-import java.util.List;
-
 @Attributes(title = "json path assignment", description = "json path assignment")
 public class AssignmentEvaluatorAttributesDto {
     @JsonProperty("assignment_type")

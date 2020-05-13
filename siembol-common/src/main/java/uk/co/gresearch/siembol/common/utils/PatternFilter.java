@@ -1,11 +1,11 @@
-package uk.co.gresearch.siembol.parsers.transformations;
+package uk.co.gresearch.siembol.common.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class PatternFilter implements FieldFilter{
+public class PatternFilter implements FieldFilter {
     private final List<Pattern> includingPatterns;
     private final List<Pattern> excludingPatterns;
 

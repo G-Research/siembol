@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.parsers.transformations;
 
+import uk.co.gresearch.siembol.common.utils.PatternFilter;
 import uk.co.gresearch.siembol.parsers.model.TransformationAttributesDto;
 import uk.co.gresearch.siembol.parsers.model.TransformationDto;
 import uk.co.gresearch.siembol.parsers.model.TransformationTypeDto;

@@ -18,9 +18,9 @@ public class ResponseRuleTest {
     private final int ruleVerion = 1;
     private final String fullRuleName = "Test_rule_v1";
 
-    private final String metchesMetricName = MetricNames.RULE_MATCHES.getNameWithSuffix(fullRuleName);
-    private final String errorMetricName = MetricNames.RULE_ERROR_MATCHES.getNameWithSuffix(fullRuleName);
-    private final String filteredMetricName = MetricNames.RULE_FILTERS.getNameWithSuffix(fullRuleName);
+    private final String metchesMetricName = MetricNames.RULE_MATCHES.getNameWithSuffix(ruleName);
+    private final String errorMetricName = MetricNames.RULE_ERROR_MATCHES.getNameWithSuffix(ruleName);
+    private final String filteredMetricName = MetricNames.RULE_FILTERS.getNameWithSuffix(ruleName);
 
     private ResponseAlert alert;
     Evaluable evaluator;

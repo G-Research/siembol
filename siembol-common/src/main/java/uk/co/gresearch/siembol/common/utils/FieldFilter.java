@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.parsers.transformations;
+package uk.co.gresearch.siembol.common.utils;
 
 public interface FieldFilter {
     boolean match(String str);

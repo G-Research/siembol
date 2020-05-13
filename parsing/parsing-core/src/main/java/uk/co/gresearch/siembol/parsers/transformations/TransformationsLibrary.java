@@ -2,6 +2,9 @@ package uk.co.gresearch.siembol.parsers.transformations;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.co.gresearch.siembol.common.utils.FieldFilter;
+import uk.co.gresearch.siembol.common.utils.PatternFilter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
