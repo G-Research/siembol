@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreImpl;
@@ -56,7 +57,10 @@ public class ConfigEditorConfiguration implements DisposableBean {
                         ConfigStoreImpl.createRuleStore(
                                 properties.getConfigStore().get(RESPONSE),
                                 JsonRuleConfigInfoProvider.create()),
-                        new ResponseSchemaService.Builder().build())
+                        new ResponseSchemaService.Builder(
+                                new HttpProvider(properties.getCentrifugeUrl(), HttpProvider::getKerberosHttpClient))
+                                .uiConfigSchema(readUiConfigFile(RESPONSE).orElse(null))
+                                .build())
                 .addService(ALERTS,
                         ConfigStoreImpl.createRuleStore(
                                 properties.getConfigStore().get(ALERTS),

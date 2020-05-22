@@ -210,6 +210,12 @@ public class RespondingCompilerImplTest {
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getResponseEngine());
+        RespondingResultAttributes metadata = result.getAttributes().getResponseEngine()
+                .getRulesMetadata().getAttributes();
+        Assert.assertEquals(1, metadata.getRulesVersion().intValue());
+        Assert.assertEquals(testingRules, metadata.getJsonRules());
+        Assert.assertEquals(1, metadata.getNumberOfRules().intValue());
+        Assert.assertNotNull(metadata.getCompiledTime());
     }
 
     @Test

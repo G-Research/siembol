@@ -9,6 +9,8 @@ import uk.co.gresearch.siembol.response.common.*;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
+
 public class RulesEngine implements ResponseEngine {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_ATTRIBUTES = "Missing response rule engine attributes";
@@ -19,6 +21,7 @@ public class RulesEngine implements ResponseEngine {
     private final MetricCounter filtersCounter;
     private final MetricCounter errorsCounter;
     private final TestingLogger logger;
+    private final RespondingResultAttributes metadataAttributes;
 
     public RulesEngine(Builder builder) {
         this.rules = builder.rules;
@@ -26,6 +29,8 @@ public class RulesEngine implements ResponseEngine {
         this.messagesCounter = builder.messagesCounter;
         this.filtersCounter = builder.filtersCounter;
         this.errorsCounter = builder.errorsCounter;
+        this.metadataAttributes = builder.metadataAttributes;
+
     }
 
     @Override
@@ -34,7 +39,7 @@ public class RulesEngine implements ResponseEngine {
 
         for (Evaluable rule: rules) {
             RespondingResult currentResult = rule.evaluate(alert);
-            if (currentResult.getStatusCode() != RespondingResult.StatusCode.OK) {
+            if (currentResult.getStatusCode() != OK) {
                 errorsCounter.increment();
                 return currentResult;
             }
@@ -58,6 +63,11 @@ public class RulesEngine implements ResponseEngine {
         return new RespondingResult(RespondingResult.StatusCode.ERROR, attributes);
     }
 
+    @Override
+    public RespondingResult getRulesMetadata() {
+        return new RespondingResult(OK, metadataAttributes);
+    }
+
     public static class Builder {
         private List<? extends Evaluable> rules;
         private TestingLogger logger = new InactiveTestingLogger();
@@ -65,9 +75,15 @@ public class RulesEngine implements ResponseEngine {
         private MetricCounter messagesCounter;
         private MetricCounter filtersCounter;
         private MetricCounter errorsCounter;
+        private RespondingResultAttributes metadataAttributes;
 
         public Builder metricFactory(MetricFactory metricFactory) {
             this.metricFactory = metricFactory;
+            return this;
+        }
+
+        public Builder metadata(RespondingResultAttributes metadataAttributes) {
+            this.metadataAttributes = metadataAttributes;
             return this;
         }
 
@@ -83,7 +99,8 @@ public class RulesEngine implements ResponseEngine {
 
         public RulesEngine build() {
             if (rules == null || rules.isEmpty()
-                    || metricFactory == null) {
+                    || metricFactory == null
+                    || metadataAttributes == null) {
                 throw new IllegalArgumentException(MISSING_ATTRIBUTES);
             }
 

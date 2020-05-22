@@ -56,9 +56,9 @@ public class ConfigSchemaController {
             @RequestBody String body) {
         ConfigSchemaService service = serviceAggregator.getConfigSchema(getUserNameFromAuthentication(authentication),
                 serviceName);
-        return new ResponseEntity<>(singleConfig
+        return ConfigEditorHelper.fromConfigEditorResult(singleConfig
                 ? service.validateConfiguration(body)
-                : service.validateConfigurations(body), HttpStatus.OK);
+                : service.validateConfigurations(body));
     }
 
     @CrossOrigin
@@ -90,8 +90,8 @@ public class ConfigSchemaController {
                 : wrapEventAsTestSpecification(serviceName, attributes.getEvent()); //TODO: remove when UI will use test specification
         ConfigSchemaService service = serviceAggregator.getConfigSchema(
                 getUserNameFromAuthentication(authentication), serviceName);
-        return new ResponseEntity<>(singleConfig
+        return ConfigEditorHelper.fromConfigEditorResult((singleConfig
                 ? service.testConfiguration(config.get(), testSpecification)
-                : service.testConfigurations(config.get(), testSpecification), HttpStatus.OK);
+                : service.testConfigurations(config.get(), testSpecification)));
     }
 }

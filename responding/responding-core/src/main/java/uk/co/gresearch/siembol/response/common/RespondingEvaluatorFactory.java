@@ -13,10 +13,6 @@ public interface RespondingEvaluatorFactory extends RespondingEvaluatorValidator
         }
     }
 
-    default RespondingResult initialise(Map<String, Object> configuration) {
-        return new RespondingResult(RespondingResult.StatusCode.OK, new RespondingResultAttributes());
-    }
-
     default RespondingResult registerMetrics(MetricFactory metricFactory) {
         return new RespondingResult(RespondingResult.StatusCode.OK, new RespondingResultAttributes());
     }

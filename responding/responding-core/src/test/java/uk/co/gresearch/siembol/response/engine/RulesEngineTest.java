@@ -25,6 +25,7 @@ public class RulesEngineTest {
     TestMetricFactory metricFactory;
     RespondingResult ruleResult;
     RespondingResultAttributes resultAttributes;
+    RespondingResultAttributes metadataAttributes;
     RespondingResult ruleNextResult;
     RespondingResultAttributes resultNextAttributes;
     RulesEngine engine;
@@ -48,9 +49,11 @@ public class RulesEngineTest {
         when(ruleNext.evaluate(alert)).thenReturn(ruleNextResult);
         rules = Arrays.asList(rule, ruleNext);
 
+        metadataAttributes = new RespondingResultAttributes();
         metricFactory = new TestMetricFactory();
         builder = new RulesEngine.Builder()
                 .metricFactory(metricFactory)
+                .metadata(metadataAttributes)
                 .rules(rules);
 
         engine = builder.build();
@@ -72,6 +75,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 
     @Test
@@ -91,6 +96,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 
     @Test
@@ -109,6 +116,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(1, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 
     @Test
@@ -128,6 +137,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(1, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 
     @Test
@@ -146,6 +157,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 
     @Test
@@ -165,6 +178,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 
     @Test
@@ -184,5 +199,7 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
+        Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
 }

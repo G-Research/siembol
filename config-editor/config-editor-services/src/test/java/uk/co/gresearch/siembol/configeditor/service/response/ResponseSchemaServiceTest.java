@@ -4,177 +4,352 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
 
+import java.io.IOException;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class ResponseSchemaServiceTest {
     /**
      * {
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "test_rule",
-     *       "rule_version": 1,
-     *       "rule_author": "john",
-     *       "rule_description": "Test rule",
-     *       "evaluators": [
-     *         {
-     *           "evaluator_type": "fixed_evaluator",
-     *           "evaluator_attributes": {
-     *             "evaluation_result": "match"
-     *           }
+     *   "statusCode": "OK",
+     *   "attributes": {
+     *     "rules_schema": {
+     *       "type": "object",
+     *       "description": "Incident Response Rules",
+     *       "title": "rules",
+     *       "properties": {
+     *         "rules_version": {
+     *           "type": "integer",
+     *           "description": "Incident response rules version",
+     *           "default": 0
      *         },
-     *         {
-     *           "evaluator_type": "assignment_evaluator",
-     *           "evaluator_attributes": {
-     *             "assignment_type": "match_always",
-     *             "field_name": "test_field",
-     *             "json_path": "$..a"
-     *           }
+     *         "rules": {
+     *           "type": "array",
+     *           "items": {
+     *             "type": "object",
+     *             "description": "Response rule that should handle response to a siembol alert",
+     *             "title": "rule",
+     *             "properties": {
+     *               "rule_name": {
+     *                 "type": "string",
+     *                 "description": "ResponseRule name that uniquely identifies the rule"
+     *               },
+     *               "rule_author": {
+     *                 "type": "string",
+     *                 "description": "The owner of the rule"
+     *               },
+     *               "rule_version": {
+     *                 "type": "integer",
+     *                 "description": "The version of the rule",
+     *                 "default": 0
+     *               },
+     *               "rule_description": {
+     *                 "type": "string",
+     *                 "description": "The description of the rule"
+     *               },
+     *               "evaluators": {
+     *                 "type": "array",
+     *                 "items": {
+     *                   "type": "object",
+     *                   "description": "Response evaluator used in response rules",
+     *                   "title": "response evaluator",
+     *                   "oneOf": [
+     *                     {
+     *                       "type": "object",
+     *                       "title": "matching_evaluator",
+     *                       "properties": {
+     *                         "evaluator_type": {
+     *                           "enum": [
+     *                             "matching_evaluator"
+     *                           ],
+     *                           "default": "matching_evaluator"
+     *                         },
+     *                         "evaluator_attributes": {
+     *                           "type": "object",
+     *                           "description": "Attributes for matching evaluator",
+     *                           "title": "matching evaluator attributes",
+     *                           "properties": {
+     *                             "evaluation_result": {
+     *                               "enum": [
+     *                                 "match",
+     *                                 "filtered"
+     *                               ],
+     *                               "type": "string",
+     *                               "description": "Evaluation result returned by the evaluator after matching",
+     *                               "default": "match"
+     *                             },
+     *                             "matchers": {
+     *                               "type": "array",
+     *                               "items": {
+     *                                 "type": "object",
+     *                                 "description": "Matcher for matching fields in response rules",
+     *                                 "title": "matcher",
+     *                                 "properties": {
+     *                                   "matcher_type": {
+     *                                     "enum": [
+     *                                       "REGEX_MATCH",
+     *                                       "IS_IN_SET"
+     *                                     ],
+     *                                     "type": "string",
+     *                                     "description": "Type of matcher, either Regex match or list of strings (newline delimited)"
+     *                                   },
+     *                                   "is_negated": {
+     *                                     "type": "boolean",
+     *                                     "description": "The matcher is negated",
+     *                                     "default": false
+     *                                   },
+     *                                   "field": {
+     *                                     "type": "string",
+     *                                     "description": "Field on which the matcher will be evaluated"
+     *                                   },
+     *                                   "case_insensitive": {
+     *                                     "type": "boolean",
+     *                                     "description": "Use case insensitive string compare",
+     *                                     "default": false
+     *                                   },
+     *                                   "data": {
+     *                                     "type": "string",
+     *                                     "description": "Matcher expression as defined by matcher type"
+     *                                   }
+     *                                 },
+     *                                 "required": [
+     *                                   "data",
+     *                                   "field",
+     *                                   "matcher_type"
+     *                                 ]
+     *                               },
+     *                               "description": "Matchers of the evaluator",
+     *                               "minItems": 1
+     *                             }
+     *                           },
+     *                           "required": [
+     *                             "evaluation_result",
+     *                             "matchers"
+     *                           ]
+     *                         }
+     *                       },
+     *                       "required": [
+     *                         "evaluator_type",
+     *                         "evaluator_attributes"
+     *                       ]
+     *                     }
+     *                   ]
+     *                 },
+     *                 "description": "Evaluators of the rule",
+     *                 "minItems": 1
+     *               }
+     *             },
+     *             "required": [
+     *               "evaluators",
+     *               "rule_author",
+     *               "rule_name",
+     *               "rule_version"
+     *             ]
+     *           },
+     *           "description": "Response rules",
+     *           "minItems": 1
      *         }
+     *       },
+     *       "required": [
+     *         "rules",
+     *         "rules_version"
      *       ]
      *     }
-     *   ]
+     *   }
      * }
      */
     @Multiline
-    public static String testingRules;
+    public static String rulesSchema;
+
+    /**
+     * {"statusCode":"OK","attributes":{"test_schema":{  "type" : "object",  "description" : "Specification for testing responding rules",  "title" : "response test specification",  "properties" : {    "event" : {      "type" : "object",      "description" : "Alert for response alerts evaluation",      "title" : "json raw string"    }  },  "required" : [ "event" ]}}}
+     */
+    @Multiline
+    public static String testSchema;
 
     /**
      * {
-     *   "rule_name": "test_rule",
-     *   "rule_version": 1,
-     *   "rule_author": "john",
-     *   "rule_description": "Test rule",
-     *   "evaluators": [
-     *     {
-     *       "evaluator_type": "fixed_evaluator",
-     *       "evaluator_attributes": {
-     *         "evaluation_result": "match"
-     *       }
-     *     },
-     *     {
-     *       "evaluator_type": "assignment_evaluator",
-     *       "evaluator_attributes": {
-     *         "assignment_type": "match_always",
-     *         "field_name": "test_field",
-     *         "json_path": "$..a"
-     *       }
-     *     }
-     *   ]
+     *   "statusCode":"ERROR",
+     *   "attributes":{ "message" : "dummy"}}
      * }
      */
     @Multiline
-    public static String testingRule;
+    public static String errorMessage;
 
-    ResponseSchemaService.Builder builder;
-    ResponseSchemaService responseSchemaService;
+    /**
+     * {
+     *   "statusCode":"OK",
+     *   "attributes":{ "message" : "dummy"}}
+     * }
+     */
+    @Multiline
+    public static String okMessage;
+
+    private ResponseSchemaService.Builder builder;
+    private ResponseSchemaService responseSchemaService;
+    private HttpProvider httpProvider;
+    private String dummyJsonObject = "{ \"dummy\" : true }";
+    private String dummyJsonObject2 = "{ \"dummy2\" : true }";
+    private String emptyUiLayout = "{\"layout\": {}}";
+
 
     @Before
     public void setup() throws Exception {
-        builder = new ResponseSchemaService.Builder();
+        httpProvider = Mockito.mock(HttpProvider.class);
+        Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_SCHEMA.toString())))
+                .thenReturn(rulesSchema);
+        Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_TEST_SCHEMA.toString())))
+                .thenReturn(testSchema);
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+                .thenReturn(okMessage);
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
+                .thenReturn(okMessage);
+
+        builder = new ResponseSchemaService.Builder(httpProvider);
     }
 
     @Test
-    public void getSchemaNoUiConfig() throws Exception {
+    public void buildNoUiConfigOK() throws Exception {
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.getSchema();
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getRulesSchema());
+        ConfigEditorResult resultTestSchema = responseSchemaService.getTestSchema();
+        Assert.assertEquals(OK, resultTestSchema.getStatusCode());
+        Assert.assertNotNull(resultTestSchema.getAttributes());
+        Assert.assertNotNull(resultTestSchema.getAttributes().getTestSchema());
     }
 
     @Test
-    public void getSchemaWithValidUiConfig() throws Exception {
+    public void buildUiConfigOK() throws Exception {
         responseSchemaService = builder
-                .uiConfigSchema("{\"layout\": {}}")
+                .uiConfigSchema(emptyUiLayout)
+                .uiConfigTestSchema(emptyUiLayout)
                 .build();
+
         ConfigEditorResult result = responseSchemaService.getSchema();
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getRulesSchema());
+        ConfigEditorResult resultTestSchema = responseSchemaService.getTestSchema();
+        Assert.assertEquals(OK, resultTestSchema.getStatusCode());
+        Assert.assertNotNull(resultTestSchema.getAttributes());
+        Assert.assertNotNull(resultTestSchema.getAttributes().getTestSchema());
     }
 
-    @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
-    public void getSchemaWithInValidUiConfig() throws Exception {
-        responseSchemaService = builder
-                .uiConfigSchema("INVALID")
-                .build();
+    @Test(expected = java.lang.IllegalStateException.class)
+    public void buildInvalidUiConfig() throws Exception {
+        responseSchemaService = builder.uiConfigSchema("INVALID").build();
+    }
+
+    @Test(expected = java.lang.IllegalStateException.class)
+    public void buildInvalidUiTestConfig() throws Exception {
+        responseSchemaService = builder.uiConfigTestSchema("INVALID").build();
+    }
+
+    @Test(expected = java.lang.IllegalStateException.class)
+    public void buildErrorGetSchema() throws Exception {
+        Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_SCHEMA.toString())))
+                .thenReturn("errorMessage");
+        responseSchemaService = builder.build();
+    }
+
+    @Test(expected = java.lang.IllegalStateException.class)
+    public void buildErrorGetTestSchema() throws Exception {
+        Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_TEST_SCHEMA.toString())))
+                .thenReturn("errorMessage");
+        responseSchemaService = builder.build();
     }
 
     @Test
     public void validateRulesOk() throws Exception {
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfigurations(testingRules);
+        ConfigEditorResult result = responseSchemaService.validateConfigurations(dummyJsonObject);
         Assert.assertEquals(OK, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
     }
 
     @Test
-    public void validateRulesMissingEvaluator() throws Exception {
+    public void validateRulesError() throws Exception {
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+                .thenReturn(errorMessage);
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfigurations(
-                testingRules.replace("\"fixed_evaluator\"", "\"unsupported_evaluator\""));
+        ConfigEditorResult result = responseSchemaService.validateConfigurations(dummyJsonObject);
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getMessage());
     }
 
     @Test
-    public void validateRulesMissingRequiredProperties() throws Exception {
+    public void validateRulesException() throws Exception {
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+                .thenThrow(new IOException());
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfigurations(
-                testingRules.replace("\"evaluation_result\"", "\"unsupported_field\""));
-        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getMessage());
-    }
-
-    @Test
-    public void validateRulesInvalidJson() throws Exception {
-        responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfigurations("INVALID");
-        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getMessage());
+        ConfigEditorResult result = responseSchemaService.validateConfigurations(dummyJsonObject);
+        Assert.assertEquals(ERROR, result.getStatusCode());
     }
 
     @Test
     public void validateRuleOk() throws Exception {
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfiguration(testingRule);
+        ConfigEditorResult result = responseSchemaService.validateConfiguration(dummyJsonObject);
         Assert.assertEquals(OK, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
     }
 
     @Test
-    public void validateRuleMissingEvaluator() throws Exception {
+    public void validateRuleError() throws Exception {
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+                .thenReturn(errorMessage);
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfiguration(
-                testingRules.replace("\"fixed_evaluator\"", "\"unsupported_evaluator\""));
+        ConfigEditorResult result = responseSchemaService.validateConfiguration(dummyJsonObject);
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getMessage());
     }
 
     @Test
-    public void validateRuleMissingRequiredProperties() throws Exception {
+    public void testRulesOk() throws Exception {
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfiguration(
-                testingRules.replace("\"evaluation_result\"", "\"unsupported_field\""));
-        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getMessage());
+        ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
+        Assert.assertEquals(OK, result.getStatusCode());
     }
 
     @Test
-    public void validateRuleInvalidJson() throws Exception {
+    public void testRuleOk() throws Exception {
         responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.validateConfiguration("INVALID");
+        ConfigEditorResult result = responseSchemaService.testConfiguration(dummyJsonObject, dummyJsonObject2);
+        Assert.assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
+    public void testRulesError() throws Exception {
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
+                .thenReturn(errorMessage);
+        responseSchemaService = builder.build();
+        ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void testRulesException() throws Exception {
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
+                .thenThrow(new IOException());
+        responseSchemaService = builder.build();
+        ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
+        Assert.assertEquals(ERROR, result.getStatusCode());
+    }
+
+    @Test
+    public void testRuleError() throws Exception {
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
+                .thenReturn(errorMessage);
+        responseSchemaService = builder.build();
+        ConfigEditorResult result = responseSchemaService.testConfiguration(dummyJsonObject, dummyJsonObject2);
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 }

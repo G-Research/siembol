@@ -15,6 +15,10 @@ public interface RespondingCompiler {
 
     RespondingResult getSchema();
 
+    RespondingResult getTestSpecificationSchema();
+
+    RespondingResult testConfigurations(String rules, String testSpecification);
+
     RespondingResult validateConfiguration(String rule);
 
     default RespondingResult validateConfigurations(String rules) {

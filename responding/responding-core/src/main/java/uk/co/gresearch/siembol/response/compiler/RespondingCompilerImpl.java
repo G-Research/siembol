@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.response.compiler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
@@ -8,12 +9,14 @@ import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.UnionJsonType;
 import uk.co.gresearch.siembol.common.jsonschema.UnionJsonTypeOption;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
+import uk.co.gresearch.siembol.common.testing.StringTestingLogger;
 import uk.co.gresearch.siembol.common.testing.TestingLogger;
 import uk.co.gresearch.siembol.response.common.*;
 import uk.co.gresearch.siembol.response.engine.ResponseEngine;
 import uk.co.gresearch.siembol.response.engine.ResponseRule;
 import uk.co.gresearch.siembol.response.engine.RulesEngine;
 import uk.co.gresearch.siembol.response.model.ResponseEvaluatorDto;
+import uk.co.gresearch.siembol.response.model.ResponseTestSpecificationDto;
 import uk.co.gresearch.siembol.response.model.RuleDto;
 import uk.co.gresearch.siembol.response.model.RulesDto;
 
@@ -23,6 +26,14 @@ import java.util.stream.Collectors;
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
 
 public class RespondingCompilerImpl implements RespondingCompiler {
+    private static ObjectReader TEST_SPECIFICATION_READER = new ObjectMapper()
+            .readerFor(ResponseTestSpecificationDto.class);
+    private static final String TESTING_START_MSG = "Start testing on the event: %s";
+    private static final String TESTING_FINISHED_MSG = "The testing finished with the status: %s";
+    private static final String TEST_ALERT_ID_FORMAT_MSG = "test-%s";
+    private static final String ERROR_FORMAT_MSG = "error message: %s";
+    private static final String ALERT_FORMAT_MSG = "result:%s alert: %s";
+
     private static final String EVALUATOR_TITLE = "response evaluator";
     private static final ObjectReader RULES_READER = new ObjectMapper().readerFor(RulesDto.class);
     private static final String RULES_WRAP_MSG = "{\"rules_version\":1, \"rules\":[%s]}";
@@ -31,6 +42,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
     private final Map<String, RespondingEvaluatorValidator> respondingEvaluatorValidatorsMap;
     private final String rulesJsonSchemaStr;
     private final JsonSchemaValidator rulesSchemaValidator;
+    private final JsonSchemaValidator testSpecificationValidator;
     private final MetricFactory metricFactory;
 
     public RespondingCompilerImpl(Builder builder) {
@@ -39,6 +51,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         this.rulesJsonSchemaStr = builder.rulesJsonSchemaStr;
         this.rulesSchemaValidator = builder.rulesSchemaValidator;
         this.metricFactory = builder.metricFactory;
+        this.testSpecificationValidator = builder.testSpecificationValidator;
     }
 
     private ResponseRule createResponseRule(RuleDto ruleDto, TestingLogger logger) {
@@ -78,7 +91,14 @@ public class RespondingCompilerImpl implements RespondingCompiler {
                     .map(x -> createResponseRule(x, logger))
                     .collect(Collectors.toList());
 
+            RespondingResultAttributes metadataAttributes = new RespondingResultAttributes();
+            metadataAttributes.setRulesVersion(rulesDto.getRulesVersion());
+            metadataAttributes.setJsonRules(rules);
+            metadataAttributes.setCompiledTime(System.currentTimeMillis());
+            metadataAttributes.setNumberOfRules(responseRules.size());
+
             ResponseEngine responseEngine = new RulesEngine.Builder()
+                    .metadata(metadataAttributes)
                     .rules(responseRules)
                     .metricFactory(metricFactory)
                     .testingLogger(logger)
@@ -97,6 +117,55 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         RespondingResultAttributes attributes = new RespondingResultAttributes();
         attributes.setRulesSchema(rulesJsonSchemaStr);
         return new RespondingResult(OK, attributes);
+    }
+
+    @Override
+    public RespondingResult getTestSpecificationSchema() {
+        RespondingResultAttributes attributes = new RespondingResultAttributes();
+        attributes.setTestSpecificationSchema(testSpecificationValidator.getJsonSchema().getAttributes().getJsonSchema());
+        return new RespondingResult(OK, attributes);
+    }
+
+    @Override
+    public RespondingResult testConfigurations(String rules, String testSpecification) {
+        SiembolResult validationResult = testSpecificationValidator.validate(testSpecification);
+        if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
+
+            return RespondingResult.fromSiembolResult(validationResult);
+        }
+        try {
+            ResponseTestSpecificationDto testSpecificationDto = TEST_SPECIFICATION_READER.readValue(testSpecification);
+            String alertId = String.format(TEST_ALERT_ID_FORMAT_MSG, UUID.randomUUID().toString());
+            ResponseAlert responseAlert = ResponseAlert.fromOriginalString(alertId,
+                    testSpecificationDto.getEventContent());
+
+            TestingLogger logger = new StringTestingLogger();
+
+            logger.appendMessage(String.format(TESTING_START_MSG, responseAlert.toString()));
+            RespondingResult rulesEngineResult = compile(rules, logger);
+            if (rulesEngineResult.getStatusCode() != OK) {
+                return rulesEngineResult;
+            }
+
+            RespondingResult result = rulesEngineResult.getAttributes().getRespondingEvaluator()
+                    .evaluate(responseAlert);
+
+            logger.appendMessage(String.format(TESTING_FINISHED_MSG, result.getStatusCode()));
+            if (result.getStatusCode() != OK) {
+                logger.appendMessage(String.format(ERROR_FORMAT_MSG, result.getAttributes().getMessage()));
+            } else {
+                logger.appendMessage(String.format(ALERT_FORMAT_MSG,
+                        result.getAttributes().getResult().toString(),
+                        result.getAttributes().getAlert().toString()));
+            }
+
+            RespondingResultAttributes returnAttributes = new RespondingResultAttributes();
+            returnAttributes.setMessage(logger.getLog());
+            return new RespondingResult(OK, returnAttributes);
+        }
+        catch (Exception e) {
+            return RespondingResult.fromException(e);
+        }
     }
 
     @Override
@@ -124,7 +193,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return new RespondingResult(OK, attributes);
     }
 
-    private String wrapRuleToRules(String ruleStr) {
+    public static String wrapRuleToRules(String ruleStr) {
         return String.format(RULES_WRAP_MSG, ruleStr);
     }
 
@@ -164,6 +233,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         private Map<String, RespondingEvaluatorValidator> respondingEvaluatorValidatorsMap = new HashMap<>();
         private String rulesJsonSchemaStr;
         private JsonSchemaValidator rulesSchemaValidator;
+        private JsonSchemaValidator testSpecificationValidator;
         private MetricFactory metricFactory;
 
         public Builder metricFactory(MetricFactory metricFactory) {
@@ -199,7 +269,12 @@ public class RespondingCompilerImpl implements RespondingCompiler {
                 throw new IllegalArgumentException(EMPTY_EVALUATORS);
             }
 
-            respondingEvaluatorFactoriesMap.forEach((k, v) -> addRespondingEvaluatorValidator(v));
+            testSpecificationValidator = new SiembolJsonSchemaValidator(ResponseTestSpecificationDto.class);
+
+            respondingEvaluatorFactoriesMap.forEach((k, v) -> {
+                addRespondingEvaluatorValidator(v);
+                v.registerMetrics(metricFactory);
+            });
 
             List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorValidatorsMap.keySet().stream()
                     .map(x ->

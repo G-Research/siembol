@@ -11,12 +11,17 @@
 	 <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.46-SNAPSHOT</version>
+        <version>1.49-SNAPSHOT</version>
     </parent>
     <modules>
         <module>responding-core</module>
     </modules>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.plugin</groupId>
+            <artifactId>spring-plugin-core</artifactId>
+            <version>2.0.0.RELEASE</version>
+        </dependency>
     </dependencies>
    <build>
         <plugins>

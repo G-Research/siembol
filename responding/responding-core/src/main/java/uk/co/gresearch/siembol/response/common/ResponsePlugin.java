@@ -1,7 +1,12 @@
 package uk.co.gresearch.siembol.response.common;
 
-import java.util.List;
+import org.springframework.plugin.core.Plugin;
 
-public interface ResponsePlugin {
-    List<RespondingEvaluatorFactory> getRespondingEvaluatorFactories();
+public interface ResponsePlugin extends Plugin<String> {
+    RespondingResult getRespondingEvaluatorFactories();
+
+    @Override
+    default boolean supports(String str) {
+        return true;
+    }
 }
