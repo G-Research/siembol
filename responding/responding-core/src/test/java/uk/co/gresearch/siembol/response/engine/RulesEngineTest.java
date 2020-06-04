@@ -75,6 +75,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -96,6 +98,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -116,6 +120,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(1, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -137,6 +143,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(1, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -157,6 +165,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -178,6 +188,8 @@ public class RulesEngineTest {
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -190,12 +202,15 @@ public class RulesEngineTest {
         Mockito.verify(rule, times(1)).evaluate(alert);
         Mockito.verify(ruleNext, times(1)).evaluate(alert);
 
-        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
+        Assert.assertEquals(NO_MATCH, result.getAttributes().getResult());
         Assert.assertNotNull(result.getAttributes().getMessage());
         Assert.assertEquals(1, metricFactory
                 .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
         Assert.assertEquals(1, metricFactory
+                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
         Assert.assertEquals(0, metricFactory
                 .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());

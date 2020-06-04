@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 
 @Attributes(title = "fixed evaluator attributes", description = "Attributes for fixed evaluator")
-public class FixedEvaluatorAttributesDto {
+public class FixedResultEvaluatorAttributesDto {
     @JsonProperty("evaluation_result")
     @Attributes(required = true, description = "Evaluation result returned by the evaluator")
     private ResponseEvaluationResult responseEvaluationResult;

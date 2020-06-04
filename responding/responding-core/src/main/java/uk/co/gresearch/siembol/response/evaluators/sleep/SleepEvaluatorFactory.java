@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.evaluators.fixed;
+package uk.co.gresearch.siembol.response.evaluators.sleep;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -7,26 +7,26 @@ import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
-import uk.co.gresearch.siembol.response.model.FixedEvaluatorAttributesDto;
+import uk.co.gresearch.siembol.response.model.SleepEvaluatorAttributesDto;
 
-public class FixedEvaluatorFactory implements RespondingEvaluatorFactory {
+public class SleepEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
-            .readerFor(FixedEvaluatorAttributesDto.class);
+            .readerFor(SleepEvaluatorAttributesDto.class);
     private final SiembolJsonSchemaValidator attributesSchema;
 
-    public FixedEvaluatorFactory() throws Exception {
-        attributesSchema = new SiembolJsonSchemaValidator(FixedEvaluatorAttributesDto.class);
+    public SleepEvaluatorFactory() throws Exception {
+        attributesSchema = new SiembolJsonSchemaValidator(SleepEvaluatorAttributesDto.class);
     }
 
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
             SiembolResult validationResult = attributesSchema.validate(attributes);
-            if (validationResult.getStatusCode() !=  SiembolResult.StatusCode.OK) {
+            if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
                 return RespondingResult.fromSiembolResult(validationResult);
             }
-            FixedEvaluatorAttributesDto attributesDto = JSON_ATTRIBUTES_READER.readValue(attributes);
-            FixedEvaluator evaluator = new FixedEvaluator(attributesDto.getResponseEvaluationResult());
+            SleepEvaluatorAttributesDto attributesDto = JSON_ATTRIBUTES_READER.readValue(attributes);
+            SleepEvaluator evaluator = new SleepEvaluator(attributesDto);
             return RespondingResult.fromEvaluator(evaluator);
         } catch (Exception e) {
             return RespondingResult.fromException(e);
@@ -35,7 +35,7 @@ public class FixedEvaluatorFactory implements RespondingEvaluatorFactory {
 
     @Override
     public RespondingResult getType() {
-        return RespondingResult.fromEvaluatorType(ProvidedEvaluators.FIXED_EVALUATOR.toString());
+        return RespondingResult.fromEvaluatorType(ProvidedEvaluators.SLEEP_EVALUATOR.toString());
     }
 
     @Override

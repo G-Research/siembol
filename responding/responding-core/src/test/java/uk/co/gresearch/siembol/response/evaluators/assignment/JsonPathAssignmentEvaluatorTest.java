@@ -19,7 +19,7 @@ import java.util.Arrays;
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.MATCH;
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.NO_MATCH;
 
-public class AssignmentEvaluatorTest {
+public class JsonPathAssignmentEvaluatorTest {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(AssignmentEvaluatorAttributesDto.class);
     /**
@@ -32,7 +32,7 @@ public class AssignmentEvaluatorTest {
     @Multiline
     public static String attributes;
 
-    private AssignmentEvaluator evaluator;
+    private JsonPathAssignmentEvaluator evaluator;
     private ResponseAlert alert = new ResponseAlert();
     private AssignmentEvaluatorAttributesDto attributesDto;
 
@@ -42,7 +42,7 @@ public class AssignmentEvaluatorTest {
         alert.put("is_alert", true);
         alert.put("a", "secret");
         attributesDto = JSON_ATTRIBUTES_READER.readValue(attributes);
-        evaluator = new AssignmentEvaluator(attributesDto);
+        evaluator = new JsonPathAssignmentEvaluator(attributesDto);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class AssignmentEvaluatorTest {
     @Test
     public void testAssignmentEvalautorMatchEmptyPath() {
         attributesDto.setAssignmentType(JsonPathAssignmentTypeDto.MATCH_ALWAYS);
-        evaluator = new AssignmentEvaluator(attributesDto);
+        evaluator = new JsonPathAssignmentEvaluator(attributesDto);
         alert.remove("a");
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
@@ -77,7 +77,7 @@ public class AssignmentEvaluatorTest {
     @Test
     public void testAssignmentEvalautorNoMatchEmptyPath() {
         attributesDto.setAssignmentType(JsonPathAssignmentTypeDto.NO_MATCH_WHEN_EMPTY);
-        evaluator = new AssignmentEvaluator(attributesDto);
+        evaluator = new JsonPathAssignmentEvaluator(attributesDto);
         alert.remove("a");
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
@@ -92,7 +92,7 @@ public class AssignmentEvaluatorTest {
     @Test
     public void testAssignmentEvalautorErrorEmptyPath() {
         attributesDto.setAssignmentType(JsonPathAssignmentTypeDto.ERROR_MATCH_WHEN_EMPTY);
-        evaluator = new AssignmentEvaluator(attributesDto);
+        evaluator = new JsonPathAssignmentEvaluator(attributesDto);
         alert.remove("a");
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
@@ -102,7 +102,7 @@ public class AssignmentEvaluatorTest {
     @Test
     public void testAssignmentEvalautorMatchNonEmptyList() {
         attributesDto.setJsonPath("$..users");
-        evaluator = new AssignmentEvaluator(attributesDto);
+        evaluator = new JsonPathAssignmentEvaluator(attributesDto);
         alert.put("users", Arrays.asList("john", "peter", "sam"));
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
@@ -119,7 +119,7 @@ public class AssignmentEvaluatorTest {
     @Test
     public void testAssignmentEvalautorMatchEmptyList() {
         attributesDto.setJsonPath("$..users");
-        evaluator = new AssignmentEvaluator(attributesDto);
+        evaluator = new JsonPathAssignmentEvaluator(attributesDto);
         alert.put("users", new ArrayList<String>());
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());

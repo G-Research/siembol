@@ -317,6 +317,10 @@ public class ResponseSchemaServiceTest {
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
         Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTestResultOutput());
+        Assert.assertNotNull(result.getAttributes().getTestResultRawOutput());
+        Assert.assertEquals("dummy", result.getAttributes().getTestResultOutput());
+        Assert.assertTrue(result.getAttributes().getTestResultComplete());
     }
 
     @Test

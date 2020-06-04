@@ -1,5 +1,8 @@
 package uk.co.gresearch.siembol.configeditor.service.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
@@ -7,6 +10,7 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
+import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
 
 import java.lang.invoke.MethodHandles;
@@ -15,9 +19,14 @@ import java.util.Optional;
 public class ResponseSchemaService implements ConfigSchemaService {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
+    private static final ObjectWriter ATTRIBUTES_WRITER = new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .writerFor(RespondingResultAttributes.class);
     private static final String INIT_START_MESSAGE = "Response schema service initialisation started";
     private static final String INIT_COMPLETED_MESSAGE = "Response schema service initialisation completed";
     private static final String INIT_ERROR_MESSAGE = "Response schema service initialisation error";
+    private static final String RULES_SCHEMA_LOG = "rules schema: {}";
+    private static final String TEST_SPECIFICATION_SCHEMA_LOG = "test specification schema: {}";
 
     private final ResponseHttpProvider responseHttpProvider;
     private final String rulesSchema;
@@ -67,7 +76,15 @@ public class ResponseSchemaService implements ConfigSchemaService {
     public ConfigEditorResult testConfigurations(String configurations, String testSpecification) {
         try {
             RespondingResult result = responseHttpProvider.testRules(configurations, testSpecification);
-            return fromRespondingResult(result);
+            ConfigEditorResult configEditorResult = fromRespondingResult(result);
+            if (configEditorResult.getStatusCode() == ConfigEditorResult.StatusCode.OK) {
+                configEditorResult.getAttributes().setTestResultOutput(result.getAttributes().getMessage());
+                configEditorResult.getAttributes().setTestResultComplete(true);
+                result.getAttributes().setMessage(null);
+                configEditorResult.getAttributes()
+                        .setTestResultRawOutput(ATTRIBUTES_WRITER.writeValueAsString(result.getAttributes()));
+            }
+            return configEditorResult;
         } catch (Exception e) {
             return ConfigEditorResult.fromException(e);
         }
@@ -113,8 +130,8 @@ public class ResponseSchemaService implements ConfigSchemaService {
             RespondingResult testSchemaResult = responseHttpProvider
                     .getTestSchema(Optional.ofNullable(uiConfigTestSchema));
 
-            LOG.info(ruleSchemaResult.getAttributes().getRulesSchema());
-            LOG.info(testSchemaResult.getAttributes().getTestSpecificationSchema());
+            LOG.info(RULES_SCHEMA_LOG, ruleSchemaResult.getAttributes().getRulesSchema());
+            LOG.info(TEST_SPECIFICATION_SCHEMA_LOG, testSchemaResult.getAttributes().getTestSpecificationSchema());
             if (ruleSchemaResult.getStatusCode() != RespondingResult.StatusCode.OK
                     || ruleSchemaResult.getAttributes().getRulesSchema() == null
                     || testSchemaResult.getStatusCode() != RespondingResult.StatusCode.OK

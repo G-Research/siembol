@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.compiler;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
@@ -130,7 +129,6 @@ public class RespondingCompilerImpl implements RespondingCompiler {
     public RespondingResult testConfigurations(String rules, String testSpecification) {
         SiembolResult validationResult = testSpecificationValidator.validate(testSpecification);
         if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
-
             return RespondingResult.fromSiembolResult(validationResult);
         }
         try {
@@ -147,7 +145,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
                 return rulesEngineResult;
             }
 
-            RespondingResult result = rulesEngineResult.getAttributes().getRespondingEvaluator()
+            RespondingResult result = rulesEngineResult.getAttributes().getResponseEngine()
                     .evaluate(responseAlert);
 
             logger.appendMessage(String.format(TESTING_FINISHED_MSG, result.getStatusCode()));
@@ -285,6 +283,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
                                             .getAttributes().getAttributesSchema()))
                     .collect(Collectors.toList());
 
+            evaluatorOptions.sort(Comparator.comparing(x -> x.getSelectorName()));
             UnionJsonType options = new UnionJsonType(EVALUATOR_TITLE, evaluatorOptions);
             rulesSchemaValidator = new SiembolJsonSchemaValidator(RulesDto.class, Optional.of(Arrays.asList(options)));
             rulesJsonSchemaStr = rulesSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();

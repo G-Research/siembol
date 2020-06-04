@@ -39,7 +39,7 @@ public class TableFormatterEvaluatorFactoryTest {
         RespondingResult result = factory.getType();
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
-        Assert.assertEquals(ProvidedEvaluators.TABLE_FORMATTER_EVALUATOR.toString(),
+        Assert.assertEquals(ProvidedEvaluators.MARKDOWN_TABLE_FORMATTER_EVALUATOR.toString(),
                 result.getAttributes().getEvaluatorType());
     }
 

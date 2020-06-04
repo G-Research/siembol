@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.49-SNAPSHOT</version>
+        <version>1.52-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>alerting-core</artifactId>
-            <version>1.49-SNAPSHOT</version>
+            <version>1.52-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

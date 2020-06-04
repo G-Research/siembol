@@ -38,12 +38,12 @@ public class ArrayTableFormatterEvaluatorFactoryTest {
         RespondingResult result = factory.getType();
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
-        Assert.assertEquals(ProvidedEvaluators.ARRAY_TABLE_FORMATTER_EVALUATOR.toString(),
+        Assert.assertEquals(ProvidedEvaluators.ARRAY_MARKDOWN_TABLE_FORMATTER_EVALUATOR.toString(),
                 result.getAttributes().getEvaluatorType());
     }
 
     @Test
-    public void testGetAttributesJsonSchema(){
+    public void testGetAttributesJsonSchema() {
         RespondingResult result = factory.getAttributesJsonSchema();
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
@@ -51,7 +51,7 @@ public class ArrayTableFormatterEvaluatorFactoryTest {
     }
 
     @Test
-    public void testCreateInstance(){
+    public void testCreateInstance() {
         RespondingResult result = factory.createInstance(attributes);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
@@ -59,19 +59,19 @@ public class ArrayTableFormatterEvaluatorFactoryTest {
     }
 
     @Test
-    public void testValidateAttributesOk(){
+    public void testValidateAttributesOk() {
         RespondingResult result = factory.validateAttributes(attributes);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
     }
 
     @Test
-    public void testValidateAttributesInvalidJson(){
+    public void testValidateAttributesInvalidJson() {
         RespondingResult result = factory.validateAttributes("INVALID");
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
     }
 
     @Test
-    public void testValidateAttributesInvalid(){
+    public void testValidateAttributesInvalid() {
         RespondingResult result = factory.validateAttributes(
                 attributes.replace("\"field_name\"", "\"unsupported\""));
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());

@@ -48,7 +48,7 @@ public class MatchingEvaluatorFactoryTest {
     }
 
     @Test
-    public void testGetAttributesJsonSchema(){
+    public void testGetAttributesJsonSchema() {
         RespondingResult result = factory.getAttributesJsonSchema();
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
@@ -56,7 +56,7 @@ public class MatchingEvaluatorFactoryTest {
     }
 
     @Test
-    public void testCreateInstance(){
+    public void testCreateInstance() {
         RespondingResult result = factory.createInstance(attributes);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
@@ -64,19 +64,19 @@ public class MatchingEvaluatorFactoryTest {
     }
 
     @Test
-    public void testValidateAttributesOk(){
+    public void testValidateAttributesOk() {
         RespondingResult result = factory.validateAttributes(attributes);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
     }
 
     @Test
-    public void testValidateAttributesInvalidJson(){
+    public void testValidateAttributesInvalidJson() {
         RespondingResult result = factory.validateAttributes("INVALID");
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
     }
 
     @Test
-    public void testValidateAttributesInvalid(){
+    public void testValidateAttributesInvalid() {
         RespondingResult result = factory.validateAttributes(
                 attributes.replace("\"match\"", "\"unsupported\""));
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());

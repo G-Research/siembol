@@ -5,7 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.response.common.*;
+import uk.co.gresearch.siembol.response.evaluators.fixed.FixedResultEvaluator;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.FILTERED;
@@ -30,8 +33,6 @@ public class ResponseRuleTest {
     TestMetricFactory metricFactory;
     RespondingResult evaluatorResult;
     RespondingResultAttributes resultAttributes;
-    RespondingResult evaluatorNextResult;
-    RespondingResultAttributes resultNextAttributes;
 
     @Before
     public void setUp() {
@@ -45,26 +46,20 @@ public class ResponseRuleTest {
         evaluator = Mockito.mock(Evaluable.class);
         when(evaluator.evaluate(alert)).thenReturn(evaluatorResult);
 
-        resultNextAttributes = new RespondingResultAttributes();
-        resultNextAttributes.setAlert(alert);
-        evaluatorNextResult = new RespondingResult(RespondingResult.StatusCode.OK, resultNextAttributes);
-        evaluatorNext = Mockito.mock(Evaluable.class);
-        when(evaluatorNext.evaluate(alert)).thenReturn(evaluatorNextResult);
-
         metricFactory = new TestMetricFactory();
         builder = new ResponseRule.Builder()
                 .metricFactory(metricFactory)
                 .ruleName(ruleName)
-                .ruleVersion(ruleVerion)
-                .addEvaluator(evaluator);
-        rule = builder.build();
+                .ruleVersion(ruleVerion);
+
     }
 
     @Test
     public void testOneEvaluatorNoMatch() {
-        resultAttributes.setResult(NO_MATCH);
+        builder.addEvaluator(new FixedResultEvaluator(NO_MATCH));
+        rule = builder.build();
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
+
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(NO_MATCH, result.getAttributes().getResult());
@@ -76,15 +71,14 @@ public class ResponseRuleTest {
 
     @Test
     public void testTwoEvaluatorsNoMatch() {
-        resultAttributes.setResult(MATCH);
-        resultNextAttributes.setResult(NO_MATCH);
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
+        builder.addEvaluator(new FixedResultEvaluator(NO_MATCH));
+        rule = builder.build();
 
         builder.addEvaluator(evaluatorNext);
         rule = builder.build();
 
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
-        Mockito.verify(evaluatorNext, times(1)).evaluate(alert);
 
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
@@ -97,14 +91,17 @@ public class ResponseRuleTest {
 
     @Test
     public void testOneEvaluatorMatch() {
-        resultAttributes.setResult(MATCH);
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
+        rule = builder.build();
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
-        Assert.assertEquals(3, result.getAttributes().getAlert().size());
-        Assert.assertEquals(fullRuleName, alert.get(ResponseFields.RULE_NAME.toString()));
+        Assert.assertEquals(4, result.getAttributes().getAlert().size());
+        Assert.assertEquals(fullRuleName, result.getAttributes().getAlert()
+                .get(ResponseFields.FULL_RULE_NAME.toString()));
+        Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
+
         Assert.assertEquals(1, metricFactory.getCounter(metchesMetricName).getValue());
         Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
         Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
@@ -112,21 +109,19 @@ public class ResponseRuleTest {
 
     @Test
     public void testTwoEvaluatorsMatch() {
-        resultAttributes.setResult(MATCH);
-        resultNextAttributes.setResult(MATCH);
-
-        builder.addEvaluator(evaluatorNext);
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
         rule = builder.build();
-
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
-        Mockito.verify(evaluatorNext, times(1)).evaluate(alert);
 
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
-        Assert.assertEquals(3, result.getAttributes().getAlert().size());
-        Assert.assertEquals(fullRuleName, alert.get(ResponseFields.RULE_NAME.toString()));
+        Assert.assertEquals(4, result.getAttributes().getAlert().size());
+        Assert.assertEquals(fullRuleName, result.getAttributes().getAlert()
+                .get(ResponseFields.FULL_RULE_NAME.toString()));
+        Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
+
         Assert.assertEquals(1, metricFactory.getCounter(metchesMetricName).getValue());
         Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
         Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
@@ -134,13 +129,18 @@ public class ResponseRuleTest {
 
     @Test
     public void testOneEvaluatorFiltered() {
-        resultAttributes.setResult(ResponseEvaluationResult.FILTERED);
+        builder.addEvaluator(new FixedResultEvaluator(FILTERED));
+        rule = builder.build();
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
+
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(FILTERED, result.getAttributes().getResult());
-        Assert.assertEquals(2, result.getAttributes().getAlert().size());
+        Assert.assertEquals(4, result.getAttributes().getAlert().size());
+        Assert.assertEquals(fullRuleName, result.getAttributes().getAlert()
+                .get(ResponseFields.FULL_RULE_NAME.toString()));
+        Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
+
         Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
         Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
         Assert.assertEquals(1, metricFactory.getCounter(filteredMetricName).getValue());
@@ -148,20 +148,18 @@ public class ResponseRuleTest {
 
     @Test
     public void testTwoEvaluatorsFiltered() {
-        resultAttributes.setResult(MATCH);
-        resultNextAttributes.setResult(FILTERED);
-
-        builder.addEvaluator(evaluatorNext);
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
+        builder.addEvaluator(new FixedResultEvaluator(FILTERED));
         rule = builder.build();
-
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
-        Mockito.verify(evaluatorNext, times(1)).evaluate(alert);
 
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(FILTERED, result.getAttributes().getResult());
-        Assert.assertEquals(2, result.getAttributes().getAlert().size());
+        Assert.assertEquals(4, result.getAttributes().getAlert().size());
+        Assert.assertEquals(fullRuleName, result.getAttributes().getAlert()
+                .get(ResponseFields.FULL_RULE_NAME.toString()));
+        Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
         Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
         Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
         Assert.assertEquals(1, metricFactory.getCounter(filteredMetricName).getValue());
@@ -170,8 +168,10 @@ public class ResponseRuleTest {
     @Test
     public void testOneEvaluatorError() {
         when(evaluator.evaluate(alert)).thenReturn(RespondingResult.fromException(new IllegalStateException()));
+        builder.addEvaluator(evaluator);
+        rule = builder.build();
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
+        Mockito.verify(evaluator, times(1)).evaluate(any());
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
@@ -182,14 +182,12 @@ public class ResponseRuleTest {
 
     @Test
     public void testTwoEvaluatorsError() {
-        resultAttributes.setResult(MATCH);
-        when(evaluatorNext.evaluate(alert)).thenReturn(RespondingResult.fromException(new IllegalStateException()));
-        builder.addEvaluator(evaluatorNext);
+        when(evaluator.evaluate(alert)).thenReturn(RespondingResult.fromException(new IllegalStateException()));
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
+        builder.addEvaluator(evaluator);
         rule = builder.build();
-
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
-        Mockito.verify(evaluatorNext, times(1)).evaluate(alert);
+        Mockito.verify(evaluator, times(1)).evaluate(any());
 
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
@@ -203,8 +201,10 @@ public class ResponseRuleTest {
     @Test
     public void testOneEvaluatorException() {
         when(evaluator.evaluate(alert)).thenThrow(new IllegalStateException());
+        builder.addEvaluator(evaluator);
+        rule = builder.build();
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
+        Mockito.verify(evaluator, times(1)).evaluate(any());
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
@@ -215,14 +215,12 @@ public class ResponseRuleTest {
 
     @Test
     public void testTwoEvaluatorsException() {
-        resultAttributes.setResult(MATCH);
-        when(evaluatorNext.evaluate(alert)).thenThrow(new IllegalStateException());
-        builder.addEvaluator(evaluatorNext);
+        when(evaluator.evaluate(alert)).thenThrow(new IllegalStateException());
+        builder.addEvaluator(new FixedResultEvaluator(MATCH));
+        builder.addEvaluator(evaluator);
         rule = builder.build();
-
         RespondingResult result = rule.evaluate(alert);
-        Mockito.verify(evaluator, times(1)).evaluate(alert);
-        Mockito.verify(evaluatorNext, times(1)).evaluate(alert);
+        Mockito.verify(evaluator, times(1)).evaluate(any());
 
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());

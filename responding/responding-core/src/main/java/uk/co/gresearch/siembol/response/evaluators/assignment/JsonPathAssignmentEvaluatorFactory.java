@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.evaluators.markdowntable;
+package uk.co.gresearch.siembol.response.evaluators.assignment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -7,15 +7,16 @@ import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
-import uk.co.gresearch.siembol.response.model.TableFormatterEvaluatorAttributesDto;
+import uk.co.gresearch.siembol.response.model.AssignmentEvaluatorAttributesDto;
 
-public class TableFormatterEvaluatorFactory implements RespondingEvaluatorFactory {
+
+public class JsonPathAssignmentEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
-            .readerFor(TableFormatterEvaluatorAttributesDto.class);
+            .readerFor(AssignmentEvaluatorAttributesDto.class);
     private final SiembolJsonSchemaValidator attributesSchema;
 
-    public TableFormatterEvaluatorFactory() throws Exception {
-        attributesSchema = new SiembolJsonSchemaValidator(TableFormatterEvaluatorAttributesDto.class);
+    public JsonPathAssignmentEvaluatorFactory() throws Exception {
+        attributesSchema = new SiembolJsonSchemaValidator(AssignmentEvaluatorAttributesDto.class);
     }
 
     @Override
@@ -25,17 +26,9 @@ public class TableFormatterEvaluatorFactory implements RespondingEvaluatorFactor
             if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
                 return RespondingResult.fromSiembolResult(validationResult);
             }
-            TableFormatterEvaluatorAttributesDto attributesDto = JSON_ATTRIBUTES_READER.readValue(attributes);
-            TableFormatter.Builder builder = new TableFormatter.Builder()
-                    .fieldName(attributesDto.getFieldName())
-                    .tableName(attributesDto.getTableName())
-                    .columnNames(attributesDto.getFieldsColumnName(), attributesDto.getValuesColumnName());
-
-            if (attributesDto.getFieldFilterDto() != null) {
-                builder.patternFilter(attributesDto.getFieldFilterDto().getIncludingFields(),
-                        attributesDto.getFieldFilterDto().getExcludingFields());
-            }
-            return RespondingResult.fromEvaluator(builder.build());
+            AssignmentEvaluatorAttributesDto attributesDto = JSON_ATTRIBUTES_READER.readValue(attributes);
+            JsonPathAssignmentEvaluator evaluator = new JsonPathAssignmentEvaluator(attributesDto);
+            return RespondingResult.fromEvaluator(evaluator);
         } catch (Exception e) {
             return RespondingResult.fromException(e);
         }
@@ -43,7 +36,7 @@ public class TableFormatterEvaluatorFactory implements RespondingEvaluatorFactor
 
     @Override
     public RespondingResult getType() {
-        return RespondingResult.fromEvaluatorType(ProvidedEvaluators.MARKDOWN_TABLE_FORMATTER_EVALUATOR.toString());
+        return RespondingResult.fromEvaluatorType(ProvidedEvaluators.JSON_PATH_ASSIGNMENT_EVALUATOR.toString());
     }
 
     @Override

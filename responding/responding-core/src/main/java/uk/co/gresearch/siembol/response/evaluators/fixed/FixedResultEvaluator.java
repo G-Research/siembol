@@ -5,9 +5,9 @@ import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.ResponseAlert;
 
-public class FixedEvaluator implements Evaluable {
+public class FixedResultEvaluator implements Evaluable {
     private final ResponseEvaluationResult returnResult;
-    public FixedEvaluator(ResponseEvaluationResult returnResult) {
+    public FixedResultEvaluator(ResponseEvaluationResult returnResult) {
         this.returnResult = returnResult;
     }
 

@@ -36,8 +36,10 @@ public class ResponseRule implements Evaluable {
 
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
-        ResponseAlert currentAlert = alert;
+        ResponseAlert currentAlert = (ResponseAlert)alert.clone();
         LOG.debug("Trying to evaluate rule {} with alert {}", fullRuleName, alert.toString());
+        currentAlert.put(ResponseFields.RULE_NAME.toString(), ruleName);
+        currentAlert.put(ResponseFields.FULL_RULE_NAME.toString(), fullRuleName);
 
         for (Evaluable evaluator: evaluators) {
             try {
@@ -52,8 +54,9 @@ public class ResponseRule implements Evaluable {
                 switch (result.getAttributes().getResult()) {
                     case FILTERED:
                         filtersCounter.increment();
+                        return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.FILTERED, currentAlert);
                     case NO_MATCH:
-                        return RespondingResult.fromEvaluationResult(result.getAttributes().getResult(), currentAlert);
+                        return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, alert);
                 }
                 currentAlert = result.getAttributes().getAlert();
             } catch (Exception e) {
@@ -62,7 +65,6 @@ public class ResponseRule implements Evaluable {
             }
         }
 
-        currentAlert.put(ResponseFields.RULE_NAME.toString(), fullRuleName);
         matchesCounter.increment();
         String msg = String.format("the rule: %s matched", fullRuleName);
         LOG.info(msg);

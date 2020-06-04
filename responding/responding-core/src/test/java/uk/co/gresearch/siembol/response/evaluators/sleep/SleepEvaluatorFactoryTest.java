@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.evaluators.throttling;
+package uk.co.gresearch.siembol.response.evaluators.sleep;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
@@ -6,23 +6,23 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
+import uk.co.gresearch.siembol.response.evaluators.throttling.AlertThrottlingEvaluatorFactory;
 
-public class AlertThrottlingEvaluatorFactoryTest {
+public class SleepEvaluatorFactoryTest {
     /**
      * {
-     *   "suppressing_key": "${field1}_${field2}",
      *   "time_unit_type": "seconds",
-     *   "suppression_time": 5
+     *   "sleeping_time": 5
      * }
      */
     @Multiline
     public static String attributes;
 
-    private AlertThrottlingEvaluatorFactory factory;
+    private SleepEvaluatorFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        factory = new AlertThrottlingEvaluatorFactory();
+        factory = new SleepEvaluatorFactory();
     }
 
     @Test
@@ -30,7 +30,7 @@ public class AlertThrottlingEvaluatorFactoryTest {
         RespondingResult result = factory.getType();
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
-        Assert.assertEquals(ProvidedEvaluators.ALERT_THROTTLING_EVALUATOR.toString(),
+        Assert.assertEquals(ProvidedEvaluators.SLEEP_EVALUATOR.toString(),
                 result.getAttributes().getEvaluatorType());
     }
 
@@ -65,7 +65,7 @@ public class AlertThrottlingEvaluatorFactoryTest {
     @Test
     public void testValidateAttributesInvalid() {
         RespondingResult result = factory.validateAttributes(
-                attributes.replace("\"suppressing_key\"", "\"unsupported\""));
+                attributes.replace("\"sleeping_time\"", "\"unsupported\""));
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getMessage());
     }

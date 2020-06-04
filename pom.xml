@@ -26,7 +26,7 @@
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
     <name>siembol</name>
-    <version>1.49-SNAPSHOT</version>
+    <version>1.52-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,6 +45,7 @@
         <hadoop_version>3.1.1</hadoop_version>
         <json_schema_validator_version>2.2.10</json_schema_validator_version>
         <spring_boot_version>2.0.4.RELEASE</spring_boot_version>
+        <guava_version>29.0-jre</guava_version>
     </properties>
     <modules>
         <module>siembol-common</module>

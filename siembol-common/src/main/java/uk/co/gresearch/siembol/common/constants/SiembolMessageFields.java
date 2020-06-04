@@ -11,7 +11,8 @@ public enum SiembolMessageFields {
     GUID("guid"),
     SENSOR_TYPE("source_type"),
     PARSING_TIME("siembol_parsing_ts"),
-    ENRICHING_TIME("siembol_enriching_ts");
+    ENRICHING_TIME("siembol_enriching_ts"),
+    RESPONSE_TIME("siembol_response_ts");
 
     private final String name;
     SiembolMessageFields(String name) {

@@ -8,13 +8,13 @@ import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.MATCH;
 
-public class FixedEvaluatorTest {
-    private FixedEvaluator evaluator;
+public class FixedResultEvaluatorTest {
+    private FixedResultEvaluator evaluator;
     private ResponseAlert alert = new ResponseAlert();
 
     @Test
     public void testFixedEvaluatorMatch() {
-        evaluator = new FixedEvaluator(MATCH);
+        evaluator = new FixedResultEvaluator(MATCH);
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
@@ -24,7 +24,7 @@ public class FixedEvaluatorTest {
 
     @Test
     public void testFixedEvaluatorNoMatch() {
-        evaluator = new FixedEvaluator(ResponseEvaluationResult.NO_MATCH);
+        evaluator = new FixedResultEvaluator(ResponseEvaluationResult.NO_MATCH);
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals(ResponseEvaluationResult.NO_MATCH, result.getAttributes().getResult());
@@ -34,7 +34,7 @@ public class FixedEvaluatorTest {
 
     @Test
     public void testFixedEvaluatorFiltered() {
-        evaluator = new FixedEvaluator(ResponseEvaluationResult.FILTERED);
+        evaluator = new FixedResultEvaluator(ResponseEvaluationResult.FILTERED);
         RespondingResult result = evaluator.evaluate(alert);
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals(ResponseEvaluationResult.FILTERED, result.getAttributes().getResult());

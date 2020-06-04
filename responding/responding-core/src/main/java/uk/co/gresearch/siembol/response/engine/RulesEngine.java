@@ -20,6 +20,7 @@ public class RulesEngine implements ResponseEngine {
     private final MetricCounter messagesCounter;
     private final MetricCounter filtersCounter;
     private final MetricCounter errorsCounter;
+    private final MetricCounter noMatchesCounter;
     private final TestingLogger logger;
     private final RespondingResultAttributes metadataAttributes;
 
@@ -29,8 +30,8 @@ public class RulesEngine implements ResponseEngine {
         this.messagesCounter = builder.messagesCounter;
         this.filtersCounter = builder.filtersCounter;
         this.errorsCounter = builder.errorsCounter;
+        this.noMatchesCounter = builder.noMatchesCounter;
         this.metadataAttributes = builder.metadataAttributes;
-
     }
 
     @Override
@@ -38,7 +39,8 @@ public class RulesEngine implements ResponseEngine {
         messagesCounter.increment();
 
         for (Evaluable rule: rules) {
-            RespondingResult currentResult = rule.evaluate(alert);
+            ResponseAlert current = (ResponseAlert)alert.clone();
+            RespondingResult currentResult = rule.evaluate(current);
             if (currentResult.getStatusCode() != OK) {
                 errorsCounter.increment();
                 return currentResult;
@@ -54,13 +56,12 @@ public class RulesEngine implements ResponseEngine {
             }
         }
 
-        errorsCounter.increment();
+        noMatchesCounter.increment();
+        RespondingResult result = RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, alert);
         String message = String.format(NO_RULE_MATCHES_THE_ALERT, alert.toString());
         logger.appendMessage(message);
-        LOG.error(message);
-        RespondingResultAttributes attributes = new RespondingResultAttributes();
-        attributes.setMessage(message);
-        return new RespondingResult(RespondingResult.StatusCode.ERROR, attributes);
+        result.getAttributes().setMessage(message);
+        return result;
     }
 
     @Override
@@ -75,6 +76,7 @@ public class RulesEngine implements ResponseEngine {
         private MetricCounter messagesCounter;
         private MetricCounter filtersCounter;
         private MetricCounter errorsCounter;
+        private MetricCounter noMatchesCounter;
         private RespondingResultAttributes metadataAttributes;
 
         public Builder metricFactory(MetricFactory metricFactory) {
@@ -110,6 +112,8 @@ public class RulesEngine implements ResponseEngine {
                     MetricNames.ENGINE_FILTERED_MESSAGES.getDescription());
             errorsCounter = metricFactory.createCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName(),
                     MetricNames.ENGINE_ERROR_MESSAGES.getDescription());
+            noMatchesCounter = metricFactory.createCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName(),
+                    MetricNames.ENGINE_NO_MATCH_MESSAGES.getDescription());
 
             return new RulesEngine(this);
         }

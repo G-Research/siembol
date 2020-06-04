@@ -6,7 +6,8 @@ public enum MetricNames {
     RULE_FILTERS("response_rule_filters", "Number of messages filtered by the rule"),
     ENGINE_PROCESSED_MESSAGES("response_engine_processed_alerts", "Number of messages processed by response engine"),
     ENGINE_FILTERED_MESSAGES("response_engine_filtered_alerts", "Number of messages filtered by response engine"),
-    ENGINE_ERROR_MESSAGES("response_engine_errors", "Number of messages with error result by response engine");
+    ENGINE_ERROR_MESSAGES("response_engine_errors", "Number of messages with error result by response engine"),
+    ENGINE_NO_MATCH_MESSAGES("response_engine_no_matches", "Number of messages with not match result by response engine");
 
     private final String name;
     private final String description;

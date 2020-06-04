@@ -17,7 +17,7 @@ import uk.co.gresearch.siembol.response.model.JsonPathAssignmentTypeDto;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class AssignmentEvaluator implements Evaluable {
+public class JsonPathAssignmentEvaluator implements Evaluable {
     private static final String ERROR_MESSAGE_FORMAT = "No json path:%s found in alert: %s";
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
             .writerFor(ResponseAlert.class);
@@ -25,7 +25,7 @@ public class AssignmentEvaluator implements Evaluable {
     private final String jsonPath;
     private final JsonPathAssignmentTypeDto assignmentType;
 
-    public AssignmentEvaluator(AssignmentEvaluatorAttributesDto assignmentDto) {
+    public JsonPathAssignmentEvaluator(AssignmentEvaluatorAttributesDto assignmentDto) {
         this.fieldName = assignmentDto.getFieldName();
         this.jsonPath = assignmentDto.getJsonPath();
         this.assignmentType = assignmentDto.getAssignmentType();

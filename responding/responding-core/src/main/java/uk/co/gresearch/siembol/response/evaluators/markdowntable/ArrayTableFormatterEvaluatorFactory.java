@@ -41,7 +41,7 @@ public class ArrayTableFormatterEvaluatorFactory implements RespondingEvaluatorF
 
     @Override
     public RespondingResult getType() {
-        return RespondingResult.fromEvaluatorType(ProvidedEvaluators.ARRAY_TABLE_FORMATTER_EVALUATOR.toString());
+        return RespondingResult.fromEvaluatorType(ProvidedEvaluators.ARRAY_MARKDOWN_TABLE_FORMATTER_EVALUATOR.toString());
     }
 
     @Override
