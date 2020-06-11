@@ -1,7 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.service.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -58,7 +57,7 @@ public class ResponseHttpProvider {
 
         try {
             Optional<String> enrichedSchema = ConfigEditorUtils
-                    .computeRulesSchema(result.getAttributes().getRulesSchema(), uiConfig.get());
+                    .patchJsonSchema(result.getAttributes().getRulesSchema(), uiConfig.get());
             result.getAttributes().setRulesSchema(enrichedSchema.get());
             return result;
         } catch (Exception e) {
@@ -75,7 +74,7 @@ public class ResponseHttpProvider {
 
         try {
             Optional<String> enrichedSchema = ConfigEditorUtils
-                    .computeRulesSchema(result.getAttributes().getTestSpecificationSchema(), uiConfig.get());
+                    .patchJsonSchema(result.getAttributes().getTestSpecificationSchema(), uiConfig.get());
             result.getAttributes().setTestSpecificationSchema(enrichedSchema.get());
             return result;
         } catch (Exception e) {

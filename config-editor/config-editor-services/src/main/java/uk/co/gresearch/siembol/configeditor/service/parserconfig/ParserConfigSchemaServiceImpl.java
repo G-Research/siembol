@@ -91,7 +91,7 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .computeRulesSchema(schemaResult.getAttributes().getJsonSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getJsonSchema(), uiConfig.get());
 
         if (!computedSchema.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);
@@ -102,7 +102,7 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
                 .getJsonSchema().getAttributes().getJsonSchema();
 
         Optional<String> testSchema = testUiConfig.isPresent()
-                ? ConfigEditorUtils.computeRulesSchema(testValidationSchema, testUiConfig.get())
+                ? ConfigEditorUtils.patchJsonSchema(testValidationSchema, testUiConfig.get())
                 : Optional.of(testValidationSchema);
 
         if (!computedSchema.isPresent() || !testSchema.isPresent()) {

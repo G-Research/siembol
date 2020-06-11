@@ -96,11 +96,11 @@ public class EnrichmentSchemaServiceImpl implements ConfigSchemaService {
         String testSchema = compilerResult.getTestSpecificationSchema().getAttributes().getTestSchema();
 
         Optional<String> rulesSchemaUi = rulesUiConfig.isPresent()
-                ? ConfigEditorUtils.computeRulesSchema(rulesSchema, rulesUiConfig.get())
+                ? ConfigEditorUtils.patchJsonSchema(rulesSchema, rulesUiConfig.get())
                 : Optional.ofNullable(rulesSchema);
 
         Optional<String> testSchemaUi = testUiConfig.isPresent()
-                ? ConfigEditorUtils.computeRulesSchema(testSchema, testUiConfig.get())
+                ? ConfigEditorUtils.patchJsonSchema(testSchema, testUiConfig.get())
                 : Optional.ofNullable(testSchema);
 
         if (!rulesSchemaUi.isPresent() || !testSchemaUi.isPresent()) {

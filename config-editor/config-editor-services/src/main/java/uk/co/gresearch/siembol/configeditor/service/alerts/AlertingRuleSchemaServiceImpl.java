@@ -85,7 +85,7 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .computeRulesSchema(schemaResult.getAttributes().getRulesSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getRulesSchema(), uiConfig.get());
 
         if (!computedSchema.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);
@@ -95,7 +95,7 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         String testSchema = testValidator.getJsonSchema().getAttributes().getJsonSchema();
 
         Optional<String> testSchemaUi = testUiConfig.isPresent()
-                ? ConfigEditorUtils.computeRulesSchema(testSchema, testUiConfig.get())
+                ? ConfigEditorUtils.patchJsonSchema(testSchema, testUiConfig.get())
                 : Optional.of(testSchema);
         LOG.info("Initialising alerts rule schema service completed");
         return new AlertingRuleSchemaServiceImpl(compiler, Optional.of(testValidator), testSchemaUi, computedSchema.get());
@@ -115,7 +115,7 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .computeRulesSchema(schemaResult.getAttributes().getRulesSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getRulesSchema(), uiConfig.get());
 
         if (!computedSchema.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);

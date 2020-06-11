@@ -43,7 +43,7 @@ public class ParserConfigSchemaServiceImplTest {
     private final String testConfig = "dummmy parser config";
     private final String testConfigs = "dummmy parser configs";
     private final String testLog = "dummy log";
-    private final String dummyUiLayout = "{\"layout\" : {}}";
+    private final String dummyUiLayout = "{}";
 
     private ParserFactory parserFactory;
     private ParserFactoryResult parserFactoryResult;
@@ -218,11 +218,12 @@ public class ParserConfigSchemaServiceImplTest {
 
     @Test(expected = Exception.class)
     public void createSchemaWrongUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of("{}"), Optional.empty());
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of("INVALID"), Optional.empty());
     }
 
     @Test(expected = Exception.class)
     public void createSchemaWrongTestUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout), Optional.of("{}"));
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout),
+                Optional.of("INVALID"));
     }
 }

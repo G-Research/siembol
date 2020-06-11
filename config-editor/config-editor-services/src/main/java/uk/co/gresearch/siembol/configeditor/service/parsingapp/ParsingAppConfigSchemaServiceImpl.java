@@ -74,7 +74,7 @@ public class ParsingAppConfigSchemaServiceImpl implements ConfigSchemaService {
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .computeRulesSchema(schemaResult.getAttributes().getJsonSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getJsonSchema(), uiConfig.get());
 
         if (!computedSchema.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);

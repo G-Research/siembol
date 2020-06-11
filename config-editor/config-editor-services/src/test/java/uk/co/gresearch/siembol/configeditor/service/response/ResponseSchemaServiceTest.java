@@ -199,7 +199,7 @@ public class ResponseSchemaServiceTest {
     private HttpProvider httpProvider;
     private String dummyJsonObject = "{ \"dummy\" : true }";
     private String dummyJsonObject2 = "{ \"dummy2\" : true }";
-    private String emptyUiLayout = "{\"layout\": {}}";
+    private String emptyUiLayout = "{}";
 
 
     @Before

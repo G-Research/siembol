@@ -3,6 +3,7 @@ package uk.co.gresearch.siembol.configeditor.common;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
@@ -19,10 +20,10 @@ import java.util.*;
 public class ConfigEditorUtils {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
-    private static final String EMPTY_UI_LAYOUT = "{\"layout\": {}}";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final String EMPTY_UI_LAYOUT = "{}";
+    private static final ObjectReader UI_CONFIG_READER = new ObjectMapper()
+            .readerFor(new TypeReference<Map<String, JsonNode>>() {});
     private static final String SCHEMA_FORM_LAYOUT_KEY = "x-schema-form";
-    private static final String LAYOUT_FIELD_NAME = "layout";
     private static final String INDEX_REPLACE_REGEX = "\"minItems\"\\s*:\\s*1";
     private static final String INDEX_REPLACEMENT = "\"minItems\":0";
 
@@ -91,13 +92,11 @@ public class ConfigEditorUtils {
         }
     }
 
-    public static Optional<String> computeRulesSchema(String rulesSchema, String uiConfig) throws IOException {
+    public static Optional<String> patchJsonSchema(String rulesSchema, String uiConfig) throws IOException {
         final DocumentContext context = JsonPath.parse(rulesSchema);
-        Map<String, Map<String, Object>> formAttributes = MAPPER.readValue(uiConfig,
-                new TypeReference<HashMap<String, Map<String, Object>>>() {
-                });
+        Map<String, JsonNode> formAttributes = UI_CONFIG_READER.readValue(uiConfig);
 
-        Set<String> layoutKeys = formAttributes.get(LAYOUT_FIELD_NAME).keySet();
+        Set<String> layoutKeys = formAttributes.keySet();
         for (String key : layoutKeys) {
             try {
                 JsonNode current = context.read(key);
@@ -113,7 +112,7 @@ public class ConfigEditorUtils {
                     LOG.error("Path: {} in schema is not an Object, the value: {}", key, current.toString());
                     return Optional.empty();
                 }
-                ((ObjectNode) current).putPOJO(SCHEMA_FORM_LAYOUT_KEY, formAttributes.get(LAYOUT_FIELD_NAME).get(key));
+                ((ObjectNode)current).set(SCHEMA_FORM_LAYOUT_KEY, formAttributes.get(key));
             } catch (Exception e) {
                 LOG.error("Problem to find a key: {} in schema: {}", key, rulesSchema);
                 return Optional.empty();
@@ -121,7 +120,6 @@ public class ConfigEditorUtils {
         }
 
         String uiSchema = context.jsonString();
-        //NOTE: we change min items in arrays to 0 so it displays better in the UI
         uiSchema = uiSchema.replaceAll(INDEX_REPLACE_REGEX, INDEX_REPLACEMENT);
         return Optional.ofNullable(uiSchema);
     }
