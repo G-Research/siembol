@@ -40,6 +40,12 @@ button {
     }
 }
 
+.logo {
+        display: block;
+        height: 350px;
+        margin: auto;
+}
+
 ::ng-deep .rulesets .mat-raised-button {
     font-size: 18px !important;
     line-height: 46px !important;

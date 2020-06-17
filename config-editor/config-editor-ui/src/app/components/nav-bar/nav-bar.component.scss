@@ -13,8 +13,8 @@
     }
     img {
         display: block;
-        height: 50px;
-        animation: spin 1.2s cubic-bezier(.55,.31,.45,.69) infinite;
+        height: 95px;
+        margin-top: -5px;
         margin-left: 20px;
     }
     h1 {
@@ -36,6 +36,10 @@
     }
 }
 
+.logo {
+    min-width: 248px;
+}
+
 .env {
     margin-left: 0 !important;
     color: #ff9800 !important;
@@ -48,19 +52,6 @@
 
 ::ng-deep .mat-button-toggle-checked {
     background: rgba(6, 167, 226, 0.9);
-}
-
-.done-spin {
-    animation-iteration-count: 1 !important;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(720deg);
-    }
 }
 
 mat-progress-bar {
