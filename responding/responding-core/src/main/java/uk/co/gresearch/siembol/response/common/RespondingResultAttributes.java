@@ -28,7 +28,6 @@ public class RespondingResultAttributes {
     private Long compiledTime;
     private ResponseEngine responseEngine;
     private List<RespondingEvaluatorFactory> respondingEvaluatorFactories;
-    private List<RespondingEvaluatorValidator> respondingEvaluatorValidators;
     @JsonProperty("test_specification")
     @JsonRawValue
     private String testSpecification;
@@ -108,14 +107,6 @@ public class RespondingResultAttributes {
 
     public void setResponseEngine(ResponseEngine responseEngine) {
         this.responseEngine = responseEngine;
-    }
-
-    public List<RespondingEvaluatorValidator> getRespondingEvaluatorValidators() {
-        return respondingEvaluatorValidators;
-    }
-
-    public void setRespondingEvaluatorValidators(List<RespondingEvaluatorValidator> respondingEvaluatorValidators) {
-        this.respondingEvaluatorValidators = respondingEvaluatorValidators;
     }
 
     public Integer getRulesVersion() {

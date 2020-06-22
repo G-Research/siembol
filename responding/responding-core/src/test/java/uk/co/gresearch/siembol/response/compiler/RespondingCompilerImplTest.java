@@ -205,17 +205,6 @@ public class RespondingCompilerImplTest {
         Assert.assertEquals(2, result.getAttributes().getRespondingEvaluatorFactories().size());
     }
 
-    @Test
-    public void testGetEvaluatorValidators() throws Exception {
-        builder.addRespondingEvaluatorFactory(evaluatorFactory);
-        builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
-        compiler = builder.build();
-        RespondingResult result = compiler.getRespondingEvaluatorValidators();
-        Assert.assertEquals(OK, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes());
-        Assert.assertNotNull(result.getAttributes().getRespondingEvaluatorValidators());
-        Assert.assertEquals(2, result.getAttributes().getRespondingEvaluatorValidators().size());
-    }
 
     @Test
     public void testCompileRules() throws Exception {

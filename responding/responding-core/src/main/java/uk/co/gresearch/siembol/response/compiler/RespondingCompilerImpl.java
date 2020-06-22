@@ -38,7 +38,6 @@ public class RespondingCompilerImpl implements RespondingCompiler {
     private static final String RULES_WRAP_MSG = "{\"rules_version\":1, \"rules\":[%s]}";
     private static final String UNSUPPORTED_EVALUATOR_TYPE_MSG = "Unsupported response evaluator type %s";
     private final Map<String, RespondingEvaluatorFactory> respondingEvaluatorFactoriesMap;
-    private final Map<String, RespondingEvaluatorValidator> respondingEvaluatorValidatorsMap;
     private final String rulesJsonSchemaStr;
     private final JsonSchemaValidator rulesSchemaValidator;
     private final JsonSchemaValidator testSpecificationValidator;
@@ -46,7 +45,6 @@ public class RespondingCompilerImpl implements RespondingCompiler {
 
     public RespondingCompilerImpl(Builder builder) {
         this.respondingEvaluatorFactoriesMap = builder.respondingEvaluatorFactoriesMap;
-        this.respondingEvaluatorValidatorsMap = builder.respondingEvaluatorValidatorsMap;
         this.rulesJsonSchemaStr = builder.rulesJsonSchemaStr;
         this.rulesSchemaValidator = builder.rulesSchemaValidator;
         this.metricFactory = builder.metricFactory;
@@ -183,14 +181,6 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return new RespondingResult(OK, attributes);
     }
 
-    @Override
-    public RespondingResult getRespondingEvaluatorValidators() {
-        RespondingResultAttributes attributes = new RespondingResultAttributes();
-        attributes.setRespondingEvaluatorValidators(respondingEvaluatorValidatorsMap.values().stream()
-                .collect(Collectors.toList()));
-        return new RespondingResult(OK, attributes);
-    }
-
     public static String wrapRuleToRules(String ruleStr) {
         return String.format(RULES_WRAP_MSG, ruleStr);
     }
@@ -207,11 +197,11 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             for (RuleDto ruleDto : rulesDto.getRules()) {
                 for (ResponseEvaluatorDto evaluatorDto : ruleDto.getEvaluators()) {
                     String evaluatorType = evaluatorDto.getEvaluatorType();
-                    if (!respondingEvaluatorValidatorsMap.containsKey(evaluatorType)) {
+                    if (!respondingEvaluatorFactoriesMap.containsKey(evaluatorType)) {
                         throw new IllegalArgumentException(String.format(
                                 UNSUPPORTED_EVALUATOR_TYPE_MSG, evaluatorType));
                     }
-                    RespondingResult validationAttributesResult = respondingEvaluatorValidatorsMap.get(evaluatorType)
+                    RespondingResult validationAttributesResult = respondingEvaluatorFactoriesMap.get(evaluatorType)
                             .validateAttributes(evaluatorDto.getEvaluatorAttributesContent());
                     if (validationAttributesResult.getStatusCode() != OK) {
                         return validationAttributesResult;
@@ -228,7 +218,6 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         private static final String EVALUATOR_DUPLICATE_TYPE = "Evaluator type: %s already registered";
         private static final String EMPTY_EVALUATORS = "Response evaluators are empty";
         private Map<String, RespondingEvaluatorFactory> respondingEvaluatorFactoriesMap = new HashMap<>();
-        private Map<String, RespondingEvaluatorValidator> respondingEvaluatorValidatorsMap = new HashMap<>();
         private String rulesJsonSchemaStr;
         private JsonSchemaValidator rulesSchemaValidator;
         private JsonSchemaValidator testSpecificationValidator;
@@ -253,33 +242,23 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             return this;
         }
 
-        public Builder addRespondingEvaluatorValidator(RespondingEvaluatorValidator validator) {
-            if (respondingEvaluatorValidatorsMap.containsKey(validator.getType().getAttributes().getEvaluatorType())) {
-                throw new IllegalArgumentException(String.format(EVALUATOR_DUPLICATE_TYPE, validator.getType()));
-            }
-
-            respondingEvaluatorValidatorsMap.put(validator.getType().getAttributes().getEvaluatorType(), validator);
-            return this;
-        }
-
         public RespondingCompilerImpl build() throws Exception {
-            if (respondingEvaluatorFactoriesMap.isEmpty() && respondingEvaluatorValidatorsMap.isEmpty()) {
+            if (respondingEvaluatorFactoriesMap.isEmpty()) {
                 throw new IllegalArgumentException(EMPTY_EVALUATORS);
             }
 
             testSpecificationValidator = new SiembolJsonSchemaValidator(ResponseTestSpecificationDto.class);
 
             respondingEvaluatorFactoriesMap.forEach((k, v) -> {
-                addRespondingEvaluatorValidator(v);
                 v.registerMetrics(metricFactory);
             });
 
-            List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorValidatorsMap.keySet().stream()
+            List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorFactoriesMap.keySet().stream()
                     .map(x ->
                             new UnionJsonTypeOption(
-                                    respondingEvaluatorValidatorsMap.get(x).getType()
+                                    respondingEvaluatorFactoriesMap.get(x).getType()
                                             .getAttributes().getEvaluatorType(),
-                                    respondingEvaluatorValidatorsMap.get(x).getAttributesJsonSchema()
+                                    respondingEvaluatorFactoriesMap.get(x).getAttributesJsonSchema()
                                             .getAttributes().getAttributesSchema()))
                     .collect(Collectors.toList());
 

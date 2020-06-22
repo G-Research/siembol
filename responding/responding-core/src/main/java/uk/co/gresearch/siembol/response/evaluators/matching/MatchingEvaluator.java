@@ -5,23 +5,24 @@ import uk.co.gresearch.siembol.alerts.engine.IsInSetMatcher;
 import uk.co.gresearch.siembol.alerts.engine.RegexMatcher;
 import uk.co.gresearch.siembol.alerts.engine.RuleMatcher;
 import uk.co.gresearch.siembol.response.common.Evaluable;
-import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.ResponseAlert;
 import uk.co.gresearch.siembol.response.model.MatcherDto;
 import uk.co.gresearch.siembol.response.model.MatchingEvaluatorAttributesDto;
+import uk.co.gresearch.siembol.response.model.MatchingEvaluatorResultDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MatchingEvaluator implements Evaluable {
     private final List<RuleMatcher> matchers;
-    private final ResponseEvaluationResult resultAfterMatch;
+    private final MatchingEvaluatorResultDto matchingResult;
 
     public MatchingEvaluator(MatchingEvaluatorAttributesDto attributesDto) {
         matchers = attributesDto.getMatchers().stream()
-                .map(this::createMatcher).collect(Collectors.toList());
-        resultAfterMatch = attributesDto.getEvaluationResult().getResponseEvaluationResult();
+                .map(this::createMatcher)
+                .collect(Collectors.toList());
+        matchingResult = attributesDto.getEvaluationResult();
     }
 
     @Override
@@ -30,10 +31,12 @@ public class MatchingEvaluator implements Evaluable {
         for (RuleMatcher matcher : matchers) {
             EvaluationResult result = matcher.match(current);
             if (result == EvaluationResult.NO_MATCH) {
-                return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, alert);
+                return RespondingResult.fromEvaluationResult(
+                        matchingResult.computeFromEvaluationResult(EvaluationResult.NO_MATCH), alert);
             }
         }
-        return RespondingResult.fromEvaluationResult(resultAfterMatch, current);
+        return RespondingResult.fromEvaluationResult(
+                matchingResult.computeFromEvaluationResult(EvaluationResult.MATCH), current);
     }
 
     private RuleMatcher createMatcher(MatcherDto matcherDto) {

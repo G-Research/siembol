@@ -30,6 +30,4 @@ public interface RespondingCompiler {
     }
 
     RespondingResult getRespondingEvaluatorFactories();
-
-    RespondingResult getRespondingEvaluatorValidators();
 }

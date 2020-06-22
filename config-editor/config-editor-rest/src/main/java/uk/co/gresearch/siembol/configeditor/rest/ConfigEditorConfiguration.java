@@ -33,9 +33,9 @@ import java.util.Optional;
 @EnableConfigurationProperties(ConfigEditorConfigurationProperties.class)
 public class ConfigEditorConfiguration implements DisposableBean {
     private static final String RESPONSE = "response";
-    private static final String ALERTS = "nikita";
+    private static final String ALERT = "alert";
     private static final String PARSER_CONFIG = "parserconfig";
-    private static final String CORRELATION_ALERTS = "nikitacorrelation";
+    private static final String CORRELATION_ALERT = "correlationalert";
     private static final String PARSING_APP = "parsingapp";
     private static final String ENRICHMENT = "enrichment";
     private static final String UNKNOWN_UI_CONFIG = "Unknown UI config for the service: %s";
@@ -61,19 +61,19 @@ public class ConfigEditorConfiguration implements DisposableBean {
                                 new HttpProvider(properties.getCentrifugeUrl(), HttpProvider::getKerberosHttpClient))
                                 .uiConfigSchema(readUiConfigFile(RESPONSE).orElse(null))
                                 .build())
-                .addService(ALERTS,
+                .addService(ALERT,
                         ConfigStoreImpl.createRuleStore(
-                                properties.getConfigStore().get(ALERTS),
+                                properties.getConfigStore().get(ALERT),
                                 JsonRuleConfigInfoProvider.create()),
                         AlertingRuleSchemaServiceImpl.createAlertingRuleSchema(
-                                readUiConfigFile(ALERTS),
-                                readTestSpecUiConfigFile(ALERTS)))
-               .addService(CORRELATION_ALERTS,
+                                readUiConfigFile(ALERT),
+                                readTestSpecUiConfigFile(ALERT)))
+               .addService(CORRELATION_ALERT,
                        ConfigStoreImpl.createRuleStore(
-                               properties.getConfigStore().get(CORRELATION_ALERTS),
+                               properties.getConfigStore().get(CORRELATION_ALERT),
                                JsonRuleConfigInfoProvider.create()),
                        AlertingRuleSchemaServiceImpl.createAlertingCorrelationRuleSchema(
-                               readUiConfigFile(CORRELATION_ALERTS)))
+                               readUiConfigFile(CORRELATION_ALERT)))
                .addService(PARSER_CONFIG,
                         ConfigStoreImpl.createRuleStore(
                                 properties.getConfigStore().get(PARSER_CONFIG),

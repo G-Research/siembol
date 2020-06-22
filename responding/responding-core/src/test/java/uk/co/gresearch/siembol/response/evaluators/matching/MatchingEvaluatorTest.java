@@ -97,4 +97,39 @@ public class MatchingEvaluatorTest {
         Assert.assertEquals(alert.get("is_alert"), returnedAlert.get("is_alert"));
         Assert.assertEquals(alert.get("to_copy"), returnedAlert.get("to_copy"));
     }
+
+    @Test
+    public void testMatchingEvaluatorFilteredWhenNoMatchAlertMatch() throws IOException {
+        attributesDto = JSON_ATTRIBUTES_READER.readValue(
+                attributes.replace("\"match\"", "\"filtered_when_no_match\""));
+        evaluator = new MatchingEvaluator(attributesDto);
+        RespondingResult result = evaluator.evaluate(alert);
+        Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertEquals(MATCH, result.getAttributes().getResult());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getAlert());
+        ResponseAlert returnedAlert = result.getAttributes().getAlert();
+        Assert.assertEquals(3, returnedAlert.size());
+        Assert.assertEquals(alert.get("is_alert"), returnedAlert.get("is_alert"));
+        Assert.assertEquals(alert.get("to_copy"), returnedAlert.get("to_copy"));
+        Assert.assertEquals(alert.get("to_copy"), returnedAlert.get("new_field"));
+    }
+
+    @Test
+    public void testMatchingEvaluatorFilteredWhenNoMatchAlertNoMatch() throws IOException {
+        attributesDto = JSON_ATTRIBUTES_READER.readValue(
+                attributes.replace("\"match\"", "\"filtered_when_no_match\""));
+        alert.put("is_alert", false);
+
+        evaluator = new MatchingEvaluator(attributesDto);
+        RespondingResult result = evaluator.evaluate(alert);
+        Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertEquals(FILTERED, result.getAttributes().getResult());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getAlert());
+        ResponseAlert returnedAlert = result.getAttributes().getAlert();
+        Assert.assertEquals(2, returnedAlert.size());
+        Assert.assertEquals(alert.get("is_alert"), returnedAlert.get("is_alert"));
+        Assert.assertEquals(alert.get("to_copy"), returnedAlert.get("to_copy"));
+    }
 }
