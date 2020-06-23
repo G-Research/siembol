@@ -1,18 +1,19 @@
 import { StatusCode } from '@app/commons';
 import {
     ConfigData, ConfigWrapper, Deployment, EditorResult, ExceptionInfo,
-    FileHistory, PullRequestInfo, RepositoryLinks, SchemaDto, SensorFields, SubmitStatus,
+    FileHistory, PullRequestInfo, RepositoryLinks, SensorFields, SubmitStatus,
 } from '@model';
 import { cloneDeep } from 'lodash';
 import { TestCaseMap } from '@model/test-case';
 import * as editor from './editor.actions';
+import { JSONSchema7 } from 'json-schema';
 
 export interface State {
     bootstrapped: string;
     currentUser: string;
     configs: ConfigWrapper<ConfigData>[];
     storedDeployment: Deployment<ConfigWrapper<ConfigData>>;
-    configSchema: SchemaDto;
+    configSchema: JSONSchema7;
     selectedConfig: number;
     errorMessage: string;
     loaded: boolean;

@@ -16,6 +16,7 @@ import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { TestingDialogComponent } from '../testing/testing-dialog/testing-dialog.component';
+import { JSONSchema7 } from 'json-schema';
 
 @Component({
     selector: 're-deploy-dialog',
@@ -77,7 +78,7 @@ export class DeployDialogComponent {
         this.environment = this.config.environment;
     }
 
-    private createDeploymentSchema(serviceName: string): string {
+    private createDeploymentSchema(serviceName: string): JSONSchema7 {
         const depSchema = this.service.configLoader.originalSchema;
         depSchema.properties[this.uiMetadata.deployment.config_array] = {};
         delete depSchema.properties[this.uiMetadata.deployment.config_array];

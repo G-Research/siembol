@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppConfigService } from '../config/app-config.service';
 import { IConfigLoaderService } from './editor.service';
-import { SchemaDto } from '@model';
 import {
   ConfigData,
   ConfigTestDto,
@@ -31,12 +30,13 @@ import { UiMetadataMap } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { map } from 'rxjs/operators';
 import { ConfigWrapperService } from './config-wrapper-service';
+import { JSONSchema7 } from 'json-schema';
 
 export class ConfigLoaderService implements IConfigLoaderService {
   private optionalObjects: string[] = [];
   private readonly uiMetadata: UiMetadataMap;
   private labelsFunc: Function;
-  public originalSchema;
+  public originalSchema: JSONSchema7;
   public modelOrder = {};
 
   constructor(
@@ -117,7 +117,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
     return subtree;
   }
 
-  public getTestSpecificationSchema(): Observable<any> {
+  public getTestSpecificationSchema(): Observable<JSONSchema7> {
     return this.http
       .get<EditorResult<TestSchemaInfo>>(
         `${this.config.serviceRoot}api/v1/${
@@ -127,15 +127,16 @@ export class ConfigLoaderService implements IConfigLoaderService {
       .pipe(map(x => x.attributes.test_schema));
   }
 
-  public getSchema(): Observable<SchemaDto> {
+  public getSchema(): Observable<JSONSchema7> {
     return this.http
       .get<EditorResult<SchemaInfo>>(
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`
       )
       .map(x => {
         this.originalSchema = x.attributes.rules_schema;
+        console.log('SCHEMA', x);
         try {
-          return this.returnSubTree(x, this.uiMetadata.perConfigSchemaPath);
+          return this.returnSubTree(x, this.uiMetadata.perConfigSchemaPath) as JSONSchema7;
         } catch {
           throw new Error(
             "Call to schema endpoint didn't return the expected schema"
@@ -156,7 +157,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
             f !== this.uiMetadata.version
         );
 
-        return { schema };
+        return schema;
       });
   }
 

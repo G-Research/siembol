@@ -1,6 +1,6 @@
 import { SensorFields } from '@app/model';
-import { SchemaDto } from './schema';
 import { TestCase } from './test-case';
+import { JSONSchema7 } from 'json-schema';
 
 export interface EditorResult<T> {
     status_code: string;
@@ -44,11 +44,11 @@ export interface RepositoryLinks {
 }
 
 export interface SchemaInfo extends ExceptionInfo {
-    rules_schema: any;
+    rules_schema: JSONSchema7;
 }
 
 export interface TestSchemaInfo extends ExceptionInfo {
-    test_schema: any;
+    test_schema: JSONSchema7;
 }
 
 export interface PullRequestInfo extends ExceptionInfo {
@@ -96,7 +96,7 @@ export interface Deployment<T> {
 
 export interface BootstrapData {
     configs: ConfigWrapper<ConfigData>[],
-    configSchema: SchemaDto,
+    configSchema: JSONSchema7,
     currentUser: string,
     pullRequestPending: PullRequestInfo,
     storedDeployment:  Deployment<ConfigWrapper<ConfigData>>,

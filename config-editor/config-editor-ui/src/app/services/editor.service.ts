@@ -6,17 +6,18 @@ import { AppConfigService } from '../config';
 import { StripSuffixPipe } from '../pipes';
 import { ConfigLoaderService } from './config-loader.service';
 import { ConfigWrapperService } from './config-wrapper-service';
-import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, SchemaDto, SensorFields,
+import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, SensorFields,
     SensorFieldTemplate, UserName, RepositoryLinksWrapper } from '@model';
 import { ConfigTestDto, DeploymentWrapper, EditorResult, ExceptionInfo, SchemaInfo, TestCaseEvaluation } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { Field } from '@model/sensor-fields';
+import { JSONSchema7 } from 'json-schema';
 
 export interface IConfigLoaderService {
   originalSchema;
   getConfigs(): Observable<ConfigWrapper<ConfigData>[]>;
   getConfigsFromFiles(files: any);
-  getSchema(): Observable<SchemaDto>;
+  getSchema(): Observable<JSONSchema7>;
   getPullRequestStatus(): Observable<PullRequestInfo>;
   getRelease(): Observable<DeploymentWrapper>;
   validateConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<ExceptionInfo>>;

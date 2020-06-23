@@ -35,10 +35,10 @@ worker.yaml
 /dist-test
 /tmp
 /out-tsc
-package-lock.json
 
 # dependencies
 /node_modules
+package-lock.json
 
 # IDEs and editors
 .project

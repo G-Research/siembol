@@ -12,6 +12,7 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { JSONSchema7 } from 'json-schema';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +31,7 @@ export class EditorViewComponent implements OnInit {
     testCaseEnabled = false;
     serviceName: string;
     configs$: Observable<ConfigWrapper<ConfigData>[]> = new Observable();
-    schema$: Observable<any> = new Observable();
+    schema$: Observable<JSONSchema7> = new Observable();
     selectedConfigIndex: number = undefined;
     fields: FormlyFieldConfig[] = [];
     formlyOptions: any = {autoClear: true}
@@ -46,7 +47,7 @@ export class EditorViewComponent implements OnInit {
     dynamicFieldsMap$: Observable<Map<string, string>>;
     configs: ConfigWrapper<ConfigData>[];
     testCaseMap$: Observable<TestCaseMap>;
-    schema: any;
+    schema: JSONSchema7;
 
     constructor(private store: Store<fromStore.State>, private config: AppConfigService, private formlyJsonschema: FormlyJsonschema) {
         this.store.select(fromStore.getServiceName).pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
@@ -68,8 +69,8 @@ export class EditorViewComponent implements OnInit {
     ngOnInit() {
         this.schema$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(
             s => {
-                this.schema = s.schema;
-                this.fields = [this.formlyJsonschema.toFieldConfig(cloneDeep(s.schema), this.formlyOptions)];
+                this.schema = s;
+                this.fields = [this.formlyJsonschema.toFieldConfig(cloneDeep(s), this.formlyOptions)];
                 this.store.dispatch(new fromStore.UpdateDynamicFieldsMap(this.formlyJsonschema.dynamicFieldsMap));
         });
 
