@@ -117,8 +117,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public upgrade(index: number) {
         const originalIndex = this.deployment.configs
             .findIndex(d => d.name === this.filteredDeployment.configs[index].name);
+        const rule = this.configs.find(c => c.name === this.deployment.configs[originalIndex].name);
+        rule.configData = this.editorService.configWrapper.unwrapConfig(rule.configData);
         const items = Object.assign(this.deployment.configs.slice(), {
-            [originalIndex]: this.configs.find(c => c.name === this.deployment.configs[originalIndex].name),
+            [originalIndex]: rule,
         });
         this.deployment.configs = items;
         this.store.dispatch(new fromStore.UpdateDeployment(this.deployment));
