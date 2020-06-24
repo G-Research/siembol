@@ -208,7 +208,7 @@ public produceOrderedJson(configData: ConfigData, path: string) {
     return Object.assign(d, {
       [this.uiMetadata.deployment.version]: deployment.deploymentVersion,
       [this.uiMetadata.deployment.config_array]:
-        deployment.configs.map(config => this.unwrapOptionalsFromArrays(cloneDeep(config.configData))),
+        deployment.configs.map(config => cloneDeep(config.configData)),
     });
   }
 }

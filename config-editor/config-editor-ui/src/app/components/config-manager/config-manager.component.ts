@@ -156,9 +156,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public onView(id: number, releaseId: number = undefined) {
         this.dialog.open(JsonViewerComponent, {
             data: {
-                config1: releaseId === undefined ? undefined
-                    : this.editorService.configWrapper
-                        .unwrapOptionalsFromArrays(cloneDeep(this.filteredDeployment.configs[releaseId].configData)),
+                config1: releaseId === undefined 
+                    ? undefined
+                    : this.filteredDeployment.configs[releaseId].configData,
                 config2: this.editorService.configWrapper.unwrapConfig(cloneDeep(this.filteredConfigs[id].configData)),
             },
         });

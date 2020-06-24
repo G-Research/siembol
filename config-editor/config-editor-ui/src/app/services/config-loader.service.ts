@@ -189,9 +189,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
               this.uiMetadata.deployment.config_array
             ].map(configData => ({
               isNew: false,
-              configData: this.configWrapperService.wrapOptionalsInArray(
-                configData
-              ),
+              configData: configData,
               savedInBackend: true,
               name: configData[this.uiMetadata.name],
               description: configData[this.uiMetadata.description],
