@@ -67,6 +67,7 @@ import { TestResultsPopoverDirective } from './popover/test-results-popover.dire
 import { PopupService } from './popup.service';
 import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
+import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.component';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfig();
@@ -140,6 +141,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     UnionTypeComponent,
     TabArrayTypeComponent,
     BuildInfoDialogComponent,
+    CheckboxTypeComponent,
   ],
   imports: [
     BrowserModule,
@@ -189,7 +191,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
               },
             },
           },
-          { name: 'boolean', extends: 'checkbox' },
+          { name: 'boolean', component: CheckboxTypeComponent, wrappers: ['form-field'] },
           { name: 'enum', extends: 'select' },
           { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
           { name: 'array', component: ArrayTypeComponent },
