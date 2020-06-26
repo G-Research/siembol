@@ -18,6 +18,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { SubmitDialogComponent } from '..';
 import { TestingDialogComponent } from '../testing/testing-dialog/testing-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,7 +63,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
 
     constructor(public store: Store<fromStore.State>, public dialog: MatDialog, public snackbar: PopupService,
-        private appConfigService: AppConfigService, private editorService: EditorService) {
+        private appConfigService: AppConfigService, private editorService: EditorService, private router: Router) {
         }
 
         ngOnInit() {
@@ -250,6 +251,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 this.config = config;
                 if (config.isNew) {
                     this.store.dispatch(new fromStore.SubmitNewConfig(config));
+                    this.router.navigate([this.serviceName]);
                 } else {
                     this.store.dispatch(new fromStore.SubmitConfigEdit(config));
                 }

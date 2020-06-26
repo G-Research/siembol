@@ -125,7 +125,7 @@ export class EditorEffects {
     @Effect()
     submitNewConfig$  = this.actions$.pipe(
         ofType<actions.SubmitNewConfig>(actions.SUBMIT_NEW_CONFIG),
-        switchMap(action =>
+        switchMap((action) =>
             this.editorService.configLoader.submitNewConfig(action.payload).pipe(
                 map(result => new actions.SubmitNewConfigSuccess(
                         this.editorService.configLoader.getConfigsFromFiles(result.attributes.files)
