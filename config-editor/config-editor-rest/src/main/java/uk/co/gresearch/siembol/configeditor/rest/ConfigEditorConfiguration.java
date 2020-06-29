@@ -12,8 +12,6 @@ import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreImpl;
 
 import uk.co.gresearch.siembol.configeditor.configstore.JsonRuleConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.service.alerts.AlertingRuleSchemaServiceImpl;
-import uk.co.gresearch.siembol.configeditor.service.elk.ElkService;
-import uk.co.gresearch.siembol.configeditor.service.elk.ElkServiceImpl;
 import uk.co.gresearch.siembol.configeditor.service.enrichments.EnrichmentSchemaServiceImpl;
 import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigSchemaServiceImpl;
@@ -47,7 +45,7 @@ public class ConfigEditorConfiguration implements DisposableBean {
     private AuthorisationProvider authProvider;
 
     private ServiceAggregator serviceAggregator;
-    private ElkService elkService;
+
     private TestCaseEvaluator testCaseEvaluator;
 
     @Bean(name = "serviceAggregator")
@@ -99,12 +97,6 @@ public class ConfigEditorConfiguration implements DisposableBean {
        return serviceAggregator;
     }
 
-    @Bean(name = "elkService")
-    ElkService elkService() throws IOException {
-        elkService = ElkServiceImpl.createElkServiceImpl(properties.getElkUrl(), properties.getElkTemplatePath());
-        return elkService;
-    }
-
     @Bean(name = "testCaseEvaluator")
     TestCaseEvaluator testCaseEvaluator() throws Exception {
         return new TestCaseEvaluatorImpl();
@@ -115,8 +107,6 @@ public class ConfigEditorConfiguration implements DisposableBean {
         if (serviceAggregator != null) {
             serviceAggregator.getConfigStoreServices().forEach(x -> x.shutDown());
         }
-
-        if (elkService != null) elkService.shutDown();
 
         if (serviceAggregator != null) {
             serviceAggregator.getConfigStoreServices().forEach(x -> x.awaitShutDown());

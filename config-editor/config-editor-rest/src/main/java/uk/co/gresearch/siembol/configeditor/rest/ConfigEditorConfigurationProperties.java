@@ -11,8 +11,6 @@ import java.util.HashMap;
 @ConfigurationProperties(prefix = "config-editor")
 public class ConfigEditorConfigurationProperties {
     private String centrifugeUrl;
-    private String elkUrl;
-    private String elkTemplatePath;
 
     @NestedConfigurationProperty
     private Map<String, ConfigStoreProperties> configStore;
@@ -29,14 +27,6 @@ public class ConfigEditorConfigurationProperties {
 
     public void setCentrifugeUrl(String centrifugeUrl) {
         this.centrifugeUrl = centrifugeUrl;
-    }
-
-    public String getElkUrl() {
-        return elkUrl;
-    }
-
-    public void setElkUrl(String elkUrl) {
-        this.elkUrl = elkUrl;
     }
 
     public Map<String, ConfigStoreProperties> getConfigStore() {
@@ -61,14 +51,6 @@ public class ConfigEditorConfigurationProperties {
 
     public void setUiConfigFileName(Map<String, String> uiConfigFileName) {
         this.uiConfigFileName = uiConfigFileName;
-    }
-
-    public String getElkTemplatePath() {
-        return elkTemplatePath;
-    }
-
-    public void setElkTemplatePath(String elkTemplatePath) {
-        this.elkTemplatePath = elkTemplatePath;
     }
 
     public Map<String, String> getTestSpecUiConfigFileName() {
