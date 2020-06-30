@@ -1,0 +1,3 @@
+FROM nginx:alpine
+
+COPY config-editor-ui /usr/share/nginx/html
