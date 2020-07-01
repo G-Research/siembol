@@ -134,7 +134,6 @@ export class ConfigLoaderService implements IConfigLoaderService {
       )
       .map(x => {
         this.originalSchema = x.attributes.rules_schema;
-        console.log('SCHEMA', x);
         try {
           return this.returnSubTree(x, this.uiMetadata.perConfigSchemaPath) as JSONSchema7;
         } catch {
@@ -179,7 +178,8 @@ export class ConfigLoaderService implements IConfigLoaderService {
         }/configstore/release`
       )
       .pipe(
-        map(result => result.attributes.files[0]),
+        map(result => {
+            return result.attributes.files[0]}),
         map(result => ({
           deploymentHistory: result.file_history,
           storedDeployment: {

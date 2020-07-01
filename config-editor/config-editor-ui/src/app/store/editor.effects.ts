@@ -39,16 +39,15 @@ export class EditorEffects {
             ),
             this.editorService.getUser(),
             this.editorService.configLoader.getPullRequestStatus(),
-            this.editorService.getSensorFields(),
             this.editorService.getTestCaseSchema(),
             this.editorService.configLoader.getTestSpecificationSchema(),
             ]).pipe(
                 tap(_ => this.store.dispatch(new actions.LoadTestCases())),
                 map(([[configSchema, configs, [deploymentHistory, storedDeployment]],
-                    currentUser, pullRequestPending, sensorFields, testCaseSchema, testSpecificationSchema]: any) =>
+                    currentUser, pullRequestPending, testCaseSchema, testSpecificationSchema]: any) =>
                         new actions.BootstrapSuccess(
                             { configs, configSchema, currentUser, pullRequestPending,
-                                storedDeployment, sensorFields, deploymentHistory, testCaseSchema, testSpecificationSchema })
+                                storedDeployment, deploymentHistory, testCaseSchema, testSpecificationSchema })
                 ),
                 catchError(err => this.errorHandler(
                     err, this.BOOTSTRAP_FAILED_MESSAGE, of(new fromStore.BootstrapFailure(err)))

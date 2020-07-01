@@ -68,6 +68,7 @@ import { PopupService } from './popup.service';
 import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
 import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.component';
+import { ConfigTestingComponent } from './components/testing/config-testing/config-testing.component';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfig();
@@ -85,7 +86,7 @@ const PROD_PROVIDERS = [
     { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService], multi: true },
     { provide: APP_INITIALIZER, useFactory: uiMetadataServiceFactory, deps: [AppConfigService], multi: true },
     { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true }
 ];
 
 const DEV_PROVIDERS = [...PROD_PROVIDERS];
@@ -128,6 +129,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     FormFieldWrapperComponent,
     TestCentreComponent,
     TestCaseComponent,
+    ConfigTestingComponent,
     JsonObjectTypeComponent,
     SubmitTestcaseDialogComponent,
     TestResultsComponent,

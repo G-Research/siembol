@@ -100,7 +100,6 @@ export interface BootstrapData {
     currentUser: string,
     pullRequestPending: PullRequestInfo,
     storedDeployment:  Deployment<ConfigWrapper<ConfigData>>,
-    sensorFields: SensorFields[],
     deploymentHistory?: FileHistory[],
     testCaseSchema: any,
     testSpecificationSchema: any,

@@ -12,6 +12,10 @@
                     [user]="user$ | async" [dynamicFieldsMap]="dynamicFieldsMap$ | async" [onClickTestCase$]="onClickTestCase$">
                     </re-generic-editor>
                 </mat-tab>
+                <mat-tab [label]="TESTING_TAB_NAME" [disabled]="!testingEnabled">
+                    <re-config-testing [fields]="testSpec" [selectedConfig]="configs[selectedConfig$ | async]">
+                    </re-config-testing>
+                </mat-tab>
                 <mat-tab [label]="TEST_CASE_TAB_NAME" [disabled]="!testCaseEnabled">
                     <re-test-centre [testCases]="testCases" [serviceName]="serviceName" 
                         [selectedConfigIndex$]="selectedConfig$" [testCaseMap]="testCaseMap$"

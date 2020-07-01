@@ -1,0 +1,37 @@
+<mat-card>
+    <div class="console">
+        <span class="title">
+            <h4>
+                <mat-icon class="left-icon">computer</mat-icon>Test Output
+            </h4>
+            <h4 *ngIf="isInvalid" class="output-help"><mat-icon>cancel</mat-icon></h4>
+        </span>
+        <div class="json-tree" *ngIf="output?.test_result_raw_output">
+            <re-json-tree [json]="output?.test_result_raw_output || {}" [prevKey]="'$'"></re-json-tree>
+        </div>
+        <mat-expansion-panel [expanded]="output?.message || output?.exception || output?.test_result_output">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Output Messages
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div *ngIf="output?.message">
+                <pre>{{ output.message }}</pre>
+            </div>
+            <div *ngIf="output?.exception">
+                <pre>{{ output.exception }}</pre>
+            </div>
+            <div *ngIf="output?.test_result_output">
+                <pre>{{ output.test_result_output }}</pre>
+            </div>
+        </mat-expansion-panel>
+    </div>
+
+    <div class="button-group-end">
+        <button mat-raised-button color="accent" title="Run Test" [disabled]="!form.valid" (click)="runSingleTest(formatOutput())">Test Config<mat-icon>play_arrow</mat-icon></button>
+    </div>
+
+    <form [formGroup]="form">
+        <formly-form #formly immutable [model]="testInput" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
+    </form>
+</mat-card>
