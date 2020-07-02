@@ -1,0 +1,5 @@
+{
+    "environment": "demo",
+    "serviceRoot": "https://config-editor/",
+    "uiBootstrapPath": "./ui-bootstrap.json"
+}
