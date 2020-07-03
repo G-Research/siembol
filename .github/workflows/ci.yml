@@ -102,6 +102,8 @@ jobs:
           jq "{appName: \"Config Editor UI\", appVersion: .version, angularVersion: .dependencies[\"@angular/core\"], buildDate: \"$(date -u +%Y%m%d-%H:%M:%S)\", siembolCompileTimeVersion: .siembolCompileTimeVersion}" package.json > src/assets/build-info.json
       - name: Build
         run: npm run build-prod
+      - name: Copy config defaults
+        run: cp -r ../../config/config-editor-ui dist/config
       - name: Uploading dist
         uses: actions/upload-artifact@v2
         with:
