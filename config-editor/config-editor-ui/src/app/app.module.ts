@@ -193,7 +193,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
               },
             },
           },
-          { name: 'boolean', component: CheckboxTypeComponent, wrappers: ['form-field'] },
+          { name: 'boolean', extends: 'checkbox' },
           { name: 'enum', extends: 'select' },
           { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
           { name: 'array', component: ArrayTypeComponent },

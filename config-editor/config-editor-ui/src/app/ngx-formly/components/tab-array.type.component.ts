@@ -11,7 +11,8 @@ import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/
         <mat-tab-group animationDuration="0ms" [(selectedIndex)]="selectedIndex">
             <mat-tab *ngFor="let tab of field.fieldGroup; index as i" [label]="getEvaluatorType(tab?.model)">
                 <span class="align-right">
-                    <svg
+                    
+                    <svg *ngIf="i === model.length - 1"
                         xmlns="http://www.w3.org/2000/svg"
                         height="18" width="18" viewBox="0 0 24 24"
                         class="close-button"
@@ -23,7 +24,7 @@ import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/
             </mat-tab>
         </mat-tab-group>
         <div class="align-right">
-            <button mat-raised-button color="primary" (click)="add(selectedIndex + 1)">add evaluator</button>
+            <button mat-raised-button color="primary" (click)="add(model.length)">add evaluator</button>
         </div>
     </div>
   `,
@@ -60,7 +61,7 @@ import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/
   `],
 })
 export class TabArrayTypeComponent extends FieldArrayType {
-    public selectedIndex =0;
+    public selectedIndex = 0;
 
     getEvaluatorType(model) {
         return Object.keys(model)[0];
