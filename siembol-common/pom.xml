@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.58-SNAPSHOT</version>
+        <version>1.59-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
