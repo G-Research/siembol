@@ -71,8 +71,8 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         return fromAlertingValidateResult(alertingResult);
     }
 
-    public static ConfigSchemaService createAlertingRuleSchema(Optional<String> uiConfig,
-                                                               Optional<String> testUiConfig) throws Exception {
+    public static ConfigSchemaService createAlertingRuleSchemaService(Optional<String> uiConfig,
+                                                                      Optional<String> testUiConfig) throws Exception {
         LOG.info("Initialising alerts rule schema service");
         AlertingCompiler compiler = AlertingRulesCompiler.createAlertingRulesCompiler();
         AlertingResult schemaResult = compiler.getSchema();
@@ -101,7 +101,7 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         return new AlertingRuleSchemaServiceImpl(compiler, Optional.of(testValidator), testSchemaUi, computedSchema.get());
     }
 
-    public static ConfigSchemaService createAlertingCorrelationRuleSchema(
+    public static ConfigSchemaService createAlertingCorrelationRuleSchemaService(
             Optional<String> uiConfig) throws Exception {
         LOG.info("Initialising alerts correlation rule schema service");
         AlertingCompiler compiler = AlertingCorrelationRulesCompiler.createAlertingCorrelationRulesCompiler();

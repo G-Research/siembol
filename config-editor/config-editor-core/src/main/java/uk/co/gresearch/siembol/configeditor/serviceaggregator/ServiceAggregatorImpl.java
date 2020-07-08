@@ -7,71 +7,73 @@ import uk.co.gresearch.siembol.configeditor.common.*;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServiceAggregatorImpl implements ServiceAggregator {
     private static final String UNSUPPORTED_SERVICE_MSG = "Unsupported service %s";
     private static final String AUTHORISATION_MSG = "User %s is unauthorised to access the service %s";
     private final AuthorisationProvider authProvider;
-    private final Map<String, ConfigStore> configStores;
-    private final Map<String, ConfigSchemaService> configSchemaServices;
+    private final Map<String, ServiceAggregatorService> serviceMap;
 
     ServiceAggregatorImpl(Builder builder) {
         this.authProvider = builder.authProvider;
-        this.configStores = builder.configStores;
-        this.configSchemaServices = builder.configSchemaServices;
+        this.serviceMap = builder.serviceMap;
     }
 
     @Override
-    public ConfigStore getConfigStore(String user, String serviceName) {
-        return getService(user, serviceName,  configStores);
+    public ConfigStore getConfigStore(String user, String serviceName) throws AuthorisationException{
+        return getService(user, serviceName).getConfigStore();
     }
 
     @Override
-    public ConfigSchemaService getConfigSchema(String user, String serviceName) {
-        return getService(user, serviceName,  configSchemaServices);
+    public ConfigSchemaService getConfigSchema(String user, String serviceName) throws AuthorisationException {
+        return getService(user, serviceName).getConfigSchemaService();
     }
 
     @Override
     public List<ConfigStore> getConfigStoreServices() {
-        return new ArrayList<>(configStores.values());
+        return serviceMap.keySet().stream()
+                .map(x -> serviceMap.get(x).getConfigStore())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ConfigSchemaService> getConfigSchemaServices() {
-        return new ArrayList<>(configSchemaServices.values());
+        return serviceMap.keySet().stream()
+                .map(x -> serviceMap.get(x).getConfigSchemaService())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ConfigEditorService> getConfigEditorServices(String user) {
         List<ConfigEditorService> ret = new ArrayList<>();
-        for (String serviceName : configSchemaServices.keySet()) {
+        for (String serviceName : serviceMap.keySet()) {
             try {
-                ConfigSchemaService current = getConfigSchema(user, serviceName);
+                ServiceAggregatorService current = getService(user, serviceName);
                 ConfigEditorService configEditorService = new ConfigEditorService();
                 configEditorService.setName(serviceName);
+                configEditorService.setType(current.getType());
                 ret.add(configEditorService);
             } catch (AuthorisationException e) {
                 continue;
             }
         }
+        ret.sort(Comparator.comparing(ConfigEditorService::getName));
         return ret;
     }
 
     @Override
     public Health checkConfigStoreServicesHealth() {
-        return checkServiceHealth(configStores);
+        return checkServiceHealth(getConfigStoreServices());
     }
 
     @Override
     public Health checkConfigSchemaServicesHealth() {
-        return checkServiceHealth(configSchemaServices);
+        return checkServiceHealth(getConfigSchemaServices());
     }
 
-    private <T> T getService(String user, String serviceName,  Map<String, T> serviceMap)  {
+    private ServiceAggregatorService getService(String user, String serviceName) throws AuthorisationException  {
         if (!serviceMap.containsKey(serviceName)) {
             throw new UnsupportedOperationException(String.format(UNSUPPORTED_SERVICE_MSG, serviceName));
         }
@@ -83,15 +85,11 @@ public class ServiceAggregatorImpl implements ServiceAggregator {
         return serviceMap.get(serviceName);
     }
 
-    private <T extends HealthCheckable> Health checkServiceHealth(Map<String, T> serviceMap)  {
-        for (String name : serviceMap.keySet()) {
-            Health current = serviceMap.get(name).checkHealth();
-            try {
-                if (current.getStatus() != Status.UP) {
-                    return current;
-                }
-            } catch (Exception e) {
-                new Health.Builder().down(e).build();
+    private <T extends HealthCheckable> Health checkServiceHealth(List<T> checkList) {
+        for (T service : checkList) {
+            Health current = service.checkHealth();
+            if (current.getStatus() != Status.UP) {
+                return current;
             }
         }
         return new Health.Builder().up().build();
@@ -101,24 +99,24 @@ public class ServiceAggregatorImpl implements ServiceAggregator {
         private static final String SERVICE_ALREADY_REGISTERED = "Service is already registered";
         private static final String NO_SERVICE_REGISTERED = "No services registered in aggregator";
         private final AuthorisationProvider authProvider;
-        private final Map<String, ConfigStore> configStores = new HashMap<>();
-        private final Map<String, ConfigSchemaService> configSchemaServices = new HashMap<>();
+        private Map<String, ServiceAggregatorService> serviceMap = new HashMap<>();
 
         public Builder(AuthorisationProvider authProvider) {
             this.authProvider = authProvider;
         }
 
-        public Builder addService(String name, ConfigStore store, ConfigSchemaService schemaService) {
-            if (configStores.containsKey(name)) {
+        public Builder addService(String name, String type, ConfigStore store, ConfigSchemaService schemaService) {
+            if (serviceMap.containsKey(name)) {
                 throw new IllegalArgumentException(SERVICE_ALREADY_REGISTERED);
             }
-            configStores.put(name, store);
-            configSchemaServices.put(name, schemaService);
+
+            ServiceAggregatorService current = new ServiceAggregatorService(type, store, schemaService);
+            serviceMap.put(name, current);
             return this;
         }
 
         public ServiceAggregator build() {
-            if (configStores.isEmpty()) {
+            if (serviceMap.isEmpty()) {
                 throw new IllegalArgumentException(NO_SERVICE_REGISTERED);
             }
             return new ServiceAggregatorImpl(this);

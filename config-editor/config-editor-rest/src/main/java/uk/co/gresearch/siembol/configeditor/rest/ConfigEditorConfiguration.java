@@ -5,40 +5,22 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreImpl;
-
-import uk.co.gresearch.siembol.configeditor.configstore.JsonRuleConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.service.alerts.AlertingRuleSchemaServiceImpl;
-import uk.co.gresearch.siembol.configeditor.service.enrichments.EnrichmentSchemaServiceImpl;
-import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigSchemaServiceImpl;
-import uk.co.gresearch.siembol.configeditor.service.parsingapp.ParsingAppConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.service.parsingapp.ParsingAppConfigSchemaServiceImpl;
-import uk.co.gresearch.siembol.configeditor.service.response.ResponseSchemaService;
+import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigEditorServiceType;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregatorImpl;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluatorImpl;
 
-import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
-
 
 @Configuration
 @EnableConfigurationProperties(ConfigEditorConfigurationProperties.class)
 public class ConfigEditorConfiguration implements DisposableBean {
-    private static final String RESPONSE = "response";
-    private static final String ALERT = "alert";
-    private static final String PARSER_CONFIG = "parserconfig";
-    private static final String CORRELATION_ALERT = "correlationalert";
-    private static final String PARSING_APP = "parsingapp";
-    private static final String ENRICHMENT = "enrichment";
-    private static final String UNKNOWN_UI_CONFIG = "Unknown UI config for the service: %s";
-    private static final String UNKNOWN_TEST_SPEC_UI_CONFIG = "Unknown Test spec UI config for the service: %s";
-
     @Autowired
     private ConfigEditorConfigurationProperties properties;
     @Autowired
@@ -46,58 +28,29 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
     private ServiceAggregator serviceAggregator;
 
-    private TestCaseEvaluator testCaseEvaluator;
-
-    @Bean(name = "serviceAggregator")
+    @Bean
     ServiceAggregator serviceAggregator() throws Exception {
-       serviceAggregator = new ServiceAggregatorImpl.Builder(authProvider)
-                .addService(RESPONSE,
-                        ConfigStoreImpl.createRuleStore(
-                                properties.getConfigStore().get(RESPONSE),
-                                JsonRuleConfigInfoProvider.create()),
-                        new ResponseSchemaService.Builder(
-                                new HttpProvider(properties.getCentrifugeUrl(), HttpProvider::getKerberosHttpClient))
-                                .uiConfigSchema(readUiConfigFile(RESPONSE).orElse(null))
-                                .build())
-                .addService(ALERT,
-                        ConfigStoreImpl.createRuleStore(
-                                properties.getConfigStore().get(ALERT),
-                                JsonRuleConfigInfoProvider.create()),
-                        AlertingRuleSchemaServiceImpl.createAlertingRuleSchema(
-                                readUiConfigFile(ALERT),
-                                readTestSpecUiConfigFile(ALERT)))
-               .addService(CORRELATION_ALERT,
-                       ConfigStoreImpl.createRuleStore(
-                               properties.getConfigStore().get(CORRELATION_ALERT),
-                               JsonRuleConfigInfoProvider.create()),
-                       AlertingRuleSchemaServiceImpl.createAlertingCorrelationRuleSchema(
-                               readUiConfigFile(CORRELATION_ALERT)))
-               .addService(PARSER_CONFIG,
-                        ConfigStoreImpl.createRuleStore(
-                                properties.getConfigStore().get(PARSER_CONFIG),
-                                ParserConfigConfigInfoProvider.create()),
-                        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(
-                                readUiConfigFile(PARSER_CONFIG),
-                                readTestSpecUiConfigFile(PARSER_CONFIG)))
-               .addService(PARSING_APP,
-                       ConfigStoreImpl.createRuleStore(
-                               properties.getConfigStore().get(PARSING_APP),
-                               ParsingAppConfigInfoProvider.create()),
-                       ParsingAppConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(
-                               readUiConfigFile(PARSING_APP)))
-               .addService(ENRICHMENT,
-                       ConfigStoreImpl.createRuleStore(
-                               properties.getConfigStore().get(ENRICHMENT),
-                               JsonRuleConfigInfoProvider.create()),
-                       EnrichmentSchemaServiceImpl.createEnrichmentsSchemaService(
-                               readUiConfigFile(ENRICHMENT),
-                               readTestSpecUiConfigFile(ENRICHMENT)))
-               .build();
+        ServiceAggregatorImpl.Builder builder = new ServiceAggregatorImpl.Builder(authProvider);
+        for (String name : properties.getServices().keySet()) {
+            ServiceConfigurationProperties serviceProperties = properties.getServices().get(name);
 
-       return serviceAggregator;
+            ConfigEditorServiceType serviceType = ConfigEditorServiceType.fromName(serviceProperties.getType());
+            ConfigStore configStore = serviceType.createConfigStore(serviceProperties.getConfigStore());
+
+            Optional<String> uiLayout = ConfigEditorUtils.readUiLayoutFile(serviceProperties.getUiConfigFileName());
+            Optional<String> testSpecUiLayout = ConfigEditorUtils.readUiLayoutFile(
+                    serviceProperties.getTestSpecUiConfigFileName());
+            Optional<Map<String, String>> attributes = Optional.ofNullable(serviceProperties.getAttributes());
+
+            ConfigSchemaService schemaService = serviceType.createConfigSchemaService(
+                    uiLayout, testSpecUiLayout, attributes);
+            builder.addService(name, serviceProperties.getType(), configStore, schemaService);
+        }
+        serviceAggregator = builder.build();
+        return serviceAggregator;
     }
 
-    @Bean(name = "testCaseEvaluator")
+    @Bean
     TestCaseEvaluator testCaseEvaluator() throws Exception {
         return new TestCaseEvaluatorImpl();
     }
@@ -111,23 +64,5 @@ public class ConfigEditorConfiguration implements DisposableBean {
         if (serviceAggregator != null) {
             serviceAggregator.getConfigStoreServices().forEach(x -> x.awaitShutDown());
         }
-    }
-
-    private Optional<String> readUiConfigFile(String serviceName) {
-        String filePath = properties.getUiConfigFileName().get(serviceName);
-        if (filePath == null) {
-            throw new IllegalArgumentException(String.format(UNKNOWN_UI_CONFIG, serviceName));
-        }
-
-        return ConfigEditorUtils.readUiLayoutFile(filePath);
-    }
-
-    private Optional<String> readTestSpecUiConfigFile(String serviceName) {
-        String filePath = properties.getTestSpecUiConfigFileName().get(serviceName);
-        if (filePath == null) {
-            throw new IllegalArgumentException(String.format(UNKNOWN_TEST_SPEC_UI_CONFIG, serviceName));
-        }
-
-        return ConfigEditorUtils.readUiLayoutFile(filePath);
     }
 }

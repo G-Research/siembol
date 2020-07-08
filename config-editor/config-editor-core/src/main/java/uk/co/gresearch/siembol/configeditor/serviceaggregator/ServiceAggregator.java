@@ -1,6 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.serviceaggregator;
 
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.configeditor.common.AuthorisationException;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorService;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
@@ -8,11 +9,9 @@ import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 import java.util.List;
 
 public interface ServiceAggregator {
-    String UNSUPPORTED_USER_PRINCIPAL_FORMAT = "Unsupported principal format in the authentication structure";
+    ConfigStore getConfigStore(String user, String serviceName) throws AuthorisationException;
 
-    ConfigStore getConfigStore(String user, String serviceName);
-
-    ConfigSchemaService getConfigSchema(String user, String serviceName);
+    ConfigSchemaService getConfigSchema(String user, String serviceName) throws AuthorisationException;
 
     List<ConfigStore> getConfigStoreServices();
 
@@ -23,5 +22,4 @@ public interface ServiceAggregator {
     Health checkConfigStoreServicesHealth();
 
     Health checkConfigSchemaServicesHealth();
-
 }

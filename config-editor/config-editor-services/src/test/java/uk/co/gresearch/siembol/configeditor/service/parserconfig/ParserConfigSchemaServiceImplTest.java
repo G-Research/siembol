@@ -197,7 +197,7 @@ public class ParserConfigSchemaServiceImplTest {
     @Test
     public void createSchemaEmptyTestConfigs() throws Exception {
         ConfigSchemaService service  = ParserConfigSchemaServiceImpl
-                .createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout), Optional.empty());
+                .createParserConfigSchemaService(Optional.of(dummyUiLayout), Optional.empty());
         Assert.assertNotNull(service.getSchema());
         Assert.assertNotNull(service.getTestSchema());
     }
@@ -205,7 +205,7 @@ public class ParserConfigSchemaServiceImplTest {
     @Test
     public void createSchemaConfigs() throws Exception {
         ConfigSchemaService service  = ParserConfigSchemaServiceImpl
-                .createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout),
+                .createParserConfigSchemaService(Optional.of(dummyUiLayout),
                         Optional.of(dummyUiLayout));
         Assert.assertNotNull(service.getSchema());
         Assert.assertNotNull(service.getTestSchema());
@@ -213,17 +213,17 @@ public class ParserConfigSchemaServiceImplTest {
 
     @Test(expected = IllegalStateException.class)
     public void createSchemaEmptyUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.empty(), Optional.of(dummyUiLayout));
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaService(Optional.empty(), Optional.of(dummyUiLayout));
     }
 
     @Test(expected = Exception.class)
     public void createSchemaWrongUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of("INVALID"), Optional.empty());
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaService(Optional.of("INVALID"), Optional.empty());
     }
 
     @Test(expected = Exception.class)
     public void createSchemaWrongTestUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaServiceImpl(Optional.of(dummyUiLayout),
+        ParserConfigSchemaServiceImpl.createParserConfigSchemaService(Optional.of(dummyUiLayout),
                 Optional.of("INVALID"));
     }
 }

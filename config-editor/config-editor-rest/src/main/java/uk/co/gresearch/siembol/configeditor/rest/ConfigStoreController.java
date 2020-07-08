@@ -1,7 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,7 +15,6 @@ import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.getUs
 @RestController
 public class ConfigStoreController {
     @Autowired
-    @Qualifier("serviceAggregator")
     private ServiceAggregator serviceAggregator;
 
     @CrossOrigin

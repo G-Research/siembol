@@ -10,6 +10,7 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -233,8 +234,8 @@ public class ResponseSchemaServiceTest {
     @Test
     public void buildUiConfigOK() throws Exception {
         responseSchemaService = builder
-                .uiConfigSchema(emptyUiLayout)
-                .uiConfigTestSchema(emptyUiLayout)
+                .uiConfigSchema(Optional.of(emptyUiLayout))
+                .uiConfigTestSchema(Optional.of(emptyUiLayout))
                 .build();
 
         ConfigEditorResult result = responseSchemaService.getSchema();
@@ -249,12 +250,12 @@ public class ResponseSchemaServiceTest {
 
     @Test(expected = java.lang.IllegalStateException.class)
     public void buildInvalidUiConfig() throws Exception {
-        responseSchemaService = builder.uiConfigSchema("INVALID").build();
+        responseSchemaService = builder.uiConfigSchema(Optional.of("INVALID")).build();
     }
 
     @Test(expected = java.lang.IllegalStateException.class)
     public void buildInvalidUiTestConfig() throws Exception {
-        responseSchemaService = builder.uiConfigTestSchema("INVALID").build();
+        responseSchemaService = builder.uiConfigTestSchema(Optional.of("INVALID")).build();
     }
 
     @Test(expected = java.lang.IllegalStateException.class)

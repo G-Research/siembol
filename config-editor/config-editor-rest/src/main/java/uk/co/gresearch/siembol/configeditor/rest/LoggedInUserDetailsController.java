@@ -14,7 +14,6 @@ import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 @RestController
 public class LoggedInUserDetailsController {
     @Autowired
-    @Qualifier("serviceAggregator")
     private ServiceAggregator serviceAggregator;
 
     @RequestMapping(value = "user", method = RequestMethod.GET)

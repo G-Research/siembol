@@ -14,6 +14,7 @@ import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Map;
 import java.util.Optional;
 
 public class ResponseSchemaService implements ConfigSchemaService {
@@ -27,6 +28,7 @@ public class ResponseSchemaService implements ConfigSchemaService {
     private static final String INIT_ERROR_MESSAGE = "Response schema service initialisation error";
     private static final String RULES_SCHEMA_LOG = "rules schema: {}";
     private static final String TEST_SPECIFICATION_SCHEMA_LOG = "test specification schema: {}";
+    private static final String ATTRIBUTES_MISSING_ERROR = "Missing attributes in Response Schema Service";
 
     private final ResponseHttpProvider responseHttpProvider;
     private final String rulesSchema;
@@ -104,31 +106,27 @@ public class ResponseSchemaService implements ConfigSchemaService {
         private HttpProvider httpProvider;
         private String rulesSchema;
         private String testSchema;
-        private String uiConfigSchema;
-        private String uiConfigTestSchema;
+        private Optional<String> uiConfigSchema = Optional.empty();
+        private Optional<String> uiConfigTestSchema = Optional.empty();
 
         public Builder(HttpProvider httpProvider) {
             this.httpProvider = httpProvider;
         }
 
-        public Builder uiConfigSchema(String uiConfigSchema) {
+        public Builder uiConfigSchema(Optional<String> uiConfigSchema) {
             this.uiConfigSchema = uiConfigSchema;
             return this;
         }
 
-        public Builder uiConfigTestSchema(String uiConfigTestSchema) {
+        public Builder uiConfigTestSchema(Optional<String> uiConfigTestSchema) {
             this.uiConfigTestSchema = uiConfigTestSchema;
             return this;
         }
 
         public ResponseSchemaService build() throws Exception {
-            LOG.info(INIT_START_MESSAGE);
             responseHttpProvider = new ResponseHttpProvider(httpProvider);
-
-            RespondingResult ruleSchemaResult = responseHttpProvider
-                    .getRulesSchema(Optional.ofNullable(uiConfigSchema));
-            RespondingResult testSchemaResult = responseHttpProvider
-                    .getTestSchema(Optional.ofNullable(uiConfigTestSchema));
+            RespondingResult ruleSchemaResult = responseHttpProvider.getRulesSchema(uiConfigSchema);
+            RespondingResult testSchemaResult = responseHttpProvider.getTestSchema(uiConfigTestSchema);
 
             LOG.info(RULES_SCHEMA_LOG, ruleSchemaResult.getAttributes().getRulesSchema());
             LOG.info(TEST_SPECIFICATION_SCHEMA_LOG, testSchemaResult.getAttributes().getTestSpecificationSchema());
@@ -142,8 +140,33 @@ public class ResponseSchemaService implements ConfigSchemaService {
 
             rulesSchema = ruleSchemaResult.getAttributes().getRulesSchema();
             testSchema = testSchemaResult.getAttributes().getTestSpecificationSchema();
-            LOG.info(INIT_COMPLETED_MESSAGE);
             return new ResponseSchemaService(this);
         }
+    }
+
+    public static ConfigSchemaService createResponseSchemaService(
+            Optional<String> uiConfig, Optional<Map<String, String>> attributes) throws Exception {
+        LOG.info(INIT_START_MESSAGE);
+        if (!attributes.isPresent()) {
+            LOG.error(ATTRIBUTES_MISSING_ERROR);
+            throw new IllegalArgumentException(ATTRIBUTES_MISSING_ERROR);
+        }
+
+        ResponseAttributes responseAttributes = new ObjectMapper()
+                .convertValue(attributes.get(), ResponseAttributes.class);
+        if (responseAttributes.getResponseUrl() == null
+                || responseAttributes.getResponseAuthenticationType() == null) {
+            LOG.error(ATTRIBUTES_MISSING_ERROR);
+            throw new IllegalArgumentException(ATTRIBUTES_MISSING_ERROR);
+        }
+
+        //NOTE; we are supporting kerberos authentication only
+        HttpProvider httpProvider = new HttpProvider(responseAttributes.getResponseUrl(),
+                HttpProvider::getKerberosHttpClient);
+        ConfigSchemaService ret = new Builder(httpProvider)
+                .uiConfigSchema(uiConfig)
+                .build();
+        LOG.info(INIT_COMPLETED_MESSAGE);
+        return ret;
     }
 }

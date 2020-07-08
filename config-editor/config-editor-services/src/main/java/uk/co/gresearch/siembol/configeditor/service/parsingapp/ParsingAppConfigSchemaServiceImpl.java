@@ -59,7 +59,7 @@ public class ParsingAppConfigSchemaServiceImpl implements ConfigSchemaService {
         return new ConfigEditorResult(statusCode, attr);
     }
 
-    public static ParsingAppConfigSchemaServiceImpl createParserConfigSchemaServiceImpl(
+    public static ParsingAppConfigSchemaServiceImpl createParsingAppConfigSchemaService(
             Optional<String> uiConfig) throws Exception {
         LOG.info("Initialising parsing app config schema service");
 

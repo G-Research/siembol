@@ -16,13 +16,7 @@ import java.util.Optional;
 public class TestCaseController {
     private static final String MISSING_ATTRIBUTES = "missing testcase in files attributes";
     @Autowired
-    @Qualifier("testCaseEvaluator")
-    TestCaseEvaluator testCaseEvaluator;
-
-    public TestCaseController(
-            @Qualifier("testCaseEvaluator") TestCaseEvaluator testCaseEvaluator) {
-        this.testCaseEvaluator = testCaseEvaluator;
-    }
+    private TestCaseEvaluator testCaseEvaluator;
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/testcases/schema", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,7 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.stereotype.Component;
@@ -11,9 +10,7 @@ import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 @Component
 public class ConfigSchemaHealthIndicator implements ReactiveHealthIndicator {
     @Autowired
-    @Qualifier("serviceAggregator")
     private ServiceAggregator serviceAggregator;
-
 
     @Override
     public Mono<Health> health() {

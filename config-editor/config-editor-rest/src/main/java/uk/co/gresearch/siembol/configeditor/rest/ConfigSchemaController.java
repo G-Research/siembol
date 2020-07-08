@@ -24,7 +24,6 @@ import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.wrapE
 public class ConfigSchemaController {
     private static final String MISSING_ATTRIBUTES = "missing required attributes for testing";
     @Autowired
-    @Qualifier("serviceAggregator")
     private ServiceAggregator serviceAggregator;
 
     @CrossOrigin

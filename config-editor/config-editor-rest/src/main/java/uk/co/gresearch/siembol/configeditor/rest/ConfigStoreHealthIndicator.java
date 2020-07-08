@@ -11,9 +11,7 @@ import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 @Component
 public class ConfigStoreHealthIndicator implements ReactiveHealthIndicator {
     @Autowired
-    @Qualifier("serviceAggregator")
     private ServiceAggregator serviceAggregator;
-
 
     @Override
     public Mono<Health> health() {

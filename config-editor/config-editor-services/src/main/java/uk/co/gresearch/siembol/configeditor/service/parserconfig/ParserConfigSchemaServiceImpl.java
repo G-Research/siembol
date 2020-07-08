@@ -76,8 +76,8 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
         return fromParserFactoryValidateResult(parserResult);
     }
 
-    public static ConfigSchemaService createParserConfigSchemaServiceImpl(Optional<String> uiConfig,
-                                                                          Optional<String> testUiConfig) throws Exception {
+    public static ConfigSchemaService createParserConfigSchemaService(Optional<String> uiConfig,
+                                                                      Optional<String> testUiConfig) throws Exception {
         LOG.info("Initialising parser config schema service");
 
         ParserFactory parserFactory = ParserFactoryImpl.createParserFactory();
