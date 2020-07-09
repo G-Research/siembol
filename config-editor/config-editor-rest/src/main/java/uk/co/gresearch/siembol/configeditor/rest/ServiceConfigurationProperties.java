@@ -6,12 +6,13 @@ import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreProperties;
 import java.util.Map;
 
 public class ServiceConfigurationProperties {
+    private static final String UNKNOWN_FILE_NAME = "unknown";
     private String type;
     @NestedConfigurationProperty
     private ConfigStoreProperties configStore;
 
-    private String uiConfigFileName;
-    private String testSpecUiConfigFileName;
+    private String uiConfigFileName = UNKNOWN_FILE_NAME;
+    private String testSpecUiConfigFileName = UNKNOWN_FILE_NAME;
     private Map<String, String> attributes;
 
     public String getType() {
