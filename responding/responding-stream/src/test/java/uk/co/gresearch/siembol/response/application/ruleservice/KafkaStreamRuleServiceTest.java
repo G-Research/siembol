@@ -15,6 +15,7 @@ import uk.co.gresearch.siembol.response.engine.RulesEngine;
 
 import java.util.List;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,8 +33,8 @@ public class KafkaStreamRuleServiceTest {
     @Multiline
     private static String alertStr;
 
-    @ClassRule
-    public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
+    @Rule
+    public KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     private KafkaStreamRulesService streamService;
     private RulesProvider rulesProvider;
@@ -45,6 +46,7 @@ public class KafkaStreamRuleServiceTest {
 
     @Before
     public void setUp() {
+        kafkaRule.waitForStartup();
         responseAlert = new ResponseAlert();
         resultAttributes = new RespondingResultAttributes();
         resultAttributes.setAlert(responseAlert);
@@ -58,11 +60,10 @@ public class KafkaStreamRuleServiceTest {
         properties.setErrorTopic(errorTopic);
         properties.setStreamConfig(new HashMap<>());
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
-        properties.getStreamConfig().put("application.id", "siembol-response");
+        properties.getStreamConfig().put("application.id", "siembol-response-" + UUID.randomUUID().toString());
         properties.getStreamConfig().put("bootstrap.servers", bootstrapServer);
         properties.getStreamConfig().put("security.protocol", "PLAINTEXT");
 
-        kafkaRule.waitForStartup();
         streamService = new KafkaStreamRulesService(rulesProvider, properties);
     }
 
