@@ -30,7 +30,7 @@ Each rule consists of a UI block containing:
 1) The version number
 2) The last author
 3) Rule name
-4) Rule descrition
+4) Rule description
 5) Rule tags
 
 [//]: # (TODO add annotated image of a rule block)
@@ -125,7 +125,7 @@ The "case_insensitive" checkbox means that the case of the strings in the data f
 [//]: # (TODO add image of is_in_set matcher)
 
 #### Tags
-Tags are optional but recommneded as they allow you categorise your rules.
+Tags are optional but recommended as they allow you categorise your rules.
 
 To add a tag, click the Add to Tags button:
 
@@ -155,7 +155,7 @@ The use of a test cases UI is covered in the Test_Cases_User_Guide.
 [//]: # (TODO add link to test cases guide)
 
 ### Saving a config
-You can save the config at any time (provided the config is valid) by clicking the submit button found in the edit config tab. This will commit it to the the store.
+You can save the config at any time (provided the config is valid) by clicking the submit button found in the edit config tab. This will commit it to the store.
 
 [//]: # (TODO add image of the submit button)
 
