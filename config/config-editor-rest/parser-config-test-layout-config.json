@@ -1,0 +1,6 @@
+{
+    "$..properties.log": {
+        "type": "textarea",
+        "wrappers": []
+    }
+}

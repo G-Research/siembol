@@ -1,0 +1,23 @@
+{
+    "$..evaluators": {
+        "type": "tab-array"
+    },
+    "$..rule_description": {
+        "type": "textarea",
+        "wrappers": []
+    },
+    "$..matchers.items.properties.data": {
+        "type": "textarea",
+        "wrappers": []
+    },
+    "$..matchers.items": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..matchers.items.properties.case_insensitive": {
+        "condition": {
+            "hideExpression": "if(model.evaluators && model.evaluators.length > 0){if( model.evaluators[field.parent.parent.parent.parent.parent.parent.parent.parent.key - 0].matching.evaluator_attributes.matchers && model.evaluators[field.parent.parent.parent.parent.parent.parent.parent.parent.key - 0].matching.evaluator_attributes.matchers.length >0){return model.evaluators[field.parent.parent.parent.parent.parent.parent.parent.parent.key - 0].matching.evaluator_attributes.matchers[field.parent.key - 0].matcher_type !== 'IS_IN_SET';}} return true;"
+        }
+    }
+}

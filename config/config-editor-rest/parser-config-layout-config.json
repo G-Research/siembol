@@ -1,0 +1,209 @@
+{
+    "$..parsers_configurations.items": {
+        "type": "tabs"
+    },
+    "$..parser_attributes..syslog_config": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "return model.parser_attributes.parser_type !== 'syslog'"
+        }
+    },
+    "$..parser_attributes..syslog_config.properties.time_formats": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..parser_extractors.items": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..parser_extractors..post_processing_functions": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..parser_extractors..regular_expressions": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'pattern_extractor'"
+        }
+    },
+    "$..parser_extractors..should_match_pattern": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'pattern_extractor'"
+        }
+    },
+    "$..parser_extractors..dot_all_regex_flag": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'pattern_extractor'"
+        }
+    },
+    "$..parser_extractors..word_delimiter": {
+        "condition": {
+            "hideExpression": "return !(model.parser_extractors[(field.parent.parent.key - 0)].extractor_type === 'csv_extractor' || model.parser_extractors[(field.parent.parent.key - 0)].extractor_type === 'key_value_extractor')"
+        }
+    },
+    "$..parser_extractors..key_value_delimiter": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'key_value_extractor'"
+        }
+    },
+    "$..parser_extractors..escaped_character": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'key_value_extractor'"
+        }
+    },
+    "$..parser_extractors..quota_value_handling": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'key_value_extractor'"
+        }
+    },
+    "$..parser_extractors..next_key_strategy": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'key_value_extractor'"
+        }
+    },
+    "$..parser_extractors..escaping_handling": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'key_value_extractor'"
+        }
+    },
+    "$..parser_extractors..rename_duplicate_keys": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'key_value_extractor'"
+        }
+    },
+    "$..parser_extractors..column_names": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'csv_extractor'"
+        }
+    },
+    "$..parser_extractors..skipping_column_name": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'csv_extractor'"
+        }
+    },
+    "$..parser_extractors..path_prefix": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'json_extractor'"
+        }
+    },
+    "$..parser_extractors..nested_separator": {
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'json_extractor'"
+        }
+    },
+    "$..parser_extractors..regex_select_config": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "return model.parser_extractors[(field.parent.parent.key - 0)].extractor_type !== 'regex_select_extractor'"
+        }
+    },
+    "$..parser_extractors..regex_select_config..patterns.items": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..parser_extractors..time_formats": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "if(model.parser_extractors[(field.parent.parent.key - 0)].post_processing_functions !== undefined){for(let x of model.parser_extractors[(field.parent.parent.key - 0)].post_processing_functions){ if(x === 'format_timestamp'){ return false;}}} return true"
+        }
+    },
+    "$..parser_extractors..timestamp_field": {
+        "condition": {
+            "hideExpression": "if(model.parser_extractors[(field.parent.parent.key - 0)].post_processing_functions !== undefined){for(let x of model.parser_extractors[(field.parent.parent.key - 0)].post_processing_functions){ if(x === 'convert_unix_timestamp' || x === 'format_timestamp'){ return false;}}} return true"
+        }
+    },
+    "$..parser_extractors..string_replace_target": {
+        "condition": {
+            "hideExpression": "return !(model.parser_extractors[(field.parent.parent.key - 0)].pre_processing_function === 'string_replace' || model.parser_extractors[(field.parent.parent.key - 0)].pre_processing_function === 'string_replace_all')"
+        }
+    },
+    "$..parser_extractors..string_replace_replacement": {
+        "condition": {
+            "hideExpression": "return !(model.parser_extractors[(field.parent.parent.key - 0)].pre_processing_function === 'string_replace' || model.parser_extractors[(field.parent.parent.key - 0)].pre_processing_function === 'string_replace_all')"
+        }
+    },
+    "$..parser_extractors..conversion_exclusions": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "if(model.parser_extractors[(field.parent.parent.key - 0)].post_processing_functions !== undefined){for(let x of model.parser_extractors[(field.parent.parent.key - 0)].post_processing_functions){ if(x === 'convert_to_string'){ return false;}}} return true;"
+        }
+    },
+    "$..transformations.items": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..transformations..field_rename_map": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "return model.transformations[(field.parent.parent.key - 0)].transformation_type !== 'rename_fields'"
+        }
+    },
+    "$..field_rename_map.items": {
+        "wrappers": [
+            "panel"
+        ]
+    },
+    "$..transformations..fields_filter": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "return !(model.transformations[(field.parent.parent.key - 0)].transformation_type === 'delete_fields' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'trim_value' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'chomp_value' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'lowercase_value' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'uppercase_value')"
+        }
+    },
+    "$..transformations..fields_filter..including_fields": {
+        "wrappers": [
+            "panel"
+        ]
+    },
+    "$..transformations..fields_filter..excluding_fields": {
+        "wrappers": [
+            "panel"
+        ]
+    },
+    "$..transformations..string_replace_target": {
+        "condition": {
+            "hideExpression": "return !(model.transformations[(field.parent.parent.key - 0)].transformation_type === 'field_name_string_replace' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'field_name_string_replace_all' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'field_name_string_delete_all')"
+        }
+    },
+    "$..transformations..string_replace_replacement": {
+        "condition": {
+            "hideExpression": "return !(model.transformations[(field.parent.parent.key - 0)].transformation_type === 'field_name_string_replace' || model.transformations[(field.parent.parent.key - 0)].transformation_type === 'field_name_string_replace_all')"
+        }
+    },
+    "$..transformations..message_filter": {
+        "wrappers": [
+            "expansion-panel"
+        ],
+        "condition": {
+            "hideExpression": "return !(model.transformations[(field.parent.parent.key - 0)].transformation_type === 'filter_message')"
+        }
+    },
+    "$..transformations..message_filter..items": {
+        "wrappers": [
+            "panel"
+        ]
+    },
+    "$..transformations..case_type": {
+        "condition": {
+            "hideExpression": "return !(model.transformations[(field.parent.parent.key - 0)].transformation_type === 'field_name_change_case')"
+        }
+    }
+}

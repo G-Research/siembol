@@ -1,0 +1,28 @@
+{
+    "$..rules.items": {
+        "type": "tabs"
+    },
+    "$..rule_description": {
+        "type": "textarea",
+        "wrappers": []
+    },
+    "$..matchers.items": {
+        "wrappers": [
+            "expansion-panel"
+        ]
+    },
+    "$..rules..tags.items": {
+        "wrappers": [
+            "panel"
+        ]
+    },
+    "$..case_insensitive": {
+        "condition": {
+            "hideExpression": "return model.matchers[field.parent.key - 0].matcher_type !== 'IS_IN_SET'"
+        }
+    },
+    "$..data": {
+        "type": "textarea",
+        "wrappers": []
+    }
+}
