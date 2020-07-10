@@ -96,7 +96,7 @@ jobs:
       - name: Install NPM packages
         run: |
           npm install typescript@3.7.5
-          npm install
+          npm ci
       - name: Generate build-info.json
         run: |
           jq "{appName: \"Config Editor UI\", appVersion: .version, angularVersion: .dependencies[\"@angular/core\"], buildDate: \"$(date -u +%Y%m%d-%H:%M:%S)\", siembolCompileTimeVersion: .siembolCompileTimeVersion}" package.json > src/assets/build-info.json
