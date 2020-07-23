@@ -128,20 +128,13 @@ export class ArrayTypeComponent extends FieldArrayType {
         this.add(newIndex, temp);
     }
 
-    add(i?: number, initialModel?: any, { markAsDirty } = { markAsDirty: true }) {
-        i = isNullOrUndefined(i) ? this.field.fieldGroup.length : i;
-        if (!this.model) {
-          assignModelValue(this.field.parent.model, getKeyPath(this.field), []);
-        }
-        let originalModel = cloneDeep(this.model);
-        
-        this.model.splice(i, 0, initialModel ? clone(initialModel) : undefined);
-    
-        (<any> this.options)._buildForm(true);
-        originalModel.push(this.model[this.model.length - 1]);
-        for (let i=0; i < this.model.length; i++) {
-            this.model[i] = originalModel[i];
-        }
+    remove(i: number, { markAsDirty } = { markAsDirty: true }) {
+        this.model.splice(i, 1);
+        this.formControl.removeAt(i);
+        this.field.fieldGroup.splice(i, 1);
+        this.field.fieldGroup.forEach((f, key) => f.key = `${key}`);
+        (<any>this.options)._buildForm(true);
         markAsDirty && this.formControl.markAsDirty();
     }
+
 }
