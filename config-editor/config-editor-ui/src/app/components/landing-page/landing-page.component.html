@@ -1,13 +1,13 @@
 <div class="centre-box">
   <div>
     <img class="logo" src="/assets/siembol_logo_dark.svg">
-    <div class="rulesets">
-      <mat-card *ngFor="let ruleset of serviceNames$ | async" class="ruleset">
-        <h2>{{ ruleset | titlecase}} </h2>
-        <button mat-raised-button color="primary" [routerLink]="['/' + ruleset]">{{ ruleset | titlecase }} Manager</button>
-        <ng-container *ngIf="repositoryLinks[ruleset]">
-          <a mat-raised-button color="accent" [href]="repositoryLinks[ruleset].rule_store_url">Working Repo</a>
-          <a mat-raised-button color="accent" [href]="repositoryLinks[ruleset].rules_release_url">Release Repo</a>
+    <div class="services">
+      <mat-card *ngFor="let service of userServices$ | async" class="service">
+        <h2>{{ service.name | titlecase}} </h2>
+        <button mat-raised-button color="primary" [routerLink]="['/' + service.name]">{{ service.type | titlecase }} Editor</button>
+        <ng-container *ngIf="repositoryLinks[service.name]">
+          <a mat-raised-button color="accent" [href]="repositoryLinks[service.name].rule_store_url">Working Repo</a>
+          <a mat-raised-button color="accent" [href]="repositoryLinks[service.name].rules_release_url">Release Repo</a>
         </ng-container>
       </mat-card>
     </div>

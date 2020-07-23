@@ -3,15 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppConfigService } from '../config';
-import { StripSuffixPipe } from '../pipes';
 import { ConfigLoaderService } from './config-loader.service';
 import { ConfigWrapperService } from './config-wrapper-service';
 import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, SensorFields,
-    SensorFieldTemplate, UserName, RepositoryLinksWrapper } from '@model';
+    SensorFieldTemplate, RepositoryLinksWrapper } from '@model';
 import { ConfigTestDto, DeploymentWrapper, EditorResult, ExceptionInfo, SchemaInfo, TestCaseEvaluation } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { Field } from '@model/sensor-fields';
 import { JSONSchema7 } from 'json-schema';
+import { ServiceInfo } from '../model/config-model';
 
 export interface IConfigLoaderService {
   originalSchema;
@@ -52,16 +52,11 @@ export class EditorService {
     private config: AppConfigService) {}
 
   public getUser(): Observable<string> {
-    return this.http.get<EditorResult<UserName>>(`${this.config.serviceRoot}user`).pipe(
-        map(result => new StripSuffixPipe().transform(result.attributes.user_name, '@UBERIT.NET'))
-    );
+    return Observable.of(this.config.getUser());
   }
 
   public getServiceNames(): Observable<string[]> {
-      return this.http.get<EditorResult<any>>(`${this.config.serviceRoot}user`).pipe(
-          map(result => result.attributes.services),
-          map(arr => arr.map(serviceName => serviceName.name))
-      );
+    return Observable.of(this.config.getServiceNames());
   }
 
   public getSensorFields(): Observable<SensorFields[]> {
@@ -85,14 +80,14 @@ export class EditorService {
       `${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`).pipe(
         map(result => ({
             ...result.attributes.rules_repositories,
-            rulesetName: serviceName,
+            service_name: serviceName,
         }))
       )
   }
 
   public createLoader(serviceName: string) {
-      this.configWrapper = new ConfigWrapperService(this.config.getUiMetadata(serviceName));
-      this.configLoader = new ConfigLoaderService(this.http, this.config, serviceName, this.configWrapper);
+    this.configWrapper = new ConfigWrapperService(this.config.getUiMetadata(serviceName));
+    this.configLoader = new ConfigLoaderService(this.http, this.config, serviceName, this.configWrapper);
   }
 
   public getTestCaseSchema(): Observable<any> {

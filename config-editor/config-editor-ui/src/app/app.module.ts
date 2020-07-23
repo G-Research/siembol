@@ -71,11 +71,7 @@ import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.com
 import { ConfigTestingComponent } from './components/testing/config-testing/config-testing.component';
 
 export function configServiceFactory(config: AppConfigService) {
-  return () => config.loadConfig();
-}
-
-export function uiMetadataServiceFactory(config: AppConfigService) {
-  return () => config.loadUiMetadata();
+  return () => config.loadConfigAndUserInfo();
 }
 
 export function buildInfoServiceFactory(config: AppConfigService) {
@@ -84,7 +80,6 @@ export function buildInfoServiceFactory(config: AppConfigService) {
 
 const PROD_PROVIDERS = [
     { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService], multi: true },
-    { provide: APP_INITIALIZER, useFactory: uiMetadataServiceFactory, deps: [AppConfigService], multi: true },
     { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true }
 ];

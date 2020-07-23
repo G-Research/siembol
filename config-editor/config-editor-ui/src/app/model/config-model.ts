@@ -29,8 +29,15 @@ export interface Content<T> extends GeneralRule {
     content: T;
 }
 
-export interface UserName extends ExceptionInfo {
+export interface ServiceInfo {
+    name: string;
+    type: string;
+}
+
+export interface UserInfo extends ExceptionInfo {
     user_name: string;
+    services : ServiceInfo[];
+
 }
 
 export interface RepositoryLinksWrapper extends ExceptionInfo {
@@ -40,7 +47,7 @@ export interface RepositoryLinksWrapper extends ExceptionInfo {
 export interface RepositoryLinks {
     rule_store_url: string;
     rules_release_url: string;
-    rulesetName: string;
+    service_name: string;
 }
 
 export interface SchemaInfo extends ExceptionInfo {

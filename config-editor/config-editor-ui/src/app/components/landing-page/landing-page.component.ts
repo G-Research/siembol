@@ -4,6 +4,8 @@ import * as fromStore from '@app/store';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ServiceInfo } from '../../model/config-model';
+import { AppConfigService } from '../../config';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.Default,
@@ -14,16 +16,18 @@ import { takeUntil } from 'rxjs/operators';
 export class LandingPageComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
-  serviceNames$: Observable<string[]>;
+  userServices$: Observable<ServiceInfo[]>;
   repositoryLinks: { [name: string]: RepositoryLinks } = {};
 
-  constructor(private store: Store<fromStore.State>) { }
+  constructor(
+    private store: Store<fromStore.State>,
+    private config: AppConfigService) { }
 
   ngOnInit(): void {
-    this.serviceNames$ = this.store.select(fromStore.getServiceNames);
+    this.userServices$ = Observable.of(this.config.getUserServices());
     this.store.select(fromStore.getRepositoryLinks).pipe(takeUntil(this.ngUnsubscribe)).subscribe(links => {
       if (links) {
-        this.repositoryLinks = links.reduce((pre, cur) => ({ ...pre, [cur.rulesetName]: cur }), {});
+        this.repositoryLinks = links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
       }
     });
   }

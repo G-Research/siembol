@@ -20,14 +20,14 @@ button {
     display: block;
 }
 
-.rulesets {
+.services {
     display: flex;
     justify-content: center;
     align-items: stretch;
     flex-wrap: wrap;
 }
 
-.ruleset {
+.service {
     margin: 25px;
     padding: 40px 50px;
     h2 {
@@ -46,7 +46,7 @@ button {
         margin: auto;
 }
 
-::ng-deep .rulesets .mat-raised-button {
+::ng-deep .services .mat-raised-button {
     font-size: 18px !important;
     line-height: 46px !important;
 }
