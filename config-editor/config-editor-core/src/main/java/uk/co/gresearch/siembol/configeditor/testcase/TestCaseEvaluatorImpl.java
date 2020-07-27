@@ -14,6 +14,7 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
+import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAssertionResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -24,6 +25,7 @@ import uk.co.gresearch.siembol.configeditor.testcase.model.TestCaseDto;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,10 +37,22 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
     private static final ObjectReader TEST_CASE_READER =
             new ObjectMapper().readerFor(TestCaseDto.class);
     private static final String EMPTY_VALIDATION_JSON = "{}";
+    private static final String EMPTY_PATCHED_UI_SCHEMA = "Error during computing patched test case schema";
     private final JsonSchemaValidator jsonSchemaValidator;
+    private final String testCaseSchema;
 
-    public TestCaseEvaluatorImpl() throws Exception {
+    public TestCaseEvaluatorImpl(Optional<String> uiConfigLayout) throws Exception {
         this.jsonSchemaValidator =  new SiembolJsonSchemaValidator(TestCaseDto.class);
+        String schemaStr = jsonSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();
+        if (uiConfigLayout.isPresent()) {
+            Optional<String> patchedSchema = ConfigEditorUtils.patchJsonSchema(schemaStr, uiConfigLayout.get());
+            if (!patchedSchema.isPresent()) {
+                throw new IllegalArgumentException(EMPTY_PATCHED_UI_SCHEMA);
+            }
+            schemaStr = patchedSchema.get();
+        }
+        testCaseSchema = schemaStr;
+
         Configuration.setDefaults(new Configuration.Defaults() {
 
             private final JsonProvider jsonProvider = new JacksonJsonNodeJsonProvider();
@@ -135,7 +149,7 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
 
     @Override
     public ConfigEditorResult getSchema() {
-        return ConfigEditorResult.fromSchema(jsonSchemaValidator.getJsonSchema().getAttributes().getJsonSchema());
+        return ConfigEditorResult.fromSchema(testCaseSchema);
     }
 
 }

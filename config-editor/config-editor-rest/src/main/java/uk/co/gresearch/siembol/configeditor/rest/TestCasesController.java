@@ -13,7 +13,7 @@ import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import java.util.Optional;
 
 @RestController
-public class TestCaseController {
+public class TestCasesController {
     private static final String MISSING_ATTRIBUTES = "missing testcase in files attributes";
     @Autowired
     private TestCaseEvaluator testCaseEvaluator;

@@ -8,4 +8,8 @@ public interface AuthorisationProvider {
     }
 
     AuthorisationResult getUserAuthorisation(String user, String serviceName);
+
+    default String getUserNameFromUser(String user) {
+        return user;
+    }
 }

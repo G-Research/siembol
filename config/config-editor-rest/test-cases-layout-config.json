@@ -1,0 +1,61 @@
+{
+    "$..test_case_name": {
+        "x-schema-form": {
+            "condition": {
+                "hideExpression": "return (localFields.version !== 0)"
+            }
+        }
+    },
+    "$..version": {
+        "x-schema-form": {
+            "condition": {
+                "hideExpression": "return true"
+            }
+        }
+    },
+    "$..author": {
+        "x-schema-form": {
+            "condition": {
+                "hideExpression": "return true"
+            }
+        }
+    },
+    "$..config_name": {
+        "x-schema-form": {
+            "condition": {
+                "hideExpression": "return true"
+            }
+        }
+    },
+    "properties.description": {
+        "x-schema-form": {
+            "type": "textarea",
+            "wrappers": []
+        }
+    },
+    "$..assertions": {
+        "x-schema-form": {
+            "wrappers": [
+                "expansion-panel"
+            ]
+        }
+    },
+    "$..json_path": {
+        "x-schema-form": {
+            "type": "textarea",
+            "wrappers": []
+        }
+    },
+    "$..expected_pattern": {
+        "x-schema-form": {
+            "type": "textarea",
+            "wrappers": []
+        }
+    },
+    "$..assertions..properties.description": {
+        "x-schema-form": {
+            "type": "textarea",
+            "wrappers": []
+        }
+    }
+}

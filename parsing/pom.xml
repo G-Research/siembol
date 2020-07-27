@@ -11,7 +11,7 @@
 	 <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.60-SNAPSHOT</version>
+        <version>1.61-SNAPSHOT</version>
     </parent>
     <modules>
         <module>parsing-core</module>

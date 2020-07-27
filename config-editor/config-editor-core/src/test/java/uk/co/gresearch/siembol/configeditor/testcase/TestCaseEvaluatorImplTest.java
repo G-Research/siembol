@@ -8,6 +8,8 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorTestCaseResult;
 
 
+import java.util.Optional;
+
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
@@ -184,7 +186,7 @@ public class TestCaseEvaluatorImplTest {
 
     @Before
     public void setUp() throws Exception {
-        testCaseEvaluator = new TestCaseEvaluatorImpl();
+        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.empty());
     }
 
     @Test
@@ -336,5 +338,22 @@ public class TestCaseEvaluatorImplTest {
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage()
                 .contains("PatternSyntaxException"));
+    }
+
+    @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
+    public void invalidJsonUiConfigLayout() throws Exception {
+        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.of("INVALID"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidUiConfigLayout() throws Exception {
+        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.of("{\"unknown\": {}}"));
+    }
+
+    public void validUiConfigLayout() throws Exception {
+        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.of("{}"));
+        ConfigEditorResult result = testCaseEvaluator.getSchema();
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getRulesSchema());
     }
 }

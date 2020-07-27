@@ -9,6 +9,7 @@ import java.util.Map;
 public class ConfigEditorConfigurationProperties {
     @NestedConfigurationProperty
     private Map<String, ServiceConfigurationProperties> services;
+    private String testCasesUiConfigFileName;
 
     public Map<String, ServiceConfigurationProperties> getServices() {
         return services;
@@ -16,5 +17,13 @@ public class ConfigEditorConfigurationProperties {
 
     public void setServices(Map<String, ServiceConfigurationProperties> services) {
         this.services = services;
+    }
+
+    public String getTestCasesUiConfigFileName() {
+        return testCasesUiConfigFileName;
+    }
+
+    public void setTestCasesUiConfigFileName(String testCasesUiConfigFileName) {
+        this.testCasesUiConfigFileName = testCasesUiConfigFileName;
     }
 }

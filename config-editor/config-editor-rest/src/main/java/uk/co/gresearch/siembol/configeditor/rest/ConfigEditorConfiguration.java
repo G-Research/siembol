@@ -52,7 +52,8 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
     @Bean
     TestCaseEvaluator testCaseEvaluator() throws Exception {
-        return new TestCaseEvaluatorImpl();
+        Optional<String> uiLayout = ConfigEditorUtils.readUiLayoutFile(properties.getTestCasesUiConfigFileName());
+        return new TestCaseEvaluatorImpl(uiLayout);
     }
 
     @Override
