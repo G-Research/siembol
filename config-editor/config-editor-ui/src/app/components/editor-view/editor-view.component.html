@@ -8,7 +8,7 @@
             <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onClickTestCase$.next($event)">
                 <mat-tab label="Edit Config">
                     <re-generic-editor [configs$]="configs$" [selectedIndex$]="selectedConfig$" [fields]="fields"
-                    [testEnabled]="testEnabled" [sensorFieldsEnabled]="sensorFieldsEnabled" [serviceName]="serviceName"
+                    [testEnabled]="testEnabled" [serviceName]="serviceName"
                     [user]="user$ | async" [dynamicFieldsMap]="dynamicFieldsMap$ | async" [onClickTestCase$]="onClickTestCase$">
                     </re-generic-editor>
                 </mat-tab>

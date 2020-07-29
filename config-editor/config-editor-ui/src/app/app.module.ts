@@ -20,7 +20,6 @@ import { HomeComponent, PageNotFoundComponent } from '@app/containers';
 import { CoreModule } from '@app/core';
 import { CredentialsInterceptor } from '@app/credentials-interceptor';
 import { RepoResolver, ViewResolver } from '@app/guards';
-import { StripSuffixPipe } from '@app/pipes';
 import { SharedModule } from '@app/shared/shared.module';
 import { metaReducers, reducers } from '@app/store';
 import { EditorEffects } from '@app/store/editor.effects';
@@ -98,7 +97,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     NavBarComponent,
     JsonViewerComponent,
     ConfigManagerComponent,
-    StripSuffixPipe,
     DeployDialogComponent,
     SubmitDialogComponent,
     LandingPageComponent,
@@ -221,7 +219,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     RepoResolver,
     ConfigStoreGuard,
     HighlightVariablesPipe,
-    StripSuffixPipe,
     PopoverService,
   ],
 

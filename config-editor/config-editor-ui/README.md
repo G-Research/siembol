@@ -1,6 +1,6 @@
 # Config Editor UI
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.6.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.0.
 
 ## Development server
 
@@ -12,7 +12,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Install
 
-If Angular CLI is not installed, follow instructions from: https://confluence.uberit.net/display/DEVGLO/Web+Application+Development (`Installation` section)
+If Angular CLI is not installed, follow instructions from: https://cli.angular.io/
 Then run `npm install`
 
 ## Build

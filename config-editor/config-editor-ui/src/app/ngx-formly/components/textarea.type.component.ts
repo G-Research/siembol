@@ -3,7 +3,6 @@ import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } fr
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
-import { SensorFields } from '@app/model';
 import { FieldType } from '@ngx-formly/material/form-field';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
@@ -34,11 +33,6 @@ import { debounceTime, take, takeUntil, tap } from 'rxjs/operators';
             <mat-autocomplete
                 #auto="matAutocomplete" [autoActiveFirstOption]='true' (optionSelected)="autoCompleteSelected($event)"
             >
-                <mat-optgroup *ngFor="let group of filteredList" [label]="group?.sensor_name">
-                    <mat-option *ngFor="let field of group?.fields" [value]="field?.name">
-                        {{field.name}}
-                    </mat-option>
-                </mat-optgroup>
             </mat-autocomplete>
             <mat-hint *ngIf="to?.description && (!to?.errorMessage)"
             align="end" [innerHTML]="to?.description"></mat-hint>
@@ -97,10 +91,6 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
 
   public displayOverlay = true;
   public modelValue;
-    sensorFields$: Observable<SensorFields[]>;
-    autoCompleteList: SensorFields[];
-    filteredList: SensorFields[] = [];
-    sensorDataSource$: any;
     _value;
 
   private ngUnsubscribe: Subject<any> = new Subject();
@@ -124,18 +114,12 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
     this.modelValue = this.value;
     this.formControl.updateValueAndValidity();
     this.formControl.valueChanges.pipe(tap(v => {this.modelValue = v}), debounceTime(400), takeUntil(this.ngUnsubscribe)).subscribe(val => {
-        if (val === null || val === undefined || !this.options.formState.sensorFields) {
+        if (val === null || val === undefined) {
             return;
         }
         this._value = val;
-        this.autoCompleteList = this.options.formState.sensorFields;
-        this.filteredList = cloneDeep(this.options.formState.sensorFields) || [];
         const matches = this.variableRegex.exec(val);
         if (matches != null && matches.length > 0) {
-            for (let i = 0; i < this.options.formState.sensorFields.length; ++i) {
-                this.filteredList[i].fields = this.options.formState.sensorFields[i].fields
-                .filter(n => n.name.includes(matches[matches.length - 1]));
-            }
             this.autocomplete.autocompleteDisabled = false;
             this.autocomplete.openPanel();
         } else {

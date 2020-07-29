@@ -2,7 +2,6 @@ import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper, TestState } fro
 
 import { BootstrapData, ConfigData, ConfigWrapper, Deployment, EditorResult,
     ExceptionInfo, PullRequestInfo, RepositoryLinks } from '@app/model';
-import { Field } from '@app/model/sensor-fields';
 import { State } from '@app/store';
 import { RouterAction } from '@ngrx/router-store';
 import { Action } from '@ngrx/store';
@@ -40,10 +39,6 @@ export const BOOTSTRAP = '[Configs] Bootstrap';
 export const BOOTSTRAP_SUCCESS = '[Configs] Bootstrap Success';
 export const BOOTSTRAP_FAILURE = '[Configs] Bootstrap Failure';
 export const SEARCH_CONFIG = '[Configs] Search Config';
-export const SELECT_DATA_SOURCE = '[Configs] Select Data Source';
-export const LOAD_CENTRIFUGE_FIELDS = '[Configs] Load Centrifuge Fields';
-export const LOAD_CENTRIFUGE_FIELDS_SUCCESS = '[Configs] Load Centrifuge Fields Success';
-export const LOAD_CENTRIFUGE_FIELDS_FAILURE = '[Configs] Load Centrifuge Fields Failure';
 export const STORE_CONFIG_TESTING_EVENT = '[Config Testing] Store Config Testing Event';
 export const FILTER_MY_CONFIGS = '[Search] Filter My Configs';
 export const FILTER_UNDEPLOYED = '[Search] Filter Undeployed';
@@ -135,20 +130,6 @@ export class LoadRepositoriesSuccess implements Action {
 
 export class LoadRepositoriesFailure implements Action {
     readonly type = LOAD_REPOSITORIES_FAILURE;
-    constructor(public payload: any) { }
-}
-
-export class LoadCentrifugeFields implements Action {
-    readonly type = LOAD_CENTRIFUGE_FIELDS;
-}
-
-export class LoadCentrifugeFieldsSuccess implements Action {
-    readonly type = LOAD_CENTRIFUGE_FIELDS_SUCCESS;
-    constructor(public payload: Field[]) { }
-}
-
-export class LoadCentrifugeFieldsFailure implements Action {
-    readonly type = LOAD_CENTRIFUGE_FIELDS_FAILURE;
     constructor(public payload: any) { }
 }
 
@@ -266,11 +247,6 @@ export class SearchConfig implements Action {
     constructor(public payload: string) { }
 }
 
-export class SelectDataSource implements Action {
-    readonly type = SELECT_DATA_SOURCE;
-    constructor(public payload: string) { }
-}
-
 export class StoreConfigTestingEvent implements Action {
     readonly type = STORE_CONFIG_TESTING_EVENT;
     constructor(public payload: string) { }
@@ -347,9 +323,6 @@ export type Actions
     | LoadPullRequestStatus
     | LoadPullRequestStatusSuccess
     | LoadPullRequestStatusFailure
-    | LoadCentrifugeFields
-    | LoadCentrifugeFieldsSuccess
-    | LoadCentrifugeFieldsFailure
     | ValidateConfig
     | ValidateConfigs
     | ValidateConfigsSuccess
@@ -361,7 +334,6 @@ export type Actions
     | BootstrapSuccess
     | BootstrapFailure
     | SearchConfig
-    | SelectDataSource
     | StoreConfigTestingEvent
     | FilterMyConfigs
     | FilterUpgradable

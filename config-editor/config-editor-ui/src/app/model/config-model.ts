@@ -1,4 +1,3 @@
-import { SensorFields } from '@app/model';
 import { TestCase } from './test-case';
 import { JSONSchema7 } from 'json-schema';
 

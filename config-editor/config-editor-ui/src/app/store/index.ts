@@ -1,6 +1,5 @@
 import { RouterStateUrl } from '@app/app-routing';
 import { ConfigWrapper } from '@app/model';
-import { SensorFields } from '@app/model/sensor-fields';
 import * as fromRouter from '@ngrx/router-store';
 import { Action, ActionReducer, ActionReducerMap, createSelector, MetaReducer } from '@ngrx/store';
 import { environment } from 'environments/environment';
@@ -64,8 +63,6 @@ export const getLoaded = createSelector(getEditorState, fromEditor.getLoaded);
 export const getBootstrapped = createSelector(getEditorState, fromEditor.getBootstrapped);
 export const getLoading = createSelector(getEditorState, fromEditor.getLoading);
 export const getSelectedView = createSelector(getEditorState, fromEditor.getSelectedView);
-export const getNewForm = createSelector(getEditorState, fromEditor.getNewForm);
-export const getRequestInflight = createSelector(getEditorState, fromEditor.getRequestInflight);
 export const getErrorMessage = createSelector(getEditorState, fromEditor.getErrorMessage);
 export const getStoredDeployment = createSelector(getEditorState, fromEditor.getStoredDeployment);
 export const getCurrentUser = createSelector(getEditorState, fromEditor.getCurrentUser);
@@ -75,8 +72,6 @@ export const getConfigValidity = createSelector(getEditorState, fromEditor.getCo
 export const getServiceName = createSelector(getEditorState, fromEditor.getServiceName);
 export const getRepositoryLinks = createSelector(getEditorState, fromEditor.getRepositoryLinks);
 export const getSearchTerm = createSelector(getEditorState, fromEditor.getSearchTerm);
-export const getSensorFields = createSelector(getEditorState, fromEditor.getSensorFields);
-export const getDataSource = createSelector(getEditorState, fromEditor.getDataSource);
 export const getConfigTestingEvent = createSelector(getEditorState, fromEditor.getConfigTestingEvent);
 export const getFilterMyConfigs = createSelector(getEditorState, fromEditor.getFilterMyConfigs);
 export const getFilterUndeployed = createSelector(getEditorState, fromEditor.getFilterUndeployed);
@@ -150,13 +145,3 @@ export const getConfigsFilteredBySearchTerm = createSelector(
     }
 )
 
-export const getSensorListFromDataSource = createSelector(
-    [getSensorFields, getDataSource],
-    (sensorFields: SensorFields[], dataSource: String) => {
-        if (dataSource === null || dataSource === undefined) {
-            return [{sensor_name: 'select a data source!', fields: [{name: ''}]}];
-        }
-
-        return [sensorFields.find(i => i.sensor_name === dataSource)];
-    }
-)

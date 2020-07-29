@@ -1,7 +1,7 @@
 {
   "name": "rule-editor.ui",
-  "version": "1.2.31",
-  "siembolCompileTimeVersion": "1.60-SNAPSHOT",
+  "version": "1.2.32",
+  "siembolCompileTimeVersion": "1.61-SNAPSHOT",
   "license": "MIT",
   "scripts": {
     "ng": "ng",

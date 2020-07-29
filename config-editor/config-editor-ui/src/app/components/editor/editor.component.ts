@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { AppConfigService } from '@app/config';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, ConfigWrapper, SensorFields } from '@app/model';
+import { ConfigData, ConfigWrapper } from '@app/model';
 import { TEST_CASE_TAB_NAME } from '@model/test-case';
 import { UiMetadataMap } from '@model/ui-metadata-map';
 import * as JsonPointer from '@app/ngx-formly/util/jsonpointer.functions';
@@ -50,7 +50,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     @Input() configs$: Observable<ConfigWrapper<ConfigData>[]>;
     @Input() selectedIndex$: Observable<number>;
     @Input() testEnabled: boolean;
-    @Input() sensorFieldsEnabled: boolean;
     @Input() serviceName: string;
     @Input() fields: FormlyFieldConfig[];
     @Input() user: string;
@@ -73,7 +72,6 @@ export class EditorComponent implements OnInit, OnDestroy {
             });
 
             this.selectedIndex$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
-                this.store.dispatch(new fromStore.SelectDataSource(undefined));
                 if (this.config && this.configData) {
                     this.pushRuleUpdateToState();
                 }
@@ -215,9 +213,5 @@ export class EditorComponent implements OnInit, OnDestroy {
                 singleConfig: true,
             },
         });
-    }
-
-    public onSelectDataSource(dataSource: string) {
-        this.store.dispatch(new fromStore.SelectDataSource(dataSource));
     }
 }

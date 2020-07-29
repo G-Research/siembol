@@ -17,7 +17,6 @@ import {
   SchemaInfo,
   TestSchemaInfo
 } from '@model/config-model';
-import { Field } from '@model/sensor-fields';
 import {
   TestCase,
   TestCaseMap,
@@ -319,15 +318,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
       json
     );
   }
-
-  public getFields(): Observable<Field[]> {
-    return this.http
-      .get<EditorResult<any>>(
-        `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/fields`
-      )
-      .pipe(map(f => f.attributes.fields));
-  }
-
+  
   public testDeploymentConfig(
     testDto: ConfigTestDto
   ): Observable<EditorResult<ConfigTestResult>> {

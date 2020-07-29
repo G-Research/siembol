@@ -2,12 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
-import { ConfigData, ServiceInfo, EditorResult, UserInfo } from '../model/config-model';
+import { ConfigData, ServiceInfo, EditorResult, UserInfo, SchemaInfo } from '../model/config-model';
 import { UiMetadataMap } from '../model/ui-metadata-map';
 import { EditorConfig } from './editor-config';
 import { BuildInfo } from '@app/model/build-info';
-import { StripSuffixPipe } from '@app/pipes';
 import { StatusCode } from '../commons/status-code';
+import { JSONSchema7 } from 'json-schema';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +20,7 @@ export class AppConfigService {
     private user: string;
     private userServices: ServiceInfo[];
     private userServicesMap: Map<string, ServiceInfo>;
+    private testCaseSchema: JSONSchema7;
 
     constructor(private http: HttpClient) { }
 
@@ -27,7 +28,8 @@ export class AppConfigService {
     public loadConfigAndUserInfo(): Promise<any> {
         return this.loadConfig()
         .then(() => this.loadUiMetadata())
-        .then(() => this.loadUserInfo());
+        .then(() => this.loadUserInfo())
+        .then(() => this.loadTestCaseSchema());
     }
 
     private loadConfig(): Promise<any> {
@@ -72,7 +74,7 @@ export class AppConfigService {
                     console.error('empty user endpoint response');
                     throw new Error();
             }
-            this.user = new StripSuffixPipe().transform(r.attributes.user_name, '@UBERIT.NET');
+            this.user = r.attributes.user_name;
             this.userServices = r.attributes.services;
             this.userServicesMap = new Map(this.userServices.map(x => [x.name, x]));
 
@@ -80,10 +82,25 @@ export class AppConfigService {
                 if (this.uiMetadata[service.type] === undefined) {
                     console.error('unsupported service type in UI metadata', service.type)
                     throw new Error();
-                }
-                
-            });
+                }  
+            })
         }).catch(err => console.error('could not load user info'));
+    }
+
+    private loadTestCaseSchema(): Promise<any> {
+        return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`)
+        .toPromise()
+        .then((r: EditorResult<SchemaInfo>) => {
+            if (r === undefined 
+                || r.status_code === undefined 
+                || r.status_code !== StatusCode.OK 
+                || r.attributes.rules_schema === undefined ) {
+                    console.error('empty test case schema endpoint response');
+                    throw new Error();
+            }
+            this.testCaseSchema = r.attributes.rules_schema;
+
+        }).catch(err => console.error('could not load test case schema'));
     }
     
     public getServiceNames(): string[] {
@@ -122,7 +139,7 @@ export class AppConfigService {
         return this.config.serviceRoot;
     }
 
-    public get testStrategySchemaLocation(): string {
-        return this.config.testStrategySchemaLocation;
+    public getTestCaseSchema(): JSONSchema7 {
+        return this.testCaseSchema;
     }
 }

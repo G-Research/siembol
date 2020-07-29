@@ -29,7 +29,6 @@ export class EditorViewComponent implements OnInit {
   selectedConfig$: Observable<number>;
 
   testEnabled = false;
-  sensorFieldsEnabled = false;
   testCaseEnabled = false;
   testingEnabled = false;
   serviceName: string;
@@ -69,9 +68,6 @@ export class EditorViewComponent implements OnInit {
         this.testEnabled = this.config.getUiMetadata(
           r
         ).testing.perConfigTestEnabled;
-        this.sensorFieldsEnabled = this.config.getUiMetadata(
-          r
-        ).enableSensorFields;
         this.testCaseEnabled = this.config.getUiMetadata(
           r
         ).testing.testCaseEnabled;

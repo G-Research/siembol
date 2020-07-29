@@ -5,7 +5,6 @@ export interface UiMetadataMap {
     description: string,
     labelsFunc: string,
     testing: TestConfig,
-    enableSensorFields: boolean,
     perConfigSchemaPath: string,
     deployment: DeploymentConfig,
     unionType?: UnionType,

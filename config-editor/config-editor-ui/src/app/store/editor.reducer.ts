@@ -1,7 +1,7 @@
 import { StatusCode } from '@app/commons';
 import {
     ConfigData, ConfigWrapper, Deployment, EditorResult, ExceptionInfo,
-    FileHistory, PullRequestInfo, RepositoryLinks, SensorFields, SubmitStatus,
+    FileHistory, PullRequestInfo, RepositoryLinks, SubmitStatus,
 } from '@model';
 import { cloneDeep } from 'lodash';
 import { TestCaseMap } from '@model/test-case';
@@ -18,8 +18,6 @@ export interface State {
     errorMessage: string;
     loaded: boolean;
     loading: boolean;
-    newForm: boolean;
-    requestInflight: boolean;
     selectedView: string;
     pullRequestPending: PullRequestInfo;
     submitReleaseStatus: SubmitStatus;
@@ -28,8 +26,6 @@ export interface State {
     serviceName: string;
     repositoryLinks: RepositoryLinks[];
     searchTerm: string;
-    sensorFields: SensorFields[];
-    dataSource: string;
     configTestingEvent: string;
     filterMyConfigs: boolean;
     filterUndeployed: boolean;
@@ -46,13 +42,10 @@ export interface State {
 export const initialState: State = {
     bootstrapped: undefined,
     currentUser: undefined,
-    dataSource: undefined,
     errorMessage: undefined,
     loaded: false,
     loading: false,
-    newForm: false,
     pullRequestPending: undefined,
-    requestInflight: false,
     configValidity: undefined,
     configs: [],
     configSchema: undefined,
@@ -64,7 +57,6 @@ export const initialState: State = {
     submitConfigStatus: new SubmitStatus(),
     serviceName: undefined,
     repositoryLinks: undefined,
-    sensorFields: [],
     configTestingEvent: '',
     filterMyConfigs: false,
     filterUndeployed: false,
@@ -109,8 +101,7 @@ export function reducer(state = initialState, action: editor.Actions): State {
         case editor.BOOTSTRAP_FAILURE:
             return Object.assign({}, state, {
                 errorMessage: action.payload,
-                loading: false,
-                requestInflight: false,
+                loading: false
             })
 
         case editor.SELECT_CONFIG:
@@ -241,24 +232,6 @@ export function reducer(state = initialState, action: editor.Actions): State {
                 searchTerm: action.payload,
             });
 
-        case editor.SELECT_DATA_SOURCE:
-            return Object.assign({}, state, {
-                dataSource: action.payload,
-            });
-
-        case editor.LOAD_CENTRIFUGE_FIELDS_SUCCESS:
-            const sensors: SensorFields[] = cloneDeep(state.sensorFields);
-            sensors.push({fields: action.payload, sensor_name: state.serviceName});
-
-            return Object.assign({}, state, {
-                sensorFields: sensors,
-            });
-
-        case editor.LOAD_CENTRIFUGE_FIELDS_FAILURE:
-            return Object.assign({}, state, {
-                errorMessage: action.payload,
-            });
-
         case editor.STORE_CONFIG_TESTING_EVENT:
             return Object.assign({}, state, {
                 configTestingEvent: action.payload,
@@ -355,8 +328,6 @@ export const getLoading = (state: State) => state.loading;
 export const getSelectedView = (state: State) => state.selectedView;
 export const getErrorMessage = (state: State) => state.errorMessage;
 export const getCurrentUser = (state: State) => state.currentUser;
-export const getNewForm = (state: State) => state.newForm;
-export const getRequestInflight = (state: State) => state.requestInflight;
 export const getStoredDeployment = (state: State) => state.storedDeployment;
 export const getPullRequestPending = (state: State) => state.pullRequestPending;
 export const getSubmitReleaseStatus = (state: State) => state.submitReleaseStatus;
@@ -364,8 +335,6 @@ export const getConfigValidity = (state: State) => state.configValidity;
 export const getServiceName = (state: State) => state.serviceName;
 export const getRepositoryLinks = (state: State) => state.repositoryLinks;
 export const getSearchTerm = (state: State) => state.searchTerm;
-export const getSensorFields = (state: State) => state.sensorFields;
-export const getDataSource = (state: State) => state.dataSource;
 export const getConfigTestingEvent = (state: State) => state.configTestingEvent;
 export const getFilterMyConfigs = (state: State) => state.filterMyConfigs;
 export const getFilterUndeployed = (state: State) => state.filterUndeployed;

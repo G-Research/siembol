@@ -3,4 +3,3 @@ export { GitFiles, SchemaInfo, EditorResult, Content,
     BootstrapData, ExceptionInfo, RepositoryLinks, RepositoryLinksWrapper, FileHistory,
 } from './config-model';
 export { SubmitStatus } from './submit-status';
-export { SensorFieldTemplate, SensorFields } from './sensor-fields';

@@ -5,11 +5,9 @@ import { map } from 'rxjs/operators';
 import { AppConfigService } from '../config';
 import { ConfigLoaderService } from './config-loader.service';
 import { ConfigWrapperService } from './config-wrapper-service';
-import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, SensorFields,
-    SensorFieldTemplate, RepositoryLinksWrapper } from '@model';
+import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo, RepositoryLinks, RepositoryLinksWrapper } from '@model';
 import { ConfigTestDto, DeploymentWrapper, EditorResult, ExceptionInfo, SchemaInfo, TestCaseEvaluation } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
-import { Field } from '@model/sensor-fields';
 import { JSONSchema7 } from 'json-schema';
 import { ServiceInfo } from '../model/config-model';
 
@@ -25,7 +23,6 @@ export interface IConfigLoaderService {
   submitNewConfig(config: ConfigWrapper<ConfigData>): Observable<EditorResult<GitFiles<ConfigData>>>;
   submitConfigEdit(config: ConfigWrapper<ConfigData>): Observable<EditorResult<GitFiles<ConfigData>>>;
   submitRelease(deployment: Deployment<ConfigWrapper<ConfigData>>): Observable<EditorResult<ExceptionInfo>>;
-  getFields(): Observable<Field[]>
   testDeploymentConfig(config: any): Observable<EditorResult<any>>;
   testSingleConfig(config: ConfigTestDto): Observable<EditorResult<any>>;
   getTestSpecificationSchema(): Observable<any>;
@@ -59,22 +56,6 @@ export class EditorService {
     return Observable.of(this.config.getServiceNames());
   }
 
-  public getSensorFields(): Observable<SensorFields[]> {
-    return this.http.get<EditorResult<SensorFieldTemplate>>(
-        `${this.config.serviceRoot}api/v1/sensorfields`).pipe(
-            map(result => result.attributes.sensor_template_fields.sort((a, b) => {
-                if (a.sensor_name > b.sensor_name) {
-                    return 1;
-                } else if (a.sensor_name < b.sensor_name) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            }
-        ))
-    )
-  }
-
   public getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
     return this.http.get<EditorResult<RepositoryLinksWrapper>>(
       `${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`).pipe(
@@ -91,12 +72,7 @@ export class EditorService {
   }
 
   public getTestCaseSchema(): Observable<any> {
-    // TODO cahnge back once augmenting the test schema is implemented in the backend
-    return this.http.get<EditorResult<SchemaInfo>>(`${window.location.origin}/assets/testStrategySchema.json`).pipe(
-        map(x => x.attributes.rules_schema)
-    )
-    // return this.http.get<EditorResult<SchemaInfo>>(`${this.config.serviceRoot}api/v1/testcases/schema`)
-    //     .map(x => x.attributes.rules_schema);
+    return Observable.of(this.config.getTestCaseSchema());
   }
 
   public validateTestCase(testcase: TestCase): Observable<EditorResult<ExceptionInfo>> {
