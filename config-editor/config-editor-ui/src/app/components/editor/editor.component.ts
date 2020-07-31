@@ -115,7 +115,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     pushRuleUpdateToState(): ConfigWrapper<ConfigData> {
         const configToUpdate = cloneDeep(this.config);
-        configToUpdate.configData = cloneDeep(this.configData);
+        configToUpdate.configData = cloneDeep(this.form.value);
         if (this.config.isNew) {
             configToUpdate.configData[this.metaDataMap.name] = configToUpdate.name = this.configName;
             configToUpdate.configData[this.metaDataMap.version] = configToUpdate.version = 0;
