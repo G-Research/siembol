@@ -10,35 +10,43 @@ From the Siembol home page, click the alert manager button to load the alert man
 ![alert manager button](images/alert/alert_manager_button.PNG)
 
 ## Alert Manager UI
-The Alert Manager UI is split into two sections. On the left hand side you can see all rules which are stored in Siembol Alert. On the right hand side you can see all the rules which are deployed. Rules which are deployed still show up in the store section.
+The Alert Manager UI is split into two sections. On the left-hand side you can see all the rules which are stored in Siembol Alert. On the right-hand side you can see all the rules which are deployed. Rules which are deployed still show up in the store section.
 
 
  [//]: # (TODO add image of store/deploy)
 
-This changes the view to the alert rule editor mode.
+### Alert Rule Editor UI - Tabs
+There are 3 different tabs in the Alert Rule Editor UI: 
 
-### Alert rule editor UI - Tabs
-There are 3 different tabs in the alert rule editor UI: 
-- Edit config: allows you to edit the rule to make it alert as you require
-- Test config: allows you to provide a raw event to test your rule works as expected. It also allows you to see the output from the event parsing through Siembol Alert. These tests are not persistent and just provide point in time verification that the alert works for a specific alert
-- Test cases: allows you right persistent tests to verify the rule works.
+- Edit config: allows you to edit the rule
+- Test config: allows you to:
+  - Provide a raw event to test your rule works as expected
+  - Allows you to see the output from the event parsing through Siembol Alert
+  - (n.b.) These tests are not persistent and just provide a point in time verification that the alert works for a specific alert
+- Test cases: allows you to write persistent tests to verify the rule works
 
 [//]: # (TODO show tabs alert rule editor UI)
 
-### Alert rule editor UI - Edit Config
-At the top there is a text input that allows you to provide a name for a rule - use a descriptive name to make it easier to identify later in the pipeline.
+### Alert Rule Editor UI - Edit Config
+At the top there is a text input that allows you to provide a name for a rule.  Use a descriptive name to make it easier to identify later in the pipeline.
 
 [//]: # (TODO add image for the config name)
 
 There are 5 different tabs within the edit config UI:
 
+1. [Rule Description](#rule-description)
+2. [Source Type](#source-type)
+3. [Matchers](#matchers)
+4. [Tags](#tags)
+5. [Rule Protection](#rule-protection)
+
 #### Rule Description
-This section contains a single text input that allows you set a description for the alert. This should be a short helpful comment that allows anyone to identify the purpose of this alert.
+This section contains a single text input that allows you set a description for the alert. This should be a short, helpful comment that allows anyone to identify the purpose of this alert.
 
 [//]: # (TODO add image of rule description)
 
 #### Source Type
-This section allows you to determine the type of data you want to match on. It is essentially a matcher for the "source_type" field. This field does not support regex - however using * as an input matches all source types.
+This section allows you to determine the type of data you want to match on. It is essentially a matcher for the "source_type" field. This field does not support regex - however, using * as an input matches all source types.
 
 The source_type field is set during parsing and is equal to the name of the parser config which was used to parse the event.
 
@@ -51,7 +59,7 @@ Tip: if you want to match on multiple data sources, set the source type to be * 
 #### Matchers
 Matchers allow you to select the events you want the rule to alert on.
 
-To add a matcher, click the Add to Matchers button:
+To add a matcher, click the 'Add to Matchers' button:
 
 [//]: # (TODO add image of add to matchers button)
 
@@ -59,26 +67,35 @@ You can add as many matchers as you want.
 
 There are two types of matchers:
 
-##### 1) REGEX_MATCH matcher
+1. [REGEX_MATCH](#1_regexmatch-matcher)
+2. [IS\_IN\_SET](#2_isinset_matcher)
+
+##### 1. REGEX_MATCH Matcher
 A regex_match allows you use a regex statement to match a specified field. There are two string inputs:
+
 - Field: the name of the field to compare to the regex statement
 - Data: the regex statement 
 
-There is a "is negated" checkbox - this means that if the regex statement doesn't match the value of the field then the matcher will return true.
+There is an "is negated" checkbox. This means that if the regex statement doesn't match the value of the field then the matcher will return true.
 
 Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event.
 
-Siembol uses Java regex, for support on how to write this see the Java Documentation here: [Java Regular Expressions](https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html)
+Siembol uses Java regex. For support on how to write this see the Java Documentation here: [Java Regular Expressions](https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html)
 
 [//]: # (TODO add image of regex matcher)
 
-##### 2) IS_IN_SET matcher
+##### 2. IS_IN_SET Matcher
 An "is_in_set" matcher compares the value of a field to a set of strings, if the value is in the set then the matcher returns true.
+
 There are also two string inputs for this type of matcher:
+
 - Field: the name of the field to compare with
-- Data: A list of strings to compare the value to. New line delimited. Does not support regex - each line must be a literal match however, field substitution is supported in this field.  
+- Data: A list of strings to compare the value to. Some notes about the data string input:
+  - It is new line delimited
+  - It does not support regex - each line must be a literal match.  However, field substitution is supported in this field.  
 
 The "is_negated" checkbox is the same as for the regex_matcher.
+
 The "case_insensitive" checkbox means that the case of the strings in the data field is ignored.
 
 [//]: # (TODO add image of is_in_set matcher)
@@ -86,51 +103,54 @@ The "case_insensitive" checkbox means that the case of the strings in the data f
 #### Tags
 Tags are optional but recommended as they allow you categorise your rules.
 
-To add a tag, click the Add to Tags button:
+To add a tag, click the "Add to Tags" button:
 
 [//]: # (TODO add image of "add to tags button")
 
-Each tag is a key-value pair. Both the key and value inputs are completely free allowing you to tag your rules in the way which works best for your organisation.
+Each tag is a key-value pair. Both the key and the value inputs are completely freeform allowing you to tag your rules in the way which works best for your organisation.
 
 You can use substitution in the value input to set the tag value equal to the value of a field from the event. The syntax for this is `{field_name}` eg:
 
 [//]: # (TODO add image of substitution in tag value)
 
 #### Rule Protection
-Rule protection allows you to prevent a noisy alert from flooding the components downstream. You can set the maximum number of times an alert can fire per hour and per day. If either limit is exceeded then any event that matches is filtered and not sent on to Siembol Response until the threshold is reset.
+Rule Protection allows you to prevent a noisy alert from flooding the components downstream. You can set the maximum number of times an alert can fire per hour and per day. If either limit is exceeded then any event that matches is filtered and not sent on to Siembol Response until the threshold is reset.
 
-This section is optional - if it isn't configured for a rule, the rule will get the global defualts applied (these are set during the deployment process - see below).
+Rule Protection is optional.  If it is not configured for a rule, the rule will get the global defualts applied (global defaults are set during the deployment process - see below).
 
 [//]: # (TODO add image of rule procetion page)
 
-### Alert rule editor UI - Test Config
-The use of the test config UI is covered in the Test_Config_User_Guide.
+### Alert Rule Editor UI - Test Config
+The use of the Test Config UI is covered in the [Test\_Config\_User\_Guide](#).
 
 [//]: # (TODO add link to test config guide)
 
-### Alert rule editor UI - Test Cases
-The use of a test cases UI is covered in the Test_Cases_User_Guide.
+### Alert Rule Editor UI - Test Cases
+The use of a test cases UI is covered in the [Test\_Cases\_User\_Guide](#).
 
 [//]: # (TODO add link to test cases guide)
 
 ### Saving a config
-You can save the config at any time (provided the config is valid) by clicking the submit button found in the edit config tab. This will commit it to the the store.
+You can save the config at any time (provided the config is valid) by clicking the submit button found in the edit config tab. This will commit it to the store.
 
 [//]: # (TODO add image of the submit button)
 
-## Deploying a config - Siembol Alert specfic options
-When you click the deploy button in the alert manager UI you are presented with a box which allows you to set two things:
+## Deploying a config - Siembol Alert-specfic options
+When you click the deploy button in the Alert Manager UI, you are presented with a box which allows you to set two things:
+
+1. [Global Tags](#global_tags)
+2. [Global Rule Protection](#global_rule_protection)
 
 [//]: # (TODO add image of deploy options)
 
-### Global tags
+### Global Tags
 You can add tags in the same way as you would for an individual rule. Clicking the "Add to Tags" button allows you to set the key and value fields for the rules. This tag is applied to all rules which are being deployed.
 
 Adding global tags is optional.
 
 [//]: # (TODO add image of global tags)
 
-### Global rule protection
-Setting the global rule protection limits is mandatory. These protections will apply to any rule which doesn't have rule protections configured already. See the Rule Protection section above for more details
+### Global Rule Protection
+Setting the global rule protection limits is mandatory. These protections will apply to any rule which doesn't have rule protections configured already. See the [Rule Protection](#rule-protection) section above for more details.
 
-Once both of these sections are complete, you can press validate to ensure all of your rules are complete and free from syntax errors. Provided all validations pass, you can then press Deploy to create the pull request with the release repo. 
+Once both of these sections are complete, you can press "Validate" to ensure all of your rules are complete and free from syntax errors. Provided all validations pass, you can then press "Deploy" to create the pull request with the release repo.
