@@ -63,40 +63,7 @@ To add a matcher, click the 'Add to Matchers' button:
 
 [//]: # (TODO add image of add to matchers button)
 
-You can add as many matchers as you want.
-
-There are two types of matchers:
-
-1. [REGEX_MATCH](#1_regexmatch-matcher)
-2. [IS\_IN\_SET](#2_isinset_matcher)
-
-##### 1. REGEX_MATCH Matcher
-A regex_match allows you use a regex statement to match a specified field. There are two string inputs:
-
-- Field: the name of the field to compare to the regex statement
-- Data: the regex statement 
-
-There is an "is negated" checkbox. This means that if the regex statement doesn't match the value of the field then the matcher will return true.
-
-Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event.
-
-Siembol uses Java regex. For support on how to write this see the Java Documentation here: [Java Regular Expressions](https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html)
-
-[//]: # (TODO add image of regex matcher)
-
-##### 2. IS_IN_SET Matcher
-An "is_in_set" matcher compares the value of a field to a set of strings, if the value is in the set then the matcher returns true.
-
-There are also two string inputs for this type of matcher:
-
-- Field: the name of the field to compare with
-- Data: A list of strings to compare the value to. Some notes about the data string input:
-  - It is new line delimited
-  - It does not support regex - each line must be a literal match.  However, field substitution is supported in this field.  
-
-The "is_negated" checkbox is the same as for the regex_matcher.
-
-The "case_insensitive" checkbox means that the case of the strings in the data field is ignored.
+For guidance on how to use matchers, see the [General Guide](Siembol_General_Guide.md#matchers)
 
 [//]: # (TODO add image of is_in_set matcher)
 

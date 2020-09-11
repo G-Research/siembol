@@ -84,3 +84,32 @@ To deploy your changes:
 2. click the deploy button at the top of the deployment section
 
 [//]: # (TODO add image of the upgrade button)
+
+## Matchers
+In multiple components you have the option to use matchers to search and filter events. 
+
+You can add as many matchers as you want.
+
+There are two types of matchers:
+
+##### 1) REGEX_MATCH matcher
+A regex_match allows you use a regex statement to match a specified field. There are two string inputs:
+- Field: the name of the field to compare to the regex statement
+- Data: the regex statement 
+
+There is a "is negated" checkbox - this means that if the regex statement doesn't match the value of the field then the matcher will return true.
+
+Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event.
+
+Siembol uses Java regex, for support on how to write this see the Java Documentation here: [Java Regular Expressions](https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html)
+
+[//]: # (TODO add image of regex matcher)
+
+##### 2) IS_IN_SET matcher
+An "is_in_set" matcher compares the value of a field to a set of strings, if the value is in the set then the matcher returns true.
+There are also two string inputs for this type of matcher:
+- Field: the name of the field to compare with
+- Data: A list of strings to compare the value to. New line delimited. Does not support regex - each line must be a literal match however, field substitution is supported in this field.  
+
+The "is_negated" checkbox is the same as for the regex_matcher.
+The "case_insensitive" checkbox means that the case of the strings in the data field is ignored.
