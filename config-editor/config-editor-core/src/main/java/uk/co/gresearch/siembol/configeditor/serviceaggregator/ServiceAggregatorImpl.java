@@ -22,12 +22,12 @@ public class ServiceAggregatorImpl implements ServiceAggregator {
     }
 
     @Override
-    public ConfigStore getConfigStore(String user, String serviceName) throws AuthorisationException{
+    public ConfigStore getConfigStore(UserInfo user, String serviceName) throws AuthorisationException{
         return getService(user, serviceName).getConfigStore();
     }
 
     @Override
-    public ConfigSchemaService getConfigSchema(String user, String serviceName) throws AuthorisationException {
+    public ConfigSchemaService getConfigSchema(UserInfo user, String serviceName) throws AuthorisationException {
         return getService(user, serviceName).getConfigSchemaService();
     }
 
@@ -46,7 +46,7 @@ public class ServiceAggregatorImpl implements ServiceAggregator {
     }
 
     @Override
-    public List<ConfigEditorService> getConfigEditorServices(String user) {
+    public List<ConfigEditorService> getConfigEditorServices(UserInfo user) {
         List<ConfigEditorService> ret = new ArrayList<>();
         for (String serviceName : serviceMap.keySet()) {
             try {
@@ -73,12 +73,13 @@ public class ServiceAggregatorImpl implements ServiceAggregator {
         return checkServiceHealth(getConfigSchemaServices());
     }
 
-    private ServiceAggregatorService getService(String user, String serviceName) throws AuthorisationException  {
+    private ServiceAggregatorService getService(UserInfo user, String serviceName) throws AuthorisationException {
         if (!serviceMap.containsKey(serviceName)) {
             throw new UnsupportedOperationException(String.format(UNSUPPORTED_SERVICE_MSG, serviceName));
         }
 
-        AuthorisationProvider.AuthorisationResult authResult = authProvider.getUserAuthorisation(user, serviceName);
+        AuthorisationProvider.AuthorisationResult authResult = authProvider
+                .getUserAuthorisation(user, serviceName);
         if (authResult == AuthorisationProvider.AuthorisationResult.FORBIDDEN) {
             throw new AuthorisationException(String.format(AUTHORISATION_MSG, user, serviceName));
         }

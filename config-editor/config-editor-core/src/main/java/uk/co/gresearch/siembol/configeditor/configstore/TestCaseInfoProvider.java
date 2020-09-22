@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.configstore;
 
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.util.List;
@@ -26,12 +27,12 @@ public class TestCaseInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
-    public ConfigInfo getConfigInfo(String user, String config) {
+    public ConfigInfo getConfigInfo(UserInfo user, String config) {
         return jsonHelperProvider.getConfigInfo(user, config);
     }
 
     @Override
-    public ConfigInfo getReleaseInfo(String user, String release) {
+    public ConfigInfo getReleaseInfo(UserInfo user, String release) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 

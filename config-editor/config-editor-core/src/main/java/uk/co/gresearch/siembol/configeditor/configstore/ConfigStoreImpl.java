@@ -5,6 +5,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorRepositories;
@@ -129,7 +130,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
-    public ConfigEditorResult addTestCase(String user, String testCase) {
+    public ConfigEditorResult addTestCase(UserInfo user, String testCase) {
         if (!flags.contains(Flags.SUPPORT_TEST_CASE)) {
             return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
         }
@@ -138,7 +139,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
-    public ConfigEditorResult updateTestCase(String user, String testCase) {
+    public ConfigEditorResult updateTestCase(UserInfo user, String testCase) {
         if (!flags.contains(Flags.SUPPORT_TEST_CASE)) {
             return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
         }
@@ -158,11 +159,11 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
-    public ConfigEditorResult addConfig(String user, String newConfig)  {
+    public ConfigEditorResult addConfig(UserInfo user, String newConfig)  {
         return addConfigItem(user, newConfig, configInfoProvider, configsCache);
     }
 
-    private ConfigEditorResult addConfigItem(String user,
+    private ConfigEditorResult addConfigItem(UserInfo user,
                                              String newConfig,
                                              ConfigInfoProvider provider,
                                              AtomicReference<List<ConfigEditorFile>> cache)  {
@@ -198,7 +199,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
         }
     }
 
-    private ConfigEditorResult updateConfigItem(String user,
+    private ConfigEditorResult updateConfigItem(UserInfo user,
                                                 String configToUpdate,
                                                 ConfigInfoProvider provider,
                                                 AtomicReference<List<ConfigEditorFile>> cache) {
@@ -234,7 +235,7 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
-    public ConfigEditorResult updateConfig(String user, String configToUpdate) {
+    public ConfigEditorResult updateConfig(UserInfo user, String configToUpdate) {
         return updateConfigItem(user, configToUpdate, configInfoProvider, configsCache);
     }
 
@@ -304,8 +305,8 @@ public class ConfigStoreImpl implements ConfigStore, Closeable {
     }
 
     @Override
-    public ConfigEditorResult submitConfigsRelease(String user, String rulesRelease) {
-        LOG.info(String.format("User %s would like submit release", user));
+    public ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease) {
+        LOG.info(String.format("User %s would like submit release", user.getUserName()));
 
         if (exception.get() != null) {
             return ConfigEditorResult.fromException(exception.get());

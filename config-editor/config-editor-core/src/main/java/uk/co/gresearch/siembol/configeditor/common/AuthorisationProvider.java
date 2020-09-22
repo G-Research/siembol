@@ -7,9 +7,5 @@ public interface AuthorisationProvider {
         FORBIDDEN,
     }
 
-    AuthorisationResult getUserAuthorisation(String user, String serviceName);
-
-    default String getUserNameFromUser(String user) {
-        return user;
-    }
+    AuthorisationResult getUserAuthorisation(UserInfo user, String serviceName);
 }

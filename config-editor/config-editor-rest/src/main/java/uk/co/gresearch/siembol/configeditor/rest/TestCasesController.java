@@ -1,7 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import java.util.Optional;
 

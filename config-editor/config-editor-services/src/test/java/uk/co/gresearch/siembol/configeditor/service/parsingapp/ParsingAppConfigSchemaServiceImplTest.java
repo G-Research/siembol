@@ -27,7 +27,7 @@ public class ParsingAppConfigSchemaServiceImplTest {
     private ParserResult parsingAppResult;
 
     @Before
-    public void Setup() {
+    public void setUp() {
         parsingAppFactory = Mockito.mock(ParsingApplicationFactory.class);
         this.parserConfigSchemaService = new ParsingAppConfigSchemaServiceImpl(parsingAppFactory, schema);
         factoryAttributes = new ParsingApplicationFactoryAttributes();
@@ -56,7 +56,7 @@ public class ParsingAppConfigSchemaServiceImplTest {
     public void validateConfigurationsError() {
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
-        Assert.assertEquals(ret.getStatusCode(), ConfigEditorResult.StatusCode.OK);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
     }
 
     @Test
@@ -67,24 +67,24 @@ public class ParsingAppConfigSchemaServiceImplTest {
     }
 
     @Test
-    public void ValidateConfigsError() {
+    public void validateConfigsError() {
         factoryAttributes.setMessage("error");
         factoryResult = new ParsingApplicationFactoryResult(ERROR, factoryAttributes);
         Mockito.when(parsingAppFactory.validateConfigurations(any())).thenReturn(factoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
-        Assert.assertEquals(ret.getStatusCode(), ConfigEditorResult.StatusCode.ERROR);
-        Assert.assertEquals(ret.getAttributes().getMessage(), "error");
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
     @Test
-    public void ValidateCongError() {
+    public void validateCongfigError() {
         factoryAttributes.setMessage("error");
         factoryResult = new ParsingApplicationFactoryResult(ERROR, factoryAttributes);
         Mockito.when(parsingAppFactory.validateConfiguration(any())).thenReturn(factoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parsingAppFactory, times(1)).validateConfiguration(testConfig);
-        Assert.assertEquals(ret.getStatusCode(), ConfigEditorResult.StatusCode.ERROR);
-        Assert.assertEquals(ret.getAttributes().getMessage(), "error");
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 }

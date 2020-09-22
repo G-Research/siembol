@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.rest;
+package uk.co.gresearch.siembol.configeditor.rest.common;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;

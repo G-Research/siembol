@@ -1,20 +1,21 @@
 package uk.co.gresearch.siembol.configeditor.configstore;
 
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.common.HealthCheckable;
 
 public interface ConfigStore extends HealthCheckable {
 
-    ConfigEditorResult addTestCase(String user, String testCase);
+    ConfigEditorResult addTestCase(UserInfo user, String testCase);
 
-    ConfigEditorResult updateTestCase(String user, String testCase);
+    ConfigEditorResult updateTestCase(UserInfo user, String testCase);
 
     ConfigEditorResult getTestCases();
 
-    ConfigEditorResult addConfig(String user, String newConfig);
+    ConfigEditorResult addConfig(UserInfo user, String newConfig);
 
-    ConfigEditorResult updateConfig(String user, String configToUpdate);
+    ConfigEditorResult updateConfig(UserInfo user, String configToUpdate);
 
     ConfigEditorResult getConfigs();
 
@@ -22,7 +23,7 @@ public interface ConfigStore extends HealthCheckable {
 
     ConfigEditorResult getConfigsReleaseStatus();
 
-    ConfigEditorResult submitConfigsRelease(String user, String rulesRelease);
+    ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease);
 
     ConfigEditorResult getRepositories();
 

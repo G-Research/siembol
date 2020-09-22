@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.configeditor.configstore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.io.IOException;
@@ -68,8 +69,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
-    public ConfigInfo getConfigInfo(String userName, String config) {
-        ConfigInfo configInfo = configInfoFromUser(userName);
+    public ConfigInfo getConfigInfo(UserInfo user, String config) {
+        ConfigInfo configInfo = configInfoFromUser(user);
 
         Map<String, Object> metadata;
         try {
@@ -126,8 +127,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
-    public ConfigInfo getReleaseInfo(String userName, String release) {
-        ConfigInfo configInfo = configInfoFromUser(userName);
+    public ConfigInfo getReleaseInfo(UserInfo user, String release) {
+        ConfigInfo configInfo = configInfoFromUser(user);
 
         int releaseVersion = getReleaseVersion(release);
 

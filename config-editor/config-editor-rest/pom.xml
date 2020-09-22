@@ -9,43 +9,64 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.61-SNAPSHOT</version>
+        <version>1.62-SNAPSHOT</version>
     </parent>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring_boot_version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+        </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>config-editor-core</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>config-editor-services</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>alerting-core</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>parsing-app</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>enriching-core</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>responding-core</artifactId>
-            <version>1.61-SNAPSHOT</version>
+            <version>1.62-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>
@@ -56,6 +77,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>${spring_boot_version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,9 +94,50 @@
             <artifactId>spring-boot-starter-security</artifactId>
             <version>${spring_boot_version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+            <version>${spring_boot_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.plugin</groupId>
+            <artifactId>spring-plugin-core</artifactId>
+            <version>2.0.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${springfox_swagger-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.23</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring_boot_version}</version>
+                <configuration>
+                    <mainClass>uk.co.gresearch.siembol.configeditor.rest.application.Application</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -79,6 +147,10 @@
                     <target>1.8</target>
                     <compilerArgument>-Xlint:unchecked</compilerArgument>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
             </plugin>
         </plugins>
     </build>

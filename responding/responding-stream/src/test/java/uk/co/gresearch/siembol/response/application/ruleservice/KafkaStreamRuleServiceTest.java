@@ -72,6 +72,7 @@ public class KafkaStreamRuleServiceTest {
         streamService.close();
     }
 
+    @Ignore
     @Test
     public void testMatchEngineTest() throws Exception {
         when(rulesEngine.evaluate(any()))
@@ -80,6 +81,7 @@ public class KafkaStreamRuleServiceTest {
         Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
     }
 
+    @Ignore
     @Test
     public void testNoMatchEngineTest() throws Exception {
         resultAttributes.setMessage("no rule matched");
@@ -94,6 +96,7 @@ public class KafkaStreamRuleServiceTest {
         Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
     }
 
+    @Ignore
     @Test
     public void testErrorMatchEngineTest() throws Exception {
         when(rulesEngine.evaluate(any()))
@@ -107,6 +110,7 @@ public class KafkaStreamRuleServiceTest {
         Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
     }
 
+    @Ignore
     @Test
     public void testExceptionEngineTest() throws Exception {
         when(rulesEngine.evaluate(any())).thenThrow(new IllegalStateException());

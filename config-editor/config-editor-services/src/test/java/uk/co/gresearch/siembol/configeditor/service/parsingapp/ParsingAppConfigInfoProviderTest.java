@@ -2,7 +2,9 @@ package uk.co.gresearch.siembol.configeditor.service.parsingapp;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfo;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfoProvider;
 
@@ -98,10 +100,23 @@ public class ParsingAppConfigInfoProviderTest {
 
     static String user = "unknown@secret.net";
     private final ConfigInfoProvider infoProvider = ParsingAppConfigInfoProvider.create();
+    private UserInfo unknown;
+    private UserInfo dummy;
+
+    @Before
+    public void setUp() {
+        unknown = new UserInfo();
+        unknown.setUserName("unknown");
+        unknown.setEmail("unknown@secret.net");
+
+        dummy = new UserInfo();
+        dummy.setUserName("dummy");
+        dummy.setEmail("dummy@secret.net");
+    }
 
     @Test
-    public void ConfigInfoTestChangeAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, simpleSingleApplicationParser);
+    public void configInfoTestChangeAuthor() {
+        ConfigInfo info = infoProvider.getConfigInfo(unknown, simpleSingleApplicationParser);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals(12346, info.getVersion());
         Assert.assertEquals("unknown", info.getCommitter());
@@ -120,8 +135,8 @@ public class ParsingAppConfigInfoProviderTest {
     }
 
     @Test
-    public void ConfigInfoTestUnchangedAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo("dummy@secret.net", simpleSingleApplicationParser);
+    public void configInfoTestUnchangedAuthor() {
+        ConfigInfo info = infoProvider.getConfigInfo(dummy, simpleSingleApplicationParser);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals("dummy", info.getCommitter());
         Assert.assertEquals("Updating configuration: test to version: 12346", info.getCommitMessage());
@@ -136,8 +151,8 @@ public class ParsingAppConfigInfoProviderTest {
     }
 
     @Test
-    public void ConfigInfoNewRule() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, simpleSingleApplicationParserNew);
+    public void configInfoNewRule() {
+        ConfigInfo info = infoProvider.getConfigInfo(unknown, simpleSingleApplicationParserNew);
         Assert.assertEquals(0, info.getOldVersion());
         Assert.assertEquals("unknown", info.getCommitter());
         Assert.assertEquals("Adding new configuration: test", info.getCommitMessage());
@@ -152,24 +167,23 @@ public class ParsingAppConfigInfoProviderTest {
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
-    public void ConfigInfoWrongJson() {
-        infoProvider.getConfigInfo(user, "WRONG JSON");
-    }
-
-
-    @Test(expected = java.lang.IllegalArgumentException.class)
-    public void ConfigInfoWrongUser() {
-        infoProvider.getConfigInfo("INVALID", simpleSingleApplicationParser);
+    public void configInfoWrongJson() {
+        infoProvider.getConfigInfo(new UserInfo(), "WRONG JSON");
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
-    public void ReleaseInfoWrongUser() { 
-        infoProvider.getReleaseInfo("INVALID", simpleSingleApplicationParser);
+    public void configInfoWrongUser() {
+        infoProvider.getConfigInfo(new UserInfo(), simpleSingleApplicationParser);
+    }
+
+    @Test(expected = java.lang.IllegalArgumentException.class)
+    public void releaseInfoWrongUser() {
+        infoProvider.getReleaseInfo(new UserInfo(), simpleSingleApplicationParser);
     }
 
     @Test
-    public void ReleaseTest() {
-        ConfigInfo info = infoProvider.getReleaseInfo("unknown@secret.net", release.trim());
+    public void releaseTest() {
+        ConfigInfo info = infoProvider.getReleaseInfo(unknown, release.trim());
 
         Assert.assertEquals(1, info.getOldVersion());
         Assert.assertEquals(2, info.getVersion());
@@ -186,7 +200,7 @@ public class ParsingAppConfigInfoProviderTest {
     }
 
     @Test
-    public void FilterRulesTest() {
+    public void filterRulesTest() {
         Assert.assertFalse(infoProvider.isReleaseFile("a.json"));
         Assert.assertTrue(infoProvider.isReleaseFile("parsing_applications.json"));
         Assert.assertTrue(infoProvider.isStoreFile("abc.json"));

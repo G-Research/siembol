@@ -2,7 +2,9 @@ package uk.co.gresearch.siembol.configeditor.configstore;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.util.ArrayList;
@@ -63,19 +65,32 @@ public class JsonRuleConfigInfoProviderTest {
     @Multiline
     public static String maliciousRule;
 
-    public static String user = "steve@secret.net";
     private final ConfigInfoProvider infoProvider = JsonRuleConfigInfoProvider.create();
+
+    private UserInfo steve;
+    private UserInfo john;
+
+    @Before
+    public void setUp() {
+        steve = new UserInfo();
+        steve.setUserName("steve");
+        steve.setEmail("steve@secret.net");
+
+        john = new UserInfo();
+        john.setUserName("john");
+        john.setEmail("john@secret.net");
+    }
 
     @Test
     public void RuleInfoTestChangeAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, testRule);
+        ConfigInfo info = infoProvider.getConfigInfo(steve, testRule);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals(12346, info.getVersion());
         Assert.assertEquals("steve", info.getCommitter());
         Assert.assertEquals("Updating rule: info_provider-test to version: 12346", info.getCommitMessage());
 
         Assert.assertEquals("steve", info.getCommitter());
-        Assert.assertEquals(user, info.getCommitterEmail());
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("info_provider-test.json"));
@@ -88,59 +103,59 @@ public class JsonRuleConfigInfoProviderTest {
     }
 
     @Test
-    public void RuleInfoTestUnchangedAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo("john@secret.net", testRule);
-        Assert.assertEquals(info.getOldVersion(), 12345);
-        Assert.assertEquals(info.getCommitter(), "john");
-        Assert.assertEquals(info.getCommitMessage(), "Updating rule: info_provider-test to version: 12346");
-        Assert.assertEquals(info.getCommitterEmail(), "john@secret.net");
-        Assert.assertEquals(info.getFilesContent().size(), 1);
-        Assert.assertEquals(info.getFilesContent().containsKey("info_provider-test.json"), true);
-        Assert.assertEquals(info.getFilesContent()
-                .get("info_provider-test.json").indexOf("\"rule_version\": 12346,") > 0, true);
-        Assert.assertEquals(info.getFilesContent()
-                .get("info_provider-test.json").indexOf("\"rule_author\": \"john\",") > 0, true);
-        Assert.assertEquals(info.isNewConfig(), false);
+    public void ruleInfoTestUnchangedAuthor() {
+        ConfigInfo info = infoProvider.getConfigInfo(john, testRule);
+        Assert.assertEquals(12345, info.getOldVersion());
+        Assert.assertEquals("john", info.getCommitter());
+        Assert.assertEquals("Updating rule: info_provider-test to version: 12346", info.getCommitMessage());
+        Assert.assertEquals("john@secret.net", info.getCommitterEmail());
+        Assert.assertEquals(1, info.getFilesContent().size());
+        Assert.assertTrue(info.getFilesContent().containsKey("info_provider-test.json"));
+        Assert.assertTrue(info.getFilesContent()
+                .get("info_provider-test.json").indexOf("\"rule_version\": 12346,") > 0);
+        Assert.assertTrue(info.getFilesContent()
+                .get("info_provider-test.json").indexOf("\"rule_author\": \"john\",") > 0);
+        Assert.assertFalse(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.RULE, info.getConfigInfoType());
     }
 
     @Test
-    public void RuleInfoNewRule() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, testNewRule);
-        Assert.assertEquals(info.getOldVersion(), 0);
-        Assert.assertEquals(info.getCommitter(), "steve");
-        Assert.assertEquals(info.getCommitMessage(), "Adding new rule: info_provider_test");
-        Assert.assertEquals(info.getCommitterEmail(), user);
-        Assert.assertEquals(info.getFilesContent().size(), 1);
-        Assert.assertEquals(info.getFilesContent().containsKey("info_provider_test.json"), true);
-        Assert.assertEquals(info.getFilesContent()
-                .get("info_provider_test.json").indexOf("\"rule_version\": 1,") > 0, true);
-        Assert.assertEquals(info.isNewConfig(), true);
+    public void ruleInfoNewRule() {
+        ConfigInfo info = infoProvider.getConfigInfo(steve, testNewRule);
+        Assert.assertEquals(0, info.getOldVersion());
+        Assert.assertEquals("steve", info.getCommitter());
+        Assert.assertEquals("Adding new rule: info_provider_test", info.getCommitMessage());
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
+        Assert.assertEquals(1, info.getFilesContent().size());
+        Assert.assertTrue(info.getFilesContent().containsKey("info_provider_test.json"));
+        Assert.assertTrue(info.getFilesContent()
+                .get("info_provider_test.json").indexOf("\"rule_version\": 1,") > 0);
+        Assert.assertTrue(info.isNewConfig());
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
-    public void RuleInfoWrongJson() {
-        ConfigInfo info = infoProvider.getConfigInfo(user,"WRONG JSON");
+    public void ruleInfoWrongJson() {
+        ConfigInfo info = infoProvider.getConfigInfo(steve,"WRONG JSON");
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void RuleInfoWrongMissingMetadata() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, maliciousRule);
+        ConfigInfo info = infoProvider.getConfigInfo(john, maliciousRule);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
-    public void RuleInfoWrongUser() {
-        ConfigInfo info = infoProvider.getConfigInfo("INVALID", testRule);
+    public void ruleInfoWrongUser() {
+        ConfigInfo info = infoProvider.getConfigInfo(null, testRule);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
-    public void ReleaseInfoWrongUser() {
-        ConfigInfo info = infoProvider.getReleaseInfo("INVALID", testRule);
+    public void releaseInfoWrongUser() {
+        ConfigInfo info = infoProvider.getReleaseInfo(new UserInfo(), testRule);
     }
 
     @Test
-    public void ReleaseTest() {
-        ConfigInfo info = infoProvider.getReleaseInfo("steve@secret.net", release);
+    public void releaseTest() {
+        ConfigInfo info = infoProvider.getReleaseInfo(steve, release);
 
         Assert.assertEquals(info.getOldVersion(), 1);
         Assert.assertEquals(info.getVersion(), 2);
@@ -148,7 +163,7 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(info.getCommitMessage(), "Rules released to version: 2");
 
         Assert.assertEquals(info.getCommitter(), "steve");
-        Assert.assertEquals(info.getCommitterEmail(), user);
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
 
         Assert.assertEquals(info.getFilesContent().size(), 1);
         Assert.assertEquals(info.getFilesContent().containsKey("rules.json"), true);
@@ -158,7 +173,7 @@ public class JsonRuleConfigInfoProviderTest {
     }
 
     @Test
-    public void FilterRulesTest() {
+    public void filterRulesTest() {
         Assert.assertEquals(infoProvider.isReleaseFile("a.json"), false);
         Assert.assertEquals(infoProvider.isReleaseFile("rules.json"), true);
         Assert.assertEquals(infoProvider.isStoreFile("abc.json"), true);
@@ -166,7 +181,7 @@ public class JsonRuleConfigInfoProviderTest {
     }
 
     @Test
-    public void RulesVersionTest() {
+    public void rulesVersionTest() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("rules.json", release, ConfigEditorFile.ContentType.RAW_JSON_STRING));
         int version = infoProvider.getReleaseVersion(files);
@@ -174,14 +189,14 @@ public class JsonRuleConfigInfoProviderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void RulesVersionTestMissingFile() {
+    public void rulesVersionTestMissingFile() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("a.json", release, ConfigEditorFile.ContentType.RAW_JSON_STRING));
         int version = infoProvider.getReleaseVersion(files);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void RulesVersionMissingVersion() {
+    public void rulesVersionMissingVersion() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("rules.json", "{}", ConfigEditorFile.ContentType.RAW_JSON_STRING));
         int version = infoProvider.getReleaseVersion(files);

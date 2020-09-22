@@ -2,7 +2,9 @@ package uk.co.gresearch.siembol.configeditor.service.parserconfig;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfo;
@@ -90,19 +92,32 @@ public class ParserConfigConfigInfoProviderTest {
     @Multiline
     public static String maliciousConfig;
 
-    public static String user = "steve@secret.net";
     private final ConfigInfoProvider infoProvider = ParserConfigConfigInfoProvider.create();
+
+    private UserInfo steve;
+    private UserInfo john;
+
+    @Before
+    public void setUp() {
+        steve = new UserInfo();
+        steve.setUserName("steve");
+        steve.setEmail("steve@secret.net");
+
+        john = new UserInfo();
+        john.setUserName("john");
+        john.setEmail("john@secret.net");
+    }
 
     @Test
     public void ConfigInfoTestChangeAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, testParser);
+        ConfigInfo info = infoProvider.getConfigInfo(steve, testParser);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals(12346, info.getVersion());
         Assert.assertEquals("steve", info.getCommitter());
         Assert.assertEquals("Updating configuration: test_parser to version: 12346", info.getCommitMessage());
 
         Assert.assertEquals("steve", info.getCommitter());
-        Assert.assertEquals(info.getCommitterEmail(), user);
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
@@ -115,7 +130,7 @@ public class ParserConfigConfigInfoProviderTest {
 
     @Test
     public void ConfigInfoTestUnchangedAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo("john@secret.net", testParser);
+        ConfigInfo info = infoProvider.getConfigInfo(john, testParser);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals("john", info.getCommitter());
         Assert.assertEquals("Updating configuration: test_parser to version: 12346", info.getCommitMessage());
@@ -131,11 +146,11 @@ public class ParserConfigConfigInfoProviderTest {
 
     @Test
     public void ConfigInfoNewRule() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, testNewParser);
+        ConfigInfo info = infoProvider.getConfigInfo(steve, testNewParser);
         Assert.assertEquals(0, info.getOldVersion());
         Assert.assertEquals("steve", info.getCommitter());
         Assert.assertEquals("Adding new configuration: test_parser", info.getCommitMessage());
-        Assert.assertEquals(user, info.getCommitterEmail());
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
         Assert.assertTrue(info.getFilesContent()
@@ -145,27 +160,27 @@ public class ParserConfigConfigInfoProviderTest {
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ConfigInfoWrongJson() {
-        infoProvider.getConfigInfo(user,"WRONG JSON");
+        infoProvider.getConfigInfo(steve,"WRONG JSON");
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ConfigInfoWrongMissingMetadata() {
-        infoProvider.getConfigInfo(user, maliciousConfig);
+        infoProvider.getConfigInfo(steve, maliciousConfig);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ConfigInfoWrongUser() {
-        infoProvider.getConfigInfo("INVALID", testParser);
+        infoProvider.getConfigInfo(new UserInfo(), testParser);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ReleaseInfoWrongUser() {
-        infoProvider.getReleaseInfo("INVALID", testParser);
+        infoProvider.getReleaseInfo(new UserInfo(), testParser);
     }
 
     @Test
     public void ReleaseTest() {
-        ConfigInfo info = infoProvider.getReleaseInfo("steve@secret.net", release);
+        ConfigInfo info = infoProvider.getReleaseInfo(steve, release);
 
         Assert.assertEquals(1, info.getOldVersion());
         Assert.assertEquals(2, info.getVersion());
@@ -173,7 +188,7 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals("Configurations released to version: 2", info.getCommitMessage());
 
         Assert.assertEquals("steve", info.getCommitter());
-        Assert.assertEquals(user, info.getCommitterEmail());
+        Assert.assertEquals(steve.getEmail(), info.getCommitterEmail());
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("parsers.json"));

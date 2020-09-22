@@ -1,4 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.configstore;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.time.Instant;
@@ -8,27 +9,26 @@ import java.util.TimeZone;
 
 public interface ConfigInfoProvider {
     String RELEASE_BRANCH_TEMPLATE = "release_%d_by_%s_on_%s";
+    String MISSING_ARGUMENTS_MSG = "missing user info attributes";
     int MILLI_SECONDS = 1000;
 
-    ConfigInfo getConfigInfo(String user, String config);
+    ConfigInfo getConfigInfo(UserInfo user, String config);
 
-    ConfigInfo getReleaseInfo(String user, String release);
+    ConfigInfo getReleaseInfo(UserInfo user, String release);
 
     int getReleaseVersion(List<ConfigEditorFile> files);
 
     ConfigEditorFile.ContentType getFileContentType();
 
-    default ConfigInfo configInfoFromUser(String userName) {
-        int delimiter = userName.indexOf('@');
-        if (delimiter <= 0) {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected userName format: %s", userName));
+    default ConfigInfo configInfoFromUser(UserInfo user) {
+        if (user == null || user.getUserName() == null || user.getEmail() == null) {
+            throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
         }
 
         ConfigInfo ret = new ConfigInfo();
-        String committer = userName.substring(0, delimiter);
+        String committer = user.getUserName();
         ret.setCommitter(committer);
-        ret.setCommitterEmail(userName);
+        ret.setCommitterEmail(user.getEmail());
         return ret;
     }
 

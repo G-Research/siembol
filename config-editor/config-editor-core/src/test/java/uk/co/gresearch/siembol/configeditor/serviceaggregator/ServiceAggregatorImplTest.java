@@ -8,10 +8,10 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorService;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +25,8 @@ public class ServiceAggregatorImplTest {
     private String serviceType = "my_type";
     private ServiceAggregatorImpl.Builder builder;
     private ServiceAggregator serviceAggregator;
+    private UserInfo user;
+
 
     @Before
     public void setUp() {
@@ -37,6 +39,7 @@ public class ServiceAggregatorImplTest {
         builder.addService("a", serviceType, store, schemaService);
         builder.addService("b", serviceType, store, schemaService);
         builder.addService("c", serviceType, store, schemaService);
+        user = new UserInfo();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -101,59 +104,59 @@ public class ServiceAggregatorImplTest {
 
     @Test
     public void getConfigStoreAuthorised() {
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("a")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.ALLOWED);
         serviceAggregator = builder.build();
-        ConfigStore userStore = serviceAggregator.getConfigStore("john", "a");
+        ConfigStore userStore = serviceAggregator.getConfigStore(user, "a");
         Mockito.verify(authProvider, times(1))
-                .getUserAuthorisation(eq("john"), eq("a"));
+                .getUserAuthorisation(eq(user), eq("a"));
         Assert.assertEquals(userStore, store);
     }
 
     @Test
     public void getConfigSchemaAuthorised() {
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("a")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.ALLOWED);
         serviceAggregator = builder.build();
-        ConfigSchemaService userSchemaService = serviceAggregator.getConfigSchema("john", "a");
+        ConfigSchemaService userSchemaService = serviceAggregator.getConfigSchema(user, "a");
         Mockito.verify(authProvider, times(1))
-                .getUserAuthorisation(eq("john"), eq("a"));
+                .getUserAuthorisation(eq(user), eq("a"));
         Assert.assertEquals(userSchemaService, schemaService);
     }
 
     @Test(expected = uk.co.gresearch.siembol.configeditor.common.AuthorisationException.class)
     public void getConfigStoreUnauthorised() {
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("a")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.FORBIDDEN);
         serviceAggregator = builder.build();
-        ConfigStore userStore = serviceAggregator.getConfigStore("john", "a");
+        ConfigStore userStore = serviceAggregator.getConfigStore(user, "a");
     }
 
     @Test(expected = uk.co.gresearch.siembol.configeditor.common.AuthorisationException.class)
     public void getConfigSchemaUnauthorised() {
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("a")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.FORBIDDEN);
         serviceAggregator = builder.build();
-        ConfigSchemaService userSchemaService = serviceAggregator.getConfigSchema("john", "a");
+        ConfigSchemaService userSchemaService = serviceAggregator.getConfigSchema(user, "a");
     }
 
     @Test
     public void getConfigEditorServices() {
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("a")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.ALLOWED);
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("b")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("b")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.FORBIDDEN);
-        Mockito.when(authProvider.getUserAuthorisation(eq("john"), eq("c")))
+        Mockito.when(authProvider.getUserAuthorisation(eq(user), eq("c")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.ALLOWED);
         serviceAggregator = builder.build();
-        List<ConfigEditorService> userServices = serviceAggregator.getConfigEditorServices("john");
+        List<ConfigEditorService> userServices = serviceAggregator.getConfigEditorServices(user);
 
         Mockito.verify(authProvider, times(1))
-                .getUserAuthorisation(eq("john"), eq("a"));
+                .getUserAuthorisation(eq(user), eq("a"));
         Mockito.verify(authProvider, times(1))
-                .getUserAuthorisation(eq("john"), eq("b"));
+                .getUserAuthorisation(eq(user), eq("b"));
         Mockito.verify(authProvider, times(1))
-                .getUserAuthorisation(eq("john"), eq("c"));
+                .getUserAuthorisation(eq(user), eq("c"));
         
         Assert.assertEquals(2, userServices.size());
         Assert.assertEquals("a", userServices.get(0).getName());

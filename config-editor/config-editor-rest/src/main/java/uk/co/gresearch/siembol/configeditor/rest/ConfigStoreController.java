@@ -6,16 +6,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 
-import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.fromConfigEditorResult;
-import static uk.co.gresearch.siembol.configeditor.rest.ConfigEditorHelper.getUserNameFromAuthentication;
+import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.fromConfigEditorResult;
 
 @RestController
 public class ConfigStoreController {
     @Autowired
     private ServiceAggregator serviceAggregator;
+    @Autowired
+    private UserInfoProvider userInfoProvider;
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configstore/configs",
@@ -23,7 +26,8 @@ public class ConfigStoreController {
     public ConfigEditorResult getConfigs(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
-        return serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service).getConfigs();
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator.getConfigStore(user, service).getConfigs();
     }
 
     @CrossOrigin
@@ -33,10 +37,9 @@ public class ConfigStoreController {
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
-
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
         return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                        .addConfig(authentication.getName(), rule));
+                serviceAggregator.getConfigStore(user, service).addConfig(user, rule));
     }
 
     @CrossOrigin
@@ -46,9 +49,9 @@ public class ConfigStoreController {
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
         return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                        .updateConfig(authentication.getName(), rule));
+                serviceAggregator.getConfigStore(user, service).updateConfig(user, rule));
     }
 
     @CrossOrigin
@@ -57,7 +60,8 @@ public class ConfigStoreController {
     public ConfigEditorResult getTestCases(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
-        return serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service).getTestCases();
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator.getConfigStore(user, service).getTestCases();
     }
 
     @CrossOrigin
@@ -67,10 +71,9 @@ public class ConfigStoreController {
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
-
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
         return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                        .addTestCase(authentication.getName(), testCase));
+                serviceAggregator.getConfigStore(user, service).addTestCase(user, testCase));
     }
 
     @CrossOrigin
@@ -80,9 +83,9 @@ public class ConfigStoreController {
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
         return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                        .updateTestCase(authentication.getName(), testCase));
+                serviceAggregator.getConfigStore(user, service).updateTestCase(user, testCase));
     }
 
     @CrossOrigin
@@ -91,8 +94,8 @@ public class ConfigStoreController {
     public ConfigEditorResult getRelease(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
-        return serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                .getConfigsRelease();
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator.getConfigStore(user, service).getConfigsRelease();
     }
 
     @CrossOrigin
@@ -101,8 +104,8 @@ public class ConfigStoreController {
     public ConfigEditorResult getReleaseStatus(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
-        return serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                .getConfigsReleaseStatus();
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator.getConfigStore(user, service).getConfigsReleaseStatus();
     }
 
     @CrossOrigin
@@ -112,9 +115,9 @@ public class ConfigStoreController {
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
         return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(getUserNameFromAuthentication(authentication), service)
-                        .submitConfigsRelease(authentication.getName(), rule));
+                serviceAggregator.getConfigStore(user, service).submitConfigsRelease(user, rule));
     }
 
     @CrossOrigin
@@ -123,7 +126,7 @@ public class ConfigStoreController {
     public ConfigEditorResult getRepositories(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
-        return serviceAggregator
-                .getConfigStore(getUserNameFromAuthentication(authentication), service).getRepositories();
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator.getConfigStore(user, service).getRepositories();
     }
 }

@@ -2,7 +2,9 @@ package uk.co.gresearch.siembol.configeditor.configstore;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.util.ArrayList;
@@ -108,19 +110,32 @@ public class TestCaseConfigInfoProviderTest {
     @Multiline
     public static String maliciousTestCase;
     
-    public static String user = "steve@secret.net";
+
     private final TestCaseInfoProvider infoProvider = new TestCaseInfoProvider();
+    private UserInfo steve;
+    private UserInfo john;
+
+    @Before
+    public void setUp() {
+        steve = new UserInfo();
+        steve.setUserName("steve");
+        steve.setEmail("steve@secret.net");
+
+        john = new UserInfo();
+        john.setUserName("john");
+        john.setEmail("john@secret.net");
+    }
 
     @Test
     public void testCaseTestChangeAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, testCase);
+        ConfigInfo info = infoProvider.getConfigInfo(steve, testCase);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals(12346, info.getVersion());
         Assert.assertEquals("steve", info.getCommitter());
         Assert.assertEquals("Updating test case: syslog-test_case to version: 12346", info.getCommitMessage());
 
         Assert.assertEquals("steve", info.getCommitter());
-        Assert.assertEquals(user, info.getCommitterEmail());
+        Assert.assertEquals(steve.getEmail(), info.getCommitterEmail());
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("syslog-test_case.json"));
@@ -132,10 +147,9 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
 
-
     @Test
     public void testCaseTestTestUnchangedAuthor() {
-        ConfigInfo info = infoProvider.getConfigInfo("john@secret.net", testCase);
+        ConfigInfo info = infoProvider.getConfigInfo(john, testCase);
         Assert.assertEquals(12345, info.getOldVersion());
         Assert.assertEquals("john", info.getCommitter());
         Assert.assertEquals("Updating test case: syslog-test_case to version: 12346", info.getCommitMessage());
@@ -150,14 +164,13 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
 
-
     @Test
     public void testCaseNew() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, testCaseNew);
+        ConfigInfo info = infoProvider.getConfigInfo(steve, testCaseNew);
         Assert.assertEquals(info.getOldVersion(), 0);
-        Assert.assertEquals(info.getCommitter(), "steve");
+        Assert.assertEquals(info.getCommitter(), steve.getUserName());
         Assert.assertEquals(info.getCommitMessage(), "Adding new test case: syslog-test_case");
-        Assert.assertEquals(info.getCommitterEmail(), user);
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("syslog-test_case.json"));
         Assert.assertTrue(info.getFilesContent()
@@ -170,29 +183,29 @@ public class TestCaseConfigInfoProviderTest {
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongJson() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, "WRONG JSON");
+        ConfigInfo info = infoProvider.getConfigInfo(john, "WRONG JSON");
     }
 
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongMissingMetadata() {
-        ConfigInfo info = infoProvider.getConfigInfo(user, maliciousTestCase);
+        ConfigInfo info = infoProvider.getConfigInfo(john, maliciousTestCase);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongMissingMetadata2() {
-        ConfigInfo info = infoProvider.getConfigInfo(user,
+        ConfigInfo info = infoProvider.getConfigInfo(john,
                 testCase.replace("config_name", "undefined"));
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongUser() {
-        ConfigInfo info = infoProvider.getConfigInfo("INVALID", testCase);
+        ConfigInfo info = infoProvider.getConfigInfo(new UserInfo(), testCase);
     }
 
     @Test(expected = java.lang.UnsupportedOperationException.class)
     public void testCaseReleaseTest() {
-        ConfigInfo info = infoProvider.getReleaseInfo("steve@secret.net", "");
+        ConfigInfo info = infoProvider.getReleaseInfo(steve, "");
     }
 
     @Test
@@ -202,7 +215,7 @@ public class TestCaseConfigInfoProviderTest {
     }
 
     @Test(expected = java.lang.UnsupportedOperationException.class)
-    public void RulesVersionTest() {
+    public void rulesVersionTest() {
         infoProvider.getReleaseVersion(new ArrayList<>());
     }
 }

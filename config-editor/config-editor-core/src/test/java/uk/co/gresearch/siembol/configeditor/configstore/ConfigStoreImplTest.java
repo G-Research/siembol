@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -34,6 +35,7 @@ public class ConfigStoreImplTest {
     private ConfigInfo ruleInfo = new ConfigInfo();
     private ConfigInfo testCaseInfo = new ConfigInfo();
     private EnumSet<ConfigStoreImpl.Flags> flags;
+    private UserInfo user;
 
     @Before
     public void setUp() throws IOException, GitAPIException {
@@ -82,6 +84,9 @@ public class ConfigStoreImplTest {
                 ruleInfoProvider,
                 testCaseInfoProvider,
                 flags);
+        user = new UserInfo();
+        user.setUserName("john");
+        user.setUserName("john@secret");
     }
 
     @After
@@ -93,8 +98,8 @@ public class ConfigStoreImplTest {
     public void addRuleOK() throws GitAPIException, IOException {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(new HashMap<>());
-        ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
-        verify(ruleInfoProvider).getConfigInfo("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addConfig(user, "NEW");
+        verify(ruleInfoProvider).getConfigInfo(user, "NEW");
         verify(gitRulesRepo).transactCopyAndCommit(ruleInfo);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(1, ret.getAttributes().getFiles().size());
@@ -114,8 +119,8 @@ public class ConfigStoreImplTest {
 
         testCaseInfo.setOldVersion(0);
         testCaseInfo.setFilesContent(new HashMap<>());
-        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
-        verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addTestCase(user, "NEW");
+        verify(testCaseInfoProvider).getConfigInfo(user, "NEW");
 
         verify(gitRulesRepo).transactCopyAndCommit(testCaseInfo);
 
@@ -129,8 +134,8 @@ public class ConfigStoreImplTest {
     public void addRuleNotNew() {
         ruleInfo.setOldVersion(1);
         ruleInfo.setFilesContent(new HashMap<>());
-        ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
-        verify(ruleInfoProvider).getConfigInfo("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addConfig(user, "NEW");
+        verify(ruleInfoProvider).getConfigInfo(user, "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("wrong version"));
     }
@@ -147,8 +152,8 @@ public class ConfigStoreImplTest {
 
         testCaseInfo.setOldVersion(1);
         testCaseInfo.setFilesContent(new HashMap<>());
-        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
-        verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addTestCase(user, "NEW");
+        verify(testCaseInfoProvider).getConfigInfo(user, "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("wrong version"));
     }
@@ -157,8 +162,8 @@ public class ConfigStoreImplTest {
     public void addRuleExisting() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(filesContent);
-        ConfigEditorResult ret = ruleStore.addConfig("john", "NEW");
-        verify(ruleInfoProvider).getConfigInfo("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addConfig(user, "NEW");
+        verify(ruleInfoProvider).getConfigInfo(user, "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("already exists"));
     }
@@ -175,8 +180,8 @@ public class ConfigStoreImplTest {
 
         testCaseInfo.setOldVersion(0);
         testCaseInfo.setFilesContent(filesTestCaseContent);
-        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
-        verify(testCaseInfoProvider).getConfigInfo("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addTestCase(user, "NEW");
+        verify(testCaseInfoProvider).getConfigInfo(user, "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("already exists"));
     }
@@ -185,9 +190,9 @@ public class ConfigStoreImplTest {
     public void updateRuleOK() throws GitAPIException, IOException {
         ruleInfo.setOldVersion(1);
         ruleInfo.setFilesContent(filesContent);
-        ConfigEditorResult ret = ruleStore.updateConfig("john", "UPDATE");
+        ConfigEditorResult ret = ruleStore.updateConfig(user, "UPDATE");
 
-        verify(ruleInfoProvider).getConfigInfo("john", "UPDATE");
+        verify(ruleInfoProvider).getConfigInfo(user, "UPDATE");
         verify(gitRulesRepo).transactCopyAndCommit(ruleInfo);
 
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
@@ -208,8 +213,8 @@ public class ConfigStoreImplTest {
 
         testCaseInfo.setOldVersion(1);
         testCaseInfo.setFilesContent(filesTestCaseContent);
-        ConfigEditorResult ret = ruleStore.updateTestCase("john", "UPDATE");
-        verify(testCaseInfoProvider).getConfigInfo("john", "UPDATE");
+        ConfigEditorResult ret = ruleStore.updateTestCase(user, "UPDATE");
+        verify(testCaseInfoProvider).getConfigInfo(user, "UPDATE");
         verify(gitRulesRepo).transactCopyAndCommit(testCaseInfo);
 
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
@@ -223,7 +228,7 @@ public class ConfigStoreImplTest {
     public void updateNew() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(filesContent);
-        ConfigEditorResult ret = ruleStore.updateConfig("john", "UPDATE");
+        ConfigEditorResult ret = ruleStore.updateConfig(user, "UPDATE");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("wrong version"));
     }
@@ -232,7 +237,7 @@ public class ConfigStoreImplTest {
     public void updateNotExist() {
         ruleInfo.setOldVersion(0);
         ruleInfo.setFilesContent(new HashMap<>());
-        ConfigEditorResult ret = ruleStore.updateConfig("john", "NEW");
+        ConfigEditorResult ret = ruleStore.updateConfig(user, "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("does not exist"));
     }
@@ -291,14 +296,14 @@ public class ConfigStoreImplTest {
 
     @Test
     public void addTestCasesDisabled() {
-        ConfigEditorResult ret = ruleStore.addTestCase("john", "NEW");
+        ConfigEditorResult ret = ruleStore.addTestCase(user, "NEW");
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("Test cases are not supported"));
     }
 
     @Test
     public void updateTestCasesDisabled() {
-        ConfigEditorResult ret = ruleStore.updateTestCase("john", "UPDATE");
+        ConfigEditorResult ret = ruleStore.updateTestCase(user, "UPDATE");
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getMessage().contains("Test cases are not supported"));
     }
@@ -382,9 +387,9 @@ public class ConfigStoreImplTest {
         when(pullRequestService.createPullRequest(ruleInfo)).thenReturn(pullRequestResult);
         when(pullRequestService.pendingPullRequest()).thenReturn(pendingPullRequestResult);
 
-        ConfigEditorResult ret = ruleStore.submitConfigsRelease("test", "dummy_rules");
+        ConfigEditorResult ret = ruleStore.submitConfigsRelease(user, "dummy_rules");
 
-        verify(ruleInfoProvider).getReleaseInfo("test", "dummy_rules");
+        verify(ruleInfoProvider).getReleaseInfo(user, "dummy_rules");
         verify(gitReleasesRepo).transactCopyAndCommit(ruleInfo);
         verify(pullRequestService).createPullRequest(ruleInfo);
         verify(pullRequestService).pendingPullRequest();
@@ -401,9 +406,9 @@ public class ConfigStoreImplTest {
         ConfigEditorResult pendingPullRequestResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
         when(pullRequestService.pendingPullRequest()).thenReturn(pendingPullRequestResult);
 
-        ConfigEditorResult ret = ruleStore.submitConfigsRelease("test", "dummy_rules");
+        ConfigEditorResult ret = ruleStore.submitConfigsRelease(user, "dummy_rules");
 
-        verify(ruleInfoProvider).getReleaseInfo("test", "dummy_rules");
+        verify(ruleInfoProvider).getReleaseInfo(user, "dummy_rules");
         verify(pullRequestService).pendingPullRequest();
 
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
