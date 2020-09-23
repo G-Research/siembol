@@ -46,7 +46,7 @@
         <json_schema_validator_version>2.2.10</json_schema_validator_version>
         <spring_boot_version>2.3.1.RELEASE</spring_boot_version>
         <guava_version>29.0-jre</guava_version>
-        <springfox_swagger-version>3.0.0</springfox_swagger-version>
+        <springfox_swagger_version>3.0.0</springfox_swagger_version>
     </properties>
     <modules>
         <module>siembol-common</module>

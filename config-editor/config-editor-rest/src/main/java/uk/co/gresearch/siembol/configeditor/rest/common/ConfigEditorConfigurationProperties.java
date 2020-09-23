@@ -4,11 +4,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.Map;
+import java.util.HashMap;
 
 @ConfigurationProperties(prefix = "config-editor")
 public class ConfigEditorConfigurationProperties {
     @NestedConfigurationProperty
-    private Map<String, ServiceConfigurationProperties> services;
+    private Map<String, ServiceConfigurationProperties> services = new HashMap<>();
     private String testCasesUiConfigFileName;
 
     public Map<String, ServiceConfigurationProperties> getServices() {

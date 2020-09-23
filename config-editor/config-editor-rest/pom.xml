@@ -107,7 +107,7 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox_swagger-version}</version>
+            <version>${springfox_swagger_version}</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -134,6 +134,11 @@
                         <id>build-info</id>
                         <goals>
                             <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>

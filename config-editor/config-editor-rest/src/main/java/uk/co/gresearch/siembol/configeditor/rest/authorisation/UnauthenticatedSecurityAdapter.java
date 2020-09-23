@@ -22,7 +22,7 @@ public class UnauthenticatedSecurityAdapter extends WebSecurityConfigurerAdapter
     private ConfigEditorAuthorisationProperties properties;
 
     @Bean
-    UserInfoProvider userInfoprovider() {
+    UserInfoProvider userInfoProvider() {
         final UserInfo singleUser = properties.getSingleUser();
         return (x) -> singleUser;
     }
@@ -34,7 +34,7 @@ public class UnauthenticatedSecurityAdapter extends WebSecurityConfigurerAdapter
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        userInfoprovider();
+        userInfoProvider();
         authorisationProvider();
         http.authorizeRequests().anyRequest().permitAll();
     }
