@@ -15,11 +15,11 @@
       <mat-divider></mat-divider>
       <p>Items in deployment:</p>
       <div class="rules-list">
-          <ol>
-            <li *ngFor="let config of deployment.configs">
-              {{ config.name }} <span class="extra-info">(v{{ config.version }} - {{ config.author }})</span>
-            </li>
-          </ol>
+        <ol>
+          <li *ngFor="let config of deployment.configs">
+            {{ config.name }} <span class="extra-info">(v{{ config.version }} - {{ config.author }})</span>
+          </li>
+        </ol>
       </div>
       <mat-divider></mat-divider>
     </div>
@@ -52,15 +52,15 @@
 </div>
 
 <ng-container *ngIf="uiMetadata.deployment.extras !== undefined">
-    <form [formGroup]="form">
-        <formly-form [model]="extrasData" [fields]="fields" [options]="options" [form]="form" (modelChange)="updateOutput($event)"></formly-form>
-    </form>
-    <button mat-raised-button color="primary" (click)="onValidate()">VALIDATE</button>
-</ng-container> 
+  <form [formGroup]="form">
+    <formly-form [model]="extrasData" [fields]="fields" [options]="options" [form]="form"
+      (modelChange)="updateOutput($event)"></formly-form>
+  </form>
+  <button mat-raised-button color="primary" (click)="onValidate()">VALIDATE</button>
+</ng-container>
 
 <div mat-dialog-actions class="button-row">
-    <button mat-raised-button color="primary" *ngFor="let name of [serviceName$ |async]"
-    [disabled]="!testEnabled || !isValid" (click)="onClickTest()">TEST</button>
-    <button mat-raised-button color="primary" [disabled]="!isValid" (click)="onClickDeploy()">DEPLOY</button>
-    <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+  <button mat-raised-button color="primary" [disabled]="!testEnabled || !isValid" (click)="onClickTest()">TEST</button>
+  <button mat-raised-button color="primary" [disabled]="!isValid" (click)="onClickDeploy()">DEPLOY</button>
+  <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
 </div>

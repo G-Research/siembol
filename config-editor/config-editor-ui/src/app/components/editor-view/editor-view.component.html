@@ -1,25 +1,27 @@
 <div class="container">
-    <re-side-bar [configs]="configs$ | async" [selectedConfig]="selectedConfig$ | async" 
-        (onReturn)="changeRoute([serviceName])" (selectedIndex)="changeRoute([serviceName, routeType, $event])">
-    </re-side-bar>
+    <div class="left-panel" *ngIf="configData">
+        <span class="buttons">
+            <button mat-raised-button class="left-button" (click)="changeRoute()">Back</button>
+        </span>
+        <mat-divider class="vert-divider" [vertical]="false"></mat-divider>
+        <ng-scrollbar class="scrollbar">
+            <re-json-tree [json]="configData" [prevKey]="'$'"></re-json-tree>
+        </ng-scrollbar>
+    </div>
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
         <ng-scrollbar class="scrollbar">
             <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onClickTestCase$.next($event)">
                 <mat-tab label="Edit Config">
-                    <re-generic-editor [configs$]="configs$" [selectedIndex$]="selectedConfig$" [fields]="fields"
-                    [testEnabled]="testEnabled" [serviceName]="serviceName"
-                    [user]="user$ | async" [dynamicFieldsMap]="dynamicFieldsMap$ | async" [onClickTestCase$]="onClickTestCase$">
+                    <re-generic-editor [fields]="fields" [onClickTestCase$]="onClickTestCase$">
                     </re-generic-editor>
                 </mat-tab>
-                <mat-tab [label]="TESTING_TAB_NAME" [disabled]="!testingEnabled">
-                    <re-config-testing [fields]="testSpec" [selectedConfig]="configs[selectedConfig$ | async]">
+                <mat-tab [label]="TESTING_TAB_NAME" [disabled]="!testingEnabled()">
+                    <re-config-testing>
                     </re-config-testing>
                 </mat-tab>
-                <mat-tab [label]="TEST_CASE_TAB_NAME" [disabled]="!testCaseEnabled">
-                    <re-test-centre [testCases]="testCases" [serviceName]="serviceName" 
-                        [selectedConfigIndex$]="selectedConfig$" [testCaseMap]="testCaseMap$"
-                        [selectedConfig]="(configs$ | async)[(selectedConfig$ | async)]" [user]="user$ | async">
+                <mat-tab [label]="TEST_CASE_TAB_NAME" [disabled]="!testCaseEnabled()">
+                    <re-test-centre>
                     </re-test-centre>
                 </mat-tab>
             </mat-tab-group>

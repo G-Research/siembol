@@ -1,8 +1,8 @@
 <div class="box" [class.selected-rule-box]="selected">
     <div class="inline">
-        <div class="column-fixed" [FileHistoryPopover]="config">
+        <div class="column-fixed" [FileHistoryPopover]="config.fileHistory">
             <span class="chip-bag">
-                <span #versionChip class="chip" [ngClass]="{'warn': !config.savedInBackend}">v{{config.version || '0' }}</span>
+                <span #versionChip class="chip">v{{config.version || '0' }}</span>
             </span>
             <h4 class="author">{{config.author}}</h4>
         </div>

@@ -2,10 +2,9 @@ import { Component, Inject } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StatusCode } from '@app/commons/status-code';
-import { ConfigData, ConfigWrapper, EditorResult, ExceptionInfo } from '@app/model';
-import { Store } from '@ngrx/store';
-import * as fromStore from 'app/store';
+import { EditorResult, ExceptionInfo } from '@app/model';
 import { Observable } from 'rxjs';
+import { EditorService } from '../../services/editor.service';
 
 @Component({
     selector: 're-submit-dialog',
@@ -13,20 +12,19 @@ import { Observable } from 'rxjs';
     templateUrl: 'submit-dialog.component.html',
 })
 export class SubmitDialogComponent implements OnInit {
-    config: ConfigWrapper<ConfigData>;
     configValidity$: Observable<EditorResult<ExceptionInfo>>;
     message: string;
     exception: string;
     statusCode: string;
     validating = true;
     isValid = false;
+    configName: string;
 
     constructor(public dialogref: MatDialogRef<SubmitDialogComponent>,
-        private store: Store<fromStore.State>,
-        @Inject(MAT_DIALOG_DATA) public data: ConfigWrapper<ConfigData>) {
-        this.configValidity$ = this.store.select(fromStore.getConfigValidity);
-        this.config = data;
-        this.store.dispatch(new fromStore.ValidateConfig(this.config));
+        private editorService: EditorService,
+        @Inject(MAT_DIALOG_DATA) public data: string) {
+        this.configName = data;
+        this.configValidity$ = this.editorService.configStore.validateEditedConfig();
     }
 
     ngOnInit() {
@@ -44,7 +42,8 @@ export class SubmitDialogComponent implements OnInit {
     }
 
     onClickSubmit() {
-        this.dialogref.close(this.config);
+        this.editorService.configStore.submitEditedConfig();
+        this.dialogref.close();
     }
 
     onClickClose() {

@@ -5,7 +5,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StatusCode } from '@app/commons/status-code';
 import { EditorService } from '@services/editor.service';
 import { EditorResult, ExceptionInfo } from '@app/model';
-import { TestCase } from '@app/model/test-case';
 import { ValidationState } from '@app/model/validation-status';
 import { throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -16,7 +15,7 @@ import { catchError, tap } from 'rxjs/operators';
     templateUrl: 'submit-testcase-dialog.component.html',
 })
 export class SubmitTestcaseDialogComponent implements OnInit {
-    testcase: TestCase;
+    testCaseName: string;
     message: string;
     exception: string;
     statusCode: string;
@@ -27,12 +26,12 @@ export class SubmitTestcaseDialogComponent implements OnInit {
 
     constructor(public dialogref: MatDialogRef<SubmitTestcaseDialogComponent>,
         private service: EditorService,
-        @Inject(MAT_DIALOG_DATA) public data: TestCase) {
-        this.testcase = data;
+        @Inject(MAT_DIALOG_DATA) public data: string) {
+        this.testCaseName = data;
     }
 
     ngOnInit() {
-        this.service.validateTestCase(this.testcase).pipe(
+        this.service.configStore.testService.validateEditedTestCase().pipe(
             tap((r: EditorResult<ExceptionInfo>) => {
                 if (r !== undefined) {
                     this.statusCode = r.status_code;
@@ -55,7 +54,8 @@ export class SubmitTestcaseDialogComponent implements OnInit {
     }
 
     onClickSubmit() {
-        this.dialogref.close(this.testcase);
+        this.service.configStore.testService.submitEditedTestCase();
+        this.dialogref.close();
     }
 
     onClickClose() {

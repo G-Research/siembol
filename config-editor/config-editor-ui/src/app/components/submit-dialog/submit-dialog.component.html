@@ -11,7 +11,7 @@
   <ng-template #validationDone>
     <div *ngIf="isValid; else: invalidMessage">
       <p>Config has been validated by the backend</p>
-      <p>Do you wish to submit {{ config.name }} to the store?</p>
+      <p>Do you wish to submit {{ configName }} to the store?</p>
     </div>
     <ng-template #invalidMessage>
       <p>Config did not pass backend validation.</p>

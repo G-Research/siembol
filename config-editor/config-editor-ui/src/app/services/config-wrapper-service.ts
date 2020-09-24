@@ -177,10 +177,11 @@ public produceOrderedJson(configData: ConfigData, path: string) {
   }
 
   public unwrapConfig(obj: object): object {
+     let returnObject = cloneDeep(obj);
      if (this.unionPath) {
-         obj = this.unwrapConfigFromUnion(obj, this.unionPath);
+         returnObject = this.unwrapConfigFromUnion(returnObject, this.unionPath);
      }
-     return this.unwrapOptionalsFromArrays(obj);
+     return this.unwrapOptionalsFromArrays(returnObject);
   }
 
   public unwrapOptionalsFromArrays(obj: any) {
@@ -211,4 +212,16 @@ public produceOrderedJson(configData: ConfigData, path: string) {
         deployment.configs.map(config => cloneDeep(config.configData)),
     });
   }
+
+    private replacer(key, value) {
+        return value === null ? undefined : value;
+    }
+
+    public cleanRawObjects(objectToClean: any, rawObjects: any): any {
+        const current = cloneDeep(objectToClean);
+        for (const element in rawObjects) {
+            current[element] = rawObjects[element];
+        }
+        return JSON.parse(JSON.stringify(current, this.replacer));
+    }
 }

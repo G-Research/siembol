@@ -1,4 +1,4 @@
-import { TestCase } from './test-case';
+import { TestCase, TestCaseWrapper, TestCaseEvaluationResult } from './test-case';
 import { JSONSchema7 } from 'json-schema';
 
 export interface EditorResult<T> {
@@ -35,7 +35,7 @@ export interface ServiceInfo {
 
 export interface UserInfo extends ExceptionInfo {
     user_name: string;
-    services : ServiceInfo[];
+    services: ServiceInfo[];
 
 }
 
@@ -74,6 +74,7 @@ export interface ConfigWrapper<T> {
     description: string;
     tags?: string[];
     fileHistory?: FileHistory[];
+    testCases: TestCaseWrapper[];
 }
 
 export interface FileHistory {
@@ -88,28 +89,12 @@ export interface ConfigTestDto {
     test_specification: string,
 }
 
-export interface EvaluateTestCaseDto {
-    files: Content<TestCase>[],
-    event: string,
-}
-
 export type ConfigData = any;
 
 export interface Deployment<T> {
     configs: T[];
     deploymentVersion: number;
 }
-
-export interface BootstrapData {
-    configs: ConfigWrapper<ConfigData>[],
-    configSchema: JSONSchema7,
-    currentUser: string,
-    pullRequestPending: PullRequestInfo,
-    storedDeployment:  Deployment<ConfigWrapper<ConfigData>>,
-    deploymentHistory?: FileHistory[],
-    testCaseSchema: any,
-    testSpecificationSchema: any,
-};
 
 export interface ConfigTestResult {
     exception?: string;
@@ -123,3 +108,10 @@ export interface DeploymentWrapper {
     storedDeployment: Deployment<ConfigWrapper<ConfigData>>;
     deploymentHistory: FileHistory[];
 }
+
+export interface TestCaseResultAttributes {
+    exception?: string;
+    message?: string;
+    test_case_result?: TestCaseEvaluationResult;
+}
+

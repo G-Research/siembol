@@ -1,19 +1,18 @@
-import { AppConfigService } from '@app/config/app-config.service';
-import { TestCase, TestCaseMap } from '@app/model/test-case';
 import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
-import { ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, OnInit, Input, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Component } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ConfigData, ConfigWrapper } from '@app/model';
 import { TEST_CASE_TAB_NAME, TESTING_TAB_NAME } from '@app/model/test-case';
-import * as fromStore from '@app/store';
-import { Store } from '@ngrx/store';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { JSONSchema7 } from 'json-schema';
 import { EditorService } from '@app/services/editor.service';
+import { Router } from '@angular/router';
+import { EditorComponent } from '../editor/editor.component';
+import * as omitEmpty from 'omit-empty';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,133 +20,67 @@ import { EditorService } from '@app/services/editor.service';
   styleUrls: ['./editor-view.component.scss'],
   templateUrl: './editor-view.component.html'
 })
-export class EditorViewComponent implements OnInit {
+export class EditorViewComponent implements OnInit, OnDestroy {
+  @ViewChild(EditorComponent, { static: false }) editorComponent: EditorComponent;
+
   readonly TEST_CASE_TAB_NAME = TEST_CASE_TAB_NAME;
   readonly TESTING_TAB_NAME = TESTING_TAB_NAME;
   ngUnsubscribe = new Subject();
-  bootstrapped$: Observable<string>;
-  selectedConfig$: Observable<number>;
 
-  testEnabled = false;
-  testCaseEnabled = false;
-  testingEnabled = false;
+  testCaseEnabled: () => boolean = () => false;
+  testingEnabled: () => boolean = () => false;
+  configData: any;
   serviceName: string;
-  configs$: Observable<ConfigWrapper<ConfigData>[]> = new Observable();
-  schema$: Observable<JSONSchema7> = new Observable();
-  selectedConfigIndex: number = undefined;
+  schema: JSONSchema7;
+
   fields: FormlyFieldConfig[] = [];
   formlyOptions: any = { autoClear: true };
 
-  testOutput: string;
-
   onClickTestCase$: Subject<MatTabChangeEvent> = new Subject();
-  selectedConfigName: string;
-
-  testCaseMap: any = {};
-  testCases: TestCase[] = [];
-
-  routeType = 'edit';
-  user$: Observable<string>;
-  dynamicFieldsMap$: Observable<Map<string, string>>;
-  configs: ConfigWrapper<ConfigData>[];
-  testCaseMap$: Observable<TestCaseMap>;
-  schema: JSONSchema7;
-  testSpec: FormlyFieldConfig[] = [];
-
+  editedConfig$: Observable<ConfigWrapper<ConfigData>>;
   constructor(
-    private store: Store<fromStore.State>,
-    private config: AppConfigService,
     private formlyJsonschema: FormlyJsonschema,
-    private editorService: EditorService
+    private editorService: EditorService,
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
-    this.store
-      .select(fromStore.getServiceName)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(r => {
-        this.serviceName = r;
-        this.testEnabled = this.config.getUiMetadata(
-          r
-        ).testing.perConfigTestEnabled;
-        this.testCaseEnabled = this.config.getUiMetadata(
-          r
-        ).testing.testCaseEnabled;
-        this.testingEnabled = this.config.getUiMetadata(
-          r
-        ).testing.perConfigTestEnabled;
-      });
-    this.bootstrapped$ = this.store.select(fromStore.getBootstrapped);
-    this.selectedConfig$ = this.store.select(fromStore.getSelectedConfig);
-    this.configs$ = this.store.select(fromStore.getConfigs);
-    this.schema$ = this.store.select(fromStore.getSchema);
-    this.user$ = this.store.select(fromStore.getCurrentUser);
-    this.dynamicFieldsMap$ = this.store.select(fromStore.getDynamicFieldsMap);
-    this.store
-      .select(fromStore.getTestCaseMap)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(t => (this.testCaseMap = t));
-    this.testCaseMap$ = this.store.select(fromStore.getTestCaseMap);
+    this.serviceName = editorService.serviceName;
+    this.schema = editorService.configSchema;
+    this.editedConfig$ = editorService.configStore.editedConfig$;
+    this.fields = [
+      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
+    ];
   }
 
   ngOnInit() {
-    this.schema$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
-      this.schema = s;
-      this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(s), this.formlyOptions)
-      ];
-      this.store.dispatch(
-        new fromStore.UpdateDynamicFieldsMap(
-          this.formlyJsonschema.dynamicFieldsMap
-        )
-      );
-    });
-
-    this.configs$
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(c => (this.configs = c));
-
-    this.selectedConfig$
-      .pipe(
-        filter(f => f !== undefined),
-        takeUntil(this.ngUnsubscribe)
-      )
-      .subscribe(s => {
-        // due to how oneOf changes the displayed fields we need to provide a freshly generated form when a rule is selected
-        if (this.schema) {
-          this.fields = [
-            this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema))
-          ];
-        }
-        this.selectedConfigName = this.configs[s].name;
-        this.testCases =
-          cloneDeep(this.testCaseMap[this.selectedConfigName]) || [];
-        this.selectedConfigIndex = s;
-      });
-
-    this.testCaseMap$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(t => {
-      this.testCases =
-        cloneDeep(this.testCaseMap[this.selectedConfigName]) || [];
-    });
-
-    if (this.config.getUiMetadata(this.serviceName).testing.perConfigTestEnabled) {
-      this.editorService.configLoader
-        .getTestSpecificationSchema()
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(l => {
-            var options = {
-              formState: {
-                mainModel: {},
-                rawObjects: {}
-            }};
-          this.testSpec = [new FormlyJsonschema().toFieldConfig(l)];
-        });
-    }
   }
 
-  changeRoute(route) {
-    this.store.dispatch(
-      new fromStore.Go({
-        path: route
-      })
-    );
+  public ngAfterViewInit() {
+    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: ConfigWrapper<ConfigData>) => {
+      this.fields = [
+        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
+      ];
+
+      this.testingEnabled = () => this.editorService.metaDataMap.testing.perConfigTestEnabled
+        && this.editorComponent.form.valid;
+
+
+      this.testCaseEnabled = () => this.editorService.metaDataMap.testing.testCaseEnabled
+        && this.editorComponent.form.valid
+        && !config.isNew;
+
+      this.configData = omitEmpty(this.editorService.configWrapper.unwrapConfig(config.configData));
+
+      this.cd.markForCheck();
+    });
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  changeRoute() {
+    this.router.navigate([this.serviceName]);
   }
 }

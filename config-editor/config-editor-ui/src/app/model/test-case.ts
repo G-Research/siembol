@@ -1,4 +1,5 @@
 import { FileHistory } from './';
+import { ConfigTestResult } from './config-model';
 
 export const TEST_CASE_TAB_NAME = 'Test Cases';
 export const TESTING_TAB_NAME = 'Test Config';
@@ -7,16 +8,28 @@ export interface TestCaseMap {
     [configName: string]: TestCaseWrapper[];
 }
 
-export type TestCase = any;
+export interface TestCase {
+    version: number,
+    author: string,
+    config_name: string,
+    test_case_name: string,
+    test_specification: any,
+    assertions: Assertion[]
+}
 
 export interface TestCaseWrapper {
     testCase: TestCase;
-    testState: TestState;
-    testResult: TestCaseResult;
     fileHistory?: FileHistory[];
+    testCaseResult?: TestCaseResult;
 }
 
 export interface TestCaseResult {
+    isRunning?: boolean;
+    evaluationResult?: TestCaseEvaluationResult;
+    testResult?: ConfigTestResult;
+}
+
+export interface TestCaseEvaluationResult {
     number_skipped_assertions: number;
     number_matched_assertions: number;
     number_failed_assertions: number;
@@ -31,14 +44,6 @@ export interface AssertionResults {
     negated_pattern: boolean;
 }
 
-export enum TestState {
-    PASS,
-    FAIL,
-    NOT_RUN,
-    RUNNING,
-    ERROR,
-}
-
 export interface Assertion {
     assertion_type: string;
     json_path: string;
@@ -48,19 +53,6 @@ export interface Assertion {
     active: boolean;
 }
 
-export class TestCaseResultDefault implements TestCaseResult {
-    number_skipped_assertions = 0;
-    number_matched_assertions = 0;
-    number_failed_assertions = 0;
-    assertion_results: AssertionResults[] = [];
-
-    constructor() {}
-}
-
-export class TestCaseWrapperDefault implements TestCaseWrapper {
-    testCase: TestCase = {};
-    testState: TestState = TestState.NOT_RUN;
-    testResult: TestCaseResult = new TestCaseResultDefault();
-
-    constructor() {}
+export function isNewTestCase(testCase: TestCaseWrapper): boolean {
+    return testCase.testCase.version === 0;
 }

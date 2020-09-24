@@ -1,9 +1,8 @@
 import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
 import { ChangeHistoryComponent } from '@app/components/change-history/change-history.component';
-import { ConfigData, FileHistory } from '@app/model/config-model';
+import { FileHistory } from '@app/model/config-model';
 import { Subject, timer } from 'rxjs';
 import { debounce, distinctUntilKeyChanged, takeUntil } from 'rxjs/operators';
-import { ConfigWrapper } from '../model/config-model';
 import { PopoverRef } from './popover-ref';
 import { PopoverService } from './popover-service';
 
@@ -18,7 +17,7 @@ export class FileHistoryPopoverDirective implements OnDestroy {
     popoverRef: PopoverRef<FileHistory[]>;
 
     // tslint:disable-next-line:no-input-rename
-    @Input('FileHistoryPopover') config: ConfigWrapper<ConfigData>;
+    @Input('FileHistoryPopover') fileHistory: FileHistory[];
 
     constructor(private el: ElementRef, private popover: PopoverService) {
         this.hoverObserver$.pipe(
@@ -30,7 +29,7 @@ export class FileHistoryPopoverDirective implements OnDestroy {
                 this.popoverRef = this.popover.open({
                     origin: this.el.nativeElement,
                     content: ChangeHistoryComponent,
-                    data: this.config.fileHistory,
+                    data: this.fileHistory,
                 });
             }
             if (event.event === 'close') {

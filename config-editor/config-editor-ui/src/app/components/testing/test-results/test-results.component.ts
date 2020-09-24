@@ -12,7 +12,7 @@ export class TestResultsComponent implements OnInit {
     content: PopoverContent;
 
   constructor(private popoverRef: PopoverRef) {
-      this.testResult = this.popoverRef.data;
+      this.testResult = popoverRef.data;
    }
 
   ngOnInit() {

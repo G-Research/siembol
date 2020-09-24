@@ -1,8 +1,6 @@
 
 import { Component } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
-import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/utility.functions';
-import { cloneDeep } from 'lodash';
 
 @Component({
   // tslint:disable-next-line:component-selector

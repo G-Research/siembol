@@ -2,7 +2,7 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/
 import { Subject, timer } from 'rxjs';
 import { debounce, distinctUntilKeyChanged, takeUntil } from 'rxjs/operators';
 import { TestResultsComponent } from '../components/testing/test-results/test-results.component';
-import { TestCaseResult, TestCaseWrapper } from '../model/test-case';
+import { TestCaseResult } from '../model/test-case';
 import { PopoverRef } from './popover-ref';
 import { PopoverService } from './popover-service';
 
@@ -17,7 +17,7 @@ export class TestResultsPopoverDirective implements OnDestroy {
     popoverRef: PopoverRef<TestCaseResult>;
 
     // tslint:disable-next-line:no-input-rename
-    @Input('TestResultsPopover') testCase: TestCaseWrapper;
+    @Input('TestResultsPopover') testCaseResult: TestCaseResult;
 
     constructor(private el: ElementRef, private popover: PopoverService) {
         this.hoverObserver$.pipe(
@@ -29,7 +29,7 @@ export class TestResultsPopoverDirective implements OnDestroy {
                 this.popoverRef = this.popover.open({
                     origin: this.el.nativeElement,
                     content: TestResultsComponent,
-                    data: this.testCase.testResult,
+                    data: this.testCaseResult,
                 });
             }
             if (event.event === 'close') {

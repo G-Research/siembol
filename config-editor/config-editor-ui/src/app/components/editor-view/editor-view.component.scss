@@ -24,7 +24,33 @@ mat-card-content {
     overflow-y: auto;
 }
 
+.buttons {
+    height: 40px;
+}
+
+.left-panel {
+    max-width: 400px;
+    margin: 5px 10px;
+    flex: 1;
+}
+
+.right-button {
+    margin-left: auto;
+    margin-right: 5px;
+    color: #83d3f1;
+}
+
+.left-button {
+    margin-right: auto;
+    margin-left: 5px;
+    color: orange;
+}
+
 .scrollbar {
     --scrollbar-thumb-color: #868686;
     --scrollbar-thumb-hover-color: #a1a1a1;
+}
+
+.vert-divider {
+    margin: 6px;
 }

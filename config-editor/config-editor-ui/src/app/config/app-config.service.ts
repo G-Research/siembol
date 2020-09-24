@@ -2,16 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
-import { ConfigData, ServiceInfo, EditorResult, UserInfo, SchemaInfo } from '../model/config-model';
+import { ConfigData, ServiceInfo, EditorResult, UserInfo, SchemaInfo, RepositoryLinksWrapper, RepositoryLinks } from '../model/config-model';
 import { UiMetadataMap } from '../model/ui-metadata-map';
 import { EditorConfig } from './editor-config';
 import { BuildInfo } from '@app/model/build-info';
 import { StatusCode } from '../commons/status-code';
 import { JSONSchema7 } from 'json-schema';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 export class AppConfigService {
 
     private config: EditorConfig;
@@ -27,9 +29,9 @@ export class AppConfigService {
     // This gets called on startup and APP_INITIALIZER will wait for the promise to resolve
     public loadConfigAndUserInfo(): Promise<any> {
         return this.loadConfig()
-        .then(() => this.loadUiMetadata())
-        .then(() => this.loadUserInfo())
-        .then(() => this.loadTestCaseSchema());
+            .then(() => this.loadUiMetadata())
+            .then(() => this.loadUserInfo())
+            .then(() => this.loadTestCaseSchema());
     }
 
     private loadConfig(): Promise<any> {
@@ -54,63 +56,63 @@ export class AppConfigService {
 
     public loadBuildInfo(): Promise<any> {
         return this.http.get('assets/build-info.json')
-        .toPromise()
-        .then((r: BuildInfo) => {
-            console.info('loaded app metadata', r);
-            this.buildInfo = r;
-        }).catch(err => console.info('could not load build info'));
+            .toPromise()
+            .then((r: BuildInfo) => {
+                console.info('loaded app metadata', r);
+                this.buildInfo = r;
+            }).catch(err => console.info('could not load build info'));
     }
 
     private loadUserInfo(): Promise<any> {
         return this.http.get(`${this.config.serviceRoot}user`)
-        .toPromise()
-        .then((r: EditorResult<UserInfo>) => {
-            console.info('loaded user info setup', r);
-            if (r === undefined 
-                || r.status_code === undefined 
-                || r.status_code !== StatusCode.OK 
-                || r.attributes.user_name === undefined 
-                || r.attributes.services === undefined) {
+            .toPromise()
+            .then((r: EditorResult<UserInfo>) => {
+                console.info('loaded user info setup', r);
+                if (r === undefined
+                    || r.status_code === undefined
+                    || r.status_code !== StatusCode.OK
+                    || r.attributes.user_name === undefined
+                    || r.attributes.services === undefined) {
                     console.error('empty user endpoint response');
                     throw new Error();
-            }
-            this.user = r.attributes.user_name;
-            this.userServices = r.attributes.services;
-            this.userServicesMap = new Map(this.userServices.map(x => [x.name, x]));
+                }
+                this.user = r.attributes.user_name;
+                this.userServices = r.attributes.services;
+                this.userServicesMap = new Map(this.userServices.map(x => [x.name, x]));
 
-            this.userServices.forEach(service => {
-                if (this.uiMetadata[service.type] === undefined) {
-                    console.error('unsupported service type in UI metadata', service.type)
-                    throw new Error();
-                }  
-            })
-        }).catch(err => console.error('could not load user info'));
+                this.userServices.forEach(service => {
+                    if (this.uiMetadata[service.type] === undefined) {
+                        console.error('unsupported service type in UI metadata', service.type)
+                        throw new Error();
+                    }
+                })
+            }).catch(err => console.error('could not load user info'));
     }
 
     private loadTestCaseSchema(): Promise<any> {
         return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`)
-        .toPromise()
-        .then((r: EditorResult<SchemaInfo>) => {
-            if (r === undefined 
-                || r.status_code === undefined 
-                || r.status_code !== StatusCode.OK 
-                || r.attributes.rules_schema === undefined ) {
+            .toPromise()
+            .then((r: EditorResult<SchemaInfo>) => {
+                if (r === undefined
+                    || r.status_code === undefined
+                    || r.status_code !== StatusCode.OK
+                    || r.attributes.rules_schema === undefined) {
                     console.error('empty test case schema endpoint response');
                     throw new Error();
-            }
-            this.testCaseSchema = r.attributes.rules_schema;
+                }
+                this.testCaseSchema = r.attributes.rules_schema;
 
-        }).catch(err => console.error('could not load test case schema'));
+            }).catch(err => console.error('could not load test case schema'));
     }
-    
+
     public getServiceNames(): string[] {
         return Array.from(this.userServicesMap.keys()).sort();
     }
-    
+
     public getUser(): string {
         return this.user;
     }
-    
+
     public getUserServices(): ServiceInfo[] {
         return this.userServices;
     }
@@ -120,7 +122,7 @@ export class AppConfigService {
     }
 
     public getServiceInfo(serviceName: string): ServiceInfo {
-       return this.userServicesMap.get(serviceName);
+        return this.userServicesMap.get(serviceName);
     }
 
     public getConfig(): EditorConfig {
@@ -141,5 +143,15 @@ export class AppConfigService {
 
     public getTestCaseSchema(): JSONSchema7 {
         return this.testCaseSchema;
+    }
+
+    public getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
+        return this.http.get<EditorResult<RepositoryLinksWrapper>>(
+            `${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`).pipe(
+                map(result => ({
+                    ...result.attributes.rules_repositories,
+                    service_name: serviceName,
+                }))
+            )
     }
 }

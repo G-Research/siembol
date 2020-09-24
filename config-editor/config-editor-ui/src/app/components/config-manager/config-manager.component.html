@@ -19,7 +19,7 @@
             <mat-divider></mat-divider>
             <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
                 (cdkDropListDropped)="drop($event)" class="rule-list">
-                    <re-config-tile *ngFor="let config of (filteredConfigs$ | async); index as i" [class.selected-rule-box]="i == (selectedConfig$ |async)"
+                    <re-config-tile *ngFor="let config of (filteredConfigs$ | async); index as i; trackBy: trackConfigByName"
                         cdkDrag [cdkDragData]="config" [config]="config" (onEdit)="onEdit(i)" (onView)="onView(i)" (onAddToDeployment)="addToDeployment(i)">
                     </re-config-tile>
                 </div>
@@ -31,10 +31,10 @@
                     <h2>Deployment</h2>
                     <span class="item-count">{{filteredDeployment.configs.length}} {{filteredDeployment.configs.length === 1 ? 'item': 'items'}}</span>
                 </div>
-                <a class="history-button" [FileHistoryPopover]="deploymentHistory">
+                <a class="history-button" [FileHistoryPopover]="deploymentHistory.fileHistory">
                     <mat-icon>history</mat-icon>
                 </a>
-                <span *ngIf="!(pullRequestPending$ | async).pull_request_pending && !(releaseStatus$ | async).submitInFlight; else prMessage">
+                <span *ngIf="!(pullRequestPending$ | async).pull_request_pending && !(releaseSubmitInFlight$ | async); else prMessage">
                     <button class="button" mat-button color="accent" title="Deploy Configs" (click)="onDeploy()">DEPLOY</button>
                 </span>
                 <ng-template #prMessage>
@@ -48,7 +48,7 @@
                 </ng-template>
             </div>
             <mat-divider></mat-divider>
-            <div @list cdkDropList id="deployment-list" [cdkDropListData]="deployment.configs" [cdkDropListEnterPredicate]="duplicateItemCheck"
+            <div @list cdkDropList id="deployment-list" [cdkDropListData]="(deployment$ | async).configs" [cdkDropListEnterPredicate]="duplicateItemCheck"
                 class="deployment-list" (cdkDropListDropped)="drop($event)">
                 <ng-container *ngIf="!deployment || !deployment.configs || deployment.configs.length === 0; else configTile">
                     <div class="placeholder-box">
@@ -56,7 +56,7 @@
                     </div>
                 </ng-container>
                 <ng-template #configTile>
-                        <re-deployment-tile *ngFor="let cfg of filteredDeployment.configs; index as i" [cdkDragData]="[cfg, deployment]" cdkDrag
+                        <re-deployment-tile *ngFor="let cfg of (filteredDeployment$ | async).configs; index as i; trackBy: trackConfigByName" [cdkDragData]="[cfg, deployment]" cdkDrag
                             [config]="cfg" (onDelete)="onRemove(i)" (onUpgrade)="upgrade(i)" (onViewDiff)="onView(i, i)"></re-deployment-tile>
                 </ng-template>
             </div>

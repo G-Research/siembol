@@ -2,11 +2,12 @@
   <div>
     <img class="logo" src="/assets/siembol_logo_dark.svg">
     <div class="services">
-      <mat-card *ngFor="let service of userServices$ | async" class="service">
+      <mat-card *ngFor="let service of userServices" class="service">
         <h2>{{ service.name | titlecase}} </h2>
-        <button mat-raised-button color="primary" [routerLink]="['/' + service.name]">{{ service.type | titlecase }} Editor</button>
+        <button mat-raised-button color="primary" [routerLink]="['/' + service.name]">{{ service.type | titlecase }}
+          Editor</button>
         <ng-container *ngIf="repositoryLinks[service.name]">
-          <a mat-raised-button color="accent" [href]="repositoryLinks[service.name].rule_store_url">Working Repo</a>
+          <a mat-raised-button color="accent" [href]="repositoryLinks[service.name].rule_store_url">Store Repo</a>
           <a mat-raised-button color="accent" [href]="repositoryLinks[service.name].rules_release_url">Release Repo</a>
         </ng-container>
       </mat-card>

@@ -12,7 +12,7 @@
   <ng-container [ngSwitch]="validationState">
       <div *ngSwitchCase="validation.PASS">
         <p>Testcase has been validated by the backend</p>
-        <p>Do you wish to submit {{ testcase?.test_case_name }} to the store?</p>
+        <p>Do you wish to submit {{ testCaseName }} to the store?</p>
       </div>
       <div *ngSwitchCase="validation.FAIL">
         <p>Testcase did not pass backend validation.</p>

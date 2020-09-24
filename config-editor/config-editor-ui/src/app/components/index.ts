@@ -1,5 +1,3 @@
-export { EditorViewComponent } from './editor-view/editor-view.component';
-export { SideBarComponent } from './side-bar/side-bar.component';
 export { NavBarComponent } from './nav-bar/nav-bar.component';
 export { JsonViewerComponent } from './json-viewer/json-viewer.component';
 export { ConfigManagerComponent } from './config-manager/config-manager.component';

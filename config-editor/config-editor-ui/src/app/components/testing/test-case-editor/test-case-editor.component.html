@@ -1,0 +1,48 @@
+<div class="console">
+    <span class="title">
+        <h4>
+            <mat-icon class="left-icon">computer</mat-icon>Test Output
+        </h4>
+        <h4 *ngIf="testCaseWrapper?.testCaseResult?.testResult?.test_result_raw_output" class="output-help">Click the
+            JSON key to copy the absolute JSON path to clipboard</h4>
+    </span>
+    <div class="json-tree" *ngIf="testCaseWrapper?.testCaseResult?.testResult?.test_result_raw_output">
+        <re-json-tree [json]="testCaseWrapper.testCaseResult.testResult.test_result_raw_output || {}" [prevKey]="'$'">
+        </re-json-tree>
+    </div>
+    <mat-expansion-panel
+        [expanded]="testCaseWrapper?.testCaseResult?.testResult?.message || testCaseWrapper?.testCaseResult?.testResult?.exception || testCaseWrapper?.testCaseResult?.testResult?.test_result_output">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Output Messages
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngIf="testCaseWrapper?.testCaseResult?.testResult?.message">
+            <pre>{{ testCaseWrapper.testCaseResult.testResult.message }}</pre>
+        </div>
+        <div *ngIf="testCaseWrapper?.testCaseResult?.testResult?.exception">
+            <pre>{{ testCaseWrapper.testCaseResult.testResult.exception }}</pre>
+        </div>
+        <div *ngIf="testCaseWrapper?.testCaseResult?.testResult?.test_result_output">
+            <pre>{{ testCaseWrapper.testCaseResult.testResult.test_result_output }}</pre>
+        </div>
+    </mat-expansion-panel>
+</div>
+
+<div class="button-group-end">
+    <a mat-button color="none" [routerLink]="['/help/testcase']" target="_blank">
+        <mat-icon>help_outline</mat-icon>
+    </a>
+    <button mat-raised-button color="accent" title="Run Test Case" [disabled]="!form.valid"
+        (click)="onRunTestCase()">Run Test Case<mat-icon>play_arrow</mat-icon></button>
+</div>
+
+<form [formGroup]="form">
+    <formly-form #formly immutable [model]="testCase" [fields]="fields" [options]="options" [form]="form"
+        (modelChange)="onUpdateTestCase($event)"></formly-form>
+</form>
+
+<div mat-dialog-actions class="button-group-end">
+    <button mat-raised-button color="accent" [disabled]="!form.valid" (click)="onSubmitTestCase()">Save Test
+        Case</button>
+</div>

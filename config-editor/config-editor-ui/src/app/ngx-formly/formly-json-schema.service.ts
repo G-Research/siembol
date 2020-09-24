@@ -84,13 +84,11 @@ interface IOptions extends FormlyJsonschemaOptions {
 
 @Injectable({ providedIn: 'root' })
 export class FormlyJsonschema {
-  public dynamicFieldsMap: Map<string, string>;
   public testSpec: FormlyFieldConfig;
   titleCasePipe: TitleCasePipe = new TitleCasePipe();
 
   constructor() {}
   toFieldConfig(schema: JSONSchema7, options?: FormlyJsonschemaOptions): FormlyFieldConfig {
-    this.dynamicFieldsMap = new Map<string, string>();
     const fieldConfig = this._toFieldConfig(schema, { schema, ...(options || {})}, []);
 
     return fieldConfig;
@@ -334,9 +332,6 @@ export class FormlyJsonschema {
                     field.hideExpression = (model, formState, f) => dynFunc(formState.mainModel, model, f);
                 } catch {
                     console.warn('Something went wrong with applying condition evaluation to form');
-                }
-                if (!schema['x-schema-form'].condition.hasOwnProperty('isContant')) {
-                    this.dynamicFieldsMap.set(('/' + propKey.join('/')), schema['x-schema-form'].condition.hideExpression);
                 }
             }
             if (schema['x-schema-form'].condition.hasOwnProperty('disableAutoClear')) {

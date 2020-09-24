@@ -1,3 +1,4 @@
-export { ConfigStoreGuard } from './config-store.guard';
-export { ViewResolver } from './view.resolver';
-export { RepoResolver } from './repo.resolver';
+export { EditorServiceGuard } from './editor-service.guard';
+export { ConfigEditGuard } from './config-edit.guard';
+
+
