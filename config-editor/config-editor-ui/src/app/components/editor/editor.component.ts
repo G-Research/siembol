@@ -26,7 +26,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     public options: FormlyFormOptions = {};
     public form: FormGroup = new FormGroup({});
     public editedConfig$: Observable<ConfigWrapper<ConfigData>>;
-    private config: ConfigWrapper<ConfigData>;
+    public config: ConfigWrapper<ConfigData>;
 
     @Input() fields: FormlyFieldConfig[];
     @Input() onClickTestCase$: Observable<MatTabChangeEvent>;
