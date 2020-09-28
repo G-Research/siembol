@@ -10,17 +10,17 @@
     </div>
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
-        <ng-scrollbar class="scrollbar">
-            <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onClickTestCase$.next($event)">
-                <mat-tab label="Edit Config">
-                    <re-generic-editor [fields]="fields" [onClickTestCase$]="onClickTestCase$">
+        <ng-scrollbar class="scrollbar">(
+            <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="selectedTab">
+                <mat-tab [label]="CONFIG_TAB.name">
+                    <re-generic-editor [fields]="fields">
                     </re-generic-editor>
                 </mat-tab>
-                <mat-tab [label]="TESTING_TAB_NAME" [disabled]="!testingEnabled()">
+                <mat-tab [label]="TESTING_TAB.name" [disabled]="!testingEnabled()">
                     <re-config-testing>
                     </re-config-testing>
                 </mat-tab>
-                <mat-tab [label]="TEST_CASE_TAB_NAME" [disabled]="!testCaseEnabled()">
+                <mat-tab [label]="TEST_CASE_TAB.name" [disabled]="!testCaseEnabled()">
                     <re-test-centre>
                     </re-test-centre>
                 </mat-tab>

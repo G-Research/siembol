@@ -20,14 +20,17 @@
             </div>
             <h4 class="subtitle">{{config.description}}</h4>
         </span>
-        <span class="buttons" *ngIf="!disableButtons">
+        <span class="buttons">
             <a (click)="editConfig()" [title]="'Edit Config'">
                 <mat-icon>edit</mat-icon>
             </a>
             <a (click)="viewConfig()" [title]="'View Json'">
                 <mat-icon>pageview</mat-icon>
             </a>
-            <a (click)="addToDeployment()" [title]="'Add to Deployment'">
+            <a (click)="cloneConfig()" [title]="'Clone Config'">
+                <mat-icon>content_copy</mat-icon>
+            </a>
+            <a *ngIf="hideAddDeployment" (click)="addToDeployment()" [title]="'Add to Deployment'">
                 <mat-icon>arrow_forward</mat-icon>
             </a>
         </span>

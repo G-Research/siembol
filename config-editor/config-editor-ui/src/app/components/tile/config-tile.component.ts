@@ -10,12 +10,12 @@ import { ConfigData, ConfigWrapper } from '../../model/config-model';
 export class ConfigTileComponent {
 
     @Input() config: ConfigWrapper<ConfigData>;
-    @Input() disableButtons: boolean;
-    @Input() selected: boolean;
+    @Input() hideAddDeployment: boolean;
 
     @Output() onEdit = new EventEmitter<number>();
     @Output() onView = new EventEmitter<number>();
     @Output() onAddToDeployment = new EventEmitter<number>();
+    @Output() onClone = new EventEmitter<number>();
 
     constructor() {}
 
@@ -30,4 +30,9 @@ export class ConfigTileComponent {
     addToDeployment() {
         this.onAddToDeployment.emit();
     }
+
+    cloneConfig() {
+        this.onClone.emit();
+    }
+
 }

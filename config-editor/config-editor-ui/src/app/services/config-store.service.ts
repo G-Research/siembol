@@ -1,14 +1,14 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { AppConfigService } from '../config/app-config.service';
 import { cloneDeep } from 'lodash';
-import { ConfigLoaderService } from './config-loader.service';
-import { ConfigStoreState } from '../model/store-state';
-import { PullRequestInfo, EditorResult, ExceptionInfo, Deployment, ConfigWrapper, ConfigData } from '../model';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { StatusCode } from '../commons/status-code';
+import { AppConfigService } from '../config/app-config.service';
+import { ConfigData, ConfigWrapper, Deployment, EditorResult, ExceptionInfo, PullRequestInfo } from '../model';
+import { ConfigStoreState } from '../model/store-state';
+import { TestCaseMap, TestCaseWrapper } from '../model/test-case';
 import { UiMetadataMap } from '../model/ui-metadata-map';
-import { TestCaseMap } from '../model/test-case';
-import { TestStoreService } from './test-store.service';
+import { ConfigLoaderService } from './config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
+import { TestStoreService } from './test-store.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   configs: [],
@@ -197,22 +197,22 @@ export class ConfigStoreService {
   validateEditedConfig(): Observable<EditorResult<ExceptionInfo>> {
     const config = this.store.getValue().editedConfig;
     if (!config) {
-      throw Error("empty edited config")
+      throw Error('empty edited config')
     }
+
     return this.configLoaderService.validateConfig(config);
   }
 
   submitEditedConfig() {
     const config = this.store.getValue().editedConfig;
     if (!config) {
-      throw Error("empty edited config")
+      throw Error('empty edited config')
     }
-
     this.configLoaderService.submitConfig(config).subscribe(configs => {
       if (configs) {
         const currentEdited = configs.find(x => x.name === config.name);
         if (!currentEdited) {
-          throw Error("Unexpected response from server during submitting config");
+          throw Error('Unexpected response from server during submitting config');
         }
 
         const newState = new ConfigStoreStateBuilder(this.store.getValue())
@@ -225,16 +225,40 @@ export class ConfigStoreService {
           .build();
         this.store.next(newState);
       }
-    })
+    });
   }
 
-  setEditedConfigByName(configName: string) {
-    const config = this.getConfigByName(configName);
-    this.updateEditedConfig(config);
+  /**
+  * Updates config and test case. If config is already loaded it does not overwrite it.
+  * @param configName
+  * @param testCaseName
+  * @returns false if config or test case don't exist, else true
+  */
+  setEditedConfigAndTestCaseByName(configName: string, testCaseName: string): boolean {
+    const editedConfig = this.store.value.editedConfig;
+    const config = (editedConfig && configName === editedConfig.name) ?
+      editedConfig : this.getConfigByName(configName);
+    if (config === undefined) {
+      return false;
+    }
+    if (testCaseName) {
+      const testCase = config.testCases.find(x => x.testCase.test_case_name === testCaseName);
+      if (testCase === undefined) {
+        return false;
+      }
+      this.updateEditedConfigAndTestCase(config, testCase);
+    } else {
+      this.updateEditedConfigAndTestCase(config, null);
+    }
+    return true;
   }
+
 
   setEditedClonedConfigByName(configName: string) {
     const configToClone = this.getConfigByName(configName);
+    if (configToClone === undefined) {
+            throw Error("no config with such name");
+    }
     const cloned = {
       isNew: true,
       configData: Object.assign({}, cloneDeep(configToClone.configData), {
@@ -277,7 +301,14 @@ export class ConfigStoreService {
   updateEditedConfig(config: ConfigWrapper<ConfigData>) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .editedConfig(config)
-      .editedTestCase(null)
+      .build();
+    this.store.next(newState);
+  }
+
+  private updateEditedConfigAndTestCase(config: ConfigWrapper<ConfigData>, testCase: TestCaseWrapper)  {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue())
+      .editedConfig(config)
+      .editedTestCase(testCase)
       .build();
     this.store.next(newState);
   }
@@ -285,10 +316,8 @@ export class ConfigStoreService {
   private getConfigByName(configName: string): ConfigWrapper<ConfigData> {
     const currentState = this.store.getValue();
     const config = currentState.configs.find(x => x.name === configName);
-    if (config === undefined) {
-      throw Error("no config with such name");
-    }
 
     return cloneDeep(config);
   }
+
 }

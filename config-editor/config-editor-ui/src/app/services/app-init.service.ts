@@ -4,9 +4,8 @@ import { AppConfigService } from '../config';
 import { HomeComponent, PageNotFoundComponent } from '../containers';
 import { TestCaseHelpComponent } from '../components/testing/test-case-help/test-case-help.component';
 import { LandingPageComponent, ConfigManagerComponent } from '../components';
-import { EditorServiceGuard } from '../guards';
+import { EditorServiceGuard, ConfigEditGuard } from '../guards';
 import { EditorViewComponent } from '../components/editor-view/editor-view.component';
-import { ConfigEditGuard } from '../guards/config-edit.guard';
 
 @Injectable({
     providedIn: 'root',
@@ -21,7 +20,14 @@ export class AppInitService {
         {
             component: EditorViewComponent,
             path: 'edit',
-            canActivate: [EditorServiceGuard, ConfigEditGuard],
+            canActivate: [EditorServiceGuard],
+            children: [{
+                path: '',
+                component: EditorViewComponent,
+                canActivate: [ConfigEditGuard],
+                runGuardsAndResolvers: 'paramsOrQueryParamsChange'
+            }],
+            runGuardsAndResolvers: 'paramsOrQueryParamsChange',
         },
     ]
 

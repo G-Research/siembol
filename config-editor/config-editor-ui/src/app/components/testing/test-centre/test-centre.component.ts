@@ -6,6 +6,7 @@ import { EditorService } from '@services/editor.service';
 import { TestCaseWrapper } from '@model/test-case';
 import { TestStoreService } from '../../../services/test-store.service';
 import { TestCaseResult } from '../../../model/test-case';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 're-test-centre',
@@ -24,7 +25,9 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     public testCase: TestCaseWrapper;
 
     constructor(private editorService: EditorService,
-        public snackbar: PopupService) {
+        public snackbar: PopupService,
+        private router: Router,
+        private activeRoute: ActivatedRoute) {
         this.testCases$ = this.editorService.configStore.editedConfigTestCases$;
         this.editingTestCase$ = this.editorService.configStore.editingTestCase$;
         this.testStoreService = this.editorService.configStore.testService;
@@ -53,7 +56,13 @@ export class TestCentreComponent implements OnInit, OnDestroy {
 
     onEditTestCase(index: number) {
         const name = this.testCases[index].testCase.test_case_name;
-        this.testStoreService.setEditedTestCaseByName(name);
+        this.router.navigate(
+        [],
+        {
+            relativeTo: this.activeRoute,
+            queryParams: { testCaseName: name },
+            queryParamsHandling: 'merge',
+        });
     }
 
     onCloneTestCase(index: number) {
@@ -66,7 +75,13 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     }
 
     onCancelEditing() {
-        this.testStoreService.cancelEditingTestCase()
+        this.router.navigate(
+        [],
+        {
+            relativeTo: this.activeRoute,
+            queryParams: { testCaseName: null },
+            queryParamsHandling: 'merge',
+        });
     }
 
     getTestBadge(testCaseResult: TestCaseResult): string {

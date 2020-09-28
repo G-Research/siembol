@@ -1,8 +1,9 @@
 import { FileHistory } from './';
 import { ConfigTestResult } from './config-model';
 
-export const TEST_CASE_TAB_NAME = 'Test Cases';
-export const TESTING_TAB_NAME = 'Test Config';
+export const CONFIG_TAB = { name: 'Edit Config', index: 0 };
+export const TESTING_TAB = { name: 'Test Config', index: 1 };
+export const TEST_CASE_TAB = { name: 'Test Cases', index: 2 };
 
 export interface TestCaseMap {
     [configName: string]: TestCaseWrapper[];

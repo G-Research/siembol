@@ -18,7 +18,16 @@ export class ConfigEditGuard implements CanActivate {
             return false;
         }
 
+        const configName = route.queryParams.configName;
+        const testCaseName = route.queryParams.testCaseName;
+        if (configName || testCaseName) {
+            if (!this.editorService.configStore.setEditedConfigAndTestCaseByName(configName, testCaseName)) {
+                return false;
+            }
+        }
+
         return this.editorService.configStore.editedConfig$
             .map(x => x !== null);
     }
+
 }

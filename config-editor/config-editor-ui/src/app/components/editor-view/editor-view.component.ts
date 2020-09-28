@@ -1,18 +1,18 @@
-import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
-import { ChangeDetectionStrategy, OnInit, Input, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Component } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ConfigData, ConfigWrapper } from '@app/model';
-import { TEST_CASE_TAB_NAME, TESTING_TAB_NAME } from '@app/model/test-case';
+import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
+import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
+import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig } from '@ngx-formly/core';
+import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
+import * as omitEmpty from 'omit-empty';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { JSONSchema7 } from 'json-schema';
-import { EditorService } from '@app/services/editor.service';
-import { Router } from '@angular/router';
 import { EditorComponent } from '../editor/editor.component';
-import * as omitEmpty from 'omit-empty';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,8 +23,10 @@ import * as omitEmpty from 'omit-empty';
 export class EditorViewComponent implements OnInit, OnDestroy {
   @ViewChild(EditorComponent, { static: false }) editorComponent: EditorComponent;
 
-  readonly TEST_CASE_TAB_NAME = TEST_CASE_TAB_NAME;
-  readonly TESTING_TAB_NAME = TESTING_TAB_NAME;
+  readonly TEST_CASE_TAB = TEST_CASE_TAB;
+  readonly TESTING_TAB = TESTING_TAB;
+  readonly CONFIG_TAB = CONFIG_TAB;
+  readonly NO_TAB = -1;
   ngUnsubscribe = new Subject();
 
   testCaseEnabled: () => boolean = () => false;
@@ -32,16 +34,19 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   configData: any;
   serviceName: string;
   schema: JSONSchema7;
+  selectedTab = this.NO_TAB;
+  previousTab = this.NO_TAB;
 
   fields: FormlyFieldConfig[] = [];
   formlyOptions: any = { autoClear: true };
 
-  onClickTestCase$: Subject<MatTabChangeEvent> = new Subject();
   editedConfig$: Observable<ConfigWrapper<ConfigData>>;
+
   constructor(
     private formlyJsonschema: FormlyJsonschema,
     private editorService: EditorService,
     private router: Router,
+    private activeRoute: ActivatedRoute,
     private cd: ChangeDetectorRef
   ) {
     this.serviceName = editorService.serviceName;
@@ -53,6 +58,14 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.editorService.configStore.editingTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+      if (e) {
+        this.selectedTab = TEST_CASE_TAB.index;
+        if (this.previousTab === this.NO_TAB) {
+          this.previousTab = this.selectedTab;
+        }
+      }
+    });
   }
 
   public ngAfterViewInit() {
@@ -80,7 +93,23 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  onTabChange() {
+    if (this.previousTab === TEST_CASE_TAB.index) {
+      this.router.navigate(
+      [],
+      {
+          relativeTo: this.activeRoute,
+          queryParams: { testCaseName: null },
+          queryParamsHandling: 'merge',
+      });
+    } else if (this.previousTab === CONFIG_TAB.index) {
+      this.editorComponent.updateConfigInStore()
+    }
+    this.previousTab = this.selectedTab;
+  }
+
   changeRoute() {
     this.router.navigate([this.serviceName]);
   }
+
 }

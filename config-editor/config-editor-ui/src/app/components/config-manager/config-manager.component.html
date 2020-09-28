@@ -20,7 +20,7 @@
             <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
                 (cdkDropListDropped)="drop($event)" class="rule-list">
                     <re-config-tile *ngFor="let config of (filteredConfigs$ | async); index as i; trackBy: trackConfigByName"
-                        cdkDrag [cdkDragData]="config" [config]="config" (onEdit)="onEdit(i)" (onView)="onView(i)" (onAddToDeployment)="addToDeployment(i)">
+                        cdkDrag [cdkDragData]="config" [config]="config" [hideAddDeployment]="i>=filteredDeployment.configs.length" (onEdit)="onEdit(i)" (onView)="onView(i)" (onClone)="onClone(i)" (onAddToDeployment)="addToDeployment(i)">
                     </re-config-tile>
                 </div>
         </div>

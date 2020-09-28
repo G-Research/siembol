@@ -136,12 +136,19 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     }
 
     public onEdit(id: number) {
-        this.configStore.setEditedConfigByName(this.filteredConfigs[id].name);
-        this.router.navigate([this.editorService.serviceName, 'edit']);
+        this.router.navigate(
+            [this.editorService.serviceName, 'edit'],
+            { queryParams: { configName: this.filteredConfigs[id].name } }
+        );
     }
 
     public addToDeployment(id: number) {
         this.configStore.addConfigToDeployment(id);
+    }
+
+    public onClone(id: number) {
+        this.configStore.setEditedClonedConfigByName(this.filteredConfigs[id].name);
+        this.router.navigate([this.editorService.serviceName, 'edit']);
     }
 
     public onRemove(id: number) {
