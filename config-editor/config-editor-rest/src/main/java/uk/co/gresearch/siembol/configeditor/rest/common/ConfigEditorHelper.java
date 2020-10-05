@@ -8,6 +8,7 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import java.util.Optional;
 
 public class ConfigEditorHelper {
+    public static final String SWAGGER_AUTH_SCHEMA = "security_auth";
     public static ResponseEntity<ConfigEditorResult> fromConfigEditorResult(ConfigEditorResult result) {
         switch (result.getStatusCode()) {
             case OK:

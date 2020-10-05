@@ -22,7 +22,7 @@ public class ServiceAggregatorImpl implements ServiceAggregator {
     }
 
     @Override
-    public ConfigStore getConfigStore(UserInfo user, String serviceName) throws AuthorisationException{
+    public ConfigStore getConfigStore(UserInfo user, String serviceName) throws AuthorisationException {
         return getService(user, serviceName).getConfigStore();
     }
 

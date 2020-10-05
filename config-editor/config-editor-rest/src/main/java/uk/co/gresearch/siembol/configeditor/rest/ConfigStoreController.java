@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +12,11 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 
+import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.SWAGGER_AUTH_SCHEMA;
 import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.fromConfigEditorResult;
 
 @RestController
+@SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
 public class ConfigStoreController {
     @Autowired
     private ServiceAggregator serviceAggregator;

@@ -1,8 +1,11 @@
 package uk.co.gresearch.siembol.configeditor.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,14 +15,18 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 
+import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.SWAGGER_AUTH_SCHEMA;
+
 @RestController
+@SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
 public class UserServicesController {
     @Autowired
     private ServiceAggregator serviceAggregator;
     @Autowired
     private UserInfoProvider userInfoProvider;
 
-    @RequestMapping(value = "user", method = RequestMethod.GET)
+    @CrossOrigin
+    @RequestMapping(value = "/user", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ConfigEditorResult getLoggedInUser(@AuthenticationPrincipal Authentication authentication) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         ConfigEditorAttributes attr = new ConfigEditorAttributes();

@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +13,10 @@ import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import java.util.Optional;
 
+import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.SWAGGER_AUTH_SCHEMA;
+
 @RestController
+@SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
 public class TestCasesController {
     private static final String MISSING_ATTRIBUTES = "missing testcase in files attributes";
     @Autowired
