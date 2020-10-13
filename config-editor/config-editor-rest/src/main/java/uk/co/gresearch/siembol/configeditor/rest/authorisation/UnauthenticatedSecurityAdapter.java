@@ -36,6 +36,6 @@ public class UnauthenticatedSecurityAdapter extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) throws Exception {
         userInfoProvider();
         authorisationProvider();
-        http.authorizeRequests().anyRequest().permitAll();
+        http.cors().and().authorizeRequests().anyRequest().permitAll();
     }
 }

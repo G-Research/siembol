@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.63-SNAPSHOT</version>
+        <version>1.64-SNAPSHOT</version>
     </parent>
     <dependencyManagement>
         <dependencies>
@@ -36,37 +36,37 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>config-editor-core</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>config-editor-services</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>alerting-core</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>parsing-app</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>enriching-core</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>responding-core</artifactId>
-            <version>1.63-SNAPSHOT</version>
+            <version>1.64-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>

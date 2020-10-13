@@ -50,6 +50,8 @@ public class Oauth2SecurityAdapter extends WebSecurityConfigurerAdapter {
 
         List<String> excludedPatterns = properties.getOauth2().getExcludedUrlPatterns();
         http
+                .cors()
+                .and()
                 .authorizeRequests()
                 .antMatchers(excludedPatterns.toArray(new String[excludedPatterns.size()]))
                 .permitAll()
