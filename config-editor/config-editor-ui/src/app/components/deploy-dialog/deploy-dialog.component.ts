@@ -45,7 +45,7 @@ export class DeployDialogComponent {
         @Inject(MAT_DIALOG_DATA) public data: Deployment<ConfigWrapper<ConfigData>>) {
         this.serviceName = service.serviceName;
         this.validating = false;
-        this.uiMetadata = this.config.getUiMetadata(this.serviceName);
+        this.uiMetadata = this.config.uiMetadata[this.serviceName];
         if (this.uiMetadata.deployment.extras !== undefined) {
             this.fields = [this.formlyJsonSchema.toFieldConfig(service.configLoader.createDeploymentSchema())];
         } else {

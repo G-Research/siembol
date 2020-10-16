@@ -8,7 +8,7 @@ import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SubmitDialogComponent } from '..';
+import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,

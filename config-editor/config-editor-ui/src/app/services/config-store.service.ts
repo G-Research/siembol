@@ -33,7 +33,6 @@ const initialPullRequestState: PullRequestInfo = {
 }
 
 export class ConfigStoreService {
-  private user: string;
   private metaDataMap: UiMetadataMap;
   private testStoreService: TestStoreService;
   private readonly store = new BehaviorSubject<ConfigStoreState>(initialConfigStoreState);
@@ -59,10 +58,10 @@ export class ConfigStoreService {
 
   constructor(
     private serviceName: string,
+    private user: string,
     private config: AppConfigService,
     private configLoaderService: ConfigLoaderService) {
-    this.metaDataMap = config.getUiMetadata(serviceName);
-    this.user = config.getUser();
+    this.metaDataMap = config.uiMetadata[serviceName];
     this.testStoreService = new TestStoreService(this.user, this.store, this.configLoaderService);
   }
 

@@ -11,6 +11,7 @@ import { takeUntil } from 'rxjs/operators';
 import { TestStoreService } from '../../../services/test-store.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SubmitTestcaseDialogComponent } from '../submit-testcase-dialog/submit-testcase-dialog.component';
+import { AppService } from '../../../services/app.service';
 
 @Component({
     selector: 're-test-case-editor',
@@ -35,7 +36,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     public form: FormGroup = new FormGroup({});
 
     constructor(
-        private appConfig: AppConfigService,
+        private appService: AppService,
         private editorService: EditorService,
         private dialog: MatDialog,
         private cd: ChangeDetectorRef
@@ -49,7 +50,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
             const subschema = new FormlyJsonschema().toFieldConfig(cloneDeep(this.editorService.testSpecificationSchema));
             const schemaConverter = new FormlyJsonschema();
             schemaConverter.testSpec = subschema;
-            this.fields = [schemaConverter.toFieldConfig(cloneDeep(this.appConfig.getTestCaseSchema()), this.options)];
+            this.fields = [schemaConverter.toFieldConfig(cloneDeep(this.appService.testCaseSchema), this.options)];
 
             this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
                 this.testCaseWrapper = testCaseWrapper;

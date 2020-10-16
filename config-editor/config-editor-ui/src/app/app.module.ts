@@ -1,15 +1,14 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  ConfigManagerComponent, DeployDialogComponent,
-  ErrorDialogComponent, JsonViewerComponent, LandingPageComponent, NavBarComponent, SearchComponent,
-  SubmitDialogComponent
+  ErrorDialogComponent, NavBarComponent, JsonViewerComponent, ConfigManagerComponent, DeployDialogComponent,
+  SubmitDialogComponent, LandingPageComponent, SearchComponent
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
 import { DeploymentTileComponent } from '@app/components/tile/deployment-tile.component';
@@ -54,13 +53,16 @@ import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
 import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.component';
 import { ConfigTestingComponent } from './components/testing/config-testing/config-testing.component';
-import { EditorServiceGuard } from './guards/editor-service.guard';
-import { AppInitService } from './services/app-init.service';
+
 import { RouterModule } from '@angular/router';
 import { EditorViewComponent } from './components/editor-view/editor-view.component';
+import { AppInitGuard } from './guards/app-init.guard';
+import { AppService } from './services/app.service';
+import { AppInitComponent } from './components/app-init/app-init.component';
+import { AuthGuard } from './guards/auth-guard';
 
-export function configServiceFactory(config: AppConfigService, appInitService: AppInitService) {
-  return () => { return config.loadConfigAndUserInfo().then(() => { return appInitService.loadRoutes(); });};
+export function configServiceFactory(config: AppConfigService) {
+  return () => config.loadConfigAndMetadata();
 }
 
 export function buildInfoServiceFactory(config: AppConfigService) {
@@ -68,9 +70,9 @@ export function buildInfoServiceFactory(config: AppConfigService) {
 }
 
 const PROD_PROVIDERS = [
-    { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService, AppInitService], multi: true },
-    { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true }
+  { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService], multi: true },
+  { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true }
 ];
 
 const DEV_PROVIDERS = [...PROD_PROVIDERS];
@@ -124,7 +126,17 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot([]),
+    RouterModule.forRoot([
+      {
+        path: '',
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: '**',
+            canActivate: [AppInitGuard],
+            component: AppInitComponent,
+          }]
+      }], { useHash: false }),
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
@@ -134,65 +146,66 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     NgxTextDiffModule,
     ScrollingModule,
     FormlyModule.forRoot({
-        validationMessages: [
-          { name: 'required', message: 'This field is required' },
-          { name: 'null', message: 'should be null' },
-          { name: 'minlength', message: 'Min length is' },
-          { name: 'maxlength', message: 'Max length is' },
-          { name: 'min', message: 'Min is' },
-          { name: 'max', message: 'Max is' },
-          { name: 'minItems', message: 'Min items required' },
-          { name: 'maxItems', message: 'Max items' },
-          { name: 'invalidJson', message: 'Json is not valid'},
-        ],
-        types: [
-          { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
-          { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
-          { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
-          {
-            name: 'number',
-            component: InputTypeComponent,
-            wrappers: ['form-field'],
-            defaultOptions: {
-              templateOptions: {
-                type: 'number',
-              },
+      validationMessages: [
+        { name: 'required', message: 'This field is required' },
+        { name: 'null', message: 'should be null' },
+        { name: 'minlength', message: 'Min length is' },
+        { name: 'maxlength', message: 'Max length is' },
+        { name: 'min', message: 'Min is' },
+        { name: 'max', message: 'Max is' },
+        { name: 'minItems', message: 'Min items required' },
+        { name: 'maxItems', message: 'Max items' },
+        { name: 'invalidJson', message: 'Json is not valid' },
+      ],
+      types: [
+        { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
+        { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
+        { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
+        {
+          name: 'number',
+          component: InputTypeComponent,
+          wrappers: ['form-field'],
+          defaultOptions: {
+            templateOptions: {
+              type: 'number',
             },
           },
-          {
-            name: 'integer',
-            component: InputTypeComponent,
-            wrappers: ['form-field'],
-            defaultOptions: {
-              templateOptions: {
-                type: 'number',
-              },
+        },
+        {
+          name: 'integer',
+          component: InputTypeComponent,
+          wrappers: ['form-field'],
+          defaultOptions: {
+            templateOptions: {
+              type: 'number',
             },
           },
-          { name: 'boolean', extends: 'checkbox' },
-          { name: 'enum', extends: 'select' },
-          { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
-          { name: 'array', component: ArrayTypeComponent },
-          { name: 'object', component: ObjectTypeComponent },
-          { name: 'tabs', component: TabsetTypeComponent},
-          { name: 'union', component: UnionTypeComponent },
-          { name: 'tab-array', component: TabArrayTypeComponent },
-        ],
-        wrappers: [
-            { name: 'panel', component: PanelWrapperComponent },
-            { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
-            { name: 'form-field', component: FormFieldWrapperComponent },
-        ],
-        extras: { checkExpressionOn: 'changeDetectionCheck', immutable: false },
-      }),
+        },
+        { name: 'boolean', extends: 'checkbox' },
+        { name: 'enum', extends: 'select' },
+        { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
+        { name: 'array', component: ArrayTypeComponent },
+        { name: 'object', component: ObjectTypeComponent },
+        { name: 'tabs', component: TabsetTypeComponent },
+        { name: 'union', component: UnionTypeComponent },
+        { name: 'tab-array', component: TabArrayTypeComponent },
+      ],
+      wrappers: [
+        { name: 'panel', component: PanelWrapperComponent },
+        { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
+        { name: 'form-field', component: FormFieldWrapperComponent },
+      ],
+      extras: { checkExpressionOn: 'changeDetectionCheck', immutable: false },
+    }),
     ReactiveFormsModule,
     FormlyMaterialModule,
   ],
   providers: [
     environment.production ? PROD_PROVIDERS : DEV_PROVIDERS,
     PopupService,
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-    EditorServiceGuard,
+    { provide: LocationStrategy, useClass: PathLocationStrategy },
+    AppService,
+    AppInitGuard,
     HighlightVariablesPipe,
     PopoverService,
   ],

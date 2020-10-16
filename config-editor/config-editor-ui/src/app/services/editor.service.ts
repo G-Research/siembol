@@ -5,12 +5,13 @@ import { AppConfigService } from '../config';
 import { ConfigLoaderService } from './config-loader.service';
 import { ConfigWrapperService } from './config-wrapper-service';
 import { ConfigData, ConfigWrapper, Deployment, GitFiles, PullRequestInfo } from '@model';
-import { DeploymentWrapper, EditorResult, ExceptionInfo, TestCaseEvaluation } from '@model/config-model';
+import { DeploymentWrapper, EditorResult, ExceptionInfo } from '@model/config-model';
 import { TestCaseMap, TestCaseWrapper } from '@model/test-case';
 import { JSONSchema7 } from 'json-schema';
 import { ConfigStoreService } from './config-store.service';
 import * as omitEmpty from 'omit-empty';
 import { UiMetadataMap } from '../model/ui-metadata-map';
+import { AppService } from './app.service';
 
 export class ServiceContext {
   metaDataMap: UiMetadataMap;
@@ -19,7 +20,6 @@ export class ServiceContext {
   configStore: ConfigStoreService;
   serviceName: string;
   configSchema: JSONSchema7;
-  testCaseSchema: JSONSchema7;
   testSpecificationSchema: JSONSchema7;
   constructor() { }
 }
@@ -51,23 +51,23 @@ export interface IConfigLoaderService {
 export class EditorService {
   private serviceContext: ServiceContext = new ServiceContext();
   private serviceNameSubject = new BehaviorSubject<string>(null);
-
+  
   public get metaDataMap() { return this.serviceContext.metaDataMap; }
   public get configLoader() { return this.serviceContext.configLoader; }
   public get configWrapper() { return this.serviceContext.configWrapper; }
   public get configStore() { return this.serviceContext.configStore; }
   public get serviceName() { return this.serviceContext.serviceName; }
   public get configSchema() { return this.serviceContext.configSchema; }
-  public get testCaseSchema() { return this.serviceContext.testCaseSchema; }
+
   public get testSpecificationSchema() { return this.serviceContext.testSpecificationSchema; }
 
+
   public serviceName$ = this.serviceNameSubject.asObservable();
-  public user: string;
 
   constructor(
     private http: HttpClient,
-    private config: AppConfigService) {
-    this.user = this.config.getUser();
+    private config: AppConfigService,
+    private appService: AppService) {
   }
 
   public setServiceContext(serviceContext: ServiceContext): boolean {
@@ -77,10 +77,10 @@ export class EditorService {
   }
 
   public createServiceContext(serviceName: string): Observable<ServiceContext> {
-    const metaDataMap = this.config.getUiMetadata(serviceName);
+    const metaDataMap = this.appService.getUiMetadataMap(serviceName);
     const configWrapper = new ConfigWrapperService(metaDataMap);
-    const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, configWrapper);
-    const configStore = new ConfigStoreService(serviceName, this.config, configLoader);
+    const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, configWrapper, metaDataMap);
+    const configStore = new ConfigStoreService(serviceName, this.appService.user, this.config, configLoader);
     const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
       ? configLoader.getTestSpecificationSchema() : Observable.of({});
     const testCaseMapFun = metaDataMap.testing.testCaseEnabled
@@ -102,7 +102,6 @@ export class EditorService {
             configStore: configStore,
             serviceName: serviceName,
             configSchema: configSchema,
-            testCaseSchema: this.config.getTestCaseSchema(),
             testSpecificationSchema: testSpecSchema
           };
         } else {
@@ -121,7 +120,7 @@ export class EditorService {
     if (config.isNew) {
       config.configData[this.metaDataMap.name] = config.name;
       config.configData[this.metaDataMap.version] = config.version = 0;
-      config.configData[this.metaDataMap.author] = config.author = this.user;
+      config.configData[this.metaDataMap.author] = config.author = this.appService.user;
     } else {
       config.configData[this.metaDataMap.name] = config.name;
       config.configData[this.metaDataMap.version] = config.version;

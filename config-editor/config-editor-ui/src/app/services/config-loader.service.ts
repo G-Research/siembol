@@ -35,7 +35,6 @@ import { TestCaseEvaluationResult, isNewTestCase } from '../model/test-case';
 
 export class ConfigLoaderService implements IConfigLoaderService {
   private optionalObjects: string[] = [];
-  private readonly uiMetadata: UiMetadataMap;
   private labelsFunc: Function;
   public originalSchema: JSONSchema7;
   public modelOrder = {};
@@ -44,9 +43,9 @@ export class ConfigLoaderService implements IConfigLoaderService {
     private http: HttpClient,
     private config: AppConfigService,
     private serviceName: string,
-    private configWrapperService: ConfigWrapperService
+    private configWrapperService: ConfigWrapperService,
+    private uiMetadata: UiMetadataMap
   ) {
-    this.uiMetadata = this.config.getUiMetadata(this.serviceName);
     try {
       this.labelsFunc = new Function('model', this.uiMetadata.labelsFunc);
     } catch {

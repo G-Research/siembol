@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog.component';
 import { EditorService } from '../../services/editor.service';
+import { AppService } from '../../services/app.service';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,14 +20,17 @@ export class NavBarComponent {
     serviceNames: string[];
     environment: string;
 
-    constructor(private config: AppConfigService, private editorService: EditorService, private dialog: MatDialog) {
-        this.user = this.config.getUser();
+    constructor(private config: AppConfigService, 
+        private appService: AppService, 
+        private editorService: EditorService, 
+        private dialog: MatDialog) {
+        this.user = this.appService.user;
         this.serviceName$ = this.editorService.serviceName$;
-        this.serviceNames = this.config.getServiceNames();
+        this.serviceNames = this.appService.serviceNames;
         this.environment = this.config.environment;
     }
 
     public showAboutApp() {
-        this.dialog.open(BuildInfoDialogComponent, { data: this.config.getBuildInfo }).afterClosed().subscribe();
+        this.dialog.open(BuildInfoDialogComponent, { data: this.config.buildInfo }).afterClosed().subscribe();
     }
 }
