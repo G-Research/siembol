@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.configeditor.rest;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,36 +23,36 @@ public class TestCasesController {
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/testcases/schema", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getSchema() {
-        return testCaseEvaluator.getSchema();
+    public ResponseEntity<ConfigEditorAttributes> getSchema() {
+        return testCaseEvaluator.getSchema().toResponseEntity();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/testcases/validate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> validate(@RequestBody ConfigEditorAttributes attributes) {
+    public ResponseEntity<ConfigEditorAttributes> validate(@RequestBody ConfigEditorAttributes attributes) {
         Optional<String> testCase = ConfigEditorHelper.getFileContent(attributes);
         if (!testCase.isPresent()) {
-            return new ResponseEntity<>(ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
-                    MISSING_ATTRIBUTES),
-                    HttpStatus.BAD_REQUEST);
+            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, MISSING_ATTRIBUTES)
+                    .toResponseEntity();
         }
 
-        return new ResponseEntity<>(testCaseEvaluator.validate(testCase.get()), HttpStatus.OK);
+        return testCaseEvaluator
+                .validate(testCase.get())
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/testcases/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> evaluate(@RequestBody ConfigEditorAttributes attributes) {
+    public ResponseEntity<ConfigEditorAttributes> evaluate(@RequestBody ConfigEditorAttributes attributes) {
         Optional<String> testCase = ConfigEditorHelper.getFileContent(attributes);
         if (!testCase.isPresent()
                 || attributes.getTestResultRawOutput() == null) {
-            return new ResponseEntity<>(ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
-                    MISSING_ATTRIBUTES),
-                    HttpStatus.BAD_REQUEST);
+            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, MISSING_ATTRIBUTES)
+                    .toResponseEntity();
         }
 
-        return new ResponseEntity<>(testCaseEvaluator.evaluate(
-                attributes.getTestResultRawOutput(), testCase.get()),
-                HttpStatus.OK);
+        return testCaseEvaluator
+                .evaluate(attributes.getTestResultRawOutput(), testCase.get())
+                .toResponseEntity();
     }
 }

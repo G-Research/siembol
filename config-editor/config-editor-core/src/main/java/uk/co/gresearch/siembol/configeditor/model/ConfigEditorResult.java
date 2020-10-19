@@ -1,18 +1,29 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorResult {
     public enum StatusCode {
-        OK,
-        BAD_REQUEST,
-        UNAUTHORISED,
-        ERROR,
+        OK(HttpStatus.OK),
+        BAD_REQUEST(HttpStatus.BAD_REQUEST),
+        UNAUTHORISED(HttpStatus.UNAUTHORIZED),
+        ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        private final HttpStatus httpStatus;
+
+        StatusCode(HttpStatus httpStatus) {
+            this.httpStatus = httpStatus;
+        }
+
+        public HttpStatus getHttpStatus() {
+            return httpStatus;
+        }
     }
-    @JsonProperty("status_code")
+
     private final StatusCode statusCode;
     private final ConfigEditorAttributes attributes;
 
@@ -51,5 +62,9 @@ public class ConfigEditorResult {
         attributes.setRulesSchema(schema);
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK,
                 attributes);
+    }
+
+    public ResponseEntity<ConfigEditorAttributes> toResponseEntity() {
+        return new ResponseEntity<>(this.attributes, this.statusCode.getHttpStatus());
     }
 }

@@ -52,6 +52,7 @@ public class Oauth2SecurityAdapter extends WebSecurityConfigurerAdapter {
         http
                 .cors()
                 .and()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(excludedPatterns.toArray(new String[excludedPatterns.size()]))
                 .permitAll()

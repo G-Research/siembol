@@ -8,12 +8,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 
 import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.SWAGGER_AUTH_SCHEMA;
-import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.fromConfigEditorResult;
 
 @RestController
 @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
@@ -26,110 +25,135 @@ public class ConfigStoreController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getConfigs(
+    public ResponseEntity<ConfigEditorAttributes> getConfigs(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return serviceAggregator.getConfigStore(user, service).getConfigs();
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getConfigs()
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> addConfig(
+    public ResponseEntity<ConfigEditorAttributes> addConfig(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(user, service).addConfig(user, rule));
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .addConfig(user, rule)
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PutMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> updateConfig(
+    public ResponseEntity<ConfigEditorAttributes> updateConfig(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(user, service).updateConfig(user, rule));
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .updateConfig(user, rule)
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getTestCases(
+    public ResponseEntity<ConfigEditorAttributes> getTestCases(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return serviceAggregator.getConfigStore(user, service).getTestCases();
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getTestCases()
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> addTestCase(
+    public ResponseEntity<ConfigEditorAttributes> addTestCase(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(user, service).addTestCase(user, testCase));
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .addTestCase(user, testCase)
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PutMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> updateTestCase(
+    public ResponseEntity<ConfigEditorAttributes> updateTestCase(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(user, service).updateTestCase(user, testCase));
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .updateTestCase(user, testCase)
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configstore/release",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getRelease(
+    public ResponseEntity<ConfigEditorAttributes> getRelease(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return serviceAggregator.getConfigStore(user, service).getConfigsRelease();
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getConfigsRelease()
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configstore/release/status",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getReleaseStatus(
+    public ResponseEntity<ConfigEditorAttributes> getReleaseStatus(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return serviceAggregator.getConfigStore(user, service).getConfigsReleaseStatus();
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getConfigsReleaseStatus()
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configstore/release",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> submitRelease(
+    public ResponseEntity<ConfigEditorAttributes> submitRelease(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return fromConfigEditorResult(
-                serviceAggregator.getConfigStore(user, service).submitConfigsRelease(user, rule));
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .submitConfigsRelease(user, rule)
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configstore/repositories",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getRepositories(
+    public ResponseEntity<ConfigEditorAttributes> getRepositories(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return serviceAggregator.getConfigStore(user, service).getRepositories();
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getRepositories()
+                .toResponseEntity();
     }
 }

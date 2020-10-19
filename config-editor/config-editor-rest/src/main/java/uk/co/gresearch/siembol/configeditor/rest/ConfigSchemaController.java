@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.configeditor.rest;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,52 +31,46 @@ public class ConfigSchemaController {
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/schema", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getSchema(
+    public ResponseEntity<ConfigEditorAttributes> getSchema(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String serviceName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
-                .getSchema();
+                .getSchema()
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/testschema", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getTestSchema(
+    public ResponseEntity<ConfigEditorAttributes> getTestSchema(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String serviceName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
-                .getTestSchema();
+                .getTestSchema()
+                .toResponseEntity();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/validate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> validate(
+    public ResponseEntity<ConfigEditorAttributes> validate(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
             @RequestBody String body) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         ConfigSchemaService service = serviceAggregator.getConfigSchema(user, serviceName);
-        return new ResponseEntity<>(singleConfig
-                ? service.validateConfiguration(body)
-                : service.validateConfigurations(body), HttpStatus.OK);
+        return singleConfig
+                ? service.validateConfiguration(body).toResponseEntity()
+                : service.validateConfigurations(body).toResponseEntity();
     }
 
-    @CrossOrigin
-    @GetMapping(value = "/api/v1/{service}/configs/fields", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getFields(
-            @AuthenticationPrincipal Authentication authentication,
-            @PathVariable("service") String serviceName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
-        return serviceAggregator.getConfigSchema(user, serviceName).getFields();
-    }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/test", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorResult> test(
+    public ResponseEntity<ConfigEditorAttributes> test(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
@@ -85,14 +78,13 @@ public class ConfigSchemaController {
 
         Optional<String> config = getFileContent(attributes);
         if (!config.isPresent() || attributes.getTestSpecification() == null) {
-            return new ResponseEntity<>(ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
-                    MISSING_ATTRIBUTES),
-                    HttpStatus.BAD_REQUEST);
+            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, MISSING_ATTRIBUTES)
+                    .toResponseEntity();
         }
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         ConfigSchemaService service = serviceAggregator.getConfigSchema(user, serviceName);
-        return new ResponseEntity<>(singleConfig
-                ? service.testConfiguration(config.get(), attributes.getTestSpecification())
-                : service.testConfigurations(config.get(), attributes.getTestSpecification()), HttpStatus.OK);
+        return singleConfig
+                ? service.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
+                : service.testConfigurations(config.get(), attributes.getTestSpecification()).toResponseEntity();
     }
 }

@@ -3,6 +3,7 @@ package uk.co.gresearch.siembol.configeditor.rest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,11 +28,11 @@ public class UserServicesController {
 
     @CrossOrigin
     @RequestMapping(value = "/user", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ConfigEditorResult getLoggedInUser(@AuthenticationPrincipal Authentication authentication) {
+    public ResponseEntity<ConfigEditorAttributes> getLoggedInUser(@AuthenticationPrincipal Authentication authentication) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         attr.setUserName(user.getUserName());
         attr.setServices(serviceAggregator.getConfigEditorServices(user));
-        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
+        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr).toResponseEntity();
     }
 }
