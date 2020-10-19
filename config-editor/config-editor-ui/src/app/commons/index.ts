@@ -1,1 +1,1 @@
-export { StatusCode } from './status-code';
+export { getHttpErrorType, StatusCode } from './status-code';

@@ -23,7 +23,6 @@ import { NgScrollbarModule } from 'ngx-scrollbar';
 import { AppComponent } from './app.component';
 import { ChangeHistoryComponent } from './components/change-history/change-history.component';
 import { EditorComponent } from './components/editor/editor.component';
-import { SubmitTestcaseDialogComponent } from './components/testing/submit-testcase-dialog/submit-testcase-dialog.component';
 import { TestCaseHelpComponent } from './components/testing/test-case-help/test-case-help.component';
 import { TestCaseEditorComponent } from './components/testing/test-case-editor/test-case-editor.component';
 import { TestCentreComponent } from './components/testing/test-centre/test-centre.component';
@@ -113,7 +112,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     TestCaseEditorComponent,
     ConfigTestingComponent,
     JsonObjectTypeComponent,
-    SubmitTestcaseDialogComponent,
     TestResultsComponent,
     TestResultsPopoverDirective,
     SelectTypeComponent,

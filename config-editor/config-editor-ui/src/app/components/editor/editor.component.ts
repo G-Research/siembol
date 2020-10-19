@@ -3,11 +3,13 @@ import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { ConfigData, ConfigWrapper } from '@app/model';
+import { Type } from '@app/model/config-model';
 import { PopupService } from '@app/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 
 @Component({
@@ -28,7 +30,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     @Input() fields: FormlyFieldConfig[];
 
     constructor(public dialog: MatDialog, public snackbar: PopupService,
-        private editorService: EditorService) {
+        private editorService: EditorService, private router: Router) {
         this.editedConfig$ = editorService.configStore.editedConfig$;
     }
 
@@ -58,6 +60,26 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     onSubmit() {
         this.updateConfigInStore();
-        this.dialog.open(SubmitDialogComponent, { data: this.configName });
+        const dialogRef = this.dialog.open(SubmitDialogComponent,
+            {
+                data: {
+                    name: this.configName,
+                    type: Type.CONFIG_TYPE,
+                    validate: () => this.editorService.configStore.validateEditedConfig(),
+                    submit: () => this.editorService.configStore.submitEditedConfig()
+                },
+                disableClose: true
+            });
+
+        dialogRef.afterClosed().subscribe(
+            success => {
+                if (success) {
+                    this.router.navigate(
+                        [this.editorService.serviceName, 'edit'],
+                        { queryParams: { configName: this.configName } }
+                    );
+                }
+            }
+        );
     }
 }

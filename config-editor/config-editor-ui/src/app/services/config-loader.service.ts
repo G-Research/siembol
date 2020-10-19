@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { AppConfigService } from '../config/app-config.service';
 import { IConfigLoaderService } from './editor.service';
@@ -26,11 +26,11 @@ import {
 import { UiMetadataMap } from '@model/ui-metadata-map';
 
 import { cloneDeep } from 'lodash';
-import { map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { ConfigWrapperService } from './config-wrapper-service';
 import { JSONSchema7 } from 'json-schema';
 import { TestCaseEvaluation, TestCaseResultAttributes } from '../model/config-model';
-import { StatusCode } from '../commons';
+import { getHttpErrorType, StatusCode } from '../commons';
 import { TestCaseEvaluationResult, isNewTestCase } from '../model/test-case';
 
 export class ConfigLoaderService implements IConfigLoaderService {
@@ -243,7 +243,9 @@ export class ConfigLoaderService implements IConfigLoaderService {
         this.serviceName
       }/configs/validate?singleConfig=true`,
       json
-    );
+    ).pipe(
+        catchError(this.handleError)
+      );
   }
 
   public validateRelease(
@@ -291,6 +293,7 @@ export class ConfigLoaderService implements IConfigLoaderService {
     });
   }
 
+
   public submitConfigEdit(
     config: ConfigWrapper<ConfigData>
   ): Observable<EditorResult<GitFiles<any>>> {
@@ -305,6 +308,8 @@ export class ConfigLoaderService implements IConfigLoaderService {
         this.serviceName
       }/configstore/configs`,
       json
+    ).pipe(
+      catchError(this.handleError)
     );
   }
 
@@ -322,6 +327,8 @@ export class ConfigLoaderService implements IConfigLoaderService {
         this.serviceName
       }/configstore/configs`,
       json
+    ).pipe(
+      catchError(this.handleError)
     );
   }
   
@@ -377,7 +384,10 @@ export class ConfigLoaderService implements IConfigLoaderService {
         }/configstore/testcases`,
         json
       )
-      .pipe(map(result => this.testCaseFilesToMap(result)));
+      .pipe(map(result => this.testCaseFilesToMap(result)))
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   public submitNewTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap> {
@@ -389,8 +399,11 @@ export class ConfigLoaderService implements IConfigLoaderService {
           this.serviceName
         }/configstore/testcases`,
         json
-      )
-      .pipe(map(result => this.testCaseFilesToMap(result)));
+    )
+      .pipe(map(result => this.testCaseFilesToMap(result)))
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   private replacer(key, value) {
@@ -400,13 +413,18 @@ export class ConfigLoaderService implements IConfigLoaderService {
 
   public validateTestCase(testcase: TestCase): Observable<EditorResult<ExceptionInfo>> {
     const outObj = {
-        files: [{
-            content: testcase,
-        }],
+      files: [{
+        content: testcase,
+      }],
     }
     const json = JSON.parse(JSON.stringify(outObj, this.replacer, 2));
 
-    return this.http.post<EditorResult<ExceptionInfo>>(`${this.config.serviceRoot}api/v1/testcases/validate`, json);
+    return this.http.
+      post<EditorResult<ExceptionInfo>>(
+        `${this.config.serviceRoot}api/v1/testcases/validate`, json
+      ).pipe(
+        catchError(this.handleError)
+      );
   }
 
   public evaluateTestCase(config: any, testCaseWrapper: TestCaseWrapper): Observable<TestCaseResult> {
@@ -461,4 +479,23 @@ export class ConfigLoaderService implements IConfigLoaderService {
 
     return depSchema;
   }
+
+  private handleError(error: Error | HttpErrorResponse) {
+    let exceptionInfo: ExceptionInfo;
+    if (error instanceof HttpErrorResponse) {
+        if (error.error instanceof ErrorEvent) {
+          exceptionInfo = { message: error.error.message }
+        } else {
+          exceptionInfo = {
+            message: error.error.attributes.message,
+            status: getHttpErrorType(error.statusText)
+          };
+        }
+    } else {
+      exceptionInfo = { message: error.message };
+    }
+
+    return throwError(exceptionInfo);
+  }
+
 }

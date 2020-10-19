@@ -1,5 +1,19 @@
 import { TestCase, TestCaseWrapper, TestCaseEvaluationResult } from './test-case';
 import { JSONSchema7 } from 'json-schema';
+import { Observable } from 'rxjs';
+
+
+export enum Type {
+    CONFIG_TYPE = 'Config',
+    TESTCASE_TYPE = 'TestCase'
+}
+
+export interface SubmitDialogData {
+    name: string,
+    type: string,
+    validate: () => Observable<EditorResult<ExceptionInfo>>;
+    submit: () => Observable<void>;
+}
 
 export interface EditorResult<T> {
     status_code: string;
@@ -9,6 +23,7 @@ export interface EditorResult<T> {
 export interface ExceptionInfo {
     exception?: string;
     message?: string;
+    status?: string;
 }
 
 export interface GitFiles<T> extends ExceptionInfo {

@@ -4,18 +4,27 @@
   <h1>Submit Config</h1>
 </div>
 <div mat-dialog-content>
-  <div class="validation" *ngIf="validating; else: validationDone">
+  <div class="validation" *ngIf="validating">
     <p>Validating</p>
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
-  <ng-template #validationDone>
-    <div *ngIf="isValid; else: invalidMessage">
-      <p>Config has been validated by the backend</p>
-      <p>Do you wish to submit {{ configName }} to the store?</p>
+  <ng-container [ngSwitch]="true">
+    <div *ngSwitchCase="isValid && !submitting">
+      <p>{{ type }} has been validated by the backend</p>
+      <p>Do you wish to submit {{ name }} to the store?</p>
     </div>
-    <ng-template #invalidMessage>
-      <p>Config did not pass backend validation.</p>
-      <p>Status code: {{ statusCode }}</p>
+    <div *ngSwitchCase="isValid && submitting && !failedSubmit">
+      <p>Submitting</p>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+    <div *ngSwitchCase="!isValid || failedSubmit">
+      <div *ngIf="!failedSubmit; else failedsubmit">
+        <p>{{ type }} did not pass backend validation.</p>
+        <p>Status code: {{ statusCode }}</p>
+      </div>
+      <ng-template #failedsubmit>
+        <p>Submitting failed.</p>
+      </ng-template>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title> Message </mat-panel-title>
@@ -24,31 +33,17 @@
           <p class="error">{{ message }}</p>
         </ng-template>
       </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Exception </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <p class="error">
-            {{
-              exception ||
-                'No exception provided - it may be wrapped in the message'
-            }}
-          </p>
-        </ng-template>
-      </mat-expansion-panel>
-    </ng-template>
-  </ng-template>
+    </div>
+  </ng-container>
 
   <mat-divider></mat-divider>
 </div>
-<div mat-dialog-actions class="button-row">
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="!isValid"
-    (click)="onClickSubmit()"
-  >
+<div *ngIf="!submitting || failedSubmit" mat-dialog-actions class="button-row">
+  <button 
+    mat-raised-button 
+    color="primary" 
+    [disabled]="!isValid || failedSubmit" 
+    (click)="onClickSubmit()">
     SUBMIT
   </button>
   <button mat-raised-button color="accent" (click)="onClickClose()">

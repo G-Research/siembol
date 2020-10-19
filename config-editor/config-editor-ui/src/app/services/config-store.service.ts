@@ -202,29 +202,33 @@ export class ConfigStoreService {
     return this.configLoaderService.validateConfig(config);
   }
 
-  submitEditedConfig() {
+  submitEditedConfig(): Observable<boolean> {
     const config = this.store.getValue().editedConfig;
     if (!config) {
       throw Error('empty edited config')
     }
-    this.configLoaderService.submitConfig(config).subscribe(configs => {
-      if (configs) {
-        const currentEdited = configs.find(x => x.name === config.name);
-        if (!currentEdited) {
-          throw Error('Unexpected response from server during submitting config');
-        }
 
-        const newState = new ConfigStoreStateBuilder(this.store.getValue())
-          .configs(configs)
-          .updateTestCasesInConfigs()
-          .detectOutdatedConfigs()
-          .reorderConfigsByDeployment()
-          .computeFiltered(this.user)
-          .editedConfigByName(config.name)
-          .build();
-        this.store.next(newState);
-      }
-    });
+    return this.configLoaderService.submitConfig(config)
+      .map(configs => {
+        if (configs) {
+          const currentEdited = configs.find(x => x.name === config.name);
+          if (!currentEdited) {
+            throw Error('Unexpected response from server during submitting config');
+          }
+
+          const newState = new ConfigStoreStateBuilder(this.store.getValue())
+            .configs(configs)
+            .updateTestCasesInConfigs()
+            .detectOutdatedConfigs()
+            .reorderConfigsByDeployment()
+            .computeFiltered(this.user)
+            .editedConfigByName(config.name)
+            .build();
+          this.store.next(newState);
+
+          return true;
+        }
+      });
   }
 
   /**
@@ -256,7 +260,7 @@ export class ConfigStoreService {
   setEditedClonedConfigByName(configName: string) {
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
-            throw Error("no config with such name");
+      throw Error("no config with such name");
     }
     const cloned = {
       isNew: true,
@@ -304,7 +308,7 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  private updateEditedConfigAndTestCase(config: ConfigWrapper<ConfigData>, testCase: TestCaseWrapper)  {
+  private updateEditedConfigAndTestCase(config: ConfigWrapper<ConfigData>, testCase: TestCaseWrapper) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .editedConfig(config)
       .editedTestCase(testCase)

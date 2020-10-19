@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { TestCaseWrapper } from '@app/model/test-case';
+import { Type } from '@app/model/config-model';
 import { FormlyForm, FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { EditorService } from '../../../services/editor.service';
@@ -10,7 +11,8 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TestStoreService } from '../../../services/test-store.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SubmitTestcaseDialogComponent } from '../submit-testcase-dialog/submit-testcase-dialog.component';
+import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.component';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '../../../services/app.service';
 
 @Component({
@@ -39,7 +41,9 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
         private appService: AppService,
         private editorService: EditorService,
         private dialog: MatDialog,
-        private cd: ChangeDetectorRef
+        private cd: ChangeDetectorRef,
+        private router: Router,
+        private activeRoute: ActivatedRoute
     ) {
         this.editedTestCase$ = editorService.configStore.editedTestCase$;
         this.testStoreService = editorService.configStore.testService;
@@ -74,9 +78,29 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     onSubmitTestCase() {
         const currentTestCase = this.getTestCaseWrapper();
         this.testStoreService.updateEditedTestCase(currentTestCase);
-        this.dialog.open(SubmitTestcaseDialogComponent, {
-            data: currentTestCase.testCase.test_case_name
-        },
+        const dialogRef = this.dialog.open(SubmitDialogComponent, {
+            data: {
+                name: currentTestCase.testCase.test_case_name,
+                type: Type.TESTCASE_TYPE,
+                validate: () => this.editorService.configStore.testService.validateEditedTestCase(),
+                submit: () => this.editorService.configStore.testService.submitEditedTestCase()
+            },
+            disableClose: true 
+        }
+        );
+        dialogRef.afterClosed().subscribe(
+            success => {
+                if (success) {
+                    this.router.navigate(
+                        [],
+                        {
+                            relativeTo: this.activeRoute,
+                            queryParams: { testCaseName: currentTestCase.testCase.test_case_name },
+                            queryParamsHandling: 'merge',
+                        }
+                    );
+                }
+            }
         );
     }
 

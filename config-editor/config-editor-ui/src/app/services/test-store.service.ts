@@ -68,7 +68,7 @@ export class TestStoreService {
         this.updateEditedTestCase(null);
     }
 
-    submitEditedTestCase() {
+    submitEditedTestCase(): Observable<boolean> {
         const state = this.store.getValue();
         if (!state.editedConfig || !state.editedTestCase) {
             throw Error("empty edited config or test case");
@@ -76,7 +76,9 @@ export class TestStoreService {
 
         const testCaseWrapper = state.editedTestCase;
         const editedConfig = state.editedConfig;
-        this.configLoaderService.submitTestCase(testCaseWrapper).subscribe((testCaseMap: TestCaseMap) => {
+
+        return this.configLoaderService.submitTestCase(testCaseWrapper)
+            .map((testCaseMap: TestCaseMap) => {
             if (testCaseMap) {
                 const currentState = this.store.getValue();
                 if (editedConfig.name !== currentState.editedConfig.name) {
@@ -98,6 +100,8 @@ export class TestStoreService {
                     .editedConfigTestCases(editedConfigTestCases)
                     .build();
                 this.store.next(newState);
+
+                return true;
             }
         });
     }
@@ -155,13 +159,13 @@ export class TestStoreService {
 
     validateEditedTestCase(): Observable<EditorResult<ExceptionInfo>> {
         const state = this.store.getValue();
-        if (isNewTestCase(state.editedTestCase) && state.editedConfig.testCases
-            .find(x => x.testCase.test_case_name == state.editedTestCase.testCase.test_case_name)) {
+        const testCase = state.editedTestCase;
+        if (isNewTestCase(testCase) && state.editedConfig.testCases
+            .find(x => x.testCase.test_case_name == testCase.testCase.test_case_name)) {
             throw Error('Testcase names must be unique in a config');
         }
 
-        const currentWrapper = this.store.getValue().editedTestCase;
-        return this.configLoaderService.validateTestCase(currentWrapper.testCase);
+        return this.configLoaderService.validateTestCase(testCase.testCase);
     }
 
     testEditedConfig(testSpecification: any): Observable<EditorResult<ConfigTestResult>> {
