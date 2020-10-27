@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.ruleservice;
+package uk.co.gresearch.siembol.response.stream.ruleservice;
 
 import org.springframework.boot.actuate.health.Health;
 import reactor.core.publisher.Mono;

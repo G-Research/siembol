@@ -1,11 +1,11 @@
-package uk.co.gresearch.siembol.response.application.rest;
+package uk.co.gresearch.siembol.response.stream.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Component;
-import uk.co.gresearch.siembol.response.application.ruleservice.RulesService;
+import uk.co.gresearch.siembol.response.stream.ruleservice.RulesService;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 

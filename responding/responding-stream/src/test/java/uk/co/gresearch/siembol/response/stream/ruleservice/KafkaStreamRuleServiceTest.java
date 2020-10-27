@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.ruleservice;
+package uk.co.gresearch.siembol.response.stream.ruleservice;
 
 import com.github.charithe.kafka.EphemeralKafkaBroker;
 import com.github.charithe.kafka.KafkaJunitRule;
@@ -6,7 +6,7 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.junit.*;
 import org.mockito.Mockito;
 import org.springframework.boot.actuate.health.Status;
-import uk.co.gresearch.siembol.response.application.rest.RespondingConfigProperties;
+import uk.co.gresearch.siembol.response.stream.rest.application.ResponseConfigurationProperties;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.common.ResponseAlert;
@@ -55,7 +55,7 @@ public class KafkaStreamRuleServiceTest {
         rulesEngine = Mockito.mock(RulesEngine.class);
 
         when(rulesProvider.getEngine()).thenReturn(rulesEngine);
-        RespondingConfigProperties properties = new RespondingConfigProperties();
+        ResponseConfigurationProperties properties = new ResponseConfigurationProperties();
         properties.setInputTopic(inputTopic);
         properties.setErrorTopic(errorTopic);
         properties.setStreamConfig(new HashMap<>());

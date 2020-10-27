@@ -1,5 +1,6 @@
-package uk.co.gresearch.siembol.response.application.rest;
+package uk.co.gresearch.siembol.response.stream.rest;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,12 +13,14 @@ import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 
+import static uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationProperties.SWAGGER_AUTH_SCHEMA;
+@SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
 @RestController
-public class RespondingRulesController {
+public class ResponseRulesController {
     @Autowired
     private final RespondingCompiler respondingCompiler;
 
-    public RespondingRulesController(RespondingCompiler respondingCompiler) {
+    public ResponseRulesController(RespondingCompiler respondingCompiler) {
         this.respondingCompiler = respondingCompiler;
     }
 
@@ -33,13 +36,13 @@ public class RespondingRulesController {
 
     @PostMapping(value = "/api/v1/rules/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RespondingResult> validateRules(@RequestBody RespondingResultAttributes attributes) {
-        return RespondingRulesController.fromRespondingResult(
+        return ResponseRulesController.fromRespondingResult(
                 respondingCompiler.validateConfigurations(attributes.getJsonRules()));
     }
 
     @PostMapping(value = "/api/v1/rules/test", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RespondingResult> testRules(@RequestBody RespondingResultAttributes attributes) {
-        return RespondingRulesController.fromRespondingResult(
+        return ResponseRulesController.fromRespondingResult(
                 respondingCompiler.testConfigurations(attributes.getJsonRules(), attributes.getTestSpecification()));
     }
 

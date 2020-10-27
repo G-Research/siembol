@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.ruleservice;
+package uk.co.gresearch.siembol.response.stream.ruleservice;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;

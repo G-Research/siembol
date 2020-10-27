@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.rest;
+package uk.co.gresearch.siembol.response.stream.rest;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -8,16 +8,16 @@ import uk.co.gresearch.siembol.response.common.MetricCounter;
 import uk.co.gresearch.siembol.response.common.MetricFactory;
 
 @Service
-public class RespondingMetricFactory implements MetricFactory {
+public class ResponseMetricFactory implements MetricFactory {
     @Autowired
     private final MeterRegistry registry;
 
-    public RespondingMetricFactory(MeterRegistry registry) {
+    public ResponseMetricFactory(MeterRegistry registry) {
         this.registry = registry;
     }
 
     @Override
     public MetricCounter createCounter(String name, String description) {
-        return new RespondingCounter(Counter.builder(name).description(description).register(registry));
+        return new ResponseCounter(Counter.builder(name).description(description).register(registry));
     }
 }

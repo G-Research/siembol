@@ -5,7 +5,6 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import java.util.Optional;
 
 public class ConfigEditorHelper {
-    public static final String SWAGGER_AUTH_SCHEMA = "security_auth";
 
     public static Optional<String> getFileContent(ConfigEditorAttributes attributes) {
         return attributes == null || attributes.getFiles() == null || attributes.getFiles().isEmpty()

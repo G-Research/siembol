@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.ruleservice;
+package uk.co.gresearch.siembol.response.stream.ruleservice;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
-import uk.co.gresearch.siembol.response.application.rest.RespondingConfigProperties;
+import uk.co.gresearch.siembol.response.stream.rest.application.ResponseConfigurationProperties;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.common.ResponseAlert;
@@ -31,13 +31,13 @@ public class KafkaStreamRulesService implements RulesService {
     private final KafkaStreams streams;
     private final RulesProvider rulesProvider;
 
-    public KafkaStreamRulesService(RulesProvider rulesProvider, RespondingConfigProperties properties) {
+    public KafkaStreamRulesService(RulesProvider rulesProvider, ResponseConfigurationProperties properties) {
         this.rulesProvider = rulesProvider;
         streams = createStreams(properties);
         streams.start();
     }
 
-    private KafkaStreams createStreams(RespondingConfigProperties properties) {
+    private KafkaStreams createStreams(ResponseConfigurationProperties properties) {
         LOG.info(INIT_START);
         KStreamBuilder builder = new KStreamBuilder();
         builder.<String, String>stream(properties.getInputTopic())

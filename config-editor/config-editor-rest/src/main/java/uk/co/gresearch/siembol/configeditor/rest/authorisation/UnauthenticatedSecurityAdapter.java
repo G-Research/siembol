@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import uk.co.gresearch.siembol.common.authorisation.SiembolUnauthenticatedSecurityAdapter;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorAuthorisationProperties;
@@ -17,7 +18,7 @@ import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(ConfigEditorAuthorisationProperties.class)
-public class UnauthenticatedSecurityAdapter extends WebSecurityConfigurerAdapter {
+public class UnauthenticatedSecurityAdapter extends SiembolUnauthenticatedSecurityAdapter {
     @Autowired
     private ConfigEditorAuthorisationProperties properties;
 
@@ -36,6 +37,6 @@ public class UnauthenticatedSecurityAdapter extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) throws Exception {
         userInfoProvider();
         authorisationProvider();
-        http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
+        super.configure(http);
     }
 }

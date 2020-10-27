@@ -12,7 +12,7 @@ import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import java.util.Optional;
 
-import static uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper.SWAGGER_AUTH_SCHEMA;
+import static uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationProperties.SWAGGER_AUTH_SCHEMA;
 
 @RestController
 @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)

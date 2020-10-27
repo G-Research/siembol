@@ -1,11 +1,12 @@
-package uk.co.gresearch.siembol.configeditor.rest.common;
+package uk.co.gresearch.siembol.common.authorisation;
 
-public enum ConfigEditorAuthorisationType {
+
+public enum SiembolAuthorisationType {
     DISABLED("disabled"),
     OAUTH2("oauth2");
     private final String name;
 
-    ConfigEditorAuthorisationType(String name) {
+    SiembolAuthorisationType(String name) {
         this.name = name;
     }
 

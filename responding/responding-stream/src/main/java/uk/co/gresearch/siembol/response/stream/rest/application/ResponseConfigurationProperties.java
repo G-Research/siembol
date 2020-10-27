@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.rest;
+package uk.co.gresearch.siembol.response.stream.rest.application;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Configuration
 @ConfigurationProperties(prefix = "siembol-response")
-public class RespondingConfigProperties {
+public class ResponseConfigurationProperties {
     private String inputTopic;
     private String errorTopic;
     private Map<String, Object> streamConfig;

@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.application.ruleservice;
+package uk.co.gresearch.siembol.response.stream.ruleservice;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
