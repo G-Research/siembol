@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.appName }}
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName}}
+        appregistry.gresearch.co.uk/app-id: "{{ .Values.appId }}"
+      name: {{ .Values.appName }}
+    spec:
+      containers:
+      - image: {{ .Values.image }}:{{ .Values.tag }}
+        workingDir: {{ .Values.mountPath }}
+        imagePullPolicy: Always
+        name: {{ .Values.appName }}
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"
+        securityContext:
+          runAsUser: 101
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8089
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8089
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        env:
+        - name: JAVA_OPTS
+          value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
+        - name: GIT_PSWD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.appName }}-secrets
+              key: git
+        volumeMounts:
+        - name: cacerts
+          mountPath: /etc/ssl/certs/java/cacerts
+          subPath: cacerts
+          readOnly: true        
+        - name: {{ .Values.appName }}
+          mountPath: /etc/gitconfig
+          subPath: gitconfig 
+          readOnly: true
+        - name: {{ .Values.appName }}
+          mountPath: {{ .Values.mountPath }}/application.properties
+          subPath: application.properties
+          readOnly: true
+        - name: rules-dir
+          mountPath: /rules
+      volumes:  
+      - name: cacerts
+        secret:
+          secretName: certs
+      - name: {{ .Values.appName }}
+        configMap:
+          name: {{ .Values.appName }}
+      - name: rules-dir
+        emptyDir: {}
+      terminationGracePeriodSeconds: 300
+

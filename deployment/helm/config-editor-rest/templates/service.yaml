@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    metrics: "true"
+spec:
+  selector:
+    app: {{ .Values.appName }}
+  ports:
+  - protocol: TCP
+    port: 8089
+    name: web

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.serviceName }}
+  name: {{ .Values.serviceName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.serviceName }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.serviceName }}
+        appregistry.gresearch.co.uk/app-id: "8318"
+      name: {{ .Values.serviceName }}
+    spec:
+      containers:
+      - image: "{{ .Values.image }}:{{ .Values.tag }}"
+        imagePullPolicy: Always
+        name: {{ .Values.serviceName }}
+        securityContext:
+          runAsUser: 101
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /index.html
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /index.html
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 300
+          periodSeconds: 30
+        resources:
+         limits:
+          cpu: 1
+          memory: 100Mi
+         requests:
+          cpu: 0.1
+          memory: 100Mi
+        volumeMounts:
+        - name: ui-config
+          mountPath: "/usr/share/nginx/html/config/ui-config.json"
+          subPath: "ui-config.json"
+          readOnly: true
+      volumes:
+      - name: ui-config
+        projected:
+          sources:
+          - configMap:
+              name: "ui-config-{{ .Values.environment }}"

@@ -1,0 +1,5 @@
+[user]
+    name = REDACTED-GIT-USER
+    email = REDACTED-GIT-USER-EMAIL
+[push]
+    default = current

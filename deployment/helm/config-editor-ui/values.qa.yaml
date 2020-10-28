@@ -1,0 +1,6 @@
+namespace: "siembol"
+environment: "qa"
+hostname: REDACTED-FQDN-UI
+serviceName: config-editor-ui
+image: "REDACTED/gresearchdev/siembol-config-editor-ui"
+tag: "latest"

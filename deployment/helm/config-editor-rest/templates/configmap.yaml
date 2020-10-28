@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }} 
+  namespace: {{ .Values.namespace }}
+data:
+  application.properties: |-
+{{ .Files.Get .Values.applicationProperties | indent 4 }}
+  gitconfig: |-
+{{ .Files.Get .Values.gitConfig | indent 4 }}

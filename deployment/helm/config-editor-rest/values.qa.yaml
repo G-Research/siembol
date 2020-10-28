@@ -1,0 +1,11 @@
+appName: "config-editor-rest"
+namespace: "siembol"
+appId: "8138"
+fqdn: "REDACTED-FQDN-BACKEND"
+applicationProperties: "resources/application.properties.qa"
+gitConfig: "resources/git.config.qa"
+mountPath: "/opt/config-editor-rest"
+image: "REDACTED/gresearchdev/siembol-config-editor-rest"
+tag: "1.64-SNAPSHOT"
+
+

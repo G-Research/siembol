@@ -1,0 +1,18 @@
+{
+    "environment": "QA",
+    "serviceRoot": "https://REDACTED-FQDN-BACKEND/",
+    "uiBootstrapPath": "../config/ui-bootstrap.json",
+    "authType": "oauth2",
+    "authAttributes": {
+        "callbackPath": "/oauth2-redirect",
+        "oidcSettings": {
+            "authority": "https://REDACTED",
+            "client_id": "siembol-qa.ui",
+            "redirect_uri": "https://REDACTED-FQDN-UI/oauth2-redirect",
+            "response_type": "code",
+            "scope": "siembol-qa openid",
+            "automaticSilentRenew": true,
+            "loadUserInfo": true
+        }
+    }
+}
