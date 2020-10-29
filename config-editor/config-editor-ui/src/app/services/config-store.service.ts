@@ -1,8 +1,8 @@
 import { cloneDeep } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { StatusCode } from '../commons/status-code';
+import 'rxjs/add/operator/finally';
 import { AppConfigService } from '../config/app-config.service';
-import { ConfigData, ConfigWrapper, Deployment, EditorResult, ExceptionInfo, PullRequestInfo } from '../model';
+import { ConfigData, ConfigWrapper, Deployment, PullRequestInfo } from '../model';
 import { ConfigStoreState } from '../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../model/test-case';
 import { UiMetadataMap } from '../model/ui-metadata-map';
@@ -183,17 +183,18 @@ export class ConfigStoreService {
 
   submitRelease(deployment: Deployment<ConfigWrapper<ConfigData>>) {
     this.updateReleaseSubmitInFlight(true);
-    this.configLoaderService.submitRelease(deployment).subscribe((result: EditorResult<ExceptionInfo>) => {
-      if (result && result.status_code && result.status_code == StatusCode.OK) {
+    this.configLoaderService.submitRelease(deployment)
+      .finally(() => {
+        this.updateReleaseSubmitInFlight(false);
+      })
+      .subscribe((result: any) => {
+      if (result) {
         this.loadPullRequestStatus();
-      } else {
-        //TODO: show failure dialog
       }
-      this.updateReleaseSubmitInFlight(false);
     })
   }
 
-  validateEditedConfig(): Observable<EditorResult<ExceptionInfo>> {
+  validateEditedConfig(): Observable<any> {
     const config = this.store.getValue().editedConfig;
     if (!config) {
       throw Error('empty edited config')

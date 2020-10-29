@@ -17,23 +17,6 @@
       <p>Submitting</p>
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     </div>
-    <div *ngSwitchCase="!isValid || failedSubmit">
-      <div *ngIf="!failedSubmit; else failedsubmit">
-        <p>{{ type }} did not pass backend validation.</p>
-        <p>Status code: {{ statusCode }}</p>
-      </div>
-      <ng-template #failedsubmit>
-        <p>Submitting failed.</p>
-      </ng-template>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Message </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <p class="error">{{ message }}</p>
-        </ng-template>
-      </mat-expansion-panel>
-    </div>
   </ng-container>
 
   <mat-divider></mat-divider>

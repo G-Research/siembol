@@ -1,6 +1,6 @@
 export {
-    GitFiles, SchemaInfo, EditorResult, Content,
+    GitFiles, SchemaInfo,  Content,
     PullRequestInfo, ConfigWrapper, ConfigData, Deployment,
-    ExceptionInfo, RepositoryLinks, RepositoryLinksWrapper, FileHistory
+    RepositoryLinks, RepositoryLinksWrapper, FileHistory
 } from './config-model';
 export { BuildInfo, AuthenticationType, AppConfig } from './app-config';

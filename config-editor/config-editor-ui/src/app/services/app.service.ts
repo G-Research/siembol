@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../config';
 import {
-    ServiceInfo, RepositoryLinks, EditorResult,
+    ServiceInfo, RepositoryLinks, 
     RepositoryLinksWrapper, UserInfo, SchemaInfo
 } from '@app/model/config-model';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
@@ -59,18 +59,16 @@ export class AppService {
 
     private loadUserInfo(): Observable<AppContext> {
         return this.http.get(`${this.config.serviceRoot}user`)
-            .map((r: EditorResult<UserInfo>) => {
+            .map((r: UserInfo) => {
                 if (r === undefined
-                    || r.status_code === undefined
-                    || r.status_code !== StatusCode.OK
-                    || r.attributes.user_name === undefined
-                    || r.attributes.services === undefined) {
+                    || r.user_name === undefined
+                    || r.services === undefined) {
                     throwError('empty user endpoint response');
                 }
 
                 const ret = new AppContext();
-                ret.user = r.attributes.user_name;
-                ret.userServices = r.attributes.services;
+                ret.user = r.user_name;
+                ret.userServices = r.services;
                 ret.userServicesMap = new Map(ret.userServices.map(x => [x.name, x]));
 
                 ret.userServices.forEach(service => {
@@ -84,22 +82,20 @@ export class AppService {
 
     public loadTestCaseSchema(): Observable<JSONSchema7> {
         return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`)
-            .map((r: EditorResult<SchemaInfo>) => {
+            .map((r: SchemaInfo) => {
                 if (r === undefined
-                    || r.status_code === undefined
-                    || r.status_code !== StatusCode.OK
-                    || r.attributes.rules_schema === undefined) {
+                    || r.rules_schema === undefined) {
                     throwError('empty test case schema endpoint response');
                 }
-                return r.attributes.rules_schema;
+                return r.rules_schema;
             });
     }
 
     public getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
-        return this.http.get<EditorResult<RepositoryLinksWrapper>>(
+        return this.http.get<RepositoryLinksWrapper>(
             `${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`).pipe(
                 map(result => ({
-                    ...result.attributes.rules_repositories,
+                    ...result.rules_repositories,
                     service_name: serviceName,
                 }))
             )

@@ -1,7 +1,6 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { ConfigStoreState } from "../model/store-state";
 import { ConfigLoaderService } from "./config-loader.service";
-import { ExceptionInfo, EditorResult } from "../model";
 import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from "../model/test-case";
 import { ConfigStoreStateBuilder } from "./config-store-state.builder";
 import { ConfigTestResult } from "../model/config-model";
@@ -157,7 +156,7 @@ export class TestStoreService {
         this.store.next(newState);
     }
 
-    validateEditedTestCase(): Observable<EditorResult<ExceptionInfo>> {
+    validateEditedTestCase(): Observable<any> {
         const state = this.store.getValue();
         const testCase = state.editedTestCase;
         if (isNewTestCase(testCase) && state.editedConfig.testCases
@@ -168,7 +167,7 @@ export class TestStoreService {
         return this.configLoaderService.validateTestCase(testCase.testCase);
     }
 
-    testEditedConfig(testSpecification: any): Observable<EditorResult<ConfigTestResult>> {
+    testEditedConfig(testSpecification: any): Observable<ConfigTestResult> {
         const config = this.store.getValue().editedConfig;
         if (!config) {
             throw Error("empty edited config")

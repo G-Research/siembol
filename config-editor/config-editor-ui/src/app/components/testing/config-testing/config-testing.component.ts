@@ -3,8 +3,6 @@ import { FormGroup } from '@angular/forms';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyForm } from '@ngx-formly/core';
-import { StatusCode } from '../../../commons/status-code';
-import { EditorResult } from '../../../model';
 import { ConfigTestResult } from '../../../model/config-model';
 import { take } from 'rxjs/operators';
 import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
@@ -51,9 +49,9 @@ export class ConfigTestingComponent implements OnInit {
       .cleanRawObjects(this.testSpecification, this.formly.options.formState.rawObjects);
 
     this.editorService.configStore.testService.testEditedConfig(cleanedTestSpecification).pipe(take(1))
-      .subscribe((r: EditorResult<ConfigTestResult>) => {
-        this.output = r.attributes;
-        this.isInvalid = r.status_code === StatusCode.OK ? false : true;
+      .subscribe((r: ConfigTestResult) => {
+        this.output = r;
+        this.isInvalid = r !== undefined ? false : true;
         this.cd.markForCheck();
       }
       );

@@ -11,22 +11,11 @@ export enum Type {
 export interface SubmitDialogData {
     name: string,
     type: string,
-    validate: () => Observable<EditorResult<ExceptionInfo>>;
-    submit: () => Observable<void>;
+    validate: () => Observable<any>;
+    submit: () => Observable<boolean>;
 }
 
-export interface EditorResult<T> {
-    status_code: string;
-    attributes: T;
-}
-
-export interface ExceptionInfo {
-    exception?: string;
-    message?: string;
-    status?: string;
-}
-
-export interface GitFiles<T> extends ExceptionInfo {
+export interface GitFiles<T> {
     files: T[];
 }
 
@@ -48,13 +37,13 @@ export interface ServiceInfo {
     type: string;
 }
 
-export interface UserInfo extends ExceptionInfo {
+export interface UserInfo {
     user_name: string;
     services: ServiceInfo[];
 
 }
 
-export interface RepositoryLinksWrapper extends ExceptionInfo {
+export interface RepositoryLinksWrapper {
     rules_repositories: RepositoryLinks;
 }
 
@@ -64,15 +53,15 @@ export interface RepositoryLinks {
     service_name: string;
 }
 
-export interface SchemaInfo extends ExceptionInfo {
+export interface SchemaInfo {
     rules_schema: JSONSchema7;
 }
 
-export interface TestSchemaInfo extends ExceptionInfo {
+export interface TestSchemaInfo {
     test_schema: JSONSchema7;
 }
 
-export interface PullRequestInfo extends ExceptionInfo {
+export interface PullRequestInfo {
     pull_request_pending: boolean;
     pull_request_url: string;
 }

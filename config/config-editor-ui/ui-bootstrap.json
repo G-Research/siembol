@@ -4,7 +4,7 @@
             "version": "rules_version",
             "config_array": "rules"
         },
-        "perConfigSchemaPath": "attributes.rules_schema.properties.rules.items",
+        "perConfigSchemaPath": "rules_schema.properties.rules.items",
         "unionType": {
             "unionPath": "/evaluators",
             "unionSelectorName": "evaluator_type"
@@ -28,7 +28,7 @@
                 "tags"
             ]
         },
-        "perConfigSchemaPath": "attributes.rules_schema.properties.rules.items",
+        "perConfigSchemaPath": "rules_schema.properties.rules.items",
         "name": "rule_name",
         "version": "rule_version",
         "author": "rule_author",
@@ -48,7 +48,7 @@
                 "tags"
             ]
         },
-        "perConfigSchemaPath": "attributes.rules_schema.properties.rules.items",
+        "perConfigSchemaPath": "rules_schema.properties.rules.items",
         "name": "rule_name",
         "version": "rule_version",
         "author": "rule_author",
@@ -65,7 +65,7 @@
             "version": "parsers_version",
             "config_array": "parsers_configurations"
         },
-        "perConfigSchemaPath": "attributes.rules_schema.properties.parsers_configurations.items",
+        "perConfigSchemaPath": "rules_schema.properties.parsers_configurations.items",
         "name": "parser_name",
         "version": "parser_version",
         "author": "parser_author",
@@ -82,7 +82,7 @@
             "version": "parsing_applications_version",
             "config_array": "parsing_applications"
         },
-        "perConfigSchemaPath": "attributes.rules_schema.properties.parsing_applications.items",
+        "perConfigSchemaPath": "rules_schema.properties.parsing_applications.items",
         "name": "parsing_app_name",
         "version": "parsing_app_version",
         "author": "parsing_app_author",
@@ -99,7 +99,7 @@
             "version": "rules_version",
             "config_array": "rules"
         },
-        "perConfigSchemaPath": "attributes.rules_schema.properties.rules.items",
+        "perConfigSchemaPath": "rules_schema.properties.rules.items",
         "name": "rule_name",
         "version": "rule_version",
         "author": "rule_author",

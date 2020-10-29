@@ -1,10 +1,7 @@
 <h1 mat-dialog-title>Error Details</h1>
 <div mat-dialog-content>
-    <p  class="details">An error occurred when making a request. Please contact the system administrator for help.</p>
-    <mat-divider></mat-divider>
-    <p class="error">{{data.name}}, {{data.message}}</p>
-    <p class="error">{{data.error.attributes.message}}</p>
+    <p  class="details">{{data}}.</p>
 </div>
 <div mat-dialog-actions>
-    <button mat-button class="button-layout" (click)="onClickClose()" tabindex="-1">CLOSE</button>
+    <button mat-button class="button-layout" (click)="onClickClose()">CLOSE</button>
 </div>

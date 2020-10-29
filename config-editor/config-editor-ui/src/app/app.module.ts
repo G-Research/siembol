@@ -2,7 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, ErrorHandler } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -59,6 +59,8 @@ import { AppInitGuard } from './guards/app-init.guard';
 import { AppService } from './services/app.service';
 import { AppInitComponent } from './components/app-init/app-init.component';
 import { AuthGuard } from './guards/auth-guard';
+import { HttpErrorInterceptor } from './http-error-interceptor';
+import { GlobalErrorHandler } from './error-handler';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -71,7 +73,9 @@ export function buildInfoServiceFactory(config: AppConfigService) {
 const PROD_PROVIDERS = [
   { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService], multi: true },
   { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
-  { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true }
+  { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true },
+  { provide: ErrorHandler, useClass: GlobalErrorHandler},
+  { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
 ];
 
 const DEV_PROVIDERS = [...PROD_PROVIDERS];

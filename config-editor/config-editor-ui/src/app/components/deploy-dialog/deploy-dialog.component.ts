@@ -11,7 +11,8 @@ import { ConfigData, ConfigWrapper, Deployment } from '@app/model';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
-import { take } from 'rxjs/operators';
+import { take, catchError } from 'rxjs/operators';
+import { throwError, of } from 'rxjs';
 
 @Component({
     selector: 're-deploy-dialog',
@@ -50,16 +51,14 @@ export class DeployDialogComponent {
             this.fields = [this.formlyJsonSchema.toFieldConfig(service.configLoader.createDeploymentSchema())];
         } else {
             this.service.configLoader.validateRelease(data).pipe(take(1))
-                .subscribe(s => {
-                    if (s !== undefined) {
-                        this.statusCode = s.status_code;
-                        if (s.status_code !== StatusCode.OK) {
-                            this.message = s.attributes.message;
-                            this.exception = s.attributes.exception;
-                        }
-                        this.validating = false;
-                        this.isValid = s.status_code === StatusCode.OK ? true : false;
-                    }
+                .pipe(
+                    catchError(e => {
+                        this.isValid = false;
+                        return throwError(e);
+                }))
+                .subscribe(() => {
+                    this.isValid = true;
+                    this.validating = false;
                 });
         }
 
@@ -72,16 +71,15 @@ export class DeployDialogComponent {
     onValidate() {
         this.deployment = {...this.deployment, ...this.extrasData};
         this.service.configLoader
-            .validateRelease(this.deployment).pipe(take(1)).subscribe(s => {
-                if (s !== undefined) {
-                    this.statusCode = s.status_code;
-                    if (s.status_code !== StatusCode.OK) {
-                        this.message = s.attributes.message;
-                        this.exception = s.attributes.exception;
-                    }
-                    this.validating = false;
-                    this.isValid = s.status_code === StatusCode.OK ? true : false;
-                }
+            .validateRelease(this.deployment).pipe(take(1))
+            .pipe(
+                catchError(e => {
+                    this.isValid = false;
+                    return throwError(e);
+            }))
+            .subscribe(() => {
+                this.isValid = true;
+                this.validating = false;
         });
     }
 

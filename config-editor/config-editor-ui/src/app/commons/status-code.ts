@@ -1,20 +1,8 @@
 export enum StatusCode {
-    OK = 'OK',
-    CREATED = 'CREATED',
-    BAD_REQUEST = 'BAD_REQUEST',
-    ERROR = 'INTERNAL_SERVER_ERROR',
-}
-
-export function getHttpErrorType(status: string): StatusCode {
-    switch (status) {
-        case StatusCode.OK || StatusCode.CREATED: {
-            return StatusCode.OK;
-        }
-        case StatusCode.BAD_REQUEST: {
-            return StatusCode.BAD_REQUEST;
-        }
-        default: {
-            return StatusCode.ERROR;
-        }
-    }
+    UNKNOWN_ERROR = 0,
+    OK = 200,
+    BAD_REQUEST = 400,
+    UNAUTHORISED = 401,
+    NOT_FOUND = 404,
+    ERROR = 500,
 }

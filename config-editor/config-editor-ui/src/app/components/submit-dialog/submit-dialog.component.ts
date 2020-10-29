@@ -1,10 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { StatusCode } from '@app/commons/status-code';
-import { EditorResult, ExceptionInfo } from '@app/model';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 import { SubmitDialogData } from '@app/model/config-model';
 
 
@@ -14,18 +12,17 @@ import { SubmitDialogData } from '@app/model/config-model';
     templateUrl: 'submit-dialog.component.html',
 })
 export class SubmitDialogComponent implements OnInit {
-    private readonly HTTP_TIMEOUT = 10000;
-    configValidity$: Observable<EditorResult<ExceptionInfo>>;
+    private readonly HTTP_TIMEOUT = 20000;
+    configValidity$: Observable<any>;
     name: string;
     type: string;
-    message: string;
     statusCode: string;
     validating = true;
     isValid = false;
     submitting = false;
     failedSubmit = false;
-    validate: () => Observable<EditorResult<ExceptionInfo>>;
-    submit: () => Observable<void>;
+    validate: () => Observable<any>;
+    submit: () => Observable<any>;
 
     constructor(public dialogref: MatDialogRef<SubmitDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: SubmitDialogData) {
@@ -33,43 +30,40 @@ export class SubmitDialogComponent implements OnInit {
         this.type = data.type;
         this.validate = data.validate;
         this.submit = data.submit;
-        this.configValidity$ = this.validate();
     }
 
     ngOnInit() {
-        this.configValidity$
+        this.validate()
             .pipe(
-                timeout(this.HTTP_TIMEOUT),
-                catchError(this.handleError)
-            )
-            .subscribe(v => {
-            if (v !== undefined) {
-                this.statusCode = v.status_code;
-                if (v.status_code !== StatusCode.OK) {
-                    this.message = v.attributes.message;
-                } else {
-                    this.validating = false;
-                    this.isValid = true;
+                timeout(this.HTTP_TIMEOUT))
+            .subscribe(
+                v => {
+                    if (v) {
+                        this.isValid = true;
+                        this.validating = false;
+                    }
+                },
+                e => {
+                    this.dialogref.close();
+                    throw e;
                 }
-            }
-        });
+            );
     }
 
     onClickSubmit() {
         this.submitting = true;
         this.submit()
             .pipe(
-                timeout(this.HTTP_TIMEOUT),
-                catchError((e: ExceptionInfo) => {
-                    this.failedSubmit = true;
-
-                    return this.handleError(e);
-                }))
+                timeout(this.HTTP_TIMEOUT))
             .subscribe(
                 success => {
                     if (success) {
                         this.dialogref.close(true);
                     }
+                },
+                e => {
+                    this.dialogref.close();
+                    throw e;
                 }
             );
     }
@@ -78,16 +72,4 @@ export class SubmitDialogComponent implements OnInit {
         this.dialogref.close();
     }
 
-    handleError(e: ExceptionInfo) {
-        this.message = e.message;
-        const status = e.status;
-        if (status === StatusCode.BAD_REQUEST) {
-
-            return of(undefined)
-        } else if (status === StatusCode.ERROR) {
-            this.message = 'Server error, please contact administrator.\n' + this.message;
-        }
-
-        return throwError(e);
-    }
 }
