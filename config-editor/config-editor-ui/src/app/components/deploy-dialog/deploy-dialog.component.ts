@@ -13,6 +13,7 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
 import { take, catchError } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
+import { AppService } from '@app/services/app.service';
 
 @Component({
     selector: 're-deploy-dialog',
@@ -43,10 +44,11 @@ export class DeployDialogComponent {
         public dialog: MatDialog,
         private service: EditorService,
         private formlyJsonSchema: FormlyJsonschema,
+        private appService: AppService,
         @Inject(MAT_DIALOG_DATA) public data: Deployment<ConfigWrapper<ConfigData>>) {
         this.serviceName = service.serviceName;
         this.validating = false;
-        this.uiMetadata = this.config.uiMetadata[this.serviceName];
+        this.uiMetadata = this.appService.getUiMetadataMap(this.serviceName);
         if (this.uiMetadata.deployment.extras !== undefined) {
             this.fields = [this.formlyJsonSchema.toFieldConfig(service.configLoader.createDeploymentSchema())];
         } else {

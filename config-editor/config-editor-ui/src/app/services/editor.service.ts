@@ -12,6 +12,7 @@ import { ConfigStoreService } from './config-store.service';
 import * as omitEmpty from 'omit-empty';
 import { UiMetadataMap } from '../model/ui-metadata-map';
 import { AppService } from './app.service';
+import { mergeMap, map } from 'rxjs/operators';
 
 export class ServiceContext {
   metaDataMap: UiMetadataMap;
@@ -86,13 +87,15 @@ export class EditorService {
     const testCaseMapFun = metaDataMap.testing.testCaseEnabled
       ? configLoader.getTestCases() : Observable.of({});
 
-    return Observable.forkJoin([
-      configLoader.getConfigs(),
-      configLoader.getRelease(),
-      configLoader.getSchema(),
-      testCaseMapFun,
-      testSpecificationFun])
-      .map(([configs, deployment, configSchema, testCaseMap, testSpecSchema]) => {
+    return configLoader.getSchema().pipe(
+      mergeMap(schema =>
+        Observable.forkJoin(
+          configLoader.getConfigs(),
+          configLoader.getRelease(),
+          Observable.of(schema),
+          testCaseMapFun,
+          testSpecificationFun))).
+      map(([configs, deployment, configSchema, testCaseMap, testSpecSchema]) => {
         if (configs && deployment && configSchema && testCaseMap && testSpecSchema) {
           configStore.initialise(configs, deployment, testCaseMap);
           return {
@@ -107,7 +110,7 @@ export class EditorService {
         } else {
           throwError('Can not load service');
         }
-      });;
+      });
   }
 
   public cleanConfigData(configData: ConfigData): ConfigData {
