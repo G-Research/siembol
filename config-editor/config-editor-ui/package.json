@@ -1,6 +1,6 @@
 {
   "name": "rule-editor.ui",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "siembolCompileTimeVersion": "1.65-SNAPSHOT",
   "license": "MIT",
   "scripts": {

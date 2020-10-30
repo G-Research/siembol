@@ -116,13 +116,22 @@ export class TestStoreService {
             .build();
         this.store.next(runningTest);
 
-        this.configLoaderService.evaluateTestCase(state.editedConfig.configData, state.editedTestCase)
-            .subscribe((testCaseResult: TestCaseResult) => {
-                const newState = new ConfigStoreStateBuilder(this.store.getValue())
-                    .editedTestCaseResult(testCaseResult)
-                    .build();
-                this.store.next(newState);
-            })
+        return this.configLoaderService.evaluateTestCase(state.editedConfig.configData, state.editedTestCase)
+            .subscribe(
+                (testCaseResult: TestCaseResult) => {
+                    const newState = new ConfigStoreStateBuilder(this.store.getValue())
+                        .editedTestCaseResult(testCaseResult)
+                        .build();
+                    this.store.next(newState);
+                    },
+                    err => {
+                        const newState = new ConfigStoreStateBuilder(this.store.getValue())
+                        .editedTestCaseResult({ isRunning: false })
+                        .build();
+                        this.store.next(newState);
+                        throw err;
+                    }
+                )
     }
 
     runEditedConfigTestSuite() {
@@ -139,6 +148,10 @@ export class TestStoreService {
                 .subscribe((testCaseResult: TestCaseResult) => {
                     testCases[i].testCaseResult = testCaseResult;
                     this.updateEditedConfigTestCases(testCases);
+                }, err => { 
+                    testCases[i].testCaseResult = { isRunning: false };
+                    this.updateEditedConfigTestCases(testCases);
+                    throw err;
                 })
         }
     }

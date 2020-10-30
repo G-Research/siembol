@@ -34,8 +34,5 @@ export class GlobalErrorHandler implements ErrorHandler {
                     data: message
                 });
         });
-        if (status && status !== StatusCode.BAD_REQUEST) {
-            throw Error(message);
-        }
     }
 }

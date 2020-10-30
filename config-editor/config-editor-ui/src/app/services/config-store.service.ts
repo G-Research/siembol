@@ -276,7 +276,7 @@ export class ConfigStoreService {
       description: `cloned from ${configToClone.name}`,
       testCases: [],
     };
-    this.updateEditedConfig(cloned);
+    this.updateEditedConfigAndTestCase(cloned, null);
   }
 
   setEditedConfigNew() {
@@ -292,7 +292,7 @@ export class ConfigStoreService {
       testCases: [],
     };
 
-    this.updateEditedConfig(newConfig);
+    this.updateEditedConfigAndTestCase(newConfig, null);
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

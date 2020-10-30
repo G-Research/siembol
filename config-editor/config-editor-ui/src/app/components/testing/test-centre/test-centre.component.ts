@@ -51,7 +51,13 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     }
 
     onAddTestCase() {
-        this.testStoreService.setEditedTestCaseNew();
+        this.router.navigate(
+        [],
+        {
+            relativeTo: this.activeRoute,
+            queryParams: { newTestCase: true },
+            queryParamsHandling: 'merge',
+        });
     }
 
     onEditTestCase(index: number) {
@@ -67,7 +73,13 @@ export class TestCentreComponent implements OnInit, OnDestroy {
 
     onCloneTestCase(index: number) {
         const name = this.testCases[index].testCase.test_case_name;
-        this.testStoreService.setEditedClonedTestCaseByName(name);
+        this.router.navigate(
+        [],
+        {
+            relativeTo: this.activeRoute,
+            queryParams: { newTestCase: true, cloneTestCase: name },
+            queryParamsHandling: 'merge',
+        });
     }
 
     onRunTestSuite() {
@@ -79,7 +91,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
         [],
         {
             relativeTo: this.activeRoute,
-            queryParams: { testCaseName: null },
+            queryParams: { testCaseName: null, newTestCase: null, cloneTestCase: null},
             queryParamsHandling: 'merge',
         });
     }
@@ -93,7 +105,8 @@ export class TestCentreComponent implements OnInit, OnDestroy {
             return 'test-running'
         }
 
-        return testCaseResult.evaluationResult.number_failed_assertions > 0
+        return !testCaseResult.evaluationResult
+            ? 'test-skipped' : testCaseResult.evaluationResult.number_failed_assertions > 0
             ? 'test-fail' : testCaseResult.evaluationResult.number_skipped_assertions > 0
                 ? 'test-skipped' : 'test-success';
 
