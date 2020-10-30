@@ -72,18 +72,35 @@ jobs:
           echo "::set-output name=version::$($xml.project.parent.version)"
           echo "::set-output name=class::$($xml.project.build.plugins.plugin.executions.execution.configuration.transformers.transformer.mainClass)"
         shell: pwsh
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: gresearchdev/siembol-${{ matrix.component }}
-          path: deployment/docker
-          dockerfile: deployment/docker/Dockerfile.storm
-          build_args: JAR=${{ matrix.component }}-${{ steps.info.outputs.version }}.jar,CLASS=${{ steps.info.outputs.class }}
-          always_pull: true
-          add_git_labels: true
-          tags: latest,${{ steps.info.outputs.version }}
+      - name: Generate Docker labels
+        id: labels
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: gresearchdev/siembol-${{ matrix.component }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: deployment/docker
+          file: deployment/docker/Dockerfile.storm
+          build-args: |
+            JAR=${{ matrix.component }}-${{ steps.info.outputs.version }}.jar
+            CLASS=${{ steps.info.outputs.class }}
+          pull: true
+          push: true
+          tags: |
+            gresearchdev/siembol-${{ matrix.component }}:latest
+            gresearchdev/siembol-${{ matrix.component }}:${{ steps.info.outputs.version }}
+          labels: |
+            ${{ steps.labels.outputs.labels }}
+            org.opencontainers.image.version=${{ steps.info.outputs.version }}
+            org.opencontainers.image.title=siembol-${{ matrix.component }}
 
   build-docker-java:
     runs-on: ubuntu-latest
@@ -114,18 +131,35 @@ jobs:
           [xml]$xml = Get-Content ./*/${{ matrix.component}}/pom.xml
           echo "::set-output name=version::$($xml.project.parent.version)"
         shell: pwsh
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: gresearchdev/siembol-${{ matrix.component}}
-          path: deployment/docker
-          dockerfile: deployment/docker/Dockerfile.java
-          build_args: APP=${{ matrix.component}},VERSION=${{ steps.info.outputs.version }}
-          always_pull: true
-          add_git_labels: true
-          tags: latest,${{ steps.info.outputs.version }}
+      - name: Generate Docker labels
+        id: labels
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: gresearchdev/siembol-${{ matrix.component }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: deployment/docker
+          file: deployment/docker/Dockerfile.java
+          build-args: |
+            APP=${{ matrix.component}}
+            VERSION=${{ steps.info.outputs.version }}
+          pull: true
+          push: true
+          tags: |
+            gresearchdev/siembol-${{ matrix.component }}:latest
+            gresearchdev/siembol-${{ matrix.component }}:${{ steps.info.outputs.version }}
+          labels: |
+            ${{ steps.labels.outputs.labels }}
+            org.opencontainers.image.version=${{ steps.info.outputs.version }}
+            org.opencontainers.image.title=siembol-${{ matrix.component }}
 
   build-js-config-editor-ui:
     runs-on: ubuntu-latest
@@ -179,14 +213,29 @@ jobs:
       - name: Get version
         id: info
         run: echo "::set-output name=version::$(jq -r .appVersion deployment/docker/config-editor-ui/assets/build-info.json)"
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: gresearchdev/siembol-config-editor-ui
-          path: deployment/docker
-          dockerfile: deployment/docker/Dockerfile.config-editor-ui
-          always_pull: true
-          add_git_labels: true
-          tags: latest,${{ steps.info.outputs.version }}
+      - name: Generate Docker labels
+        id: labels
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: gresearchdev/siembol-config-editor-ui
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: deployment/docker
+          file: deployment/docker/Dockerfile.config-editor-ui
+          pull: true
+          push: true
+          tags: |
+            gresearchdev/siembol-config-editor-ui:latest
+            gresearchdev/siembol-config-editor-ui:${{ steps.info.outputs.version }}
+          labels: |
+            ${{ steps.labels.outputs.labels }}
+            org.opencontainers.image.version=${{ steps.info.outputs.version }}
+            org.opencontainers.image.title=siembol-config-editor-ui
