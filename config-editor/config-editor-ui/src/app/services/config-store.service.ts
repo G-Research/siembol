@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import 'rxjs/add/operator/finally';
 import { AppConfigService } from '../config/app-config.service';
-import { ConfigData, ConfigWrapper, Deployment, PullRequestInfo } from '../model';
+import { ConfigData, Config, Deployment, PullRequestInfo } from '../model';
 import { ConfigStoreState } from '../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../model/test-case';
 import { UiMetadataMap } from '../model/ui-metadata-map';
@@ -65,7 +65,7 @@ export class ConfigStoreService {
     this.testStoreService = new TestStoreService(this.user, this.store, this.configLoaderService);
   }
 
-  initialise(configs: ConfigWrapper<ConfigData>[],
+  initialise(configs: Config[],
     deployment: any,
     testCaseMap: TestCaseMap) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
@@ -181,7 +181,7 @@ export class ConfigStoreService {
     })
   }
 
-  submitRelease(deployment: Deployment<ConfigWrapper<ConfigData>>) {
+  submitRelease(deployment: Deployment) {
     this.updateReleaseSubmitInFlight(true);
     this.configLoaderService.submitRelease(deployment)
       .finally(() => {
@@ -302,14 +302,14 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  updateEditedConfig(config: ConfigWrapper<ConfigData>) {
+  updateEditedConfig(config: Config) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .editedConfig(config)
       .build();
     this.store.next(newState);
   }
 
-  private updateEditedConfigAndTestCase(config: ConfigWrapper<ConfigData>, testCase: TestCaseWrapper) {
+  private updateEditedConfigAndTestCase(config: Config, testCase: TestCaseWrapper) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .editedConfig(config)
       .editedTestCase(testCase)
@@ -317,7 +317,7 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  private getConfigByName(configName: string): ConfigWrapper<ConfigData> {
+  private getConfigByName(configName: string): Config {
     const currentState = this.store.getValue();
     const config = currentState.configs.find(x => x.name === configName);
 

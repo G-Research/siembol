@@ -7,7 +7,7 @@ import { StatusCode } from '@app/commons';
 import { FormGroup } from '@angular/forms';
 import { AppConfigService } from '@app/config';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, ConfigWrapper, Deployment } from '@app/model';
+import { ConfigData, Config, Deployment } from '@app/model';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
@@ -21,7 +21,7 @@ import { AppService } from '@app/services/app.service';
     templateUrl: 'deploy-dialog.component.html',
 })
 export class DeployDialogComponent {
-    deployment: Deployment<ConfigWrapper<ConfigData>>;
+    deployment: Deployment;
     environment: string;
     isValid = undefined;
     validating = true;
@@ -45,12 +45,12 @@ export class DeployDialogComponent {
         private service: EditorService,
         private formlyJsonSchema: FormlyJsonschema,
         private appService: AppService,
-        @Inject(MAT_DIALOG_DATA) public data: Deployment<ConfigWrapper<ConfigData>>) {
+        @Inject(MAT_DIALOG_DATA) public data: Deployment) {
         this.serviceName = service.serviceName;
         this.validating = false;
         this.uiMetadata = this.appService.getUiMetadataMap(this.serviceName);
         if (this.uiMetadata.deployment.extras !== undefined) {
-            this.fields = [this.formlyJsonSchema.toFieldConfig(service.configLoader.createDeploymentSchema())];
+            this.fields = [this.formlyJsonSchema.toFieldConfig(service.configSchema.createDeploymentSchema())];
         } else {
             this.service.configLoader.validateRelease(data).pipe(take(1))
                 .pipe(

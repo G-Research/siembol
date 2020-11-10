@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Input, OnDestroy, OnInit, V
 import { Component } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ConfigData, ConfigWrapper } from '@app/model';
+import { ConfigData, Config } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
 import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
 import { EditorService } from '@app/services/editor.service';
@@ -40,7 +40,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   fields: FormlyFieldConfig[] = [];
   formlyOptions: any = { autoClear: true };
 
-  editedConfig$: Observable<ConfigWrapper<ConfigData>>;
+  editedConfig$: Observable<Config>;
 
   constructor(
     private formlyJsonschema: FormlyJsonschema,
@@ -50,7 +50,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef
   ) {
     this.serviceName = editorService.serviceName;
-    this.schema = editorService.configSchema;
+    this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
     this.fields = [
       this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
@@ -69,7 +69,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   }
 
   public ngAfterViewInit() {
-    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: ConfigWrapper<ConfigData>) => {
+    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
         this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
       ];
@@ -82,7 +82,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
         && this.editorComponent.form.valid
         && !config.isNew;
 
-      this.configData = omitEmpty(this.editorService.configWrapper.unwrapConfig(config.configData));
+      this.configData = config.configData;
 
       this.cd.markForCheck();
     });

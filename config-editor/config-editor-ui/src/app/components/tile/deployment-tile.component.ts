@@ -1,4 +1,4 @@
-import { ConfigData, ConfigWrapper } from '../../model/config-model';
+import { ConfigData, Config } from '../../model/config-model';
 
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 })
 export class DeploymentTileComponent {
 
-    @Input() config: ConfigWrapper<ConfigData>;
+    @Input() config: Config;
 
     @Output() onDelete = new EventEmitter<number>();
     @Output() onUpgrade = new EventEmitter<number>();

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ConfigData, ConfigWrapper } from '@app/model';
+import { ConfigData, Config } from '@app/model';
 
 export interface DiffContent {
     leftContent: string;

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ConfigData, ConfigWrapper } from '../../model/config-model';
+import { ConfigData, Config } from '../../model/config-model';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -9,7 +9,7 @@ import { ConfigData, ConfigWrapper } from '../../model/config-model';
 })
 export class ConfigTileComponent {
 
-    @Input() config: ConfigWrapper<ConfigData>;
+    @Input() config: Config;
     @Input() hideAddDeployment: boolean;
 
     @Output() onEdit = new EventEmitter<number>();

@@ -66,11 +66,11 @@ export interface PullRequestInfo {
     pull_request_url: string;
 }
 
-export interface ConfigWrapper<T> {
+export interface Config {
     versionFlag?: number;
     isDeployed?: boolean;
     isNew: boolean;
-    configData: T;
+    configData: ConfigData;
     savedInBackend: boolean;
     name: string;
     author: string;
@@ -95,8 +95,8 @@ export interface ConfigTestDto {
 
 export type ConfigData = any;
 
-export interface Deployment<T> {
-    configs: T[];
+export interface Deployment {
+    configs: Config[];
     deploymentVersion: number;
 }
 
@@ -109,7 +109,7 @@ export interface ConfigTestResult {
 }
 
 export interface DeploymentWrapper {
-    storedDeployment: Deployment<ConfigWrapper<ConfigData>>;
+    storedDeployment: Deployment;
     deploymentHistory: FileHistory[];
 }
 

@@ -1,19 +1,19 @@
-import { ConfigWrapper, ConfigData, Deployment, FileHistory } from ".";
+import { Config, ConfigData, Deployment, FileHistory } from ".";
 import { TestCaseMap, TestCaseWrapper } from "./test-case";
 
 export interface ConfigStoreState {
-    configs: ConfigWrapper<ConfigData>[];
-    deployment: Deployment<ConfigWrapper<ConfigData>>;
+    configs: Config[];
+    deployment: Deployment;
     deploymentHistory: FileHistory[];
-    sortedConfigs: ConfigWrapper<ConfigData>[];
-    filteredConfigs: ConfigWrapper<ConfigData>[];
-    filteredDeployment: Deployment<ConfigWrapper<ConfigData>>;
+    sortedConfigs: Config[];
+    filteredConfigs: Config[];
+    filteredDeployment: Deployment;
     searchTerm: string;
     filterMyConfigs: boolean;
     filterUndeployed: boolean;
     filterUpgradable: boolean;
     releaseSubmitInFlight: boolean;
-    editedConfig: ConfigWrapper<ConfigData>;
+    editedConfig: Config;
     editedTestCase: TestCaseWrapper;
     testCaseMap: TestCaseMap;
 }

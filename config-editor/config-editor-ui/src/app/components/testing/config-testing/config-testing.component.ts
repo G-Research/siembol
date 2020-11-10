@@ -45,7 +45,7 @@ export class ConfigTestingComponent implements OnInit {
   }
 
   runTest() {
-    const cleanedTestSpecification = this.editorService.configWrapper
+    const cleanedTestSpecification = this.editorService.configSchema
       .cleanRawObjects(this.testSpecification, this.formly.options.formState.rawObjects);
 
     this.editorService.configStore.testService.testEditedConfig(cleanedTestSpecification).pipe(take(1))

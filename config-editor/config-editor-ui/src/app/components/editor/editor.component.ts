@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@a
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, ConfigWrapper } from '@app/model';
+import { ConfigData, Config } from '@app/model';
 import { Type } from '@app/model/config-model';
 import { PopupService } from '@app/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -24,8 +24,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     public configData: ConfigData = {};
     public options: FormlyFormOptions = {};
     public form: FormGroup = new FormGroup({});
-    public editedConfig$: Observable<ConfigWrapper<ConfigData>>;
-    public config: ConfigWrapper<ConfigData>;
+    public editedConfig$: Observable<Config>;
+    public config: Config;
 
     @Input() fields: FormlyFieldConfig[];
 
@@ -37,7 +37,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
             this.config = config;
-            this.configData = cloneDeep(this.config.configData);
+            //NOTE: in the form we are using wrapping config to handle optionals, unions
+            this.configData = this.editorService.configSchema.wrapConfig(config.configData);
             this.configName = this.config.name;
             this.options.formState = {
                 mainModel: this.configData,
@@ -51,10 +52,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     updateConfigInStore() {
-        const configToClean = cloneDeep(this.config) as ConfigWrapper<ConfigData>;
+        const configToClean = cloneDeep(this.config) as Config;
         configToClean.configData = cloneDeep(this.form.value);
         configToClean.name = this.configName;
-        const configToUpdate = this.editorService.cleanConfig(configToClean);
+        const configToUpdate = this.editorService.configSchema.cleanConfig(configToClean);
         this.editorService.configStore.updateEditedConfig(configToUpdate);
     }
 

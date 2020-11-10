@@ -7,7 +7,7 @@ import {
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, ConfigWrapper, Deployment, PullRequestInfo } from '@app/model';
+import { ConfigData, Config, Deployment, PullRequestInfo } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
@@ -42,19 +42,19 @@ import { Router } from '@angular/router';
 export class ConfigManagerComponent implements OnInit, OnDestroy {
     private ngUnsubscribe = new Subject();
     private configStore: ConfigStoreService;
-    public allConfigs$: Observable<ConfigWrapper<ConfigData>[]>;
-    public filteredConfigs$: Observable<ConfigWrapper<ConfigData>[]>;
-    public deployment$: Observable<Deployment<ConfigWrapper<ConfigData>>>;
-    public deployment: Deployment<ConfigWrapper<ConfigData>>;
-    public configs: ConfigWrapper<ConfigData>[];
+    public allConfigs$: Observable<Config[]>;
+    public filteredConfigs$: Observable<Config[]>;
+    public deployment$: Observable<Deployment>;
+    public deployment: Deployment;
+    public configs: Config[];
     public selectedConfig$: Observable<number>;
     public selectedConfig: number;
     public pullRequestPending$: Observable<PullRequestInfo>;
     public releaseSubmitInFlight$: Observable<boolean>;
     public searchTerm$: Observable<string>;
-    public filteredDeployment: Deployment<ConfigWrapper<ConfigData>>;
-    public filteredDeployment$: Observable<Deployment<ConfigWrapper<ConfigData>>>;
-    private filteredConfigs: ConfigWrapper<ConfigData>[];
+    public filteredDeployment: Deployment;
+    public filteredDeployment$: Observable<Deployment>;
+    private filteredConfigs: Config[];
     public filterMyConfigs$: Observable<boolean>;
     public filterUndeployed$: Observable<boolean>;
     public filterUpgradable$: Observable<boolean>;
@@ -114,7 +114,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
         this.configStore.upgradeConfigInDeployment(index);
     }
 
-    public drop(event: CdkDragDrop<ConfigWrapper<ConfigData>[]>) {
+    public drop(event: CdkDragDrop<Config[]>) {
         if (event.container.id === 'deployment-list') {
             if (event.previousContainer.id === 'store-list') {
                 this.configStore.addConfigToDeploymentInPosition(event.previousIndex, event.currentIndex);
@@ -130,7 +130,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
                 config1: releaseId === undefined
                     ? undefined
                     : this.filteredDeployment.configs[releaseId].configData,
-                config2: this.editorService.configWrapper.unwrapConfig(this.filteredConfigs[id].configData),
+                config2: this.filteredConfigs[id].configData,
             },
         });
     }
@@ -170,7 +170,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
                 const dialogRef = this.dialog.open(DeployDialogComponent, {
                     data: cloneDeep(this.deployment),
                 });
-                dialogRef.afterClosed().subscribe((results: Deployment<ConfigWrapper<ConfigData>>) => {
+                dialogRef.afterClosed().subscribe((results: Deployment) => {
                     if (results && results.configs.length > 0) {
                         if (results.deploymentVersion >= 0) {
                             this.configStore.submitRelease(results);
@@ -191,7 +191,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
         this.configStore.loadPullRequestStatus();
     }
 
-    public duplicateItemCheck(item: CdkDrag<ConfigWrapper<ConfigData>>, deployment: CdkDropList<ConfigWrapper<ConfigData>[]>) {
+    public duplicateItemCheck(item: CdkDrag<Config>, deployment: CdkDropList<Config[]>) {
         return deployment.data.find(d => d.name === item.data.name) === undefined
             ? true : false;
     }
@@ -208,7 +208,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
         this.configStore.updateFilterUndeployed($event);
     }
 
-    public trackConfigByName(index: number, item: ConfigWrapper<ConfigData>) {
+    public trackConfigByName(index: number, item: Config) {
         return item.name;
     }
 }
