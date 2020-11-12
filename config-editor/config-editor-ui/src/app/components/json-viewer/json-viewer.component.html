@@ -1,5 +1,6 @@
 <div class="viewer">
-    <td-ngx-text-diff 
+    <td-ngx-text-diff
+        id="text-diff"
         [left]="(leftContent === undefined ? rightContent : leftContent) | json"
         [right]="rightContent | json"
         [loading]="false"

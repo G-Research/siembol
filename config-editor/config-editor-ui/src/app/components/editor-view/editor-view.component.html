@@ -10,7 +10,7 @@
     </div>
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
-        <ng-scrollbar class="scrollbar">(
+        <ng-scrollbar class="scrollbar">
             <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onTabChange()" [(selectedIndex)]="selectedTab">
                 <mat-tab [label]="CONFIG_TAB.name">
                     <re-generic-editor [fields]="fields">

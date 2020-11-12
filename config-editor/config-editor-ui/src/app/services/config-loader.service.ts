@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppConfigService } from '../config/app-config.service';
 import {
-  ConfigData,
   ConfigTestDto,
   ConfigTestResult,
   Config,
@@ -131,27 +130,39 @@ export class ConfigLoaderService {
       )
       .pipe(
         map(result => {
-            return result.files[0]}),
-        map(result => ({
+          return result.files[0]
+        }),
+        map(result => {
+          let extras = {};
+          if (this.uiMetadata.deployment.extras) {
+            extras = this.uiMetadata.deployment.extras
+              .reduce((a, x) => (
+                { ...a, [x]: result.content[x] }), {}
+              )
+          }
+          return ({
           deploymentHistory: result.file_history,
           storedDeployment: {
-            deploymentVersion:
-              result.content[this.uiMetadata.deployment.version],
-            configs: result.content[
-              this.uiMetadata.deployment.config_array
-            ].map(configData => ({
-              isNew: false,
-              configData: configData,
-              savedInBackend: true,
-              name: configData[this.uiMetadata.name],
-              description: configData[this.uiMetadata.description],
-              author: configData[this.uiMetadata.author],
-              version: configData[this.uiMetadata.version],
-              versionFlag: -1,
-              tags: this.labelsFunc(configData)
-            }))
+            ... extras,
+            ... {
+              deploymentVersion:
+                result.content[this.uiMetadata.deployment.version],
+              configs: result.content[
+                this.uiMetadata.deployment.config_array
+              ].map(configData => ({
+                isNew: false,
+                configData: configData,
+                savedInBackend: true,
+                name: configData[this.uiMetadata.name],
+                description: configData[this.uiMetadata.description],
+                author: configData[this.uiMetadata.author],
+                version: configData[this.uiMetadata.version],
+                versionFlag: -1,
+                tags: this.labelsFunc(configData)
+              }))
+            }
           }
-        }))
+        })})
       );
   }
 

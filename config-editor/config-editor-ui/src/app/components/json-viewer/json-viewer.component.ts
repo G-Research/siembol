@@ -9,11 +9,6 @@ export interface DiffContent {
     rightContent: string;
 }
 
-export interface DiffContent {
-    leftContent: string;
-    rightContent: string;
-}
-
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-json-viewer',

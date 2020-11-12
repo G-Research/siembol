@@ -7,47 +7,33 @@
   <div class="validation" *ngIf="validating; else validationDone">
     <p> Validating </p>
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-divider></mat-divider>
   </div>
   <ng-template #validationDone>
-    <div *ngIf="isValid === true">
+    <div *ngIf="isValid === true; else notValid">
       <p>Validation successful</p>
       <p>Deploying to environment: {{ environment }}</p>
       <mat-divider></mat-divider>
-      <p>Items in deployment:</p>
-      <div class="rules-list">
-        <ol>
-          <li *ngFor="let config of deployment.configs">
-            {{ config.name }} <span class="extra-info">(v{{ config.version }} - {{ config.author }})</span>
-          </li>
-        </ol>
-      </div>
+      <div *ngIf="hasChanged; else nothingToDeploy">
+        <p>Changes in deployment:</p>
+        <td-ngx-text-diff
+            id="text-diff"
+            [left]="(initContent === undefined ? newContent : initContent)"
+            [right]="newContent"
+            [loading]="false"
+            [hideMatchingLines]="false"
+            [format]="'SideBySide'"
+            [showToolbar]="true"
+            (compareResults)="onCompareResults($event)">
+        </td-ngx-text-diff>
+        </div>
+      <ng-template #nothingToDeploy>No change in config.</ng-template>
       <mat-divider></mat-divider>
     </div>
-    <div *ngIf="isValid === false">
-      <p>Validation was unsuccessful</p>
-      <p>Status code: {{ statusCode }}</p>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Message
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <p class="error">{{ message }}</p>
-        </ng-template>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Exception
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <p class="error">{{ exception || 'No exception provided - it may be wrapped in the message'}}</p>
-        </ng-template>
-      </mat-expansion-panel>
+    <ng-template #notValid>
+      <p>{{message}}</p>
       <mat-divider></mat-divider>
-    </div>
+    </ng-template>
   </ng-template>
 </div>
 

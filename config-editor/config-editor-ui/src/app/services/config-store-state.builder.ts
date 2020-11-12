@@ -1,7 +1,7 @@
 import { ConfigStoreState } from "@app/model/store-state";
 import { cloneDeep } from 'lodash';
 import { moveItemInArray } from "@angular/cdk/drag-drop";
-import { Config, ConfigData, Deployment, FileHistory } from "../model";
+import { Config, Deployment, FileHistory } from "../model";
 import { TestCaseMap } from "@app/model/test-case";
 import { TestCaseWrapper, TestCaseResult } from "../model/test-case";
 
@@ -19,6 +19,11 @@ export class ConfigStoreStateBuilder {
 
     deployment(deployment: Deployment) {
         this.state.deployment = deployment;
+        return this;
+    }
+
+    initialDeployment(deployment: Deployment) {
+        this.state.initialDeployment = cloneDeep(deployment);
         return this;
     }
 

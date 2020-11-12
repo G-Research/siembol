@@ -25,7 +25,8 @@
             "version": "rules_version",
             "config_array": "rules",
             "extras": [
-                "tags"
+                "tags",
+                "rules_protection"
             ]
         },
         "perConfigSchemaPath": "properties.rules.items",
@@ -45,7 +46,8 @@
             "version": "rules_version",
             "config_array": "rules",
             "extras": [
-                "tags"
+                "tags",
+                "rules_protection"
             ]
         },
         "perConfigSchemaPath": "properties.rules.items",

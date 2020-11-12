@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import 'rxjs/add/operator/finally';
 import { AppConfigService } from '../config/app-config.service';
-import { ConfigData, Config, Deployment, PullRequestInfo } from '../model';
+import { Config, Deployment, PullRequestInfo } from '../model';
 import { ConfigStoreState } from '../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../model/test-case';
 import { UiMetadataMap } from '../model/ui-metadata-map';
@@ -13,6 +13,7 @@ import { TestStoreService } from './test-store.service';
 const initialConfigStoreState: ConfigStoreState = {
   configs: [],
   deployment: undefined,
+  initialDeployment: undefined,
   deploymentHistory: [],
   sortedConfigs: [],
   filteredConfigs: [],
@@ -40,6 +41,7 @@ export class ConfigStoreService {
 
   public readonly allConfigs$ = this.store.asObservable().map(x => x.configs);
   public readonly deployment$ = this.store.asObservable().map(x => x.deployment);
+  public readonly initialDeployment$ = this.store.asObservable().map(x => x.initialDeployment);
   public readonly filteredConfigs$ = this.store.asObservable().map(x => x.filteredConfigs);
   public readonly filteredDeployment$ = this.store.asObservable().map(x => x.filteredDeployment);
   public readonly searchTerm$ = this.store.asObservable().map(x => x.searchTerm);
@@ -73,6 +75,7 @@ export class ConfigStoreService {
       .configs(configs)
       .updateTestCasesInConfigs()
       .deployment(deployment.storedDeployment)
+      .initialDeployment(deployment.storedDeployment)
       .deploymentHistory(deployment.deploymentHistory)
       .detectOutdatedConfigs()
       .reorderConfigsByDeployment()
@@ -192,6 +195,19 @@ export class ConfigStoreService {
         this.loadPullRequestStatus();
       }
     })
+  }
+
+  reloadStoreAndDeployment(): Observable<any> {
+    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled
+      ? this.configLoaderService.getTestCases() : Observable.of({});
+    return Observable.forkJoin(
+      this.configLoaderService.getConfigs(),
+      this.configLoaderService.getRelease(),
+      testCaseMapFun).map(([configs, deployment, testCaseMap]) => {
+        if (configs && deployment && testCaseMap) {
+          this.initialise(configs, deployment, testCaseMap);
+        }
+      });
   }
 
   validateEditedConfig(): Observable<any> {

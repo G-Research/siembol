@@ -23,10 +23,10 @@
     <div *ngIf="!(editingTestCase$ | async); else editTestCaseTemplate">
         <div class="box" *ngFor="let testCase of testCases; index as i">
             <div class="inline">
-                <div class="column-fixed">
-                    <button [FileHistoryPopover]="testCase.fileHistory">
+                <div class="column-fixed" [FileHistoryPopover]="testCase.fileHistory">
+                    <span class="chip-bag">
                         <span #versionChip class="chip">v{{testCase?.testCase?.version || '0' }}</span>
-                    </button>
+                    </span>
                     <h4 class="author">{{testCase?.testCase?.author}}</h4>
                 </div>
                 <mat-divider [vertical]="true"></mat-divider>

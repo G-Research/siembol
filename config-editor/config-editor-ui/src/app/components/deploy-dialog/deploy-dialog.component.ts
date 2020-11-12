@@ -2,7 +2,6 @@ import { UiMetadataMap } from '../../model/ui-metadata-map';
 
 import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { StatusCode } from '@app/commons';
 
 import { FormGroup } from '@angular/forms';
 import { AppConfigService } from '@app/config';
@@ -12,8 +11,10 @@ import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
 import { take, catchError } from 'rxjs/operators';
-import { throwError, of } from 'rxjs';
+import { throwError, Observable, of } from 'rxjs';
+import { DiffResults } from 'ngx-text-diff/lib/ngx-text-diff.model';
 import { AppService } from '@app/services/app.service';
+import { DeploymentWrapper } from '@app/model/config-model';
 
 @Component({
     selector: 're-deploy-dialog',
@@ -21,11 +22,14 @@ import { AppService } from '@app/services/app.service';
     templateUrl: 'deploy-dialog.component.html',
 })
 export class DeployDialogComponent {
-    deployment: Deployment;
+    newDeployment: Deployment;
+    newContent: ConfigData;
+    initContent: ConfigData;
     environment: string;
     isValid = undefined;
-    validating = true;
     message: string;
+    validating = false;
+    hasChanged = true;
     exception: string;
     statusCode: string;
     deploymentSchema = {};
@@ -39,6 +43,10 @@ export class DeployDialogComponent {
     fields: FormlyFieldConfig[];
     public form: FormGroup = new FormGroup({});
 
+    private readonly OUTDATED_DEPLOYMENT_MESSAGE = `Old version detected, latest deployment 
+        have now been reloaded. Please prepare your deployment again.`;
+    private readonly INVALID_MESSAGE = 'Deployment is invalid.'
+
     constructor(public dialogref: MatDialogRef<DeployDialogComponent>,
         private config: AppConfigService,
         public dialog: MatDialog,
@@ -47,48 +55,81 @@ export class DeployDialogComponent {
         private appService: AppService,
         @Inject(MAT_DIALOG_DATA) public data: Deployment) {
         this.serviceName = service.serviceName;
-        this.validating = false;
         this.uiMetadata = this.appService.getUiMetadataMap(this.serviceName);
+        this.newDeployment = data;
         if (this.uiMetadata.deployment.extras !== undefined) {
             this.fields = [this.formlyJsonSchema.toFieldConfig(service.configSchema.createDeploymentSchema())];
+            this.extrasData = this.uiMetadata.deployment.extras.reduce((a, x) => (
+                { ...a, [x]: this.newDeployment[x] }), {}
+              )
         } else {
-            this.service.configLoader.validateRelease(data).pipe(take(1))
+            this.validating = true;
+            this.service.configLoader.validateRelease(this.newDeployment).pipe(take(1))
                 .pipe(
                     catchError(e => {
-                        this.isValid = false;
+                        this.dialogref.close();
                         return throwError(e);
                 }))
-                .subscribe(() => {
-                    this.isValid = true;
+                .subscribe(s => {
                     this.validating = false;
+                    if (s) {
+                        this.isValid = true;
+                    } else {
+                        this.service.configStore.reloadStoreAndDeployment();
+                        this.dialogref.close();
+                        throw this.OUTDATED_DEPLOYMENT_MESSAGE;
+                    }
                 });
         }
-
-
         this.testEnabled = this.uiMetadata.testing.deploymentTestEnabled;
-        this.deployment = data;
         this.environment = this.config.environment;
+
+        this.service.configStore.initialDeployment$.subscribe((d: Deployment) => {
+            this.initContent = this.getDeploymentMetadataString(d);
+        });
+        this.newContent = this.getDeploymentMetadataString(this.newDeployment);
+    }
+
+    getDeploymentMetadataString(deployment: Deployment): string {
+        return Object.values(deployment.configs)
+            .map((c: ConfigData) => `${c.name} (v${c.version} ${c.author})`)
+            .join("\n") + "\n";
     }
 
     onValidate() {
-        this.deployment = {...this.deployment, ...this.extrasData};
+        this.validating = true;
+        this.newDeployment = { ...this.newDeployment, ...this.extrasData };
         this.service.configLoader
-            .validateRelease(this.deployment).pipe(take(1))
+            .getRelease().flatMap((d: DeploymentWrapper) => {
+                if (d.storedDeployment.deploymentVersion > this.newDeployment.deploymentVersion) {
+                    return of(false);
+                }
+                return this.service.configLoader.validateRelease(this.newDeployment);
+            })
+            .pipe(take(1))
             .pipe(
                 catchError(e => {
                     this.isValid = false;
+                    this.message = this.INVALID_MESSAGE;
                     return throwError(e);
-            }))
-            .subscribe(() => {
-                this.isValid = true;
+                }))
+            .subscribe(s => {
                 this.validating = false;
-        });
+                if (s) {
+                    this.isValid = true;
+                } else {
+                    this.service.configStore.reloadStoreAndDeployment().subscribe(() => {
+                        this.dialogref.close();
+                        throw this.OUTDATED_DEPLOYMENT_MESSAGE;
+                    });
+                }
+            });
     }
 
     onClickDeploy() {
         const deployment = this.extrasData !== undefined
-            ? Object.assign(cloneDeep(this.deployment), this.extrasData)
-            : this.deployment;
+            ? Object.assign(cloneDeep(this.newDeployment), this.extrasData)
+            : this.newDeployment;
         this.dialogref.close(deployment);
     }
 
@@ -102,5 +143,11 @@ export class DeployDialogComponent {
 
     updateOutput(event) {
         this.extrasData = event;
+    }
+
+    onCompareResults(diffResults: DiffResults) {
+        if (!diffResults.hasDiff) {
+            this.hasChanged = false;
+        }
     }
 }

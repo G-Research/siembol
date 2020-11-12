@@ -1,0 +1,53 @@
+$font: 'Courier New', Courier, monospace;
+
+#text-diff .td-wrapper {
+    background-color: #24292e;
+    color: #e5e9ee; 
+    font-family: $font;
+    font-size: 12pt;
+}
+
+#text-diff button {
+  padding: 5px 10px;
+}  
+
+#text-diff .line-number-col {
+  font-family: $font;
+  border-right: 0;
+  color: #838a92;
+  text-align: right;
+  background-color: #1d2125;
+}
+
+#text-diff .line-number-col-left {
+  font-family: $font;
+  background-color: #1d2125;
+}
+
+#text-diff .td-table {
+  border: 0;
+}
+
+#text-diff .insert-row,
+#text-diff .insert-row > .line-number-col {
+  background-color: #0c4532;
+  border-color: #188a64;
+}
+
+#text-diff .delete-row,
+#text-diff .delete-row > .line-number-col {
+  border-color: #b31d28;
+  background-color: #421a1a;
+}
+
+#text-diff .empty-row {
+  background-color: #1d2125;
+}
+
+#text-diff .insert-row > .highlight {
+  background-color: #188a64 !important;
+}
+
+#text-diff .delete-row > .highlight {
+  background-color: #b31d28 !important;
+}

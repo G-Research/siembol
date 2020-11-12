@@ -4,6 +4,7 @@ import { TestCaseMap, TestCaseWrapper } from "./test-case";
 export interface ConfigStoreState {
     configs: Config[];
     deployment: Deployment;
+    initialDeployment: Deployment;
     deploymentHistory: FileHistory[];
     sortedConfigs: Config[];
     filteredConfigs: Config[];

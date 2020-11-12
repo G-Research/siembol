@@ -7,7 +7,7 @@ import {
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, Config, Deployment, PullRequestInfo } from '@app/model';
+import { Config, Deployment, PullRequestInfo } from '@app/model';
 import { PopupService } from '@app/popup.service';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
@@ -17,6 +17,7 @@ import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/config-store.service';
 import { Router } from '@angular/router';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,8 +62,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public deploymentHistory$: Observable<FileHistory[]>;
     public deploymentHistory;
 
+    private readonly BLOCKING_TIMEOUT = 10000;
     private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
-
+    @BlockUI() blockUI: NgBlockUI;
     constructor(public dialog: MatDialog, private snackbar: PopupService,
         private editorService: EditorService, private router: Router) {
         this.configStore = editorService.configStore;
@@ -160,7 +162,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public onClickCreate() {
         this.router.navigate(
             [this.editorService.serviceName, 'edit'],
-            {queryParams: { newConfig: true }});
+            { queryParams: { newConfig: true } });
     }
 
     public onDeploy() {
@@ -187,8 +189,14 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
         this.configStore.updateFilterMyConfigs($event);
     }
 
-    public onRefreshPrStatus() {
-        this.configStore.loadPullRequestStatus();
+    public onSyncWithGit() {
+        this.blockUI.start("loading store and deployments");
+        this.configStore.reloadStoreAndDeployment().subscribe(() => {
+            this.blockUI.stop();
+        });
+        setTimeout(() => {
+            this.blockUI.stop();
+        }, this.BLOCKING_TIMEOUT);
     }
 
     public duplicateItemCheck(item: CdkDrag<Config>, deployment: CdkDropList<Config[]>) {

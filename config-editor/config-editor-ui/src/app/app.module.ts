@@ -18,8 +18,10 @@ import { CredentialsInterceptor } from '@app/credentials-interceptor';
 import { SharedModule } from '@app/shared/shared.module';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { NgxTextDiffModule } from 'ngx-text-diff';
 import { environment } from 'environments/environment';
 import { NgScrollbarModule } from 'ngx-scrollbar';
+import { BlockUIModule } from 'ng-block-ui';
 import { AppComponent } from './app.component';
 import { ChangeHistoryComponent } from './components/change-history/change-history.component';
 import { EditorComponent } from './components/editor/editor.component';
@@ -48,7 +50,6 @@ import { PopoverRendererComponent } from './popover/popover-renderer.component';
 import { PopoverService } from './popover/popover-service';
 import { TestResultsPopoverDirective } from './popover/test-results-popover.directive';
 import { PopupService } from './popup.service';
-import { NgxTextDiffModule } from './text-diff/ngx-text-diff.module';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
 import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.component';
 import { ConfigTestingComponent } from './components/testing/config-testing/config-testing.component';
@@ -128,6 +129,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
   ],
   imports: [
     BrowserModule,
+    BlockUIModule.forRoot(),
     RouterModule.forRoot([
       {
         path: '',
