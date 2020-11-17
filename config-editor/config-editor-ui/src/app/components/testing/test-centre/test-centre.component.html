@@ -13,17 +13,33 @@
         <button mat-raised-button title="Test Suite" (click)="onCancelEditing()"><</button>
         <h2>{{ testCase.testCase.test_case_name }} v{{ testCase.testCase.version }}</h2>
         <div class="test-status-badge" *ngIf="testCase?.testCaseResult"
-            [ngClass]="getTestBadge(testCase.testCaseResult)" [TestResultsPopover]="testCase.testCaseResult">
-            {{testCase.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon class="test-icon">
-                done</mat-icon>{{testCase.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
-                class="test-icon">clear</mat-icon>
+            [ngClass]="getTestBadge(testCase.testCaseResult)"
+            [popper]="testCaseResult"
+            [popperTrigger]="'hover'"
+            [popperPlacement]="'left-start'"
+            [popperHideOnScroll]="true"
+            [popperDisableStyle]="true">
+            <popper-content #testCaseResult>
+                <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>
+            </popper-content> 
+            {{testCase.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon
+                >done</mat-icon>{{testCase.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
+                >clear</mat-icon>
             {{testCase.testCaseResult?.evaluationResult?.number_skipped_assertions}}<strong>?</strong>
         </div>
     </mat-card-title>
     <div *ngIf="!(editingTestCase$ | async); else editTestCaseTemplate">
         <div class="box" *ngFor="let testCase of testCases; index as i">
             <div class="inline">
-                <div class="column-fixed" [FileHistoryPopover]="testCase.fileHistory">
+                <div class="column-fixed" 
+                        [popper]="fileHistory"
+                        [popperTrigger]="'hover'"
+                        [popperPlacement]="'left-start'"
+                        [popperHideOnScroll]="true"
+                        [popperDisableStyle]="true">
+                    <popper-content #fileHistory>
+                        <re-change-history [history]="testCase.fileHistory"></re-change-history>
+                    </popper-content>
                     <span class="chip-bag">
                         <span #versionChip class="chip">v{{testCase?.testCase?.version || '0' }}</span>
                     </span>
@@ -46,10 +62,18 @@
                                 <mat-icon>content_copy</mat-icon>
                             </a>
                         </span>
-                        <span>
-                            <div *ngIf="testCase?.testCaseResult?.evaluationResult" class="test-status-badge"
-                                [ngClass]="getTestBadge(testCase.testCaseResult)"
-                                [TestResultsPopover]="testCase.testCaseResult">
+                        <span [popper]="testCaseResult"
+                                [popperTrigger]="'hover'"
+                                [popperPlacement]="'left-start'"
+                                [popperHideOnScroll]="true"
+                                [popperDisableStyle]="true"
+                                >
+                                <popper-content #testCaseResult>
+                                    <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>
+                                </popper-content>
+                            <div *ngIf="testCase?.testCaseResult?.evaluationResult" 
+                                class="test-status-badge"
+                                [ngClass]="getTestBadge(testCase.testCaseResult)">
                                 {{testCase?.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon
                                     class="test-icon">done</mat-icon>
                                 {{testCase?.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon

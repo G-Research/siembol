@@ -18,6 +18,7 @@ import { CredentialsInterceptor } from '@app/credentials-interceptor';
 import { SharedModule } from '@app/shared/shared.module';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { NgxPopperModule } from 'ngx-popper';
 import { NgxTextDiffModule } from 'ngx-text-diff';
 import { environment } from 'environments/environment';
 import { NgScrollbarModule } from 'ngx-scrollbar';
@@ -45,10 +46,6 @@ import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.compo
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
 import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
 import { HighlightVariablesPipe } from './pipes';
-import { FileHistoryPopoverDirective } from './popover/file-history-popover.directive';
-import { PopoverRendererComponent } from './popover/popover-renderer.component';
-import { PopoverService } from './popover/popover-service';
-import { TestResultsPopoverDirective } from './popover/test-results-popover.directive';
 import { PopupService } from './popup.service';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
 import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.component';
@@ -100,8 +97,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     DeploymentTileComponent,
     EditorComponent,
     ChangeHistoryComponent,
-    PopoverRendererComponent,
-    FileHistoryPopoverDirective,
     ObjectTypeComponent,
     ArrayTypeComponent,
     NullTypeComponent,
@@ -118,7 +113,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ConfigTestingComponent,
     JsonObjectTypeComponent,
     TestResultsComponent,
-    TestResultsPopoverDirective,
     SelectTypeComponent,
     TestCaseHelpComponent,
     JsonTreeComponent,
@@ -203,6 +197,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     }),
     ReactiveFormsModule,
     FormlyMaterialModule,
+    NgxPopperModule.forRoot({})
   ],
   providers: [
     environment.production ? PROD_PROVIDERS : DEV_PROVIDERS,
@@ -210,8 +205,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     AppService,
     AppInitGuard,
-    HighlightVariablesPipe,
-    PopoverService,
+    HighlightVariablesPipe
   ],
 
 })

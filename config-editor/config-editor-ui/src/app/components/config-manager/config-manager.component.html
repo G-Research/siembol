@@ -32,7 +32,15 @@
                         <h2>Deployment</h2>
                         <span class="item-count">{{filteredDeployment.configs.length}} {{filteredDeployment.configs.length === 1 ? 'item': 'items'}}</span>
                     </div>
-                    <a class="history-button" [FileHistoryPopover]="deploymentHistory.fileHistory">
+                    <a class="history-button" 
+                        [popper]="fileHistory"
+                        [popperTrigger]="'hover'"
+                        [popperPlacement]="'left-start'"
+                        [popperHideOnScroll]="true"
+                        [popperDisableStyle]="true">
+                        <popper-content #fileHistory>
+                            <re-change-history [history]="deploymentHistory.fileHistory"></re-change-history>
+                        </popper-content>
                         <mat-icon>history</mat-icon>
                     </a>
                     <span *ngIf="!(pullRequestPending$ | async).pull_request_pending && !(releaseSubmitInFlight$ | async); else prMessage">
