@@ -5,8 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfo;
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 
 public class ParsingAppConfigInfoProviderTest {
 

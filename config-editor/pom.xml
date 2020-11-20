@@ -11,7 +11,7 @@
 	 <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.66-SNAPSHOT</version>
+        <version>1.67-SNAPSHOT</version>
     </parent>
     <modules>
         <module>config-editor-core</module>

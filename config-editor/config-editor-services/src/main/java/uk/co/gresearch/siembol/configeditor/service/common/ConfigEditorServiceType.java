@@ -1,7 +1,8 @@
 package uk.co.gresearch.siembol.configeditor.service.common;
 
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
-import uk.co.gresearch.siembol.configeditor.configstore.*;
+import uk.co.gresearch.siembol.configeditor.configinfo.JsonRuleConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.service.alerts.AlertingRuleSchemaServiceImpl;
 import uk.co.gresearch.siembol.configeditor.service.enrichments.EnrichmentSchemaServiceImpl;
 import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigConfigInfoProvider;
@@ -29,23 +30,23 @@ public enum ConfigEditorServiceType implements ConfigSchemaServiceFactory {
 
     private static final String UNSUPPORTED_SERVICE_NAME = "Unsupported service name";
     private final String name;
-    private final ConfigInfoProvider infoProvider;
+    private final ConfigInfoProvider configInfoProvider;
     private final ConfigSchemaServiceFactory configSchemaServiceFactory;
 
-    ConfigEditorServiceType(String name, ConfigInfoProvider infoProvider, ConfigSchemaServiceFactory configSchemaServiceFactory) {
+    ConfigEditorServiceType(
+            String name,
+            ConfigInfoProvider configInfoProvider,
+            ConfigSchemaServiceFactory configSchemaServiceFactory) {
         this.name = name;
-        this.infoProvider = infoProvider;
+        this.configInfoProvider = configInfoProvider;
         this.configSchemaServiceFactory = configSchemaServiceFactory;
     }
 
-    public ConfigStore createConfigStore(ConfigStoreProperties configStoreProperties) throws Exception {
-        return ConfigStoreImpl.createRuleStore(configStoreProperties, infoProvider);
-    }
-
     @Override
-    public ConfigSchemaService createConfigSchemaService(Optional<String> uiLayoutConfig,
-                                                         Optional<String> uiTestLayoutConfig,
-                                                         Optional<Map<String, String>> attributes) throws Exception {
+    public ConfigSchemaService createConfigSchemaService(
+            Optional<String> uiLayoutConfig,
+            Optional<String> uiTestLayoutConfig,
+            Optional<Map<String, String>> attributes) throws Exception {
         return configSchemaServiceFactory.createConfigSchemaService(uiLayoutConfig, uiTestLayoutConfig, attributes);
     }
 
@@ -61,5 +62,9 @@ public enum ConfigEditorServiceType implements ConfigSchemaServiceFactory {
         }
 
         throw new IllegalArgumentException(UNSUPPORTED_SERVICE_NAME);
+    }
+
+    public ConfigInfoProvider getConfigInfoProvider() {
+        return configInfoProvider;
     }
 }

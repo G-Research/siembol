@@ -1,17 +1,22 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorRepositories {
     @JsonProperty("rule_store_url")
     private String ruleStoreUrl;
+    @JsonProperty("test_case_store_url")
+    private String testCaseStoreUrl;
     @JsonProperty("rules_release_url")
     private String rulesReleaseUrl;
-
-    public ConfigEditorRepositories(String ruleStoreUrl, String rulesReleaseUrl) {
-        this.ruleStoreUrl = ruleStoreUrl;
-        this.rulesReleaseUrl = rulesReleaseUrl;
-    }
+    @JsonProperty("rule_store_directory_url")
+    private String ruleStoreDirectoryUrl;
+    @JsonProperty("test_case_store_directory_url")
+    private String testCaseStoreDirectoryUrl;
+    @JsonProperty("rules_release_directory_url")
+    private String rulesReleaseDirectoryUrl;
 
     public String getRuleStoreUrl() {
         return ruleStoreUrl;
@@ -27,5 +32,37 @@ public class ConfigEditorRepositories {
 
     public void setRulesReleaseUrl(String rulesReleaseUrl) {
         this.rulesReleaseUrl = rulesReleaseUrl;
+    }
+
+    public String getTestCaseStoreUrl() {
+        return testCaseStoreUrl;
+    }
+
+    public void setTestCaseStoreUrl(String testCaseStoreUrl) {
+        this.testCaseStoreUrl = testCaseStoreUrl;
+    }
+
+    public String getRuleStoreDirectoryUrl() {
+        return ruleStoreDirectoryUrl;
+    }
+
+    public void setRuleStoreDirectoryUrl(String ruleStoreDirectoryUrl) {
+        this.ruleStoreDirectoryUrl = ruleStoreDirectoryUrl;
+    }
+
+    public String getTestCaseStoreDirectoryUrl() {
+        return testCaseStoreDirectoryUrl;
+    }
+
+    public void setTestCaseStoreDirectoryUrl(String testCaseStoreDirectoryUrl) {
+        this.testCaseStoreDirectoryUrl = testCaseStoreDirectoryUrl;
+    }
+
+    public String getRulesReleaseDirectoryUrl() {
+        return rulesReleaseDirectoryUrl;
+    }
+
+    public void setRulesReleaseDirectoryUrl(String rulesReleaseDirectoryUrl) {
+        this.rulesReleaseDirectoryUrl = rulesReleaseDirectoryUrl;
     }
 }

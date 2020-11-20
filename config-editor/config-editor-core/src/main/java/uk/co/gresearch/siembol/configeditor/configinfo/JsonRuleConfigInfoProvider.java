@@ -1,4 +1,6 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.configinfo;
+
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 
 public class JsonRuleConfigInfoProvider {
     private static final String AUTHOR_FIELD = "rule_author";

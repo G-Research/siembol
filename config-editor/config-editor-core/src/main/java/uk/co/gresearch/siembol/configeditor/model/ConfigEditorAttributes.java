@@ -32,16 +32,6 @@ public class ConfigEditorAttributes {
 
     @JsonProperty("rules_repositories")
     ConfigEditorRepositories rulesRepositories;
-	
-	@JsonProperty("fields")
-    @JsonRawValue
-    private String fields;
-
-    @JsonProperty("template_fields")
-    private List<TemplateField> templateFields;
-
-    @JsonProperty("sensor_template_fields")
-    private List<SensorTemplateFields> sensorTemplateFields;
 
     @JsonProperty("test_result_output")
     private String testResultOutput;
@@ -63,8 +53,6 @@ public class ConfigEditorAttributes {
     @JsonProperty("test_specification")
     @JsonRawValue
     private String testSpecification;
-
-    private String event;
 
     private List<ConfigEditorService> services;
 
@@ -140,30 +128,6 @@ public class ConfigEditorAttributes {
         this.rulesRepositories = rulesRepositories;
     }
 
-    public List<TemplateField> getTemplateFields() {
-        return templateFields;
-    }
-
-    public void setTemplateFields(List<TemplateField> templateFields) {
-        this.templateFields = templateFields;
-    }
-
-    public List<SensorTemplateFields> getSensorTemplateFields() {
-        return sensorTemplateFields;
-    }
-
-    public void setSensorTemplateFields(List<SensorTemplateFields> sensorTemplateFields) {
-        this.sensorTemplateFields = sensorTemplateFields;
-    }
-	
-	 public String getFields() {
-        return fields;
-    }
-
-    public void setFields(String fields) {
-        this.fields = fields;
-    }
-
     public String getTestResultOutput() {
         return testResultOutput;
     }
@@ -178,19 +142,6 @@ public class ConfigEditorAttributes {
 
     public void setTestResultComplete(Boolean testResultComplete) {
         this.testResultComplete = testResultComplete;
-    }
-
-    public String getEvent() {
-        return event;
-    }
-
-    @JsonSetter("event")
-    public void setEvent(JsonNode event) {
-        this.event = event.toString();
-    }
-
-    public void setEvent(String event) {
-        this.event = event;
     }
 
     public List<ConfigEditorService> getServices() {

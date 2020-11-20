@@ -1,8 +1,9 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.common;
 
 import java.util.Map;
 
 public class ConfigInfo {
+    private String name;
     private Map<String, String> filesContent;
     private String commitMessage;
     private int oldVersion;
@@ -87,5 +88,13 @@ public class ConfigInfo {
 
     public void setConfigInfoType(ConfigInfoType configInfoType) {
         this.configInfoType = configInfoType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

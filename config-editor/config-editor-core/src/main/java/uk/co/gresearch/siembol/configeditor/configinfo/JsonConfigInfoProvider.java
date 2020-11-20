@@ -1,9 +1,12 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.configinfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -97,6 +100,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         String configName = configNamePrefixField == null
                 ? (String)metadata.get(configNameField)
                 : String.format(PREFIX_NAME_FORMAT, metadata.get(configNamePrefixField), metadata.get(configNameField));
+        configInfo.setName(configName);
         String configAuthor = (String)metadata.get(configAuthorField);
         int configVersion = ((Number)metadata.get(configVersionField)).intValue();
 

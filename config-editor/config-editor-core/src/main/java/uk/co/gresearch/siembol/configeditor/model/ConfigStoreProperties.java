@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.model;
 
 public class ConfigStoreProperties {
     private String githubUrl;

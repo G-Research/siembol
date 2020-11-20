@@ -1,7 +1,10 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.configinfo;
 
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.List;
 

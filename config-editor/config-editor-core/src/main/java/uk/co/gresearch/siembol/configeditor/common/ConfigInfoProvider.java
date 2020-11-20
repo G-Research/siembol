@@ -1,5 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
-import uk.co.gresearch.siembol.configeditor.common.UserInfo;
+package uk.co.gresearch.siembol.configeditor.common;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.time.Instant;
@@ -10,9 +9,17 @@ import java.util.TimeZone;
 public interface ConfigInfoProvider {
     String RELEASE_BRANCH_TEMPLATE = "release_%d_by_%s_on_%s";
     String MISSING_ARGUMENTS_MSG = "missing user info attributes";
+    String UNKNOWN_USER_INFO = "unknown";
     int MILLI_SECONDS = 1000;
 
     ConfigInfo getConfigInfo(UserInfo user, String config);
+
+    default ConfigInfo getConfigInfo(String config) {
+        UserInfo unknownUser = new UserInfo();
+        unknownUser.setUserName(UNKNOWN_USER_INFO);
+        unknownUser.setEmail(UNKNOWN_USER_INFO);
+        return getConfigInfo(unknownUser, config);
+    }
 
     ConfigInfo getReleaseInfo(UserInfo user, String release);
 
@@ -39,11 +46,11 @@ public interface ConfigInfoProvider {
                 .replaceAll(":", "-");
     }
 
-    default boolean isStoreFile(String filename) {
+    default boolean isStoreFile(String fileName) {
         return true;
     }
 
-    default boolean isReleaseFile(String filename) {
+    default boolean isReleaseFile(String fileName) {
         return true;
     }
 }

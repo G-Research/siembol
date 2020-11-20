@@ -1,8 +1,8 @@
 package uk.co.gresearch.siembol.configeditor.service.parsingapp;
 
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigInfoType;
-import uk.co.gresearch.siembol.configeditor.configstore.JsonConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
+import uk.co.gresearch.siembol.configeditor.configinfo.JsonConfigInfoProvider;
 
 public class ParsingAppConfigInfoProvider {
     private static final String AUTHOR_FIELD = "parsing_app_author";

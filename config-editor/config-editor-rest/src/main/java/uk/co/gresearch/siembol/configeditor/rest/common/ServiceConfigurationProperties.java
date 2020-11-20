@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.rest.common;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreProperties;
+import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 
 import java.util.Map;
 

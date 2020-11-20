@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
-import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
+import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;
+import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper;
 import uk.co.gresearch.siembol.configeditor.rest.common.ServiceConfigurationProperties;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigEditorServiceType;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
@@ -33,12 +34,14 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
     @Bean
     ServiceAggregator serviceAggregator() throws Exception {
+        Map<String, ConfigStoreProperties> configStorePropertiesMap = ConfigEditorHelper
+                .getConfigStoreProperties(this.properties);
+
         ServiceAggregatorImpl.Builder builder = new ServiceAggregatorImpl.Builder(authProvider);
         for (String name : properties.getServices().keySet()) {
             ServiceConfigurationProperties serviceProperties = properties.getServices().get(name);
 
             ConfigEditorServiceType serviceType = ConfigEditorServiceType.fromName(serviceProperties.getType());
-            ConfigStore configStore = serviceType.createConfigStore(serviceProperties.getConfigStore());
 
             Optional<String> uiLayout = ConfigEditorUtils.readUiLayoutFile(serviceProperties.getUiConfigFileName());
             Optional<String> testSpecUiLayout = ConfigEditorUtils.readUiLayoutFile(
@@ -47,7 +50,11 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
             ConfigSchemaService schemaService = serviceType.createConfigSchemaService(
                     uiLayout, testSpecUiLayout, attributes);
-            builder.addService(name, serviceProperties.getType(), configStore, schemaService);
+            builder.addService(name,
+                    serviceProperties.getType(),
+                    configStorePropertiesMap.get(name),
+                    serviceType.getConfigInfoProvider() ,
+                    schemaService);
         }
         serviceAggregator = builder.build();
         return serviceAggregator;
@@ -62,11 +69,11 @@ public class ConfigEditorConfiguration implements DisposableBean {
     @Override
     public void destroy() {
         if (serviceAggregator != null) {
-            serviceAggregator.getConfigStoreServices().forEach(x -> x.shutDown());
+            serviceAggregator.shutDown();
         }
 
         if (serviceAggregator != null) {
-            serviceAggregator.getConfigStoreServices().forEach(x -> x.awaitShutDown());
+            serviceAggregator.awaitShutDown();
         }
     }
 }

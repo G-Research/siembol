@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.git;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -12,10 +12,8 @@ import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFileHistoryItem;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
+import uk.co.gresearch.siembol.configeditor.model.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -24,18 +22,22 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class GitRepository implements Closeable {
+    private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for git repository initialisation";
+    private static final String ERROR_INIT_MSG = "Error during git repository initialisation";
     public static final String MAIN_BRANCH = "master";
-    private static final String TESTCASE_DISABLED = "Testcases are disabled for this repository";
+    private static final String GIT_REPO_DIRECTORY_URL_FORMAT = "%s/%s/tree/master/%s";
     private final CredentialsProvider credentialsProvider;
     private final Git git;
-    private final Path rulesPath;
-    private final Path testCasePath;
+    private final String gitUrl;
+    private final String repoName;
+    private final String repoFolder;
     private final String repoUri;
     private final ConfigEditorFile.ContentType contentType;
 
@@ -46,18 +48,18 @@ public class GitRepository implements Closeable {
     private GitRepository(Builder builder) {
         credentialsProvider = builder.credentialsProvider;
         git = builder.git;
-        rulesPath = builder.rulesPath;
-        testCasePath = builder.testCasesPath;
         repoUri = builder.repoUri;
         contentType = builder.contentType;
+        repoFolder = builder.repoFolder;
+        gitUrl = builder.gitUrl;
+        repoName = builder.repoName;
     }
 
     public ConfigEditorResult transactCopyAndCommit(
-            ConfigInfo configInfo) throws GitAPIException, IOException {
-        Path currentPath = configInfo.getConfigInfoType() == ConfigInfoType.TEST_CASE ? testCasePath : rulesPath;
-        if (currentPath == null) {
-            throw new IllegalStateException(TESTCASE_DISABLED);
-        }
+            ConfigInfo configInfo,
+            String directory,
+            Function<String, Boolean> fileNameFilter) throws GitAPIException, IOException {
+        Path currentPath = Paths.get(repoFolder, directory);
 
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
@@ -91,7 +93,7 @@ public class GitRepository implements Closeable {
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
-        ConfigEditorResult result = getFiles(currentPath);
+        ConfigEditorResult result = getFiles(directory, fileNameFilter);
 
         if (!MAIN_BRANCH.equals(configInfo.getBranchName())) {
             git.checkout().setName(MAIN_BRANCH).call();
@@ -99,26 +101,23 @@ public class GitRepository implements Closeable {
         return result;
     }
 
-    public ConfigEditorResult getConfigs() throws IOException, GitAPIException {
-        return getFiles(rulesPath);
+
+    public ConfigEditorResult getFiles(String directory) throws IOException, GitAPIException {
+        return getFiles(directory, x -> true);
     }
 
-    public ConfigEditorResult getTestCases() throws IOException, GitAPIException {
-        if (testCasePath == null) {
-            throw new IllegalStateException(TESTCASE_DISABLED);
-        }
-
-        return getFiles(testCasePath);
-    }
-
-    private ConfigEditorResult getFiles(Path path) throws IOException, GitAPIException {
+    public ConfigEditorResult getFiles(String directory,
+                                       Function<String, Boolean> fileNameFilter) throws IOException, GitAPIException {
+        Path path = Paths.get(repoFolder, directory);
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
         Map<String, ConfigEditorFile> files = new HashMap<>();
         try (Stream<Path> paths = Files.walk(path)) {
-            paths.filter(Files::isRegularFile)
+            paths
+                    .filter(Files::isRegularFile)
+                    .filter(x -> fileNameFilter.apply(x.getFileName().toString()))
                     .forEach(x -> {
                         try {
                             files.put(x.getFileName().toString(),
@@ -178,6 +177,10 @@ public class GitRepository implements Closeable {
         return repoUri;
     }
 
+    public String getDirectoryUrl(String directory) {
+        return String.format(GIT_REPO_DIRECTORY_URL_FORMAT, gitUrl, repoName, directory);
+    }
+
     @Override
     public void close() {
         git.close();
@@ -189,55 +192,36 @@ public class GitRepository implements Closeable {
         private String repoUri;
         private String gitUrl;
         private String repoFolder;
-        private Path rulesPath;
-        private Path testCasesPath;
-        private String rulesDirectory = "";
-        private String testCaseDirectory;
         private CredentialsProvider credentialsProvider;
         private Git git;
         private ConfigEditorFile.ContentType contentType = ConfigEditorFile.ContentType.RAW_JSON_STRING;
 
-        Builder repoName(String repoName) {
+        public Builder repoName(String repoName) {
             this.repoName = repoName;
             return this;
         }
 
-        Builder gitUrl(String gitUrl) {
+        public Builder gitUrl(String gitUrl) {
             this.gitUrl = gitUrl;
             return this;
         }
 
-        Builder rulesDirectory(String rulesDirectory) {
-            this.rulesDirectory = rulesDirectory;
-            return this;
-        }
-
-        Builder testCaseDirectory(String testCaseDirectory) {
-            this.testCaseDirectory = testCaseDirectory;
-            return this;
-        }
-
-        Builder repoFolder(String repoFolder) {
+        public Builder repoFolder(String repoFolder) {
             this.repoFolder = repoFolder;
             return this;
         }
 
-        Builder contentType(ConfigEditorFile.ContentType contentType) {
-            this.contentType = contentType;
-            return this;
-        }
-
-        Builder credentials(String userName, String password) {
+        public Builder credentials(String userName, String password) {
             credentialsProvider = new UsernamePasswordCredentialsProvider(userName, password);
             return this;
         }
 
-        GitRepository build() throws GitAPIException, IOException {
+        public GitRepository build() throws GitAPIException, IOException {
             if (repoName == null
                     || gitUrl == null
                     || repoFolder == null
                     || credentialsProvider == null) {
-                throw new IllegalArgumentException("Not provided required properties");
+                throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
             }
 
             File repoFolderDir = new File(repoFolder);
@@ -255,13 +239,8 @@ public class GitRepository implements Closeable {
                     .setDirectory(repoFolderDir)
                     .call();
 
-            rulesPath = Paths.get(repoFolder, rulesDirectory);
-            if (testCaseDirectory != null) {
-                testCasesPath = Paths.get(repoFolder, testCaseDirectory);
-            }
-
             if (git == null || !repoFolderDir.exists()) {
-                throw new IllegalStateException("Error during git rules repo initialisation");
+                throw new IllegalStateException(ERROR_INIT_MSG);
             }
 
             return new GitRepository(this);

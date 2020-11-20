@@ -19,10 +19,6 @@ public interface ConfigSchemaService extends HealthCheckable {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
 
-    default ConfigEditorResult getFields() {
-        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
-    }
-
     default ConfigEditorResult testConfiguration(String configuration, String testSpecification ) {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }

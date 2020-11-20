@@ -1,14 +1,15 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.serviceaggregator;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
+import uk.co.gresearch.siembol.configeditor.configinfo.TestCaseInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TestCaseConfigInfoProviderTest {
     /**

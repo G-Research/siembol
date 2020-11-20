@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.git;
 
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.PullRequestMarker;
@@ -7,6 +7,7 @@ import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 public class ReleasePullRequestService {
     private static final String BODY_TEMPLATE = "User %s would like to release rules version %d.";
     private static final String PR_STATE_OPEN = "open";
+    private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for pull request service";
 
     private final RepositoryId repoId;
     private final PullRequestService service;
@@ -83,7 +85,7 @@ public class ReleasePullRequestService {
                     || repoName == null
                     || password == null
                     || repoName == null) {
-                throw new IllegalArgumentException("Missing required parameters");
+                throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
             }
 
             repoId = RepositoryId.createFromId(repoName);

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>enriching</artifactId>
     <groupId>uk.co.gresearch.siembol</groupId>
-    <version>1.66-SNAPSHOT</version>
+    <version>1.67-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>enriching-storm</artifactId>

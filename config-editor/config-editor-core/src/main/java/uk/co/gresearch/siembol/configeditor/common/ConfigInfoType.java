@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.configstore;
+package uk.co.gresearch.siembol.configeditor.common;
 
 public enum ConfigInfoType {
     RULE("rule", "Rules"),

@@ -27,9 +27,5 @@ public interface ConfigStore extends HealthCheckable {
 
     ConfigEditorResult getRepositories();
 
-    ConfigEditorResult shutDown();
-
-    ConfigEditorResult awaitShutDown();
-
     Health checkHealth();
 }
