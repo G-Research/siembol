@@ -14,4 +14,4 @@ COPY $APP /opt/$APP
 
 USER $APP
 
-CMD exec java $JAVA_OPTS -jar $APP-$VERSION.jar
+CMD exec java $JAVA_OPTS -cp $APP-$VERSION.jar org.springframework.boot.loader.PropertiesLauncher
