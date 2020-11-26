@@ -160,9 +160,8 @@ public class ResponseSchemaService implements ConfigSchemaService {
             throw new IllegalArgumentException(ATTRIBUTES_MISSING_ERROR);
         }
 
-        //NOTE; we are supporting kerberos authentication only
         HttpProvider httpProvider = new HttpProvider(responseAttributes.getResponseUrl(),
-                HttpProvider::getKerberosHttpClient);
+                responseAttributes.getResponseAuthenticationType().getHttpClientFactory());
         ConfigSchemaService ret = new Builder(httpProvider)
                 .uiConfigSchema(uiConfig)
                 .build();

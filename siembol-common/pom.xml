@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.67-SNAPSHOT</version>
+        <version>1.68-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.7</version>
+            <version>4.5.12</version>
         </dependency>
         <dependency>
             <groupId>org.apache.storm</groupId>

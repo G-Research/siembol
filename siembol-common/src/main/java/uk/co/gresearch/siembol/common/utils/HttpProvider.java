@@ -34,7 +34,7 @@ public class HttpProvider {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final int TIMEOUT_MILLI = 120000;
+    private static final int DEFAULT_TIMEOUT_MS = 60 * 1000;
     private final String host;
     private final Supplier<CloseableHttpClient> clientFactory;
 
@@ -122,15 +122,31 @@ public class HttpProvider {
                 .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory(true, false))
                 .build();
 
-        final RequestConfig params = RequestConfig.custom()
-                .setConnectTimeout(TIMEOUT_MILLI)
-                .setSocketTimeout(TIMEOUT_MILLI).build();
+        final RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(DEFAULT_TIMEOUT_MS)
+                .setConnectTimeout(DEFAULT_TIMEOUT_MS)
+                .setSocketTimeout(DEFAULT_TIMEOUT_MS).build();
 
         CloseableHttpClient httpclient = HttpClients
                 .custom()
                 .setDefaultAuthSchemeRegistry(authSchemeRegistry)
                 .setDefaultCredentialsProvider(credsProvider)
-                .setDefaultRequestConfig(params)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+
+        return httpclient;
+    }
+
+    public static CloseableHttpClient getHttpClient() {
+        final RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(DEFAULT_TIMEOUT_MS)
+                .setConnectTimeout(DEFAULT_TIMEOUT_MS)
+                .setSocketTimeout(DEFAULT_TIMEOUT_MS)
+                .build();
+
+        CloseableHttpClient httpclient = HttpClients
+                .custom()
+                .setDefaultRequestConfig(requestConfig)
                 .build();
 
         return httpclient;
