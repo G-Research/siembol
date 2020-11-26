@@ -17,7 +17,7 @@
         "testing": {
             "perConfigTestEnabled": true,
             "deploymentTestEnabled": true,
-            "testCaseEnabled": true
+            "testCaseEnabled": false
         }
     },
     "alert": {
