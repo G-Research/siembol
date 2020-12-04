@@ -4,8 +4,8 @@
             <button mat-raised-button class="left-button" (click)="changeRoute()">Back</button>
         </span>
         <mat-divider class="vert-divider" [vertical]="false"></mat-divider>
-        <ng-scrollbar class="scrollbar">
-            <re-json-tree [json]="configData" [prevKey]="'$'"></re-json-tree>
+        <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertX'" [appearance]="'standard'">
+            <re-json-tree [json]="configData" [prevKey]="'$'" [copyOnClick]="false"></re-json-tree>
         </ng-scrollbar>
     </div>
     <mat-divider [vertical]="true"></mat-divider>

@@ -4,7 +4,7 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfigData, Config } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
-import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
@@ -38,7 +38,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   previousTab = this.NO_TAB;
 
   fields: FormlyFieldConfig[] = [];
-  formlyOptions: any = { autoClear: true };
+  formlyOptions: any;
 
   editedConfig$: Observable<Config>;
 
@@ -52,6 +52,10 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
+    this.formlyOptions = {
+      autoClear: true,
+      map: editorService.configSchema.mapSchemaForm
+    }
     this.fields = [
       this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
     ];

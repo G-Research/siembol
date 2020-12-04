@@ -21,6 +21,7 @@ export class JsonTreeComponent implements OnChanges {
   @Input() expanded = true;
   @Input() prevKey: string;
   @Input() cleanOnChange = true;
+  @Input() copyOnClick = true;
 
   segments: Segment[] = [];
 
@@ -104,11 +105,13 @@ export class JsonTreeComponent implements OnChanges {
   }
 
   onClick(path, key) {
-    this.snackbar.openNotification(
+    if (this.copyOnClick) {
+      this.snackbar.openNotification(
         this.copyTextToClipboard(this.composePath(path, key))
-        ? 'JSON path copied to clipboard!'
-        : 'Error copying to clipboard'
-    );
+          ? 'JSON path copied to clipboard!'
+          : 'Error copying to clipboard'
+      );
+    }
   }
 
   composePath(part1: string, part2: any) {

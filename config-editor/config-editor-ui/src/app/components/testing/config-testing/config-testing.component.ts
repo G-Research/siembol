@@ -5,7 +5,7 @@ import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyForm } from '@ngx-formly/core';
 import { ConfigTestResult } from '../../../model/config-model';
 import { take } from 'rxjs/operators';
-import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 @Component({
   selector: 're-config-testing',
@@ -18,6 +18,7 @@ export class ConfigTestingComponent implements OnInit {
   testInput: any = {}
 
   fields: FormlyFieldConfig[] = [];
+  formlyOptions: any;
   options: FormlyFormOptions = {
     formState: {
       mainModel: {},
@@ -36,7 +37,13 @@ export class ConfigTestingComponent implements OnInit {
 
   ngOnInit() {
     if (this.editorService.metaDataMap.testing.perConfigTestEnabled) {
-      this.fields = [new FormlyJsonschema().toFieldConfig(this.editorService.testSpecificationSchema)];
+      let schema = this.editorService.testSpecificationSchema;
+      this.editorService.configSchema.formatTitlesInSchema(schema, '');
+      this.formlyOptions = {
+        autoClear: true,
+        map: this.editorService.configSchema.mapSchemaForm
+      }
+      this.fields = [new FormlyJsonschema().toFieldConfig(schema, this.formlyOptions)];
     }
   }
 

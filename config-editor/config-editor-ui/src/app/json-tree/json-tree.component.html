@@ -12,7 +12,8 @@
       }"
     >
       <div *ngIf="isExpandable(segment)" class="toggler"></div>
-      <span class="segment-key" (click)="onClick(segment.path, segment.key)">{{ segment.key }}</span>
+      <span *ngIf="copyOnClick; else notCopy" class="segment-key-help" (click)="onClick(segment.path, segment.key)">{{ segment.key }}</span>
+      <ng-template #notCopy><span class="segment-key" (click)="onClick(segment.path, segment.key)">{{ segment.key }}</span></ng-template>
       <span class="segment-separator">: </span>
       <span
         *ngIf="!segment.expanded || !isExpandable(segment)"
@@ -25,6 +26,7 @@
         [json]="segment.value"
         [expanded]="expanded"
         [prevKey]="composePath(prevKey, segment.key)"
+        [copyOnClick] = "copyOnClick"
       ></re-json-tree>
     </section>
   </section>

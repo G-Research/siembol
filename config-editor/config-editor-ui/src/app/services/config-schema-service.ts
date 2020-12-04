@@ -1,3 +1,5 @@
+import { TitleCasePipe } from '@angular/common';
+import { FormlyFieldConfig } from '@ngx-formly/core';
 import { UiMetadataMap } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { ConfigData, Config } from '@app/model';
@@ -10,6 +12,7 @@ export class ConfigSchemaService {
     private optionalObjects: string[] = [];
     private selectorName: string;
     private readonly _schema: JSONSchema7;
+    titleCasePipe: TitleCasePipe = new TitleCasePipe();
 
     constructor(private uiMetadata: UiMetadataMap, private user: string, private originalSchema: JSONSchema7) {
         if (uiMetadata.unionType) {
@@ -20,6 +23,7 @@ export class ConfigSchemaService {
         //NOTE: we need to modify the schema to handle optionals, unions and remove metadata
         this._schema = this.returnSubTree(this.originalSchema, this.uiMetadata.perConfigSchemaPath) as JSONSchema7;
         this.wrapOptionalsInSchema(this._schema, '', '');
+        this.formatTitlesInSchema(this._schema, '');
         delete this._schema.properties[this.uiMetadata.name];
         delete this._schema.properties[this.uiMetadata.author];
         delete this._schema.properties[this.uiMetadata.version];
@@ -36,7 +40,7 @@ export class ConfigSchemaService {
     public wrapConfig(obj: object): object {
         const ret = cloneDeep(obj);
         let config = this.wrapOptionalsInArray(ret);
-        if (this.unionPath) {
+        if (this.unionPath && Object.keys(ret).length !== 0) {
             this.wrapUnionConfig(ret, this.unionPath);
         }
         return ret;
@@ -156,9 +160,9 @@ export class ConfigSchemaService {
                     }
                     const sub = { ...thingy };
                     thingy.type = 'array';
-                    delete thingy.required;
-                    delete thingy.properties;
                     delete thingy.title;
+                    delete thingy.required;
+                    delete thingy.properties
                     delete thingy.description;
 
                     // tabs is not compatible with the array type so delete it if it is at the parent level but keep it on the sub level
@@ -280,5 +284,66 @@ export class ConfigSchemaService {
             current[element] = rawObjects[element];
         }
         return JSON.parse(JSON.stringify(current, this.replacer));
+    }
+
+    public formatTitlesInSchema(obj: any, propKey?: string): any {
+        if (obj === undefined || obj === null || typeof (obj) !== typeof ({})) {
+            return;
+        }
+        obj.title = obj.title ? obj.title : propKey;
+        obj.title = this.titleCasePipe.transform(obj.title.replace(/_/g, ' '));
+        if (obj.type === 'object') {
+            if (obj.properties === undefined && !obj.hasOwnProperty('oneOf')) {
+                obj.type = 'rawobject';
+            }
+            else if (typeof (obj.properties) === typeof ({})) {
+                const props = Object.keys(obj.properties);
+                for (const property of props) {
+                    this.formatTitlesInSchema(obj.properties[property], property);
+                }
+            } 
+        } else if (obj.type === 'array') {
+            if (obj.items.hasOwnProperty('oneOf')) {
+                let objs = obj.items.oneOf;
+                for (let i = 0; i < objs.length; i++) {
+                    this.formatTitlesInSchema(objs[i], '');
+                }
+            }
+            if (obj.items.type === 'object') {
+                this.formatTitlesInSchema(obj.items, propKey);
+            }
+        } else if (obj.type === undefined && !obj.hasOwnProperty('properties')) {
+            for (const key of Object.keys(obj)) {
+                this.formatTitlesInSchema(obj[key], key);
+            }
+        }
+    }
+
+    public mapSchemaForm(field: FormlyFieldConfig, schema: JSONSchema7) {
+        if (schema.hasOwnProperty('x-schema-form')) {
+            if (schema['x-schema-form'].hasOwnProperty('type')) {
+                field.type = schema['x-schema-form'].type;
+            }
+            if (schema['x-schema-form'].hasOwnProperty('wrappers')) {
+                field.wrappers = schema['x-schema-form'].wrappers;
+            } else if (field.type === 'object') {
+                field.wrappers = ['panel']
+            }
+            if (schema['x-schema-form'].hasOwnProperty('condition')) {
+                if (schema['x-schema-form'].condition.hasOwnProperty('hideExpression')) {
+                    try {
+                        const dynFunc: Function =
+                            new Function('model', 'localFields', 'field', schema['x-schema-form'].condition.hideExpression);
+                        field.hideExpression = (model, formState, f) => dynFunc(formState.mainModel, model, f);
+                    } catch {
+                        console.warn('Something went wrong with applying condition evaluation to form');
+                    }
+                }
+                if (schema['x-schema-form'].condition.hasOwnProperty('disableAutoClear')) {
+                    field['autoClear'] = false;
+                }
+            }
+        }
+        return field;
     }
 }

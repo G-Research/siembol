@@ -22,9 +22,9 @@
             <popper-content #testCaseResult>
                 <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>
             </popper-content> 
-            {{testCase.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon
-                >done</mat-icon>{{testCase.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
-                >clear</mat-icon>
+            {{testCase.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon 
+                class="test-icon">done</mat-icon>{{testCase.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
+                class="test-icon">clear</mat-icon>
             {{testCase.testCaseResult?.evaluationResult?.number_skipped_assertions}}<strong>?</strong>
         </div>
     </mat-card-title>
@@ -62,7 +62,11 @@
                                 <mat-icon>content_copy</mat-icon>
                             </a>
                         </span>
-                        <span [popper]="testCaseResult"
+                        <span>
+                            <div *ngIf="testCase?.testCaseResult?.evaluationResult" 
+                                class="test-status-badge"
+                                [ngClass]="getTestBadge(testCase.testCaseResult)"
+                                [popper]="testCaseResult"
                                 [popperTrigger]="'hover'"
                                 [popperPlacement]="'left-start'"
                                 [popperHideOnScroll]="true"
@@ -71,9 +75,6 @@
                                 <popper-content #testCaseResult>
                                     <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>
                                 </popper-content>
-                            <div *ngIf="testCase?.testCaseResult?.evaluationResult" 
-                                class="test-status-badge"
-                                [ngClass]="getTestBadge(testCase.testCaseResult)">
                                 {{testCase?.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon
                                     class="test-icon">done</mat-icon>
                                 {{testCase?.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon

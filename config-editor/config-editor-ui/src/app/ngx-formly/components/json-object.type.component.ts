@@ -58,7 +58,7 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
     }
 
     ngOnInit() {
-        this.val = JSON.stringify({[this.field.key]: this.field.parent.model[this.field.key]}, null, 2);
+        this.val = JSON.stringify({[Array.isArray(this.field.key) ? this.field.key[0] : this.field.key]: this.field.parent.model[Array.isArray(this.field.key) ? this.field.key[0] : this.field.key]}, null, 2);
         this.tree = this.field.parent.model;
         this.formControl.validator = a => {
             try {
@@ -78,7 +78,7 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
                     this.formControl.setErrors(null);
                     this.valid = true;
                     this.tree = parsed;
-                    this.options.formState['rawObjects'][this.field.key] = parsed[this.field.key];
+                    this.options.formState['rawObjects'][Array.isArray(this.field.key) ? this.field.key[0] : this.field.key] = parsed[Array.isArray(this.field.key) ? this.field.key[0]: this.field.key];
                     this.changeDetector.markForCheck();
                 }
             } catch (ex) {

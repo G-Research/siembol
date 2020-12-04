@@ -5,7 +5,7 @@ import { Type } from '@app/model/config-model';
 import { FormlyForm, FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { EditorService } from '../../../services/editor.service';
-import { FormlyJsonschema } from '@app/ngx-formly/formly-json-schema.service';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { AppConfigService } from '../../../config/app-config.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -26,7 +26,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     public ngUnsubscribe = new Subject();
     public editedTestCase$: Observable<TestCaseWrapper>;
     public fields: FormlyFieldConfig[] = [];
-    public options: any = { autoClear: false }
+    public options: any;
 
     public testCaseWrapper: TestCaseWrapper;
     public testCase: any;
@@ -51,10 +51,16 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         if (this.editorService.metaDataMap.testing.testCaseEnabled) {
-            const subschema = new FormlyJsonschema().toFieldConfig(cloneDeep(this.editorService.testSpecificationSchema));
+            const subschema = cloneDeep(this.editorService.testSpecificationSchema);
+            let schema = cloneDeep(this.appService.testCaseSchema);
+            schema.properties.test_specification = subschema;
             const schemaConverter = new FormlyJsonschema();
-            schemaConverter.testSpec = subschema;
-            this.fields = [schemaConverter.toFieldConfig(cloneDeep(this.appService.testCaseSchema), this.options)];
+            this.editorService.configSchema.formatTitlesInSchema(schema, '');
+            this.options = {
+                autoClear: false,
+                map: this.editorService.configSchema.mapSchemaForm
+            }
+            this.fields = [schemaConverter.toFieldConfig(schema, this.options)];
 
             this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
                 this.testCaseWrapper = testCaseWrapper;

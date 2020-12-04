@@ -1,6 +1,6 @@
 {
   "name": "rule-editor.ui",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "siembolCompileTimeVersion": "1.65-SNAPSHOT",
   "license": "MIT",
   "scripts": {
@@ -33,8 +33,8 @@
     "@angular/platform-server": "^9.0.0",
     "@angular/router": "^9.0.0",
     "@juggle/resize-observer": "^2.3.0",
-    "@ngx-formly/core": "~5.8.0",
-    "@ngx-formly/material": "~5.8.0",
+    "@ngx-formly/core": "^5.8.0",
+    "@ngx-formly/material": "^5.8.0",
     "@types/dragula": "^2.1.34",
     "@types/json-schema": "^7.0.5",
     "ajv": "^6.12.0",
@@ -43,7 +43,7 @@
     "json-ptr": "^1.2.0",
     "ng-block-ui": "^3.0.2",
     "ngx-popper": "^7.0.0",
-    "ngx-scrollbar": "^7.2.1-beta.0",
+    "ngx-scrollbar": "^7.4.1",
     "ngx-text-diff": "^0.6.0",
     "oidc-client": "^1.9.1",
     "omit-empty": "^1.0.0",

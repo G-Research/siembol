@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
+import { isNullOrUndefined, assignModelValue, getKeyPath, clone } from '../util/utility.functions';
 import { cloneDeep } from 'lodash';
-import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/utility.functions';
 
 
 @Component({
@@ -9,7 +9,7 @@ import { clone, isNullOrUndefined, assignModelValue, getKeyPath } from '../util/
   template: `
     <div>
         <mat-tab-group animationDuration="0ms" [(selectedIndex)]="selectedIndex">
-            <mat-tab *ngFor="let tab of field.fieldGroup; index as i" [label]="getEvaluatorType(tab?.model)">
+            <mat-tab *ngFor="let tab of field.fieldGroup; let i = index" [label]="getEvaluatorType(tab?.model)">
                 <span class="align-right">
                     
                     <svg *ngIf="i === model.length - 1"

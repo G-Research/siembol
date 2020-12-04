@@ -185,7 +185,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { name: 'array', component: ArrayTypeComponent },
         { name: 'object', component: ObjectTypeComponent },
         { name: 'tabs', component: TabsetTypeComponent },
-        { name: 'union', component: UnionTypeComponent },
+        { name: 'multischema', component: UnionTypeComponent },
         { name: 'tab-array', component: TabArrayTypeComponent },
       ],
       wrappers: [
