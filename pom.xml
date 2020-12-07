@@ -14,14 +14,12 @@
             </snapshots>
         </repository>
         <repository>
-            <id>spring-release</id>
-            <name>Spring Libs Release</name>
-            <url>https://repo.spring.io/libs-release</url>
-            <layout>default</layout>
+            <id>bintray</id>
+            <url>https://jcenter.bintray.com</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>    
+        </repository>
     </repositories>
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
@@ -48,6 +46,7 @@
         <guava_version>29.0-jre</guava_version>
         <springdoc_openapi_version>1.4.8</springdoc_openapi_version>
         <commons_beanutils_version>1.9.4</commons_beanutils_version>
+        <multiline_string_version>0.1.2</multiline_string_version>
     </properties>
     <modules>
         <module>siembol-common</module>

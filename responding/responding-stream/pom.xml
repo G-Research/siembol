@@ -170,6 +170,12 @@
             <artifactId>guava</artifactId>
             <version>${guava_version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.adrianwalker</groupId>
+            <artifactId>multiline-string</artifactId>
+            <version>${multiline_string_version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
