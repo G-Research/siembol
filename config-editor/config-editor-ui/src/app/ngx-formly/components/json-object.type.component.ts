@@ -60,7 +60,7 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
     ngOnInit() {
         this.val = JSON.stringify({[Array.isArray(this.field.key) ? this.field.key[0] : this.field.key]: this.field.parent.model[Array.isArray(this.field.key) ? this.field.key[0] : this.field.key]}, null, 2);
         this.tree = this.field.parent.model;
-        this.formControl.validator = a => {
+        this.formControl.setValidators = a => {
             try {
                 JSON.parse(this._val);
 
