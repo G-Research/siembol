@@ -98,8 +98,8 @@ jobs:
         with:
           name: unit-test-results-${{ matrix.lang }}
           path: |
-            target/surefire-reports/*.xml
-            target/site/surefire-report.html
+            **/target/surefire-reports/*.xml
+            **/target/site/surefire-report.html
 
   publish-test-results:
     needs: test-java
@@ -118,7 +118,7 @@ jobs:
         with:
           check_name: unit-test-results
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: "unit-test-results/unit-test-results-*/**/*.xml"
+          files: "unit-test-results/unit-test-results-*/**/TEST-*.xml"
           log_level: DEBUG
 
   build-docker-storm:
