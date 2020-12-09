@@ -23,10 +23,10 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -DskipTests
 
-      - name: Upload binaries
+      - name: Upload targets
         uses: actions/upload-artifact@v2
         with:
-          name: binaries
+          name: targets
           path: |
             **/target
 
@@ -78,24 +78,24 @@ jobs:
           restore-keys: |
             maven-
 
-      - name: Download binaries
+      - name: Download targets
         uses: actions/download-artifact@v2
         with:
-          name: binaries
+          name: targets
           path: .
       - name: Test with Maven (lang=${{ matrix.lang }})
         env:
           LANG: ${{ matrix.lang }}
         run: mvn -B test
 
-  delete-binaries:
+  delete-targets:
     runs-on: ubuntu-latest
     needs: test-java
     if: always()
     steps:
       - uses: geekyeggo/delete-artifact@v1
         with:
-          name: binaries
+          name: targets
           failOnError: false
 
   build-docker-storm:
