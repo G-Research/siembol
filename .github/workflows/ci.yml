@@ -89,6 +89,38 @@ jobs:
           LANG: ${{ matrix.lang }}
         run: mvn -B test
 
+      - name: Generate Unit Test Report
+        if: failure()
+        run: mvn --batch-mode surefire-report:report-only
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit-test-results-${{ matrix.lang }}
+          path: |
+            target/surefire-reports/*.xml
+            target/site/surefire-report.html
+
+  publish-test-results:
+    needs: test-java
+
+    runs-on: ubuntu-latest
+    if: success() || failure()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: unit-test-results
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1.6
+        with:
+          check_name: unit-test-results
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: "unit-test-results/unit-test-results-*/**/*.xml"
+          log_level: DEBUG
+
   build-docker-storm:
     runs-on: ubuntu-latest
     needs: build-java
