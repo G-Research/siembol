@@ -88,16 +88,6 @@ jobs:
           LANG: ${{ matrix.lang }}
         run: mvn -B test
 
-  delete-targets:
-    runs-on: ubuntu-latest
-    needs: test-java
-    if: always()
-    steps:
-      - uses: geekyeggo/delete-artifact@v1
-        with:
-          name: targets
-          failOnError: false
-
   build-docker-storm:
     runs-on: ubuntu-latest
     needs: build-java
