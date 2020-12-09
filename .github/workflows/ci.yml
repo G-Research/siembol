@@ -29,6 +29,7 @@ jobs:
           name: targets
           path: |
             **/target
+            !**/target/*.jar
 
       - name: Upload alerting-storm jar
         uses: actions/upload-artifact@v2
