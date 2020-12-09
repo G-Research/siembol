@@ -21,9 +21,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-			<groupId>uk.co.gresearch.siembol</groupId>
-			<artifactId>alerting-core</artifactId>
-			<version>1.68-SNAPSHOT</version>
+            <groupId>uk.co.gresearch.siembol</groupId>
+            <artifactId>alerting-core</artifactId>
+            <version>1.68-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jackson-databind</artifactId>
@@ -51,8 +51,8 @@
             <version>${multiline_string_version}</version>
             <scope>test</scope>
         </dependency>
-	</dependencies>	
-   <build>
+    </dependencies>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

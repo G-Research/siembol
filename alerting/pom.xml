@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <properties>
     </properties>
-	 <parent>
+    <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
         <version>1.68-SNAPSHOT</version>
@@ -20,7 +20,7 @@
     </modules>
     <dependencies>
     </dependencies>
-   <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

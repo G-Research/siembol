@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>	
+    <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-		<java_version>1.8</java_version>
+        <java_version>1.8</java_version>
         <jackson_version>2.9.8</jackson_version>
         <junit_version>4.12</junit_version>
         <mockito_version>3.2.4</mockito_version>
