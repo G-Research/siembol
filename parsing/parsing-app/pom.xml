@@ -14,7 +14,7 @@
         <version>1.68-SNAPSHOT</version>
     </parent>
     <dependencies>
-	    <dependency>
+        <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
             <version>1.68-SNAPSHOT</version>
