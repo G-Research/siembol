@@ -24,5 +24,6 @@ export interface AppConfig {
 
 export interface Oauth2Attributes {
     callbackPath: string;
+    expiresIntervalMinimum: number;
     oidcSettings: UserSettings;
 }

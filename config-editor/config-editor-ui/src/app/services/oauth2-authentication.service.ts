@@ -1,46 +1,45 @@
 import { DefaultAuthenticationService } from "./authentication.service";
-import { UserManager } from 'oidc-client';
-import { BehaviorSubject, from, Observable } from "rxjs";
+import { User, UserManager } from 'oidc-client';
+import { from, Observable } from "rxjs";
 import { HttpRequest } from "@angular/common/http";
 import { Oauth2Attributes } from "@app/model/app-config";
 
 export class Oauth2AuthenticationService extends DefaultAuthenticationService {
     private callbackPath: string;
-    private token: string;
+    private expiresIntervalMinimum: number;
     private userManager: UserManager;
-    private _loadedUser: boolean;
+    private user: User = null;
 
     constructor(authAttributes: Oauth2Attributes) {
         super();
         this.callbackPath = authAttributes.callbackPath;
+        this.expiresIntervalMinimum = authAttributes.expiresIntervalMinimum ? authAttributes.expiresIntervalMinimum : 0;
         this.userManager = new UserManager(authAttributes.oidcSettings);
         this.userManager.getUser().then(user => {
-            if (user
-                && !user.expired) {
-                this.token = user.access_token;
-                this._loadedUser = true;
+            if (user && this.hasUserFreshToken(user)) {
+                this.user = user;
             }
         });
     }
 
     modifyRequest(req: HttpRequest<any>): HttpRequest<any> {
-        if (!this.loadedUser) {
+        if (!this.user) {
             return req;
         }
 
         return req.clone({
             setHeaders: {
-                Authorization: `Bearer ${this.token}`
+                Authorization: `Bearer ${this.user.access_token}`
             }
         });
     }
 
     get loadedUser() {
-        return this._loadedUser;
+        return this.user !== null && this.hasUserFreshToken(this.user);
     }
 
     get loadedUser$() {
-        return this._loadedUser
+        return this.hasUserFreshToken(this.user)
             ? Observable.of(true)
             : this.completeAuthentication();
     }
@@ -50,19 +49,26 @@ export class Oauth2AuthenticationService extends DefaultAuthenticationService {
         this.userManager.signinRedirect();
     }
 
+    isCallbackUrl(url: string): boolean {
+        return url && url.startsWith(this.callbackPath);
+    }
+
     private completeAuthentication(): Observable<boolean> {
         return from(this.userManager.signinRedirectCallback().catch())
             .map(user => {
-                if (user) {
-                    this.token = user.access_token;
-                    this._loadedUser = true;
+                if (this.hasUserFreshToken(user)) {
+                    this.user = user;
                     return true;
                 }
                 return false;
             })
     }
 
-    isCallbackUrl(url: string): boolean {
-        return url && url.startsWith(this.callbackPath);
+    private hasUserFreshToken(user: User): boolean {
+        if (!user) {
+            return false;
+        }
+
+        return user.expires_in > this.expiresIntervalMinimum;
     }
 }
