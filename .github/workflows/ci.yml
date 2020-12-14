@@ -244,12 +244,16 @@ jobs:
     #needs: build-java
     #if: github.ref == 'refs/heads/master'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Get snapshot version
         id: version
         run: |
           version=$(grep --max-count=1 "<version>" pom.xml | sed -E "s/.*>(.+)<.*/\1/")
           echo "::set-output name=version::$version"
         shell: bash
+
       - name: Publish snapshot
         # deploy only SNAPSHOT versions
         if: endsWith(steps.version.outputs.version, '-SNAPSHOT')
