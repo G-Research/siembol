@@ -239,14 +239,15 @@ jobs:
             org.opencontainers.image.version=${{ steps.info.outputs.version }}
             org.opencontainers.image.title=siembol-config-editor-ui
 
-  publish-snapshot:
+  publish-snapshot-version:
     runs-on: ubuntu-latest
     #needs: build-java
     #if: github.ref == 'refs/heads/master'
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Get snapshot version
         id: version
         run: |
@@ -254,7 +255,33 @@ jobs:
           echo "::set-output name=version::$version"
         shell: bash
 
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    needs: publish-snapshot-version
+    # deploy only SNAPSHOT versions
+    if: endsWith(needs.publish-snapshot-version.outputs.version, '-SNAPSHOT')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-
+
       - name: Publish snapshot
-        # deploy only SNAPSHOT versions
-        if: endsWith(steps.version.outputs.version, '-SNAPSHOT')
-        run: mvn --batch-mode deploy
+        run: mvn --batch-mode deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
