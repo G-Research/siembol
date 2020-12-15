@@ -19,8 +19,20 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             maven-
-      - name: Build with Maven
-        run: mvn -B package
+
+      - name: Build and test with Maven
+        run: mvn --batch-mode package
+      - name: Generate unit test reports
+        if: failure()
+        run: mvn --batch-mode surefire-report:report-only
+      - name: Publish unit test results
+        uses: EnricoMi/publish-unit-test-result-action@v1.6
+        with:
+          check_name: unit-test-results
+          comment_title: Unit Test Results
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: "**/target/surefire-reports/TEST-*.xml"
+
       - name: Upload alerting-storm jar
         uses: actions/upload-artifact@v2
         with:
