@@ -8,16 +8,16 @@
     <packaging>jar</packaging>
     <properties>
     </properties>
-	<parent>
+    <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.68-SNAPSHOT</version>
+        <version>1.69-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.68-SNAPSHOT</version>
+            <version>1.69-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.adrianwalker</groupId>

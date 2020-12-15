@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.68-SNAPSHOT</version>
+        <version>1.69-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -105,7 +105,7 @@
             <groupId>org.adrianwalker</groupId>
             <artifactId>multiline-string</artifactId>
             <version>${multiline_string_version}</version>
-			<scope>test</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -160,7 +160,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-   <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

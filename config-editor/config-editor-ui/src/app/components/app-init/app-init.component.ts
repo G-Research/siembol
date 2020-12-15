@@ -28,7 +28,7 @@ export class AppInitComponent implements OnInit, OnDestroy {
         {
             component: EditorViewComponent,
             path: 'edit',
-            canActivate: [EditorServiceGuard],
+            canActivate: [AuthGuard, EditorServiceGuard],
             children: [{
                 path: '',
                 component: EditorViewComponent,

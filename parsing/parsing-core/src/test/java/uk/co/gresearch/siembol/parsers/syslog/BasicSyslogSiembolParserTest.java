@@ -4,15 +4,24 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import uk.co.gresearch.siembol.parsers.common.SiembolParser;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactory;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactoryImpl;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-
+@RunWith(Parameterized.class)
 public class BasicSyslogSiembolParserTest {
+    @Parameterized.Parameters
+    public static List<Object> data() {
+        return Arrays.asList(
+                new Locale("de", "DE"),
+                new Locale("en", "US"),
+                new Locale("zh", "CN"));
+    }
+
     private SiembolParser syslogParser;
     private SiembolParser syslogBsdParser;
     private ParserFactory factory;
@@ -175,6 +184,9 @@ public class BasicSyslogSiembolParserTest {
     @Multiline
     public static String multipleSdElementsDummyCheckpoint2;
 
+    public BasicSyslogSiembolParserTest(Locale locale) {
+        Locale.setDefault(locale);
+    }
 
     @Before
     public void setUp() throws Exception {

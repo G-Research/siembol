@@ -21,6 +21,7 @@ target/
 /dsq-prototype/data/*.csv
 /dsq-prototype/data
 pom.xml.versionsBackup
+dependency-reduced-pom.xml
 
 # Python
 *.pyc
