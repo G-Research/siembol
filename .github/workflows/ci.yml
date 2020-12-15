@@ -5,7 +5,6 @@ on: [push]
 jobs:
   build-java:
     runs-on: ubuntu-latest
-    if: false
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -161,7 +160,6 @@ jobs:
 
   build-js-config-editor-ui:
     runs-on: ubuntu-latest
-    if: false
     defaults:
       run:
         working-directory: config-editor/config-editor-ui
@@ -239,27 +237,30 @@ jobs:
             org.opencontainers.image.version=${{ steps.info.outputs.version }}
             org.opencontainers.image.title=siembol-config-editor-ui
 
-  publish-snapshot-version:
+  release-version:
     runs-on: ubuntu-latest
-    #needs: build-java
-    #if: github.ref == 'refs/heads/master'
+    needs: build-java
+    # we only release from master or tags
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Get snapshot version
+      - name: Get release version
         id: version
         run: |
           version=$(grep --max-count=1 "<version>" pom.xml | sed -E "s/.*>(.+)<.*/\1/")
           echo "::set-output name=version::$version"
         shell: bash
 
-  publish-snapshot:
+  release:
     runs-on: ubuntu-latest
-    needs: publish-snapshot-version
-    # deploy only SNAPSHOT versions
-    if: endsWith(needs.publish-snapshot-version.outputs.version, '-SNAPSHOT')
+    needs: release-version
+    # deploy only SNAPSHOT versions from master and non-SNAPSHOTs from tags
+    if: >
+      github.ref == 'refs/heads/master' && endsWith(needs.release-version.outputs.version, '-SNAPSHOT') ||
+      startsWith(github.ref, 'refs/tags/') && ! endsWith(needs.release-version.outputs.version, '-SNAPSHOT')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -284,7 +285,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Publish snapshot
+      - name: Release artifacts
         run: mvn --batch-mode deploy -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
