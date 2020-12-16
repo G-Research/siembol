@@ -1,9 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
   build-java:
@@ -105,7 +102,7 @@ jobs:
             JAR=${{ matrix.component }}-${{ steps.info.outputs.version }}.jar
             CLASS=${{ steps.info.outputs.class }}
           pull: true
-          push: true
+          push: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') }}
           tags: |
             gresearchdev/siembol-${{ matrix.component }}:latest
             gresearchdev/siembol-${{ matrix.component }}:${{ steps.info.outputs.version }}
@@ -164,7 +161,7 @@ jobs:
             APP=${{ matrix.component}}
             VERSION=${{ steps.info.outputs.version }}
           pull: true
-          push: true
+          push: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') }}
           tags: |
             gresearchdev/siembol-${{ matrix.component }}:latest
             gresearchdev/siembol-${{ matrix.component }}:${{ steps.info.outputs.version }}
@@ -243,7 +240,7 @@ jobs:
           context: deployment/docker
           file: deployment/docker/Dockerfile.config-editor-ui
           pull: true
-          push: true
+          push: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') }}
           tags: |
             gresearchdev/siembol-config-editor-ui:latest
             gresearchdev/siembol-config-editor-ui:${{ steps.info.outputs.version }}
