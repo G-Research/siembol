@@ -47,7 +47,7 @@ public class ModelHelper {
 
     private static final String WRONG_UNION_DTO_CLASS = "Wrong definition of union Dto Class with title: %s";
     private static final String NO_TITLE_ERROR_MSG = "Can not find title annotation in Dto Class %s";
-    private static final String NO_FIELDS_WARN_MSG = "Dto class without fields";
+    private static final String NO_FIELDS_WARN_MSG = "Dto: {} without fields used in the Dto: {}";
     private static ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final String PROPERTIES_KEY = "properties";
     private static final String REQUIRED_KEY = "required";
@@ -177,7 +177,7 @@ public class ModelHelper {
             }
 
             if (orderedNames.isEmpty()) {
-                LOG.warn(NO_FIELDS_WARN_MSG);
+                LOG.warn(NO_FIELDS_WARN_MSG, current.toString(), clazz.toString());
             }
             fieldNames.put(title, orderedNames);
             if (current.isEnum()) {

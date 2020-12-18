@@ -23,7 +23,6 @@ public class ConfigEditorUtils {
     private static final String EMPTY_UI_LAYOUT = "{}";
     private static final ObjectReader UI_CONFIG_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, JsonNode>>() {});
-    private static final String SCHEMA_FORM_LAYOUT_KEY = "x-schema-form";
     private static final String INDEX_REPLACE_REGEX = "\"minItems\"\\s*:\\s*1";
     private static final String INDEX_REPLACEMENT = "\"minItems\":0";
 
@@ -50,32 +49,7 @@ public class ConfigEditorUtils {
         });
     }
 
-    public static Optional<String> readTextFromResources(String filename) {
-        ClassLoader classLoader = new Object(){}.getClass().getClassLoader();
-        try (InputStream in = classLoader.getResourceAsStream(filename)) {
-            int ch;
-            StringBuilder sb = new StringBuilder();
-            while ((ch = in.read()) != -1) {
-                sb.append((char) ch);
-            }
-            return Optional.of(sb.toString());
-        } catch (Exception e) {
-            LOG.error("could not get file {}", filename, e);
-            return Optional.empty();
-        }
-    }
-
     public static Optional<String> readUiLayoutFile(String filePath) {
-        try {
-            return readTextFromFile(filePath);
-        } catch (FileNotFoundException ex) {
-            return Optional.of(EMPTY_UI_LAYOUT);
-        } catch (IOException ex) {
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<String> readTextFromFile(String filePath) throws IOException{
         try (FileInputStream fs = new FileInputStream(filePath)) {
             int ch;
             StringBuilder sb = new StringBuilder();
@@ -84,11 +58,11 @@ public class ConfigEditorUtils {
             }
             return Optional.of(sb.toString());
         } catch (FileNotFoundException ex) {
-            LOG.error("Could not find the file at {}", filePath);
-            throw ex;
+            LOG.warn("File {} can not find, using empty layout instead", filePath);
+            return Optional.of(EMPTY_UI_LAYOUT);
         } catch (IOException ex) {
-            LOG.error("An error occurred while trying to read file {}", filePath);
-            throw ex;
+            LOG.error("Exception {} during reading file {} ", ex, filePath);
+            return Optional.empty();
         }
     }
 
@@ -112,7 +86,16 @@ public class ConfigEditorUtils {
                     LOG.error("Path: {} in schema is not an Object, the value: {}", key, current.toString());
                     return Optional.empty();
                 }
-                ((ObjectNode)current).set(SCHEMA_FORM_LAYOUT_KEY, formAttributes.get(key));
+
+                if (!formAttributes.get(key).isObject()) {
+                    LOG.error("Layout config for path: {} is not an Object: {}",
+                            key, formAttributes.get(key).toString());
+                    return Optional.empty();
+                }
+
+                final ObjectNode currentObjectNode = (ObjectNode)current;
+                formAttributes.get(key).fieldNames().forEachRemaining(
+                        fieldName -> currentObjectNode.set(fieldName, formAttributes.get(key).get(fieldName)));
             } catch (Exception e) {
                 LOG.error("Problem to find a key: {} in schema: {}", key, rulesSchema);
                 return Optional.empty();

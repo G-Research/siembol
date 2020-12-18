@@ -164,20 +164,31 @@ public class ConfigEditorUtilsTest {
     /**
      * {
      *     "$..evaluators": {
-     *       "type": "tab-array"
+     *       "widget": {
+     *             "formlyConfig": {
+     *                 "type": "tab-array"
+     *             }
+     *         }
      *     },
      *     "$..rule_description": {
-     *       "type": "textarea",
-     *       "wrappers": []
+     *       "widget": {
+     *             "formlyConfig": {
+     *                 "type": "textarea",
+     *                 "wrappers": []
+     *             }
+     *         }
      *     },
      *     "$..matchers.items": {
-     *       "wrappers": [
-     *         "expansion-panel"
-     *       ]
+     *       "widget": {
+     *             "formlyConfig": {
+     *                 "wrappers": [
+     *                     "expansion-panel"
+     *                 ]
+     *             }
+     *         }
      *     },
      *     "$..matchers.items.properties.data": {
-     *       "type": "textarea",
-     *       "wrappers": []
+     *       "title" : "changed"
      *     }
      * }
      */
@@ -212,7 +223,24 @@ public class ConfigEditorUtilsTest {
      * }
      */
     @Multiline
-    public static String valueNotObject;
+    public static String valueWithString;
+
+    /**
+     * {
+     *     "$..evaluators": {
+     *     }
+     * }
+     */
+    @Multiline
+    public static String valueEmptyObject;
+
+    /**
+     * {
+     *     "$..evaluators": "dummy"
+     * }
+     */
+    @Multiline
+    public static String valueString;
 
     private static final ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
@@ -252,7 +280,19 @@ public class ConfigEditorUtilsTest {
 
     @Test
     public void patchSchemaNotJsonObject() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueNotObject);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueWithString);
+        Assert.assertFalse(patched.isPresent());
+    }
+
+    @Test
+    public void patchSchemaEmptyObject() throws IOException {
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueEmptyObject);
+        Assert.assertTrue(patched.isPresent());
+    }
+
+    @Test
+    public void patchSchemaStringValue() throws IOException {
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueString);
         Assert.assertFalse(patched.isPresent());
     }
 
