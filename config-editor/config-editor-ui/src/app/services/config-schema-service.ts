@@ -1,5 +1,4 @@
 import { TitleCasePipe } from '@angular/common';
-import { FormlyFieldConfig } from '@ngx-formly/core';
 import { UiMetadataMap } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { ConfigData, Config } from '@app/model';
@@ -164,15 +163,7 @@ export class ConfigSchemaService {
                     delete thingy.required;
                     delete thingy.properties
                     delete thingy.description;
-
-                    // tabs is not compatible with the array type so delete it if it is at the parent level but keep it on the sub level
-                    if (sub['x-schema-form'] !== undefined && sub['x-schema-form']['type'] !== 'tabs') {
-                        delete sub['x-schema-form'];
-                    }
-                    if (thingy['x-schema-form'] !== undefined && thingy['x-schema-form']['type'] === 'tabs' && thingy['type'] === 'array') {
-                        delete thingy['x-schema-form'];
-                    }
-                    // ***********************
+                    delete sub.widget;
 
                     thingy.items = sub;
                     thingy.maxItems = 1;
@@ -317,33 +308,5 @@ export class ConfigSchemaService {
                 this.formatTitlesInSchema(obj[key], key);
             }
         }
-    }
-
-    public mapSchemaForm(field: FormlyFieldConfig, schema: JSONSchema7) {
-        if (schema.hasOwnProperty('x-schema-form')) {
-            if (schema['x-schema-form'].hasOwnProperty('type')) {
-                field.type = schema['x-schema-form'].type;
-            }
-            if (schema['x-schema-form'].hasOwnProperty('wrappers')) {
-                field.wrappers = schema['x-schema-form'].wrappers;
-            } else if (field.type === 'object') {
-                field.wrappers = ['panel']
-            }
-            if (schema['x-schema-form'].hasOwnProperty('condition')) {
-                if (schema['x-schema-form'].condition.hasOwnProperty('hideExpression')) {
-                    try {
-                        const dynFunc: Function =
-                            new Function('model', 'localFields', 'field', schema['x-schema-form'].condition.hideExpression);
-                        field.hideExpression = (model, formState, f) => dynFunc(formState.mainModel, model, f);
-                    } catch {
-                        console.warn('Something went wrong with applying condition evaluation to form');
-                    }
-                }
-                if (schema['x-schema-form'].condition.hasOwnProperty('disableAutoClear')) {
-                    field['autoClear'] = false;
-                }
-            }
-        }
-        return field;
     }
 }

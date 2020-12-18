@@ -38,8 +38,7 @@
 </div>
 
 <form [formGroup]="form">
-    <formly-form #formly immutable [model]="testCase" [fields]="fields" [options]="options" [form]="form"
-        (modelChange)="onUpdateTestCase($event)"></formly-form>
+    <formly-form #formly [model]="testCase" [fields]="fields" [options]="options" [form]="form"></formly-form>
 </form>
 
 <div mat-dialog-actions class="button-group-end">

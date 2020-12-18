@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -14,11 +14,9 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigTestingComponent implements OnInit {
-  testSpecification: any = {};
   testInput: any = {}
 
   fields: FormlyFieldConfig[] = [];
-  formlyOptions: any;
   options: FormlyFormOptions = {
     formState: {
       mainModel: {},
@@ -39,21 +37,13 @@ export class ConfigTestingComponent implements OnInit {
     if (this.editorService.metaDataMap.testing.perConfigTestEnabled) {
       let schema = this.editorService.testSpecificationSchema;
       this.editorService.configSchema.formatTitlesInSchema(schema, '');
-      this.formlyOptions = {
-        autoClear: true,
-        map: this.editorService.configSchema.mapSchemaForm
-      }
-      this.fields = [new FormlyJsonschema().toFieldConfig(schema, this.formlyOptions)];
+      this.fields = [new FormlyJsonschema().toFieldConfig(schema)];
     }
-  }
-
-  updateTestSpecification(event: any) {
-    this.testSpecification = event;
   }
 
   runTest() {
     const cleanedTestSpecification = this.editorService.configSchema
-      .cleanRawObjects(this.testSpecification, this.formly.options.formState.rawObjects);
+      .cleanRawObjects(this.form.value, this.formly.options.formState.rawObjects);
 
     this.editorService.configStore.testService.testEditedConfig(cleanedTestSpecification).pipe(take(1))
       .subscribe((r: ConfigTestResult) => {

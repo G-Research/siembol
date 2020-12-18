@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
-import { isNullOrUndefined, assignModelValue, getKeyPath, clone } from '../util/utility.functions';
-import { cloneDeep } from 'lodash';
 
 
 @Component({
@@ -12,7 +10,7 @@ import { cloneDeep } from 'lodash';
             <mat-tab *ngFor="let tab of field.fieldGroup; let i = index" [label]="getEvaluatorType(tab?.model)">
                 <span class="align-right">
                     
-                    <svg *ngIf="i === model.length - 1"
+                    <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="18" width="18" viewBox="0 0 24 24"
                         class="close-button"
@@ -64,24 +62,12 @@ export class TabArrayTypeComponent extends FieldArrayType {
     public selectedIndex = 0;
 
     getEvaluatorType(model) {
-        return Object.keys(model)[0];
+        const keys = Object.keys(model)
+        return keys[keys.length-1]
     }
 
-    add(i?: number, initialModel?: any, { markAsDirty } = { markAsDirty: true }) {
-        i = isNullOrUndefined(i) ? this.field.fieldGroup.length : i;
-        if (!this.model) {
-          assignModelValue(this.field.parent.model, getKeyPath(this.field), []);
-        }
-        let originalModel = cloneDeep(this.model);
-        
-        this.model.splice(i, 0, initialModel ? clone(initialModel) : undefined);
-    
-        (<any> this.options)._buildForm(true);
-        originalModel.splice(i, 0, this.model[this.model.length - 1]);
-        for (let i=0; i < this.model.length; i++) {
-            this.model[i] = originalModel[i];
-        }
-        markAsDirty && this.formControl.markAsDirty();
+    add(i: number) {
+        super.add(i);
         this.selectedIndex = i;
     }
 }

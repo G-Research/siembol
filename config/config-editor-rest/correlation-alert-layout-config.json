@@ -1,29 +1,51 @@
 {
-    "$..rules.items": {
+  "$..rules.items": {
+    "widget": {
+      "formlyConfig": {
         "type": "tabs"
-    },
-    "$..rule_description": {
+      }
+    }
+  },
+  "$..rule_description": {
+    "widget": {
+      "formlyConfig": {
         "type": "textarea",
         "wrappers": []
-    },
-    "$..alerts": {
-        "wrappers": [
-            "expansion-panel"
-        ]
-    },
-    "$..alerts.items": {
-        "wrappers": [
-            "panel"
-        ]
-    },
-    "$..rules..tags.items": {
-        "wrappers": [
-            "panel"
-        ]
-    },
-    "$..max_time_lag_in_sec": {
-        "condition": {
-            "hideExpression": "if(model.correlation_attributes !== undefined && model.correlation_attributes.length > 0){ return model.correlation_attributes[0].time_computation_type !== 'event_time'} return true;"
-        }
+      }
     }
+  },
+  "$..alerts": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "expansion-panel"
+        ]
+      }
+    }
+  },
+  "$..alerts.items": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "panel"
+        ]
+      }
+    }
+  },
+  "$..rules..tags.items": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "panel"
+        ]
+      }
+    }
+  },
+  "$..max_time_lag_in_sec": {
+    "widget": {
+      "formlyConfig": {
+        "hideExpression": "model.time_computation_type !== 'event_time'"
+      }
+    }
+  }
 }

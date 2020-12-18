@@ -38,7 +38,6 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   previousTab = this.NO_TAB;
 
   fields: FormlyFieldConfig[] = [];
-  formlyOptions: any;
 
   editedConfig$: Observable<Config>;
 
@@ -52,12 +51,8 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
-    this.formlyOptions = {
-      autoClear: true,
-      map: editorService.configSchema.mapSchemaForm
-    }
     this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
+      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema)),
     ];
   }
 
@@ -75,7 +70,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   public ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), this.formlyOptions),
+        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema)),
       ];
 
       this.testingEnabled = () => this.editorService.metaDataMap.testing.perConfigTestEnabled

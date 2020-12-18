@@ -125,14 +125,4 @@ export class ArrayTypeComponent extends FieldArrayType {
         this.remove(oldIndex);
         this.add(newIndex, temp);
     }
-
-    remove(i: number, { markAsDirty } = { markAsDirty: true }) {
-        this.model.splice(i, 1);
-        this.formControl.removeAt(i);
-        this.field.fieldGroup.splice(i, 1);
-        this.field.fieldGroup.forEach((f, key) => f.key = `${key}`);
-        (<any>this.options)._buildForm(true);
-        markAsDirty && this.formControl.markAsDirty();
-    }
-
 }

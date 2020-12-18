@@ -35,7 +35,6 @@
     </div>
 
     <form [formGroup]="form">
-        <formly-form #formly immutable [model]="testInput" [fields]="fields" [options]="options" [form]="form"
-            (modelChange)="updateTestSpecification($event)"></formly-form>
+        <formly-form #formly [model]="testInput" [fields]="fields" [options]="options" [form]="form"></formly-form>
     </form>
 </mat-card>

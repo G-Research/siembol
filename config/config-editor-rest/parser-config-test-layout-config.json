@@ -1,6 +1,10 @@
 {
-    "$..properties.log": {
+  "$..properties.log": {
+    "widget": {
+      "formlyConfig": {
         "type": "textarea",
         "wrappers": []
+      }
     }
+  }
 }

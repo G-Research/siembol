@@ -1,28 +1,50 @@
 {
     "$..rules.items": {
-        "type": "tabs"
+        "widget": {
+            "formlyConfig": {
+                "type": "tabs"
+            }
+        }
     },
     "$..rule_description": {
-        "type": "textarea",
-        "wrappers": []
+        "widget": {
+            "formlyConfig": {
+                "type": "textarea",
+                "wrappers": []
+            }
+        }
     },
     "$..matchers.items": {
-        "wrappers": [
-            "expansion-panel"
-        ]
+        "widget": {
+            "formlyConfig": {
+                "wrappers": [
+                    "expansion-panel"
+                ]
+            }
+        }
     },
     "$..rules..tags.items": {
-        "wrappers": [
-            "panel"
-        ]
+        "widget": {
+            "formlyConfig": {
+                "wrappers": [
+                    "panel"
+                ]
+            }
+        }
     },
     "$..case_insensitive": {
-        "condition": {
-            "hideExpression": "return model.matchers[field.parent.key - 0].matcher_type !== 'IS_IN_SET'"
+        "widget": {
+            "formlyConfig": {
+                "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+            }
         }
     },
     "$..data": {
-        "type": "textarea",
-        "wrappers": []
+        "widget": {
+            "formlyConfig": {
+                "type": "textarea",
+                "wrappers": []
+            }
+        }
     }
 }

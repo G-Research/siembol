@@ -1,29 +1,51 @@
 {
-    "$..rules.items": {
+  "$..rules.items": {
+    "widget": {
+      "formlyConfig": {
         "type": "tabs"
-    },
-    "$..rule_description": {
+      }
+    }
+  },
+  "$..rule_description": {
+    "widget": {
+      "formlyConfig": {
         "type": "textarea",
         "wrappers": []
-    },
-    "$..matchers.items": {
-        "wrappers": [
-            "expansion-panel"
-        ]
-    },
-    "$..tags.items": {
-        "wrappers": [
-            "panel"
-        ]
-    },
-    "$..enriching_fields.items": {
-        "wrappers": [
-            "panel"
-        ]
-    },
-    "$..case_insensitive": {
-        "condition": {
-            "hideExpression": "return model.matchers[field.parent.key - 0].matcher_type !== 'IS_IN_SET'"
-        }
+      }
     }
+  },
+  "$..matchers.items": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "expansion-panel"
+        ]
+      }
+    }
+  },
+  "$..tags.items": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "panel"
+        ]
+      }
+    }
+  },
+  "$..enriching_fields.items": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "panel"
+        ]
+      }
+    }
+  },
+  "$..case_insensitive": {
+    "widget": {
+      "formlyConfig": {
+        "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+      }
+    }
+  }
 }

@@ -1,43 +1,71 @@
 {
-    "$..test_case_name": {
-        "condition": {
-            "hideExpression": "return (localFields.version !== 0)"
-        }
-    },
-    "$..version": {
-        "condition": {
-            "hideExpression": "return true"
-        }
-    },
-    "$..author": {
-        "condition": {
-            "hideExpression": "return true"
-        }
-    },
-    "$..config_name": {
-        "condition": {
-            "hideExpression": "return true"
-        }
-    },
-    "properties.description": {
-        "type": "textarea",
-        "wrappers": []
-    },
-    "$..assertions": {
-        "wrappers": [
-            "expansion-panel"
-        ]
-    },
-    "$..json_path": {
-        "type": "textarea",
-        "wrappers": []
-    },
-    "$..expected_pattern": {
-        "type": "textarea",
-        "wrappers": []
-    },
-    "$..assertions..properties.description": {
-        "type": "textarea",
-        "wrappers": []
+  "$..test_case_name": {
+    "widget": {
+      "formlyConfig": {
+        "hideExpression": "model.version !== 0"
+      }
     }
+  },
+  "$..version": {
+    "widget": {
+      "formlyConfig": {
+        "hideExpression": true
+      }
+    }
+  },
+  "$..author": {
+    "widget": {
+      "formlyConfig": {
+        "hideExpression": true
+      }
+    }
+  },
+  "$..config_name": {
+    "widget": {
+      "formlyConfig": {
+        "hideExpression": true
+      }
+    }
+  },
+  "properties.description": {
+    "widget": {
+      "formlyConfig": {
+        "type": "textarea",
+        "wrappers": []
+      }
+    }
+  },
+  "$..assertions": {
+    "widget": {
+      "formlyConfig": {
+        "wrappers": [
+          "expansion-panel"
+        ]
+      }
+    }
+  },
+  "$..json_path": {
+    "widget": {
+      "formlyConfig": {
+        "type": "textarea",
+        "wrappers": []
+      }
+    }
+  },
+  "$..expected_pattern": {
+    "widget": {
+      "formlyConfig": {
+        "type": "textarea",
+        "wrappers": []
+      }
+    }
+  },
+  "$..assertions..properties.description": {
+    "widget": {
+      "formlyConfig": {
+        "type": "textarea",
+        "wrappers": []
+      }
+    }
+  }
 }

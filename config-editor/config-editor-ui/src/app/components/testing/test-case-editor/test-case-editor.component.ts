@@ -57,15 +57,13 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
             const schemaConverter = new FormlyJsonschema();
             this.editorService.configSchema.formatTitlesInSchema(schema, '');
             this.options = {
-                autoClear: false,
-                map: this.editorService.configSchema.mapSchemaForm
+                resetOnHide: false
             }
             this.fields = [schemaConverter.toFieldConfig(schema, this.options)];
 
             this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
                 this.testCaseWrapper = testCaseWrapper;
                 this.testCase = testCaseWrapper !== null ? cloneDeep(this.testCaseWrapper.testCase) : {};
-                this.testCaseCopy = cloneDeep(this.testCase);
 
                 this.form = new FormGroup({});
                 this.options.formState = {
@@ -115,13 +113,9 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
         this.testStoreService.runEditedTestCase();
     }
 
-    onUpdateTestCase(event: any) {
-        this.testCaseCopy = event;
-    }
-
     private getTestCaseWrapper(): TestCaseWrapper {
         const ret = cloneDeep(this.testCaseWrapper) as TestCaseWrapper;
-        ret.testCase = cloneDeep(this.testCaseCopy);
+        ret.testCase = cloneDeep(this.form.value);
         ret.testCase.test_specification = this.editorService.configSchema
             .cleanRawObjects(ret.testCase.test_specification, this.formly.options.formState.rawObjects);
         return ret;

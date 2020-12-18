@@ -33,14 +33,11 @@ import { TestResultsComponent } from './components/testing/test-results/test-res
 import { JsonTreeComponent } from './json-tree/json-tree.component';
 import { ArrayTypeComponent } from './ngx-formly/components/array.type';
 import { ExpansionPanelWrapperComponent } from './ngx-formly/components/expansion-panel-wrapper.component';
-import { FormFieldWrapperComponent } from './ngx-formly/components/form-field-wrapper.component';
-import { InputTypeComponent } from './ngx-formly/components/input.type.component';
 import { JsonObjectTypeComponent } from './ngx-formly/components/json-object.type.component';
 import { UnionTypeComponent } from './ngx-formly/components/union.type.component';
 import { NullTypeComponent } from './ngx-formly/components/null.type';
 import { ObjectTypeComponent } from './ngx-formly/components/object.type.component';
 import { PanelWrapperComponent } from './ngx-formly/components/panel-wrapper.component';
-import { SelectTypeComponent } from './ngx-formly/components/select.type.component';
 import { TabArrayTypeComponent } from './ngx-formly/components/tab-array.type.component';
 import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
@@ -48,7 +45,6 @@ import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.com
 import { HighlightVariablesPipe } from './pipes';
 import { PopupService } from './popup.service';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
-import { CheckboxTypeComponent } from './ngx-formly/components/checkbox.type.component';
 import { ConfigTestingComponent } from './components/testing/config-testing/config-testing.component';
 
 import { RouterModule } from '@angular/router';
@@ -106,20 +102,16 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ExpansionPanelWrapperComponent,
     TextAreaTypeComponent,
     HighlightVariablesPipe,
-    InputTypeComponent,
-    FormFieldWrapperComponent,
     TestCentreComponent,
     TestCaseEditorComponent,
     ConfigTestingComponent,
     JsonObjectTypeComponent,
     TestResultsComponent,
-    SelectTypeComponent,
     TestCaseHelpComponent,
     JsonTreeComponent,
     UnionTypeComponent,
     TabArrayTypeComponent,
     BuildInfoDialogComponent,
-    CheckboxTypeComponent,
   ],
   imports: [
     BrowserModule,
@@ -156,12 +148,12 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { name: 'invalidJson', message: 'Json is not valid' },
       ],
       types: [
-        { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
+        { name: 'string', extends: 'input', wrappers: ['form-field'] },
         { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
         { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
         {
           name: 'number',
-          component: InputTypeComponent,
+          extends: 'input',
           wrappers: ['form-field'],
           defaultOptions: {
             templateOptions: {
@@ -171,7 +163,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         },
         {
           name: 'integer',
-          component: InputTypeComponent,
+          extends: 'input',
           wrappers: ['form-field'],
           defaultOptions: {
             templateOptions: {
@@ -191,9 +183,11 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
       wrappers: [
         { name: 'panel', component: PanelWrapperComponent },
         { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
-        { name: 'form-field', component: FormFieldWrapperComponent },
       ],
-      extras: { checkExpressionOn: 'changeDetectionCheck', immutable: false },
+      extras: {
+        checkExpressionOn: 'changeDetectionCheck',
+        resetFieldOnHide: true
+      },
     }),
     ReactiveFormsModule,
     FormlyMaterialModule,
