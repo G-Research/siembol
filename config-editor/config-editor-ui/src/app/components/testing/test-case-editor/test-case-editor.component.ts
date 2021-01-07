@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { TestCaseWrapper } from '@app/model/test-case';
+import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
 import { Type } from '@app/model/config-model';
 import { FormlyForm, FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
@@ -99,7 +99,10 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
                         [],
                         {
                             relativeTo: this.activeRoute,
-                            queryParams: { testCaseName: currentTestCase.testCase.test_case_name },
+                            queryParams: {
+                                testCaseName: currentTestCase.testCase.test_case_name,
+                                newTestCase: null
+                            },
                             queryParamsHandling: 'merge',
                         }
                     );
@@ -115,7 +118,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
 
     private getTestCaseWrapper(): TestCaseWrapper {
         const ret = cloneDeep(this.testCaseWrapper) as TestCaseWrapper;
-        ret.testCase = cloneDeep(this.form.value);
+        ret.testCase = copyHiddenTestCaseFields(cloneDeep(this.form.value), this.testCase);
         ret.testCase.test_specification = this.editorService.configSchema
             .cleanRawObjects(ret.testCase.test_specification, this.formly.options.formState.rawObjects);
         return ret;

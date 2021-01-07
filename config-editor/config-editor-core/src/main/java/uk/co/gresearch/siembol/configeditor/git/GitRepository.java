@@ -80,7 +80,7 @@ public class GitRepository implements Closeable {
         }
 
         git.add()
-                .addFilepattern(currentPath.getFileName().toString())
+                .addFilepattern(directory)
                 .call();
 
         git.commit()

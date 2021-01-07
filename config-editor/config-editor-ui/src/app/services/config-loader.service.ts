@@ -70,8 +70,7 @@ export class ConfigLoaderService {
       )
       .map(result => {
         if (
-          result.files &&
-          result.files.length > 0
+          result.files
         ) {
           return result.files.map(file => this.getConfigFromFile(file));
         }

@@ -57,3 +57,12 @@ export interface Assertion {
 export function isNewTestCase(testCase: TestCaseWrapper): boolean {
     return testCase.testCase.version === 0;
 }
+
+export function copyHiddenTestCaseFields(formValue: any, testCase: TestCase): any {
+    formValue.author = testCase.author;
+    formValue.version = testCase.version;
+    formValue.test_case_name = testCase.test_case_name;
+    formValue.config_name = testCase.config_name;
+
+    return formValue
+}
