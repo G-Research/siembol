@@ -6,19 +6,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.result.SiembolAttributes;
+import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.ERROR;
+import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
 
 
-public class AlertingRuleSchemaServiceImplTest {
+public class AlertingRuleSchemaServiceTest {
     /**
      * {"test_event":"true"}
      **/
@@ -32,22 +39,36 @@ public class AlertingRuleSchemaServiceImplTest {
     @Multiline
     public static String testSpecification;
 
-    private AlertingRuleSchemaServiceImpl alertingRuleSchemaService;
+    private AlertingRuleSchemaService alertingRuleSchemaService;
     private final String ruleSchema = "dummmy schema";
     private final String testSchema = "dummmy test schema";
+    private final String adminSchema = "dummmy admin config schema";
     private final String testRule = "dummmy rule";
     private final String testRules = "dummmy rules";
     private final String testResultOutput = "test output";
+    private final String testConfig = "dummmy config";
     private AlertingCompiler alertingCompiler;
     private AlertingResult alertingResult;
     private AlertingAttributes alertingAttributes;
+    private ConfigSchemaServiceContext context;
+    private SiembolJsonSchemaValidator adminConfigValidator;
+    private SiembolResult validationResult;
 
     @Before
     public void Setup() throws Exception {
         alertingCompiler = Mockito.mock(AlertingCompiler.class);
+        adminConfigValidator = Mockito.mock(SiembolJsonSchemaValidator.class);
+        validationResult = new SiembolResult(OK, new SiembolAttributes());
+        when(adminConfigValidator.validate(eq(testConfig))).thenReturn(validationResult);
+
+        context = new ConfigSchemaServiceContext();
+        context.setTestSchema(testSchema);
+        context.setConfigSchema(ruleSchema);
+        context.setAdminConfigSchema(adminSchema);
+        context.setAdminConfigValidator(adminConfigValidator);
         SiembolJsonSchemaValidator testValidator = new SiembolJsonSchemaValidator(AlertingTestSpecificationDto.class);
-        this.alertingRuleSchemaService = new AlertingRuleSchemaServiceImpl(alertingCompiler,
-                Optional.of(testValidator), Optional.of(testSchema), ruleSchema);
+        this.alertingRuleSchemaService = new AlertingRuleSchemaService(alertingCompiler, context);
+
         alertingAttributes = new AlertingAttributes();
         alertingResult = new AlertingResult(AlertingResult.StatusCode.OK, alertingAttributes);
         Mockito.when(alertingCompiler.validateRules(any())).thenReturn(alertingResult);
@@ -61,6 +82,29 @@ public class AlertingRuleSchemaServiceImplTest {
         ConfigEditorResult ret = alertingRuleSchemaService.getSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(ret.getAttributes().getRulesSchema(), ruleSchema);
+    }
+
+    @Test
+    public void getAdminConfigSchemaOK() {
+        ConfigEditorResult ret = alertingRuleSchemaService.getAdminConfigurationSchema();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertEquals(adminSchema, ret.getAttributes().getAdminConfigSchema());
+    }
+
+    @Test
+    public void validateAdminConfigOK() {
+        ConfigEditorResult ret = alertingRuleSchemaService.validateAdminConfiguration(testConfig);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        verify(adminConfigValidator, times(1)).validate(testConfig);
+    }
+
+    @Test
+    public void validateAdminConfigInvalid() {
+        when(adminConfigValidator.validate(eq(testConfig)))
+                .thenReturn(new SiembolResult(ERROR, new SiembolAttributes()));
+        ConfigEditorResult ret = alertingRuleSchemaService.validateAdminConfiguration(testConfig);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
+        verify(adminConfigValidator, times(1)).validate(testConfig);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.serviceaggregator;
+package uk.co.gresearch.siembol.configeditor.configinfo;
 
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;

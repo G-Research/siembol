@@ -16,7 +16,7 @@ import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributes;
+import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
 
 
 import java.util.List;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.withSettings;
 
 public class StormEnrichingApplicationTest {
     private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
-            .readerFor(StormEnrichmentAttributes.class);
+            .readerFor(StormEnrichmentAttributesDto.class);
 
     /**
      * {
@@ -190,7 +190,7 @@ public class StormEnrichingApplicationTest {
     ZookeperConnector enrichingTablesZookeperConnector;
     SiembolFileSystemFactory fileSystemFactory;
     SiembolFileSystem fileSystem;
-    StormEnrichmentAttributes enrichmentAttributes;
+    StormEnrichmentAttributesDto enrichmentAttributes;
     StormTopology topology;
 
     @Before
@@ -219,7 +219,7 @@ public class StormEnrichingApplicationTest {
 
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
         enrichmentAttributes.getStormAttributes().setBootstrapServers(bootstrapServer);
-        enrichmentAttributes.getKafkaBatchWriterAttributes().getProducerProperties()
+        enrichmentAttributes.getKafkaBatchWriterAttributes().getProducerProperties().getRawMap()
                 .put("bootstrap.servers", bootstrapServer);
 
         kafkaRule.waitForStartup();

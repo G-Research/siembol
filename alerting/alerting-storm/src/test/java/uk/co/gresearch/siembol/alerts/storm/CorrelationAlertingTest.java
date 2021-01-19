@@ -15,7 +15,7 @@ import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributes;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.withSettings;
 
 public class CorrelationAlertingTest {
     private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
-            .readerFor(AlertingStormAttributes.class);
+            .readerFor(AlertingStormAttributesDto.class);
     private static ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
 
@@ -146,7 +146,7 @@ public class CorrelationAlertingTest {
 
     private ZookeperConnector rulesZookeperConnector;
     private ZookeperConnectorFactory zookeperConnectorFactory;
-    private AlertingStormAttributes alertingStormAttributes;
+    private AlertingStormAttributesDto alertingStormAttributes;
     private StormTopology topology;
 
     @Before
@@ -162,7 +162,7 @@ public class CorrelationAlertingTest {
 
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
         alertingStormAttributes.getStormAttributes().setBootstrapServers(bootstrapServer);
-        alertingStormAttributes.getKafkaProducerProperties()
+        alertingStormAttributes.getKafkaProducerProperties().getRawMap()
                 .put("bootstrap.servers", bootstrapServer);
 
         kafkaRule.waitForStartup();

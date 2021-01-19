@@ -7,6 +7,7 @@ public class UserInfo {
     private String userName;
     private String email;
     private List<String> groups = new ArrayList<>();
+    private ServiceUserRole serviceUserRole = ServiceUserRole.SERVICE_USER;
 
     public String getUserName() {
         return userName;
@@ -30,5 +31,13 @@ public class UserInfo {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public ServiceUserRole getServiceUserRole() {
+        return serviceUserRole;
+    }
+
+    public void setServiceUserRole(ServiceUserRole serviceUserRole) {
+        this.serviceUserRole = serviceUserRole;
     }
 }

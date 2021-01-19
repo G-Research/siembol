@@ -1,50 +1,52 @@
 {
-  "$..rules.items": {
-    "widget": {
-      "formlyConfig": {
-        "type": "tabs"
+  "config_layout": {
+    "$..rules.items": {
+      "widget": {
+        "formlyConfig": {
+          "type": "tabs"
+        }
       }
-    }
-  },
-  "$..rule_description": {
-    "widget": {
-      "formlyConfig": {
-        "type": "textarea",
-        "wrappers": []
+    },
+    "$..rule_description": {
+      "widget": {
+        "formlyConfig": {
+          "type": "textarea",
+          "wrappers": []
+        }
       }
-    }
-  },
-  "$..matchers.items": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "expansion-panel"
-        ]
+    },
+    "$..matchers.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
       }
-    }
-  },
-  "$..tags.items": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "panel"
-        ]
+    },
+    "$..tags.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
       }
-    }
-  },
-  "$..enriching_fields.items": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "panel"
-        ]
+    },
+    "$..enriching_fields.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
       }
-    }
-  },
-  "$..case_insensitive": {
-    "widget": {
-      "formlyConfig": {
-        "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+    },
+    "$..case_insensitive": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+        }
       }
     }
   }

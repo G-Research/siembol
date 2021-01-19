@@ -3,6 +3,8 @@ package uk.co.gresearch.siembol.configeditor.serviceaggregator;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+
 public class ServiceAggregatorService {
     private final String type;
     private final ConfigStore configStore;
@@ -24,5 +26,9 @@ public class ServiceAggregatorService {
 
     public ConfigSchemaService getConfigSchemaService() {
         return configSchemaService;
+    }
+
+    public boolean supportsAdminConfiguration() {
+        return configSchemaService.getAdminConfigurationSchema().getStatusCode() == OK;
     }
 }

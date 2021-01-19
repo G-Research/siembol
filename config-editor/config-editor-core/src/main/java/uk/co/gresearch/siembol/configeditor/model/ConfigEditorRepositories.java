@@ -11,12 +11,16 @@ public class ConfigEditorRepositories {
     private String testCaseStoreUrl;
     @JsonProperty("rules_release_url")
     private String rulesReleaseUrl;
+    @JsonProperty("admin_config_url")
+    private String adminConfigUrl;
     @JsonProperty("rule_store_directory_url")
     private String ruleStoreDirectoryUrl;
     @JsonProperty("test_case_store_directory_url")
     private String testCaseStoreDirectoryUrl;
     @JsonProperty("rules_release_directory_url")
     private String rulesReleaseDirectoryUrl;
+    @JsonProperty("admin_config_directory_url")
+    private String adminConfigDirectoryUrl;
 
     public String getRuleStoreUrl() {
         return ruleStoreUrl;
@@ -64,5 +68,21 @@ public class ConfigEditorRepositories {
 
     public void setRulesReleaseDirectoryUrl(String rulesReleaseDirectoryUrl) {
         this.rulesReleaseDirectoryUrl = rulesReleaseDirectoryUrl;
+    }
+
+    public String getAdminConfigUrl() {
+        return adminConfigUrl;
+    }
+
+    public void setAdminConfigUrl(String adminConfigUrl) {
+        this.adminConfigUrl = adminConfigUrl;
+    }
+
+    public String getAdminConfigDirectoryUrl() {
+        return adminConfigDirectoryUrl;
+    }
+
+    public void setAdminConfigDirectoryUrl(String adminConfigDirectoryUrl) {
+        this.adminConfigDirectoryUrl = adminConfigDirectoryUrl;
     }
 }

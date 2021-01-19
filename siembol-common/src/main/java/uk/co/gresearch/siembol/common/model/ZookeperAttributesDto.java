@@ -1,17 +1,25 @@
-package uk.co.gresearch.siembol.common.zookeper;
+package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.reinert.jjschema.Attributes;
+
 import java.io.Serializable;
 
-public class ZookeperAttributes implements Serializable {
+@Attributes(title = "zookeeper attributes", description = "Zookeeper attributes for node cache")
+public class ZookeperAttributesDto implements Serializable {
     @JsonProperty("zk.url")
+    @Attributes(required = true, description = "Zookeeper servers url. Multiple servers are separated by coma")
     private String zkUrl;
+    @Attributes(required = true, description = "Path to a zookeeper node")
     @JsonProperty("zk.path")
     private String zkPath;
+    @Attributes(required = true, description = "Increasing sleep time in milliseconds between retries in retry policy")
     @JsonProperty("zk.base.sleep.ms")
-    private Integer zkBaseSleepMs;
+    private Integer zkBaseSleepMs = 1000;
     @JsonProperty("zk.max.retries")
-    private Integer zkMaxRetries;
+    @Attributes(required = true, description = "Maximum number of times to retry in retry policy", minimum = 1,
+            maximum = 29)
+    private Integer zkMaxRetries = 3;
 
     public String getZkUrl() {
         return zkUrl;

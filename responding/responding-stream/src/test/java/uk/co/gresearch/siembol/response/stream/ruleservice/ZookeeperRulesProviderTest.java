@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.response.common.*;
@@ -50,7 +50,7 @@ public class ZookeeperRulesProviderTest {
     private ZookeperConnectorFactory zookeperConnectorFactory;
     private ZookeperConnector rulesZookeperConnector;
     private ZookeeperRulesProvider rulesProvider;
-    private ZookeperAttributes zookeperAttributes;
+    private ZookeperAttributesDto zookeperAttributes;
 
     @Before
     public void setUp() throws Exception {
@@ -66,7 +66,7 @@ public class ZookeeperRulesProviderTest {
                 .build();
 
 
-        zookeperAttributes = new ZookeperAttributes();
+        zookeperAttributes = new ZookeperAttributesDto();
         zookeperConnectorFactory = Mockito.mock(ZookeperConnectorFactory.class, withSettings().serializable());
 
         rulesZookeperConnector = Mockito.mock(ZookeperConnector.class, withSettings().serializable());

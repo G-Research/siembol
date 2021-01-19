@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.rest.authorisation;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,7 +33,8 @@ public class Oauth2SecurityAdapter extends SiembolOauth2SecurityAdapter {
 
     @Bean
     AuthorisationProvider authorisationProvider() {
-        return new GroupBasedAuthorisationProvider(properties.getAuthorisationGroups());
+        return new GroupBasedAuthorisationProvider(properties.getAuthorisationGroups(),
+                properties.getAuthorisationAdminGroups());
     }
 
     @Override

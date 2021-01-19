@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
@@ -156,4 +157,48 @@ public class ConfigStoreController {
                 .getRepositories()
                 .toResponseEntity();
     }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/v1/{service}/configstore/adminconfig",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getAdminConfig(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String service) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getAdminConfig()
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/v1/{service}/configstore/adminconfig/status",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getAdminConfigStatus(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String service) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .getAdminConfigStatus()
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/configstore/adminconfig",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> submitAdminConfig(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String service,
+            @RequestBody String config) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .submitAdminConfig(user, config)
+                .toResponseEntity();
+    }
+
 }

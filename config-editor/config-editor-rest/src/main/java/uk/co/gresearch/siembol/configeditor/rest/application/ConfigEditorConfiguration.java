@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper;
@@ -43,13 +44,10 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
             ConfigEditorServiceType serviceType = ConfigEditorServiceType.fromName(serviceProperties.getType());
 
-            Optional<String> uiLayout = ConfigEditorUtils.readUiLayoutFile(serviceProperties.getUiConfigFileName());
-            Optional<String> testSpecUiLayout = ConfigEditorUtils.readUiLayoutFile(
-                    serviceProperties.getTestSpecUiConfigFileName());
+            ConfigEditorUiLayout uiLayout = ConfigEditorUtils.readUiLayoutFile(serviceProperties.getUiConfigFileName());
             Optional<Map<String, String>> attributes = Optional.ofNullable(serviceProperties.getAttributes());
+            ConfigSchemaService schemaService = serviceType.createConfigSchemaService(uiLayout, attributes);
 
-            ConfigSchemaService schemaService = serviceType.createConfigSchemaService(
-                    uiLayout, testSpecUiLayout, attributes);
             builder.addService(name,
                     serviceProperties.getType(),
                     configStorePropertiesMap.get(name),
@@ -62,7 +60,7 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
     @Bean
     TestCaseEvaluator testCaseEvaluator() throws Exception {
-        Optional<String> uiLayout = ConfigEditorUtils.readUiLayoutFile(properties.getTestCasesUiConfigFileName());
+        ConfigEditorUiLayout uiLayout = ConfigEditorUtils.readUiLayoutFile(properties.getTestCasesUiConfigFileName());
         return new TestCaseEvaluatorImpl(uiLayout);
     }
 

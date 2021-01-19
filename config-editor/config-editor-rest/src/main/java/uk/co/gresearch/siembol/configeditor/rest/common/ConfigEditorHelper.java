@@ -66,9 +66,11 @@ public class ConfigEditorHelper {
             directoriesUnion.addAll(current.storeDirectories);
             directoriesUnion.addAll(current.releaseDirectories);
             directoriesUnion.addAll(current.testCaseDirectories);
+            directoriesUnion.addAll(current.adminConfigDirectories);
             int expectedDirectoriesSize = current.storeDirectories.size()
                     + current.releaseDirectories.size()
-                    + current.testCaseDirectories.size();
+                    + current.testCaseDirectories.size()
+                    + current.adminConfigDirectories.size();
 
             if (current.userNames.size() != EXPECTED_ONE_ITEM_SIZE
                     || current.passwords.size() != EXPECTED_ONE_ITEM_SIZE
@@ -101,6 +103,7 @@ public class ConfigEditorHelper {
         Set<String> storeDirectories = new HashSet<>();
         Set<String> releaseDirectories = new HashSet<>();
         Set<String> testCaseDirectories = new HashSet<>();
+        Set<String> adminConfigDirectories = new HashSet<>();
 
         void removeNullStrings() {
             userNames.remove(null);
@@ -109,6 +112,7 @@ public class ConfigEditorHelper {
             storeDirectories.remove(null);
             releaseDirectories.remove(null);
             testCaseDirectories.remove(null);
+            adminConfigDirectories.remove(null);
         }
     }
 }

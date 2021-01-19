@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
@@ -71,16 +71,16 @@ public class EnrichmentEvaluatorBoltTest {
     private EnrichmentExceptions exceptions;
     private EnrichmentCommands commands;
     EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
-    ZookeperAttributes zookeperAttributes;
-    StormEnrichmentAttributes attributes;
+    ZookeperAttributesDto zookeperAttributes;
+    StormEnrichmentAttributesDto attributes;
     ZookeperConnector zookeperConnector;
     ZookeperConnectorFactory zookeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
     public void setUp() throws Exception {
-        zookeperAttributes = new ZookeperAttributes();
-        attributes = new StormEnrichmentAttributes();
+        zookeperAttributes = new ZookeperAttributesDto();
+        attributes = new StormEnrichmentAttributesDto();
         attributes.setEnrichingRulesZookeperAttributes(zookeperAttributes);
 
         exceptions = new EnrichmentExceptions();

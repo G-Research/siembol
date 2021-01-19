@@ -15,10 +15,7 @@ import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAssertionResult;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorTestCaseResult;
+import uk.co.gresearch.siembol.configeditor.model.*;
 import uk.co.gresearch.siembol.configeditor.testcase.model.AssertionTypeDto;
 import uk.co.gresearch.siembol.configeditor.testcase.model.TestAssertionDto;
 import uk.co.gresearch.siembol.configeditor.testcase.model.TestCaseDto;
@@ -41,17 +38,14 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
     private final JsonSchemaValidator jsonSchemaValidator;
     private final String testCaseSchema;
 
-    public TestCaseEvaluatorImpl(Optional<String> uiConfigLayout) throws Exception {
-        this.jsonSchemaValidator =  new SiembolJsonSchemaValidator(TestCaseDto.class);
+    public TestCaseEvaluatorImpl(ConfigEditorUiLayout uiLayout) throws Exception {
+        this.jsonSchemaValidator = new SiembolJsonSchemaValidator(TestCaseDto.class);
         String schemaStr = jsonSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();
-        if (uiConfigLayout.isPresent()) {
-            Optional<String> patchedSchema = ConfigEditorUtils.patchJsonSchema(schemaStr, uiConfigLayout.get());
-            if (!patchedSchema.isPresent()) {
-                throw new IllegalArgumentException(EMPTY_PATCHED_UI_SCHEMA);
-            }
-            schemaStr = patchedSchema.get();
+        Optional<String> patchedSchema = ConfigEditorUtils.patchJsonSchema(schemaStr, uiLayout.getTestCaseLayout());
+        if (!patchedSchema.isPresent()) {
+            throw new IllegalArgumentException(EMPTY_PATCHED_UI_SCHEMA);
         }
-        testCaseSchema = schemaStr;
+        testCaseSchema = patchedSchema.get();
 
         Configuration.setDefaults(new Configuration.Defaults() {
 

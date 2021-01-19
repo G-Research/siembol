@@ -18,7 +18,7 @@ import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributes;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 
 public class KafkaWriterBoltTest {
     private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
-            .readerFor(AlertingStormAttributes.class);
+            .readerFor(AlertingStormAttributesDto.class);
     private static final ObjectReader JSON_MAP_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
 
@@ -97,7 +97,7 @@ public class KafkaWriterBoltTest {
     @ClassRule
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
-    private AlertingStormAttributes attributes;
+    private AlertingStormAttributesDto attributes;
     private KafkaWriterBolt writerBolt;
     private String bootstrapServer;
     private Tuple tuple;
@@ -112,7 +112,7 @@ public class KafkaWriterBoltTest {
                 .readValue(alertingStormConfig);
         alertMap = JSON_MAP_READER.readValue(AlertMessageStr);
         bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
-        attributes.getKafkaProducerProperties().put("bootstrap.servers", bootstrapServer);
+        attributes.getKafkaProducerProperties().getRawMap().put("bootstrap.servers", bootstrapServer);
 
         collector = Mockito.mock(OutputCollector.class);
         AlertMessages = new AlertMessages();

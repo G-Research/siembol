@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -18,14 +19,15 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingRulesCompiler;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-
-public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
+public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
@@ -40,23 +42,11 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
     private static final String SCHEMA_INIT_ERROR = "Error during computing rules schema";
     private static final String TESTING_ERROR = "Unexpected rule testing service result";
     private final AlertingCompiler alertingCompiler;
-    private final Optional<SiembolJsonSchemaValidator> testSchemaValidator;
-    private final Optional<String> testSchema;
-    private final String schema;
 
-    AlertingRuleSchemaServiceImpl(AlertingCompiler alertingCompiler,
-                                  Optional<SiembolJsonSchemaValidator> testSchemaValidator,
-                                  Optional<String> testSchema,
-                                  String schema) throws Exception {
+    AlertingRuleSchemaService(AlertingCompiler alertingCompiler,
+                              ConfigSchemaServiceContext context) {
+        super(context);
         this.alertingCompiler = alertingCompiler;
-        this.testSchemaValidator = testSchemaValidator;
-        this.testSchema = testSchema;
-        this.schema = schema;
-    }
-
-    @Override
-    public ConfigEditorResult getSchema() {
-        return ConfigEditorResult.fromSchema(schema);
     }
 
     @Override
@@ -71,59 +61,78 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         return fromAlertingValidateResult(alertingResult);
     }
 
-    public static ConfigSchemaService createAlertingRuleSchemaService(Optional<String> uiConfig,
-                                                                      Optional<String> testUiConfig) throws Exception {
+    public static ConfigSchemaService createAlertingRuleSchemaService(ConfigEditorUiLayout uiLayout) throws Exception {
         LOG.info("Initialising alerts rule schema service");
+        ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
         AlertingCompiler compiler = AlertingRulesCompiler.createAlertingRulesCompiler();
         AlertingResult schemaResult = compiler.getSchema();
 
         if (schemaResult.getStatusCode() != AlertingResult.StatusCode.OK
                 || schemaResult.getAttributes().getRulesSchema() == null
-                || !uiConfig.isPresent()) {
+                || uiLayout == null) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .patchJsonSchema(schemaResult.getAttributes().getRulesSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getRulesSchema(), uiLayout.getConfigLayout());
 
-        if (!computedSchema.isPresent()) {
-            LOG.error(SCHEMA_INIT_ERROR);
-            throw new IllegalStateException(SCHEMA_INIT_ERROR);
-        }
         SiembolJsonSchemaValidator testValidator = new SiembolJsonSchemaValidator(AlertingTestSpecificationDto.class);
         String testSchema = testValidator.getJsonSchema().getAttributes().getJsonSchema();
 
-        Optional<String> testSchemaUi = testUiConfig.isPresent()
-                ? ConfigEditorUtils.patchJsonSchema(testSchema, testUiConfig.get())
-                : Optional.of(testSchema);
+        SiembolJsonSchemaValidator adminConfigValidator = new SiembolJsonSchemaValidator(AlertingStormAttributesDto.class);
+        Optional<String> adminConfigSchemaUi = ConfigEditorUtils.patchJsonSchema(
+                adminConfigValidator.getJsonSchema().getAttributes().getJsonSchema(),
+                uiLayout.getAdminConfigLayout());
+
+        Optional<String> testSchemaUi = ConfigEditorUtils.patchJsonSchema(testSchema, uiLayout.getTestLayout());
+
+        if (!computedSchema.isPresent()
+                || !adminConfigSchemaUi.isPresent()
+                || !testSchemaUi.isPresent()) {
+            LOG.error(SCHEMA_INIT_ERROR);
+            throw new IllegalStateException(SCHEMA_INIT_ERROR);
+        }
+        context.setConfigSchema(computedSchema.get());
+        context.setAdminConfigSchema(adminConfigSchemaUi.get());
+        context.setAdminConfigValidator(adminConfigValidator);
+        context.setTestSchema(testSchema);
         LOG.info("Initialising alerts rule schema service completed");
-        return new AlertingRuleSchemaServiceImpl(compiler, Optional.of(testValidator), testSchemaUi, computedSchema.get());
+        return new AlertingRuleSchemaService(compiler, context);
     }
 
     public static ConfigSchemaService createAlertingCorrelationRuleSchemaService(
-            Optional<String> uiConfig) throws Exception {
+            ConfigEditorUiLayout uiLayout) throws Exception {
         LOG.info("Initialising alerts correlation rule schema service");
+        ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
         AlertingCompiler compiler = AlertingCorrelationRulesCompiler.createAlertingCorrelationRulesCompiler();
         AlertingResult schemaResult = compiler.getSchema();
 
         if (schemaResult.getStatusCode() != AlertingResult.StatusCode.OK
                 || schemaResult.getAttributes().getRulesSchema() == null
-                || !uiConfig.isPresent()) {
+                || uiLayout == null) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .patchJsonSchema(schemaResult.getAttributes().getRulesSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getRulesSchema(), uiLayout.getConfigLayout());
+        SiembolJsonSchemaValidator adminConfigValidator = new SiembolJsonSchemaValidator(AlertingStormAttributesDto.class);
+        Optional<String> adminConfigSchemaUi = ConfigEditorUtils.patchJsonSchema(
+                adminConfigValidator.getJsonSchema().getAttributes().getJsonSchema(),
+                uiLayout.getAdminConfigLayout());
 
-        if (!computedSchema.isPresent()) {
+        if (!computedSchema.isPresent() || !adminConfigSchemaUi.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
+        context.setConfigSchema(computedSchema.get());
+        context.setAdminConfigSchema(adminConfigSchemaUi.get());
+        context.setAdminConfigValidator(adminConfigValidator);
+
         LOG.info("Initialising alerts correlation rule schema service completed");
-        return new AlertingRuleSchemaServiceImpl(compiler, Optional.empty(), Optional.empty(), computedSchema.get());
+        return new AlertingRuleSchemaService(compiler, context);
     }
 
     @Override
@@ -186,15 +195,5 @@ public class AlertingRuleSchemaServiceImpl implements ConfigSchemaService {
         }
 
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
-    }
-
-    @Override
-    public ConfigEditorResult getTestSchema() {
-        if (!testSchema.isPresent()) {
-            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
-        }
-        ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        attr.setTestSchema(testSchema.get());
-        return new ConfigEditorResult(OK, attr);
     }
 }

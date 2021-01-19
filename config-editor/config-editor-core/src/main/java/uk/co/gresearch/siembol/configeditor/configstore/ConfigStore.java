@@ -25,6 +25,12 @@ public interface ConfigStore extends HealthCheckable {
 
     ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease);
 
+    ConfigEditorResult getAdminConfig();
+
+    ConfigEditorResult getAdminConfigStatus();
+
+    ConfigEditorResult submitAdminConfig(UserInfo user, String adminConfig);
+
     ConfigEditorResult getRepositories();
 
     Health checkHealth();

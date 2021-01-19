@@ -38,9 +38,9 @@ public class KafkaWriterBolt extends BaseRichBolt {
     private Producer<String, String> producer;
     private RuleProtectionSystem ruleProtection;
 
-    public KafkaWriterBolt(AlertingStormAttributes attributes) {
+    public KafkaWriterBolt(AlertingStormAttributesDto attributes) {
         this.props = new Properties();
-        attributes.getKafkaProducerProperties().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
+        attributes.getKafkaProducerProperties().getRawMap().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
         this.outputTopic = attributes.getOutputTopic();
         this.errorTopic = attributes.getKafkaErrorTopic();
         this.correlationTopic = attributes.getCorrelationOutputTopic();

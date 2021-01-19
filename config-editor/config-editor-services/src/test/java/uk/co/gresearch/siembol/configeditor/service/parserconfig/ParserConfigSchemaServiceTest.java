@@ -7,18 +7,19 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactory;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactoryResult;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 
-public class ParserConfigSchemaServiceImplTest {
+public class ParserConfigSchemaServiceTest {
     /**
      * {
      *   "encoding" : "utf8_string",
@@ -37,7 +38,7 @@ public class ParserConfigSchemaServiceImplTest {
     @Multiline
     public static String logHex;
 
-    private ParserConfigSchemaServiceImpl parserConfigSchemaService;
+    private ParserConfigSchemaService parserConfigSchemaService;
     private final String schema = "dummmy schema";
     private final String testSchema = "dummmy schema";
     private final String testConfig = "dummmy parser config";
@@ -49,11 +50,15 @@ public class ParserConfigSchemaServiceImplTest {
     private ParserFactoryResult parserFactoryResult;
     private ParserFactoryAttributes parserFactoryAttributes;
     private ParserResult parserResult;
+    private ConfigSchemaServiceContext context;
 
     @Before
     public void setup() throws Exception {
+        context = new ConfigSchemaServiceContext();
+        context.setConfigSchema(schema);
+        context.setTestSchema(schema);
         parserFactory = Mockito.mock(ParserFactory.class);
-        this.parserConfigSchemaService = new ParserConfigSchemaServiceImpl(parserFactory, schema, testSchema);
+        this.parserConfigSchemaService = new ParserConfigSchemaService(parserFactory, context);
         parserFactoryAttributes = new ParserFactoryAttributes();
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, parserFactoryAttributes);
         parserResult = new ParserResult();
@@ -196,34 +201,33 @@ public class ParserConfigSchemaServiceImplTest {
 
     @Test
     public void createSchemaEmptyTestConfigs() throws Exception {
-        ConfigSchemaService service  = ParserConfigSchemaServiceImpl
-                .createParserConfigSchemaService(Optional.of(dummyUiLayout), Optional.empty());
+        ConfigSchemaService service  = ParserConfigSchemaService
+                .createParserConfigSchemaService(new ConfigEditorUiLayout());
         Assert.assertNotNull(service.getSchema());
         Assert.assertNotNull(service.getTestSchema());
     }
 
     @Test
     public void createSchemaConfigs() throws Exception {
-        ConfigSchemaService service  = ParserConfigSchemaServiceImpl
-                .createParserConfigSchemaService(Optional.of(dummyUiLayout),
-                        Optional.of(dummyUiLayout));
+        ConfigSchemaService service  = ParserConfigSchemaService
+                .createParserConfigSchemaService(new ConfigEditorUiLayout());
         Assert.assertNotNull(service.getSchema());
         Assert.assertNotNull(service.getTestSchema());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void createSchemaEmptyUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaService(Optional.empty(), Optional.of(dummyUiLayout));
+    @Test
+    public void getAdminConfigSchemaError() throws Exception {
+        ConfigSchemaService service  = ParserConfigSchemaService
+                .createParserConfigSchemaService(new ConfigEditorUiLayout());
+        ConfigEditorResult ret = service.getAdminConfigurationSchema();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }
 
-    @Test(expected = Exception.class)
-    public void createSchemaWrongUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaService(Optional.of("INVALID"), Optional.empty());
-    }
-
-    @Test(expected = Exception.class)
-    public void createSchemaWrongTestUiConfigs() throws Exception {
-        ParserConfigSchemaServiceImpl.createParserConfigSchemaService(Optional.of(dummyUiLayout),
-                Optional.of("INVALID"));
+    @Test
+    public void validateAdminConfigError() throws Exception {
+        ConfigSchemaService service  = ParserConfigSchemaService
+                .createParserConfigSchemaService(new ConfigEditorUiLayout());
+        ConfigEditorResult ret = service.getAdminConfigurationSchema();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }
 }

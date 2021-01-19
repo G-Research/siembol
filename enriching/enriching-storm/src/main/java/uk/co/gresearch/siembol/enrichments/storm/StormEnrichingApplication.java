@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.HdfsFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
-import uk.co.gresearch.siembol.common.storm.StormAttributes;
+import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributes;
+import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Base64;
@@ -41,16 +41,18 @@ public class StormEnrichingApplication {
     private static final String SUBMIT_INFO_MSG = "Submitted enriching storm topology: {} " +
             "with enriching storm attributes: {}";
 
-    private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(StormEnrichmentAttributes attributes) {
-        StormAttributes stormAttributes = attributes.getStormAttributes();
-        stormAttributes.getKafkaSpoutProperties().put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        stormAttributes.getKafkaSpoutProperties().put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(StormEnrichmentAttributesDto attributes) {
+        StormAttributesDto stormAttributes = attributes.getStormAttributes();
+        stormAttributes.getKafkaSpoutProperties().getRawMap()
+                .put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        stormAttributes.getKafkaSpoutProperties().getRawMap()
+                .put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         return StormHelper.createKafkaSpoutConfig(stormAttributes,
                 r -> new Values(r.value()), new Fields(EnrichmentTuples.EVENT.toString()));
     }
 
-    public static StormTopology createTopology(StormEnrichmentAttributes attributes,
+    public static StormTopology createTopology(StormEnrichmentAttributesDto attributes,
                                                ZookeperConnectorFactory zookeperConnectorFactory,
                                                SiembolFileSystemFactory siembolFileSystemFactory) {
         TopologyBuilder builder = new TopologyBuilder();
@@ -89,12 +91,12 @@ public class StormEnrichingApplication {
         }
 
         String attributesStr = new String(Base64.getDecoder().decode(args[STORM_ATTR_INDEX]));
-        StormEnrichmentAttributes attributes = new ObjectMapper()
-                .readerFor(StormEnrichmentAttributes.class)
+        StormEnrichmentAttributesDto attributes = new ObjectMapper()
+                .readerFor(StormEnrichmentAttributesDto.class)
                 .readValue(attributesStr);
 
         Config config = new Config();
-        config.putAll(attributes.getStormAttributes().getStormConfig());
+        config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
         StormTopology topology = createTopology(attributes,
                 new ZookeperConnectorFactory() {},
                 new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));

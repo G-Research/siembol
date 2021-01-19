@@ -15,7 +15,7 @@ import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentExceptions;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributes;
+import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
 
 import java.util.*;
 
@@ -60,7 +60,7 @@ public class EnrichmentMergerBoltTest {
         when(tuple.getValueByField(eq(EnrichmentTuples.EXCEPTIONS.toString()))).thenReturn(exceptions);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        StormEnrichmentAttributes attributes = new StormEnrichmentAttributes();
+        StormEnrichmentAttributesDto attributes = new StormEnrichmentAttributesDto();
         attributes.setEnrichingErrorTopic(errorTopic);
         attributes.setEnrichingOutputTopic(outputTopic);
         mergerBolt = new EnrichmentMergerBolt(attributes);

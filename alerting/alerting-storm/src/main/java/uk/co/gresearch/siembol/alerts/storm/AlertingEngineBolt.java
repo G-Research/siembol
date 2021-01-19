@@ -14,7 +14,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
@@ -24,7 +24,7 @@ import uk.co.gresearch.siembol.alerts.compiler.AlertingRulesCompiler;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributes;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -51,14 +51,14 @@ public class AlertingEngineBolt extends BaseRichBolt {
     private OutputCollector collector;
     private ZookeperConnector zookeperConnector;
     private final ZookeperConnectorFactory zookeperConnectorFactory;
-    private final ZookeperAttributes zookeperAttributes;
+    private final ZookeperAttributesDto zookeperAttributes;
 
-    AlertingEngineBolt(AlertingStormAttributes attributes, ZookeperConnectorFactory zookeperConnectorFactory) {
+    AlertingEngineBolt(AlertingStormAttributesDto attributes, ZookeperConnectorFactory zookeperConnectorFactory) {
         this.zookeperAttributes = attributes.getZookeperAttributes();
         this.zookeperConnectorFactory = zookeperConnectorFactory;
     }
 
-    AlertingEngineBolt(AlertingStormAttributes attributes) {
+    AlertingEngineBolt(AlertingStormAttributesDto attributes) {
         this(attributes, new ZookeperConnectorFactory() {});
     }
 

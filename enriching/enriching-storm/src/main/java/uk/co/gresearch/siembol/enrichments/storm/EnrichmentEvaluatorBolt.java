@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentResult;
@@ -21,7 +21,7 @@ import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluator;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentCommands;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentExceptions;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributes;
+import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -47,15 +47,15 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
 
     private OutputCollector collector;
     private ZookeperConnector zookeperConnector;
-    private final ZookeperAttributes zookeperAttributes;
+    private final ZookeperAttributesDto zookeperAttributes;
     private final ZookeperConnectorFactory zookeperConnectorFactory;
 
-    EnrichmentEvaluatorBolt(StormEnrichmentAttributes attributes, ZookeperConnectorFactory zookeperConnectorFactory) {
+    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZookeperConnectorFactory zookeperConnectorFactory) {
         this.zookeperAttributes = attributes.getEnrichingRulesZookeperAttributes();
         this.zookeperConnectorFactory = zookeperConnectorFactory;
     }
 
-    public EnrichmentEvaluatorBolt(StormEnrichmentAttributes attributes) {
+    public EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes, new ZookeperConnectorFactory() {});
     }
 

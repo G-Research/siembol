@@ -112,7 +112,7 @@ public class StormParsingApplicationTest {
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     private ParsingApplicationFactoryAttributes parsingAttributes;
-    private StormParsingApplicationAttributes stormAttributes;
+    private StormParsingApplicationAttributesDto stormAttributes;
     private ZookeperConnector zookeperConnector;
     private ZookeperConnectorFactory zookeperConnectorFactory;
     private StormTopology topology;
@@ -120,7 +120,7 @@ public class StormParsingApplicationTest {
     @Before
     public void setUp() throws Exception {
        stormAttributes = new ObjectMapper()
-                .readerFor(StormParsingApplicationAttributes.class)
+                .readerFor(StormParsingApplicationAttributesDto.class)
                 .readValue(stormSettings);
 
         ParsingApplicationFactoryResult result = new ParsingApplicationFactoryImpl()
@@ -142,7 +142,7 @@ public class StormParsingApplicationTest {
 
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
         stormAttributes.getStormAttributes().setBootstrapServers(bootstrapServer);
-        stormAttributes.getKafkaBatchWriterAttributes().getProducerProperties()
+        stormAttributes.getKafkaBatchWriterAttributes().getProducerProperties().getRawMap()
                 .put("bootstrap.servers", bootstrapServer);
 
         kafkaRule.waitForStartup();

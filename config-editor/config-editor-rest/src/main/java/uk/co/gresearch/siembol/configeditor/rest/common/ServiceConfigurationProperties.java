@@ -12,7 +12,6 @@ public class ServiceConfigurationProperties {
     private ConfigStoreProperties configStore;
 
     private String uiConfigFileName = UNKNOWN_FILE_NAME;
-    private String testSpecUiConfigFileName = UNKNOWN_FILE_NAME;
     private Map<String, String> attributes;
 
     public String getType() {
@@ -37,14 +36,6 @@ public class ServiceConfigurationProperties {
 
     public void setUiConfigFileName(String uiConfigFileName) {
         this.uiConfigFileName = uiConfigFileName;
-    }
-
-    public String getTestSpecUiConfigFileName() {
-        return testSpecUiConfigFileName;
-    }
-
-    public void setTestSpecUiConfigFileName(String testSpecUiConfigFileName) {
-        this.testSpecUiConfigFileName = testSpecUiConfigFileName;
     }
 
     public Map<String, String> getAttributes() {

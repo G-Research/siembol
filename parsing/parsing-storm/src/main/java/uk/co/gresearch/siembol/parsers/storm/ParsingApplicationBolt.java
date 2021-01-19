@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
@@ -41,14 +41,14 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLE = "Invalid type in tuple";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
-    private final ZookeperAttributes zookeperAttributes;
+    private final ZookeperAttributesDto zookeperAttributes;
     private final String parsingAppSpecification;
 
     private OutputCollector collector;
     private ZookeperConnector zookeperConnector;
     private final ZookeperConnectorFactory zookeperConnectorFactory;
 
-    ParsingApplicationBolt(StormParsingApplicationAttributes attributes,
+    ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                            ParsingApplicationFactoryAttributes parsingAttributes,
                            ZookeperConnectorFactory zookeperConnectorFactory) throws Exception {
         this.zookeperAttributes = attributes.getZookeperAttributes();
@@ -56,7 +56,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         this.zookeperConnectorFactory = zookeperConnectorFactory;
     }
 
-    public ParsingApplicationBolt(StormParsingApplicationAttributes attributes,
+    public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
         this(attributes, parsingAttributes, new ZookeperConnectorFactory() {});
     }

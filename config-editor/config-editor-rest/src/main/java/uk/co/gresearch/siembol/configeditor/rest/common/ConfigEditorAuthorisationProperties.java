@@ -26,6 +26,7 @@ public class ConfigEditorAuthorisationProperties extends SiembolAuthorisationPro
     }
 
     private Map<String, List<String>> authorisationGroups = new HashMap<>();
+    private Map<String, List<String>> authorisationAdminGroups = new HashMap<>();
 
     public Map<String, List<String>> getAuthorisationGroups() {
         return authorisationGroups;
@@ -43,4 +44,11 @@ public class ConfigEditorAuthorisationProperties extends SiembolAuthorisationPro
         this.singleUser = singleUser;
     }
 
+    public Map<String, List<String>> getAuthorisationAdminGroups() {
+        return authorisationAdminGroups;
+    }
+
+    public void setAuthorisationAdminGroups(Map<String, List<String>> authorisationAdminGroups) {
+        this.authorisationAdminGroups = authorisationAdminGroups;
+    }
 }

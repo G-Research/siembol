@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.co.gresearch.siembol.common.result.SiembolResult;
+
+import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorResult {
@@ -62,6 +65,28 @@ public class ConfigEditorResult {
         attributes.setRulesSchema(schema);
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK,
                 attributes);
+    }
+
+    public static ConfigEditorResult fromTestSchema(String schema) {
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setTestSchema(schema);
+        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK,
+                attributes);
+    }
+
+    public static ConfigEditorResult fromAdminConfigSchema(String schema) {
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setAdminConfigSchema(schema);
+        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK,
+                attributes);
+    }
+
+    public static ConfigEditorResult fromValidationResult(SiembolResult siembolResult) {
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setMessage(siembolResult.getAttributes().getMessage());
+
+        return new ConfigEditorResult(siembolResult.getStatusCode() == OK
+                ? ConfigEditorResult.StatusCode.OK : StatusCode.BAD_REQUEST, attributes);
     }
 
     public ResponseEntity<ConfigEditorAttributes> toResponseEntity() {

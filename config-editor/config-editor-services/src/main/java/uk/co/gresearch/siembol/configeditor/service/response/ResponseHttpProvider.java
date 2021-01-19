@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
@@ -48,16 +49,17 @@ public class ResponseHttpProvider {
         this.httpProvider = httpProvider;
     }
 
-    public RespondingResult getRulesSchema(Optional<String> uiConfig) {
+    public RespondingResult getRulesSchema(ConfigEditorUiLayout uiLayout) {
         RespondingResult result = get(ResponseApplicationPaths.GET_SCHEMA);
         if (result.getStatusCode() != RespondingResult.StatusCode.OK
-                || !uiConfig.isPresent()) {
+                || uiLayout.getConfigLayout() == null
+                || uiLayout.getConfigLayout().isEmpty()) {
             return result;
         }
 
         try {
             Optional<String> enrichedSchema = ConfigEditorUtils
-                    .patchJsonSchema(result.getAttributes().getRulesSchema(), uiConfig.get());
+                    .patchJsonSchema(result.getAttributes().getRulesSchema(), uiLayout.getConfigLayout());
             result.getAttributes().setRulesSchema(enrichedSchema.get());
             return result;
         } catch (Exception e) {
@@ -65,16 +67,17 @@ public class ResponseHttpProvider {
         }
     }
 
-    public RespondingResult getTestSchema(Optional<String> uiConfig) {
+    public RespondingResult getTestSchema(ConfigEditorUiLayout uiLayout) {
         RespondingResult result = get(ResponseApplicationPaths.GET_TEST_SCHEMA);
         if (result.getStatusCode() != RespondingResult.StatusCode.OK
-                || !uiConfig.isPresent()) {
+                || uiLayout.getConfigLayout() == null
+                || uiLayout.getConfigLayout().isEmpty()) {
             return result;
         }
 
         try {
             Optional<String> enrichedSchema = ConfigEditorUtils
-                    .patchJsonSchema(result.getAttributes().getTestSpecificationSchema(), uiConfig.get());
+                    .patchJsonSchema(result.getAttributes().getTestSpecificationSchema(), uiLayout.getTestLayout());
             result.getAttributes().setTestSpecificationSchema(enrichedSchema.get());
             return result;
         } catch (Exception e) {

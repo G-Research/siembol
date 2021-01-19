@@ -12,6 +12,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -20,9 +21,8 @@ import java.util.*;
 public class ConfigEditorUtils {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
-    private static final String EMPTY_UI_LAYOUT = "{}";
     private static final ObjectReader UI_CONFIG_READER = new ObjectMapper()
-            .readerFor(new TypeReference<Map<String, JsonNode>>() {});
+            .readerFor(ConfigEditorUiLayout.class);
     private static final String INDEX_REPLACE_REGEX = "\"minItems\"\\s*:\\s*1";
     private static final String INDEX_REPLACEMENT = "\"minItems\":0";
 
@@ -49,28 +49,27 @@ public class ConfigEditorUtils {
         });
     }
 
-    public static Optional<String> readUiLayoutFile(String filePath) {
+    public static ConfigEditorUiLayout readUiLayoutFile(String filePath) throws IOException  {
         try (FileInputStream fs = new FileInputStream(filePath)) {
             int ch;
             StringBuilder sb = new StringBuilder();
             while ((ch = fs.read()) != -1) {
                 sb.append((char) ch);
             }
-            return Optional.of(sb.toString());
+            return UI_CONFIG_READER.readValue(sb.toString());
         } catch (FileNotFoundException ex) {
-            LOG.warn("File {} can not find, using empty layout instead", filePath);
-            return Optional.of(EMPTY_UI_LAYOUT);
+            LOG.warn("File {} can not be found, using empty layout instead", filePath);
+            return new ConfigEditorUiLayout();
         } catch (IOException ex) {
             LOG.error("Exception {} during reading file {} ", ex, filePath);
-            return Optional.empty();
+            throw ex;
         }
     }
 
-    public static Optional<String> patchJsonSchema(String rulesSchema, String uiConfig) throws IOException {
+    public static Optional<String> patchJsonSchema(String rulesSchema, Map<String, JsonNode> formAttributes) {
         final DocumentContext context = JsonPath.parse(rulesSchema);
-        Map<String, JsonNode> formAttributes = UI_CONFIG_READER.readValue(uiConfig);
-
         Set<String> layoutKeys = formAttributes.keySet();
+
         for (String key : layoutKeys) {
             try {
                 JsonNode current = context.read(key);

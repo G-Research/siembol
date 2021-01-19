@@ -50,6 +50,11 @@ public class TestCaseInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
+    public ConfigInfoType getConfigInfoType() {
+        return jsonHelperProvider.getConfigInfoType();
+    }
+
+    @Override
     public ConfigEditorFile.ContentType getFileContentType() {
         return ConfigEditorFile.ContentType.RAW_JSON_STRING;
     }

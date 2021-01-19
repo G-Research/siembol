@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.response.stream.rest.application;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Configuration;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class ResponseConfigurationProperties {
     private Map<String, Object> streamConfig;
     private Boolean inactiveStreamService = false;
     @NestedConfigurationProperty
-    private ZookeperAttributes zookeperAttributes;
+    private ZookeperAttributesDto zookeperAttributes;
 
     public String getInputTopic() {
         return inputTopic;
@@ -33,11 +33,11 @@ public class ResponseConfigurationProperties {
         this.errorTopic = errorTopic;
     }
 
-    public ZookeperAttributes getZookeperAttributes() {
+    public ZookeperAttributesDto getZookeperAttributes() {
         return zookeperAttributes;
     }
 
-    public void setZookeperAttributes(ZookeperAttributes zookeperAttributes) {
+    public void setZookeperAttributes(ZookeperAttributesDto zookeperAttributes) {
         this.zookeperAttributes = zookeperAttributes;
     }
 

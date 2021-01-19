@@ -68,7 +68,7 @@ public class ZookeperConnectorImpl implements ZookeperConnector {
                     || path == null
                     || baseSleepTimeMs == null
                     || maxRetries == null) {
-                throw new IllegalArgumentException("Missing required parameters to initialise zookeper connector");
+                throw new IllegalArgumentException("Missing required parameters to initialise zookeeper connector");
             }
             client = CuratorFrameworkFactory.newClient(zkServer,
                    new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));

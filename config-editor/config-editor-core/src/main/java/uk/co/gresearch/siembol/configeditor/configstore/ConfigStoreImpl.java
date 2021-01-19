@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
+import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.configinfo.TestCaseInfoProvider;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.git.ReleasePullRequestService;
@@ -24,22 +26,27 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 public class ConfigStoreImpl implements ConfigStore {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String TEST_CASES_UNSUPPORTED_MSG = "Test cases are not supported";
+    private static final String ADMIN_CONFIG_UNSUPPORTED_MSG = "Admin configuration is not supported for the service";
     private static final String GENERIC_EXCEPTION_LOG_MSG = "Exception {} during getting or updating git repositories";
     private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for config store initialisation";
 
     private final AtomicReference<Exception> exception = new AtomicReference<>();
     private final ExecutorService storeExecutorService;
     private final ExecutorService releaseExecutorService;
+    private final ExecutorService adminConfigExecutorService;
     private final ConfigRelease release;
+    private final ConfigRelease adminConfig;
     private final ConfigItems configs;
     private final ConfigItems testCases;
 
     ConfigStoreImpl(Builder builder) {
         this.storeExecutorService = builder.storeExecutorService;
         this.releaseExecutorService = builder.releaseExecutorService;
+        this.adminConfigExecutorService = builder.adminConfigExecutorService;
         this.release = builder.release;
         this.configs = builder.configs;
         this.testCases = builder.testCases;
+        this.adminConfig = builder.adminConfig;
     }
 
     @Override
@@ -114,6 +121,36 @@ public class ConfigStoreImpl implements ConfigStore {
     }
 
     @Override
+    public ConfigEditorResult getAdminConfig() {
+        if (adminConfig == null) {
+            return ConfigEditorResult.fromMessage(ERROR, ADMIN_CONFIG_UNSUPPORTED_MSG);
+        }
+
+        Callable<ConfigEditorResult> command = () -> adminConfig.getConfigsRelease();
+        return executeStoreCommand(command, adminConfigExecutorService);
+    }
+
+    @Override
+    public ConfigEditorResult getAdminConfigStatus() {
+        if (adminConfig == null) {
+            return ConfigEditorResult.fromMessage(ERROR, ADMIN_CONFIG_UNSUPPORTED_MSG);
+        }
+
+        Callable<ConfigEditorResult> command = () -> adminConfig.getConfigsReleaseStatus();
+        return executeStoreCommand(command, adminConfigExecutorService);
+    }
+
+    @Override
+    public ConfigEditorResult submitAdminConfig(UserInfo user, String adminConfigStr) {
+        if (adminConfig == null) {
+            return ConfigEditorResult.fromMessage(ERROR, ADMIN_CONFIG_UNSUPPORTED_MSG);
+        }
+
+        Callable<ConfigEditorResult> command = () -> adminConfig.submitConfigsRelease(user, adminConfigStr);
+        return executeStoreCommand(command, adminConfigExecutorService);
+    }
+
+    @Override
     public ConfigEditorResult getRepositories() {
         ConfigEditorRepositories repositories = new ConfigEditorRepositories();
         repositories.setRuleStoreUrl(configs.getRepoUri());
@@ -125,6 +162,11 @@ public class ConfigStoreImpl implements ConfigStore {
         if (testCases != null) {
             repositories.setTestCaseStoreUrl(testCases.getRepoUri());
             repositories.setTestCaseStoreDirectoryUrl(testCases.getDirectoryUri());
+        }
+
+        if (adminConfig != null) {
+            repositories.setAdminConfigUrl(adminConfig.getRepoUri());
+            repositories.setAdminConfigDirectoryUrl(adminConfig.getDirectoryUri());
         }
 
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
@@ -157,19 +199,27 @@ public class ConfigStoreImpl implements ConfigStore {
     }
 
     public static class Builder {
-        private final static ConfigInfoProvider TEST_CASE_INFO_PROVIDER = new TestCaseInfoProvider();
+        private static final ConfigInfoProvider TEST_CASE_INFO_PROVIDER = new TestCaseInfoProvider();
+        private static final ConfigInfoProvider ADMIN_CONFIG_INFO_PROVIDER = new AdminConfigInfoProvider();
+
         private GitRepository gitStoreRepo;
         private GitRepository gitReleaseRepo;
+        private GitRepository gitAdminConfigRepo;
 
         private String configStoreDirectory;
         private String testCaseDirectory;
         private String releaseDirectory;
+        private String adminConfigDirectory;
         private ConfigInfoProvider configInfoProvider;
         private ReleasePullRequestService pullRequestService;
+        private ReleasePullRequestService adminConfigPullRequestService;
 
         ExecutorService storeExecutorService;
         ExecutorService releaseExecutorService;
+        ExecutorService adminConfigExecutorService;
+
         ConfigRelease release;
+        ConfigRelease adminConfig;
         ConfigItems configs;
         ConfigItems testCases;
 
@@ -186,6 +236,11 @@ public class ConfigStoreImpl implements ConfigStore {
             return this;
         }
 
+        public Builder gitAdminConfigRepo(GitRepository gitAdminConfigRepo) {
+            this.gitAdminConfigRepo = gitAdminConfigRepo;
+            return this;
+        }
+
         public Builder storeExecutorService(ExecutorService storeExecutorService) {
             this.storeExecutorService = storeExecutorService;
             return this;
@@ -193,6 +248,11 @@ public class ConfigStoreImpl implements ConfigStore {
 
         public Builder releaseExecutorService(ExecutorService releaseExecutorService) {
             this.releaseExecutorService = releaseExecutorService;
+            return this;
+        }
+
+        public Builder adminConfigExecutorService(ExecutorService adminConfigExecutorService) {
+            this.adminConfigExecutorService = adminConfigExecutorService;
             return this;
         }
 
@@ -206,6 +266,11 @@ public class ConfigStoreImpl implements ConfigStore {
             return this;
         }
 
+        public Builder adminConfigDirectory(String adminConfigDirectory) {
+            this.adminConfigDirectory = adminConfigDirectory;
+            return this;
+        }
+
         public Builder releaseDirectory(String releaseDirectory) {
             this.releaseDirectory = releaseDirectory;
             return this;
@@ -213,6 +278,11 @@ public class ConfigStoreImpl implements ConfigStore {
 
         public Builder pullRequestService(ReleasePullRequestService pullRequestService) {
             this.pullRequestService = pullRequestService;
+            return this;
+        }
+
+        public Builder adminConfigPullRequestService(ReleasePullRequestService adminConfigPullRequestService) {
+            this.adminConfigPullRequestService = adminConfigPullRequestService;
             return this;
         }
 
@@ -233,7 +303,10 @@ public class ConfigStoreImpl implements ConfigStore {
                 throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
             }
 
-            release = new ConfigRelease(gitReleaseRepo, pullRequestService, configInfoProvider, releaseDirectory);
+            release = new ConfigRelease(gitReleaseRepo,
+                    pullRequestService,
+                    configInfoProvider,
+                    releaseDirectory);
 
             configs = new ConfigItems(gitStoreRepo, configInfoProvider, configStoreDirectory);
             configs.init();
@@ -242,6 +315,19 @@ public class ConfigStoreImpl implements ConfigStore {
                 testCases = new ConfigItems(gitStoreRepo, TEST_CASE_INFO_PROVIDER, testCaseDirectory);
                 testCases.init();
             }
+
+            if (adminConfigDirectory != null) {
+                if (gitAdminConfigRepo == null
+                        || adminConfigExecutorService == null
+                        || adminConfigPullRequestService == null) {
+                    throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
+                }
+                adminConfig = new ConfigRelease(gitAdminConfigRepo,
+                        adminConfigPullRequestService,
+                        ADMIN_CONFIG_INFO_PROVIDER,
+                        adminConfigDirectory);
+            }
+
             return new ConfigStoreImpl(this);
         }
     }

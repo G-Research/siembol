@@ -2,13 +2,17 @@ package uk.co.gresearch.siembol.configeditor.service.parsingapp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
-import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
+import uk.co.gresearch.siembol.parsers.storm.StormParsingApplicationAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
@@ -17,20 +21,13 @@ import java.util.function.Function;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
-public class ParsingAppConfigSchemaServiceImpl implements ConfigSchemaService {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+public class ParsingAppConfigSchemaService extends ConfigSchemaServiceAbstract {
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ParsingApplicationFactory factory;
-    private final String schema;
 
-    ParsingAppConfigSchemaServiceImpl(ParsingApplicationFactory factory, String schema) {
+    ParsingAppConfigSchemaService(ParsingApplicationFactory factory, ConfigSchemaServiceContext context) {
+        super(context);
         this.factory = factory;
-        this.schema = schema;
-    }
-
-    @Override
-    public ConfigEditorResult getSchema() {
-        return ConfigEditorResult.fromSchema(schema);
     }
 
     @Override
@@ -59,29 +56,40 @@ public class ParsingAppConfigSchemaServiceImpl implements ConfigSchemaService {
         return new ConfigEditorResult(statusCode, attr);
     }
 
-    public static ParsingAppConfigSchemaServiceImpl createParsingAppConfigSchemaService(
-            Optional<String> uiConfig) throws Exception {
+    public static ParsingAppConfigSchemaService createParsingAppConfigSchemaService(
+            ConfigEditorUiLayout uiLayout) throws Exception {
         LOG.info("Initialising parsing app config schema service");
 
+        ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
         ParsingApplicationFactory factory = new ParsingApplicationFactoryImpl();
         ParsingApplicationFactoryResult schemaResult = factory.getSchema();
 
         if (schemaResult.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK
                 || schemaResult.getAttributes().getJsonSchema() == null
-                || !uiConfig.isPresent()) {
+                || uiLayout == null) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .patchJsonSchema(schemaResult.getAttributes().getJsonSchema(), uiConfig.get());
+                .patchJsonSchema(schemaResult.getAttributes().getJsonSchema(), uiLayout.getConfigLayout());
+        SiembolJsonSchemaValidator adminConfigValidator = new SiembolJsonSchemaValidator(
+                StormParsingApplicationAttributesDto.class);
+        Optional<String> adminConfigSchemaUi = ConfigEditorUtils.patchJsonSchema(
+                adminConfigValidator.getJsonSchema().getAttributes().getJsonSchema(),
+                uiLayout.getAdminConfigLayout());
 
-        if (!computedSchema.isPresent()) {
+        if (!computedSchema.isPresent()
+                || !adminConfigSchemaUi.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
+        context.setConfigSchema(computedSchema.get());
+        context.setAdminConfigSchema(adminConfigSchemaUi.get());
+        context.setAdminConfigValidator(adminConfigValidator);
+
         LOG.info("Initialising parsing app schema service completed");
-        return new ParsingAppConfigSchemaServiceImpl(factory, computedSchema.get());
+        return new ParsingAppConfigSchemaService(factory, context);
     }
 }

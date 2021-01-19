@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.response.stream.ruleservice;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
@@ -31,13 +31,13 @@ public class ZookeeperRulesProvider implements RulesProvider {
     private final RespondingCompiler respondingCompiler;
 
 
-    public ZookeeperRulesProvider(ZookeperAttributes zookeperAttributes,
+    public ZookeeperRulesProvider(ZookeperAttributesDto zookeperAttributes,
                                   RespondingCompiler respondingCompiler) throws Exception {
         this(new ZookeperConnectorFactory() {}, zookeperAttributes, respondingCompiler);
     }
 
     ZookeeperRulesProvider(ZookeperConnectorFactory factory,
-                           ZookeperAttributes zookeperAttributes,
+                           ZookeperAttributesDto zookeperAttributes,
                            RespondingCompiler respondingCompiler) throws Exception {
         LOG.info(INIT_START);
 

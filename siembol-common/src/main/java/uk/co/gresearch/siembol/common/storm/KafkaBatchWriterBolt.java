@@ -14,6 +14,7 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -44,9 +45,9 @@ public class KafkaBatchWriterBolt extends BaseRichBolt {
     private OutputCollector collector;
     private Producer<String, String> producer;
 
-    public KafkaBatchWriterBolt(KafkaBatchWriterAttributes attributes, String fieldName) {
+    public KafkaBatchWriterBolt(KafkaBatchWriterAttributesDto attributes, String fieldName) {
         this.props = new Properties();
-        attributes.getProducerProperties().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
+        attributes.getProducerProperties().getRawMap().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
         this.batchSize = attributes.getBatchSize();
         this.fieldName = fieldName;
     }

@@ -18,7 +18,7 @@ import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluatorLibrary
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentExceptions;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributes;
+import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class EnrichmentMergerBolt extends BaseRichBolt {
     private final String outputTopic;
     private final String errorTopic;
 
-    public EnrichmentMergerBolt(StormEnrichmentAttributes attributes) {
+    public EnrichmentMergerBolt(StormEnrichmentAttributesDto attributes) {
         this.outputTopic = attributes.getEnrichingOutputTopic();
         this.errorTopic = attributes.getEnrichingErrorTopic();
     }

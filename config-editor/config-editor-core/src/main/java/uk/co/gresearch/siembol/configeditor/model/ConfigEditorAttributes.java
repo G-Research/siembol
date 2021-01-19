@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class ConfigEditorAttributes {
 
     @JsonProperty("rules_version")
     private Integer rulesVersion;
+
+    @JsonProperty("config_version")
+    private Integer configVersion;
 
     @JsonProperty("rules_repositories")
     ConfigEditorRepositories rulesRepositories;
@@ -55,6 +59,10 @@ public class ConfigEditorAttributes {
     private String testSpecification;
 
     private List<ConfigEditorService> services;
+
+    @JsonProperty("admin_config_schema")
+    @JsonRawValue
+    private String adminConfigSchema;
 
     public String getException() {
         return exception;
@@ -114,6 +122,19 @@ public class ConfigEditorAttributes {
 
     public Integer getRulesVersion() {
         return rulesVersion;
+    }
+
+    public void setReleaseVersion(Integer version, ConfigInfoType type) {
+        if (type == ConfigInfoType.ADMIN_CONFIG) {
+            configVersion = version;
+        } else {
+            rulesVersion = version;
+        }
+    }
+
+    public Integer getReleaseVersion(ConfigInfoType type) {
+        return type == ConfigInfoType.ADMIN_CONFIG
+                ? configVersion : rulesVersion;
     }
 
     public void setRulesVersion(Integer rulesVersion) {
@@ -183,5 +204,21 @@ public class ConfigEditorAttributes {
     @JsonSetter("test_specification")
     public void setTestSpecification(JsonNode testSpecification) {
         this.testSpecification = testSpecification.toString();
+    }
+
+    public String getAdminConfigSchema() {
+        return adminConfigSchema;
+    }
+
+    public void setAdminConfigSchema(String adminConfigSchema) {
+        this.adminConfigSchema = adminConfigSchema;
+    }
+
+    public Integer getConfigVersion() {
+        return configVersion;
+    }
+
+    public void setConfigVersion(Integer configVersion) {
+        this.configVersion = configVersion;
     }
 }

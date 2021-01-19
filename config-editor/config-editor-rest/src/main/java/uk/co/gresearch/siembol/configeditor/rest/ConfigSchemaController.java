@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -54,6 +55,19 @@ public class ConfigSchemaController {
     }
 
     @CrossOrigin
+    @GetMapping(value = "/api/v1/{service}/adminconfig/schema", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getAdminConfigSchema(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String serviceName) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .getAdminConfigurationSchema()
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> validate(
             @AuthenticationPrincipal Authentication authentication,
@@ -67,6 +81,19 @@ public class ConfigSchemaController {
                 : service.validateConfigurations(body).toResponseEntity();
     }
 
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/adminconfig/validate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> validateAdminConfiguration(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String serviceName,
+            @RequestBody String body) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .validateAdminConfiguration(body)
+                .toResponseEntity();
+    }
 
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/test", produces = MediaType.APPLICATION_JSON_VALUE)

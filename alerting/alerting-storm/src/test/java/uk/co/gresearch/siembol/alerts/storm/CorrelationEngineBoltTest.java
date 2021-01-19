@@ -13,14 +13,14 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.common.AlertingTags;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributes;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,8 +120,8 @@ public class CorrelationEngineBoltTest {
     private Tuple tuple;
     private OutputCollector collector;
     CorrelationAlertingEngineBolt correlationAlertingEngineBolt;
-    AlertingStormAttributes stormAttributes;
-    ZookeperAttributes zookeperAttributes;
+    AlertingStormAttributesDto stormAttributes;
+    ZookeperAttributesDto zookeperAttributes;
 
     ZookeperConnector zookeperConnector;
     ZookeperConnectorFactory zookeperConnectorFactory;
@@ -129,9 +129,9 @@ public class CorrelationEngineBoltTest {
 
     @Before
     public void setUp() throws Exception {
-        stormAttributes = new AlertingStormAttributes();
+        stormAttributes = new AlertingStormAttributesDto();
         stormAttributes.setAlertingEngineCleanIntervalSec(1000);
-        zookeperAttributes = new ZookeperAttributes();
+        zookeperAttributes = new ZookeperAttributesDto();
         stormAttributes.setZookeperAttributes(zookeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);

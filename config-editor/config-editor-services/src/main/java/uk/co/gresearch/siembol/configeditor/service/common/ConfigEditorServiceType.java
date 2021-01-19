@@ -3,12 +3,13 @@ package uk.co.gresearch.siembol.configeditor.service.common;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.configinfo.JsonRuleConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.service.alerts.AlertingRuleSchemaServiceImpl;
-import uk.co.gresearch.siembol.configeditor.service.enrichments.EnrichmentSchemaServiceImpl;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.alerts.AlertingRuleSchemaService;
+import uk.co.gresearch.siembol.configeditor.service.enrichments.EnrichmentSchemaService;
 import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigSchemaServiceImpl;
+import uk.co.gresearch.siembol.configeditor.service.parserconfig.ParserConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.service.parsingapp.ParsingAppConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.service.parsingapp.ParsingAppConfigSchemaServiceImpl;
+import uk.co.gresearch.siembol.configeditor.service.parsingapp.ParsingAppConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.service.response.ResponseSchemaService;
 
 import java.util.Map;
@@ -16,17 +17,17 @@ import java.util.Optional;
 
 public enum ConfigEditorServiceType implements ConfigSchemaServiceFactory {
     RESPONSE("response", JsonRuleConfigInfoProvider.create(),
-            (x, y, z) -> ResponseSchemaService.createResponseSchemaService(x, z)),
+            (x, y) -> ResponseSchemaService.createResponseSchemaService(x, y)),
     ALERT("alert", JsonRuleConfigInfoProvider.create(),
-            (x, y, z) -> AlertingRuleSchemaServiceImpl.createAlertingRuleSchemaService(x, y)),
+            (x, y) -> AlertingRuleSchemaService.createAlertingRuleSchemaService(x)),
     CORRELATION_ALERT("correlationalert", JsonRuleConfigInfoProvider.create(),
-            (x, y, z) -> AlertingRuleSchemaServiceImpl.createAlertingCorrelationRuleSchemaService(x)),
+            (x, y) -> AlertingRuleSchemaService.createAlertingCorrelationRuleSchemaService(x)),
     PARSER_CONFIG("parserconfig", ParserConfigConfigInfoProvider.create(),
-            (x, y, z) -> ParserConfigSchemaServiceImpl.createParserConfigSchemaService(x, y)),
+            (x, y) -> ParserConfigSchemaService.createParserConfigSchemaService(x)),
     PARSING_APP("parsingapp", ParsingAppConfigInfoProvider.create(),
-            (x, y, z) -> ParsingAppConfigSchemaServiceImpl.createParsingAppConfigSchemaService(x)),
+            (x, y) -> ParsingAppConfigSchemaService.createParsingAppConfigSchemaService(x)),
     ENRICHMENT("enrichment", JsonRuleConfigInfoProvider.create(),
-            (x, y, z) -> EnrichmentSchemaServiceImpl.createEnrichmentsSchemaService(x, y));
+            (x, y) -> EnrichmentSchemaService.createEnrichmentsSchemaService(x));
 
     private static final String UNSUPPORTED_SERVICE_NAME = "Unsupported service name";
     private final String name;
@@ -44,10 +45,9 @@ public enum ConfigEditorServiceType implements ConfigSchemaServiceFactory {
 
     @Override
     public ConfigSchemaService createConfigSchemaService(
-            Optional<String> uiLayoutConfig,
-            Optional<String> uiTestLayoutConfig,
+            ConfigEditorUiLayout uiLayout,
             Optional<Map<String, String>> attributes) throws Exception {
-        return configSchemaServiceFactory.createConfigSchemaService(uiLayoutConfig, uiTestLayoutConfig, attributes);
+        return configSchemaServiceFactory.createConfigSchemaService(uiLayout, attributes);
     }
 
     public String getName() {

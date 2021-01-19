@@ -6,11 +6,14 @@ public class ConfigStoreProperties {
     private String gitPassword;
     private String storeRepositoryName;
     private String releaseRepositoryName;
+    private String adminConfigRepositoryName;
     private String storeRepositoryPath;
     private String releaseRepositoryPath;
+    private String adminConfigRepositoryPath;
     private String storeDirectory;
     private String testCaseDirectory;
     private String releaseDirectory;
+    private String adminConfigDirectory;
 
     public String getGithubUrl() {
         return githubUrl;
@@ -90,5 +93,29 @@ public class ConfigStoreProperties {
 
     public void setTestCaseDirectory(String testCaseDirectory) {
         this.testCaseDirectory = testCaseDirectory;
+    }
+
+    public String getAdminConfigRepositoryName() {
+        return adminConfigRepositoryName;
+    }
+
+    public void setAdminConfigRepositoryName(String adminConfigRepositoryName) {
+        this.adminConfigRepositoryName = adminConfigRepositoryName;
+    }
+
+    public String getAdminConfigDirectory() {
+        return adminConfigDirectory;
+    }
+
+    public void setAdminConfigDirectory(String adminConfigDirectory) {
+        this.adminConfigDirectory = adminConfigDirectory;
+    }
+
+    public String getAdminConfigRepositoryPath() {
+        return adminConfigRepositoryPath;
+    }
+
+    public void setAdminConfigRepositoryPath(String adminConfigRepositoryPath) {
+        this.adminConfigRepositoryPath = adminConfigRepositoryPath;
     }
 }

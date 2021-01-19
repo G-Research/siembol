@@ -9,6 +9,9 @@ import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
@@ -17,9 +20,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.Optional;
 
-public class ResponseSchemaService implements ConfigSchemaService {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+public class ResponseSchemaService extends ConfigSchemaServiceAbstract {
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectWriter ATTRIBUTES_WRITER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(RespondingResultAttributes.class);
@@ -31,25 +33,10 @@ public class ResponseSchemaService implements ConfigSchemaService {
     private static final String ATTRIBUTES_MISSING_ERROR = "Missing attributes in Response Schema Service";
 
     private final ResponseHttpProvider responseHttpProvider;
-    private final String rulesSchema;
-    private final String testSchema;
 
     ResponseSchemaService(Builder builder) {
-        rulesSchema = builder.rulesSchema;
-        testSchema = builder.testSchema;
+        super(builder.context);
         responseHttpProvider = builder.responseHttpProvider;
-    }
-
-    @Override
-    public ConfigEditorResult getSchema() {
-        return ConfigEditorResult.fromSchema(rulesSchema);
-    }
-
-    @Override
-    public ConfigEditorResult getTestSchema() {
-        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
-        attributes.setTestSchema(testSchema);
-        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attributes);
     }
 
     @Override
@@ -102,31 +89,24 @@ public class ResponseSchemaService implements ConfigSchemaService {
     }
 
     public static class Builder {
+        private ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
         private ResponseHttpProvider responseHttpProvider;
         private HttpProvider httpProvider;
-        private String rulesSchema;
-        private String testSchema;
-        private Optional<String> uiConfigSchema = Optional.empty();
-        private Optional<String> uiConfigTestSchema = Optional.empty();
+        private ConfigEditorUiLayout uiLayout = new ConfigEditorUiLayout();
 
         public Builder(HttpProvider httpProvider) {
             this.httpProvider = httpProvider;
         }
 
-        public Builder uiConfigSchema(Optional<String> uiConfigSchema) {
-            this.uiConfigSchema = uiConfigSchema;
-            return this;
-        }
-
-        public Builder uiConfigTestSchema(Optional<String> uiConfigTestSchema) {
-            this.uiConfigTestSchema = uiConfigTestSchema;
+        public Builder uiConfigSchema(ConfigEditorUiLayout uiLayout) {
+            this.uiLayout = uiLayout;
             return this;
         }
 
         public ResponseSchemaService build() throws Exception {
             responseHttpProvider = new ResponseHttpProvider(httpProvider);
-            RespondingResult ruleSchemaResult = responseHttpProvider.getRulesSchema(uiConfigSchema);
-            RespondingResult testSchemaResult = responseHttpProvider.getTestSchema(uiConfigTestSchema);
+            RespondingResult ruleSchemaResult = responseHttpProvider.getRulesSchema(uiLayout);
+            RespondingResult testSchemaResult = responseHttpProvider.getTestSchema(uiLayout);
 
             LOG.info(RULES_SCHEMA_LOG, ruleSchemaResult.getAttributes().getRulesSchema());
             LOG.info(TEST_SPECIFICATION_SCHEMA_LOG, testSchemaResult.getAttributes().getTestSpecificationSchema());
@@ -138,14 +118,14 @@ public class ResponseSchemaService implements ConfigSchemaService {
                 throw new IllegalStateException(INIT_ERROR_MESSAGE);
             }
 
-            rulesSchema = ruleSchemaResult.getAttributes().getRulesSchema();
-            testSchema = testSchemaResult.getAttributes().getTestSpecificationSchema();
+            context.setConfigSchema(ruleSchemaResult.getAttributes().getRulesSchema());
+            context.setTestSchema(testSchemaResult.getAttributes().getTestSpecificationSchema());
             return new ResponseSchemaService(this);
         }
     }
 
-    public static ConfigSchemaService createResponseSchemaService(
-            Optional<String> uiConfig, Optional<Map<String, String>> attributes) throws Exception {
+    public static ConfigSchemaService createResponseSchemaService(ConfigEditorUiLayout uiConfig,
+                                                                  Optional<Map<String, String>> attributes) throws Exception {
         LOG.info(INIT_START_MESSAGE);
         if (!attributes.isPresent()) {
             LOG.error(ATTRIBUTES_MISSING_ERROR);

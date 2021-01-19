@@ -18,6 +18,9 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactory;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactoryImpl;
@@ -31,7 +34,7 @@ import java.util.Optional;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
-public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
+public class ParserConfigSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectWriter JSON_WRITER_MESSAGES = new ObjectMapper()
@@ -46,22 +49,13 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
             .readerFor(ParserConfingTestSpecificationDto.class);
 
     private final ParserFactory parserFactory;
-    private final String schema;
-    private final String testSchema;
     private final SiembolJsonSchemaValidator testSchemaValidator;
 
-    ParserConfigSchemaServiceImpl(ParserFactory parserFactory,
-                                  String schema,
-                                  String testSchema) throws Exception {
+    ParserConfigSchemaService(ParserFactory parserFactory,
+                              ConfigSchemaServiceContext context) throws Exception {
+        super(context);
         this.parserFactory = parserFactory;
-        this.schema = schema;
-        this.testSchema = testSchema;
         this.testSchemaValidator = new SiembolJsonSchemaValidator(ParserConfingTestSpecificationDto.class);
-    }
-
-    @Override
-    public ConfigEditorResult getSchema() {
-        return ConfigEditorResult.fromSchema(schema);
     }
 
     @Override
@@ -76,42 +70,36 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
         return fromParserFactoryValidateResult(parserResult);
     }
 
-    public static ConfigSchemaService createParserConfigSchemaService(Optional<String> uiConfig,
-                                                                      Optional<String> testUiConfig) throws Exception {
+    public static ConfigSchemaService createParserConfigSchemaService(ConfigEditorUiLayout uiLayout) throws Exception {
         LOG.info("Initialising parser config schema service");
-
+        ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
         ParserFactory parserFactory = ParserFactoryImpl.createParserFactory();
         ParserFactoryResult schemaResult = parserFactory.getSchema();
 
         if (schemaResult.getStatusCode() != ParserFactoryResult.StatusCode.OK
                 || schemaResult.getAttributes().getJsonSchema() == null
-                || !uiConfig.isPresent()) {
+                || uiLayout == null) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
         Optional<String> computedSchema = ConfigEditorUtils
-                .patchJsonSchema(schemaResult.getAttributes().getJsonSchema(), uiConfig.get());
-
-        if (!computedSchema.isPresent()) {
-            LOG.error(SCHEMA_INIT_ERROR);
-            throw new IllegalStateException(SCHEMA_INIT_ERROR);
-        }
+                .patchJsonSchema(schemaResult.getAttributes().getJsonSchema(), uiLayout.getConfigLayout());
 
         String testValidationSchema = new SiembolJsonSchemaValidator(ParserConfingTestSpecificationDto.class)
                 .getJsonSchema().getAttributes().getJsonSchema();
-
-        Optional<String> testSchema = testUiConfig.isPresent()
-                ? ConfigEditorUtils.patchJsonSchema(testValidationSchema, testUiConfig.get())
-                : Optional.of(testValidationSchema);
+        Optional<String> testSchema = ConfigEditorUtils.patchJsonSchema(testValidationSchema, uiLayout.getTestLayout());
 
         if (!computedSchema.isPresent() || !testSchema.isPresent()) {
             LOG.error(SCHEMA_INIT_ERROR);
             throw new IllegalStateException(SCHEMA_INIT_ERROR);
         }
 
+        context.setConfigSchema(computedSchema.get());
+        context.setTestSchema(testSchema.get());
+
         LOG.info("Initialising parser config schema service completed");
-        return new ParserConfigSchemaServiceImpl(parserFactory, computedSchema.get(), testSchema.get());
+        return new ParserConfigSchemaService(parserFactory, context);
     }
 
     @Override
@@ -163,13 +151,6 @@ public class ParserConfigSchemaServiceImpl implements ConfigSchemaService {
             return ConfigEditorResult.fromException(e);
         }
 
-        return new ConfigEditorResult(OK, attr);
-    }
-
-    @Override
-    public ConfigEditorResult getTestSchema() {
-        ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        attr.setTestSchema(testSchema);
         return new ConfigEditorResult(OK, attr);
     }
 }

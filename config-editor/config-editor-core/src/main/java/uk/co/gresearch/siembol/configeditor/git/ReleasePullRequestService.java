@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ReleasePullRequestService {
-    private static final String BODY_TEMPLATE = "User %s would like to release rules version %d.";
+    private static final String BODY_TEMPLATE = "User %s would like to release %s version %d.";
     private static final String PR_STATE_OPEN = "open";
     private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for pull request service";
 
@@ -31,6 +31,7 @@ public class ReleasePullRequestService {
         PullRequest request = new PullRequest();
         request.setBody(String.format(BODY_TEMPLATE,
                 info.getCommitter(),
+                info.getConfigInfoType().getReleaseName().toLowerCase(),
                 info.getVersion()));
 
         request.setTitle(info.getCommitMessage());

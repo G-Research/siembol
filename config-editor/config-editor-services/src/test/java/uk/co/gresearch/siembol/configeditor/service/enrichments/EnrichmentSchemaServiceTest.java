@@ -1,27 +1,34 @@
 package uk.co.gresearch.siembol.configeditor.service.enrichments;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.internal.verification.VerificationModeFactory;
+import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.result.SiembolAttributes;
+import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentAttributes;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentResult;
 import uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompiler;
 
-import java.util.Optional;
-
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.OK;
 
-public class EnrichmentSchemaServiceImplTest {
-    private EnrichmentSchemaServiceImpl enrichmentsSchemaService;
+public class EnrichmentSchemaServiceTest {
+    private EnrichmentSchemaService enrichmentsSchemaService;
     private final String schema = "dummmy schema";
     private final String testSchema = "dummmy test schema";
+    private final String adminSchema = "dummmy admin schema";
     private final String testConfig = "dummmy enrichments config";
     private final String testSpecification = "dummmy test specification";
     private final String testConfigs = "dummmy enrichments configs";
@@ -33,11 +40,24 @@ public class EnrichmentSchemaServiceImplTest {
 
     private EnrichmentAttributes enrichmentAttributes;
     private EnrichmentResult enrichmentResult;
+    private ConfigSchemaServiceContext context;
+    private SiembolJsonSchemaValidator adminConfigValidator;
+    private SiembolResult validationResult;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         compiler = Mockito.mock(EnrichmentCompiler.class);
-        this.enrichmentsSchemaService = new EnrichmentSchemaServiceImpl(compiler, schema, testSchema);
+        adminConfigValidator = Mockito.mock(SiembolJsonSchemaValidator.class);
+        validationResult = new SiembolResult(SiembolResult.StatusCode.OK, new SiembolAttributes());
+        when(adminConfigValidator.validate(eq(testConfig))).thenReturn(validationResult);
+
+        context = new ConfigSchemaServiceContext();
+        context.setConfigSchema(schema);
+        context.setTestSchema(schema);
+        context.setAdminConfigSchema(adminSchema);
+        context.setAdminConfigValidator(adminConfigValidator);
+
+        this.enrichmentsSchemaService = new EnrichmentSchemaService(compiler, context);
         enrichmentAttributes = new EnrichmentAttributes();
         enrichmentResult = new EnrichmentResult(OK, enrichmentAttributes);
         Mockito.when(compiler.compile(any())).thenReturn(enrichmentResult);
@@ -150,14 +170,32 @@ public class EnrichmentSchemaServiceImplTest {
 
     @Test
     public void createEnrichmentSchemaServiceEmptyUiConfig() throws Exception {
-        ConfigSchemaService service = EnrichmentSchemaServiceImpl
-                .createEnrichmentsSchemaService(Optional.empty(), Optional.empty());
+        ConfigSchemaService service = EnrichmentSchemaService
+                .createEnrichmentsSchemaService(new ConfigEditorUiLayout());
         Assert.assertNotNull(service);
     }
 
-    @Test(expected = JsonParseException.class)
-    public void createEnrichmentSchemaServiceWrongUiConfig() throws Exception {
-        ConfigSchemaService service = EnrichmentSchemaServiceImpl
-                .createEnrichmentsSchemaService(Optional.of("invalid"), Optional.empty());
+    @Test
+    public void getAdminConfigSchemaOK() {
+        ConfigEditorResult ret = enrichmentsSchemaService.getAdminConfigurationSchema();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertEquals(adminSchema, ret.getAttributes().getAdminConfigSchema());
     }
+
+    @Test
+    public void validateAdminConfigOK() {
+        ConfigEditorResult ret = enrichmentsSchemaService.validateAdminConfiguration(testConfig);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        verify(adminConfigValidator, VerificationModeFactory.times(1)).validate(testConfig);
+    }
+
+    @Test
+    public void validateAdminConfigInvalid() {
+        when(adminConfigValidator.validate(eq(testConfig)))
+                .thenReturn(new SiembolResult(SiembolResult.StatusCode.ERROR, new SiembolAttributes()));
+        ConfigEditorResult ret = enrichmentsSchemaService.validateAdminConfiguration(testConfig);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
+        verify(adminConfigValidator, VerificationModeFactory.times(1)).validate(testConfig);
+    }
+
 }

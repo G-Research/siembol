@@ -1,60 +1,62 @@
 {
-  "$..parsing_applications.items": {
-    "widget": {
-      "formlyConfig": {
-        "type": "tabs"
+  "config_layout": {
+    "$..parsing_applications.items": {
+      "widget": {
+        "formlyConfig": {
+          "type": "tabs"
+        }
       }
-    }
-  },
-  "$..parsing_app_description": {
-    "widget": {
-      "formlyConfig": {
-        "type": "textarea",
-        "wrappers": []
+    },
+    "$..parsing_app_description": {
+      "widget": {
+        "formlyConfig": {
+          "type": "textarea",
+          "wrappers": []
+        }
       }
-    }
-  },
-  "$..routing_parser": {
-    "widget": {
-      "formlyConfig": {
-        "hideExpression": "formState.mainModel.parsing_app_settings.parsing_app_type !== 'router_parsing'"
+    },
+    "$..routing_parser": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "formState.mainModel.parsing_app_settings.parsing_app_type !== 'router_parsing'"
+        }
       }
-    }
-  },
-  "$..parsers": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "expansion-panel"
-        ]
+    },
+    "$..parsers": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
       }
-    }
-  },
-  "$..parsers.items": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "panel"
-        ]
+    },
+    "$..parsers.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
       }
-    }
-  },
-  "$..default_parser": {
-    "wrappers": [
-      "panel"
-    ]
-  },
-  "$..single_parser": {
-    "widget": {
-      "formlyConfig": {
-        "hideExpression": "formState.mainModel.parsing_app_settings.parsing_app_type !== 'single_parser'"
+    },
+    "$..default_parser": {
+      "wrappers": [
+        "panel"
+      ]
+    },
+    "$..single_parser": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "formState.mainModel.parsing_app_settings.parsing_app_type !== 'single_parser'"
+        }
       }
-    }
-  },
-  "$..metadata_prefix": {
-    "widget": {
-      "formlyConfig": {
-        "hideExpression": "!model.parse_metadata"
+    },
+    "$..metadata_prefix": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "!model.parse_metadata"
+        }
       }
     }
   }

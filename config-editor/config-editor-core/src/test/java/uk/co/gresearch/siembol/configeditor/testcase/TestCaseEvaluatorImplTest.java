@@ -1,11 +1,15 @@
 package uk.co.gresearch.siembol.configeditor.testcase;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorTestCaseResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 
 
 import java.util.Optional;
@@ -186,7 +190,7 @@ public class TestCaseEvaluatorImplTest {
 
     @Before
     public void setUp() throws Exception {
-        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.empty());
+        testCaseEvaluator = new TestCaseEvaluatorImpl(new ConfigEditorUiLayout());
     }
 
     @Test
@@ -340,18 +344,16 @@ public class TestCaseEvaluatorImplTest {
                 .contains("PatternSyntaxException"));
     }
 
-    @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
-    public void invalidJsonUiConfigLayout() throws Exception {
-        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.of("INVALID"));
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void invalidUiConfigLayout() throws Exception {
-        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.of("{\"unknown\": {}}"));
+        ConfigEditorUiLayout uiLayout = new ConfigEditorUiLayout();
+        uiLayout.getTestCaseLayout().put("unknown", JsonNodeFactory.instance.objectNode());
+        testCaseEvaluator = new TestCaseEvaluatorImpl(uiLayout);
     }
 
     public void validUiConfigLayout() throws Exception {
-        testCaseEvaluator = new TestCaseEvaluatorImpl(Optional.of("{}"));
+        ConfigEditorUiLayout uiLayout = new ConfigEditorUiLayout();
+        testCaseEvaluator = new TestCaseEvaluatorImpl(uiLayout);
         ConfigEditorResult result = testCaseEvaluator.getSchema();
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getRulesSchema());

@@ -1,50 +1,52 @@
 {
-  "$..rules.items": {
-    "widget": {
-      "formlyConfig": {
-        "type": "tabs"
+  "config_layout": {
+    "$..rules.items": {
+      "widget": {
+        "formlyConfig": {
+          "type": "tabs"
+        }
       }
-    }
-  },
-  "$..rule_description": {
-    "widget": {
-      "formlyConfig": {
-        "type": "textarea",
-        "wrappers": []
+    },
+    "$..rule_description": {
+      "widget": {
+        "formlyConfig": {
+          "type": "textarea",
+          "wrappers": []
+        }
       }
-    }
-  },
-  "$..alerts": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "expansion-panel"
-        ]
+    },
+    "$..alerts": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
       }
-    }
-  },
-  "$..alerts.items": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "panel"
-        ]
+    },
+    "$..alerts.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
       }
-    }
-  },
-  "$..rules..tags.items": {
-    "widget": {
-      "formlyConfig": {
-        "wrappers": [
-          "panel"
-        ]
+    },
+    "$..rules..tags.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
       }
-    }
-  },
-  "$..max_time_lag_in_sec": {
-    "widget": {
-      "formlyConfig": {
-        "hideExpression": "model.time_computation_type !== 'event_time'"
+    },
+    "$..max_time_lag_in_sec": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "model.time_computation_type !== 'event_time'"
+        }
       }
     }
   }

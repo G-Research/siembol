@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public interface ConfigInfoProvider {
-    String RELEASE_BRANCH_TEMPLATE = "release_%d_by_%s_on_%s";
+    String RELEASE_BRANCH_TEMPLATE = "ver_%d_by_%s_on_%s";
     String MISSING_ARGUMENTS_MSG = "missing user info attributes";
     String UNKNOWN_USER_INFO = "unknown";
     int MILLI_SECONDS = 1000;
@@ -53,4 +53,6 @@ public interface ConfigInfoProvider {
     default boolean isReleaseFile(String fileName) {
         return true;
     }
+
+    ConfigInfoType getConfigInfoType();
 }

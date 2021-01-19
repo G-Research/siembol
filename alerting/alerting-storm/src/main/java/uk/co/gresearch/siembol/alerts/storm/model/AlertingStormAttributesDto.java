@@ -1,39 +1,56 @@
 package uk.co.gresearch.siembol.alerts.storm.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.co.gresearch.siembol.common.storm.StormAttributes;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import com.github.reinert.jjschema.Attributes;
+import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
+import uk.co.gresearch.siembol.common.model.AdminConfigDto;
+import uk.co.gresearch.siembol.common.model.StormAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
-import java.util.Map;
 
-public class AlertingStormAttributes implements Serializable {
+@Attributes(title = "storm alerting attributes", description = "Attributes for siembol alerting")
+public class AlertingStormAttributesDto extends AdminConfigDto implements Serializable {
+    @Attributes(required = true, description = "The type of siembol alerting engine")
     @JsonProperty("alerts.engine")
     private String alertingEngine;
+    @Attributes(required = true, description = "The name of storm topology")
     @JsonProperty("alerts.topology.name")
     private String topologyName;
+    @Attributes(required = true, description = "The number of seconds for cleaning correlation context", minimum = 1)
     @JsonProperty("alerts.engine.clean.interval.sec")
-    private Integer alertingEngineCleanIntervalSec;
+    private Integer alertingEngineCleanIntervalSec = 1;
+    @Attributes(required = true, description = "The kafka input topic for reading messages")
     @JsonProperty("alerts.input.topic")
     private String inputTopic;
+    @Attributes(required = true, description = "The kafka error topic for error messages")
     @JsonProperty("kafka.error.topic")
     private String kafkaErrorTopic;
+    @Attributes(required = true, description = "The kafka output topic for producing alerts")
     @JsonProperty("alerts.output.topic")
     private String outputTopic;
+    @Attributes(required = true, description = "The kafka topic for alerts used for correlation by siembol correlation engine")
     @JsonProperty("alerts.correlation.output.topic")
     private String correlationOutputTopic;
     @JsonProperty("kafka.producer.properties")
-    private Map<String, Object> kafkaProducerProperties;
+    @Attributes(required = true, description = "Defines kafka producer properties, " +
+            "https://kafka.apache.org/0102/documentation.html#producerconfigs")
+    private JsonRawStringDto kafkaProducerProperties;
     @JsonProperty("zookeeper.attributes")
-    ZookeperAttributes zookeperAttributes;
+    @Attributes(required = true, description = "The zookeeper attributes for alerting rules")
+    private ZookeperAttributesDto zookeperAttributes;
+    @Attributes(required = true, description = "Storm attributes for the topology")
     @JsonProperty("storm.attributes")
-    private StormAttributes stormAttributes;
+    private StormAttributesDto stormAttributes;
+    @Attributes(required = true, description = "The number of executors for reading from kafka input topic", minimum = 1)
     @JsonProperty("kafka.spout.num.executors")
-    private Integer kafkaSpoutNumExecutors;
+    private Integer kafkaSpoutNumExecutors = 1;
+    @Attributes(required = true, description = "The number of executors for evaluating alerting rules", minimum = 1)
     @JsonProperty("alerts.engine.bolt.num.executors")
-    private Integer AlertingEngineBoltNumExecutors;
+    private Integer AlertingEngineBoltNumExecutors = 1;
+    @Attributes(required = true, description = "The number of executors for producing alerts to output topic", minimum = 1)
     @JsonProperty("kafka.writer.bolt.num.executors")
-    private Integer kafkaWriterBoltNumExecutors;
+    private Integer kafkaWriterBoltNumExecutors = 1;
 
     public String getAlertingEngine() {
         return alertingEngine;
@@ -83,11 +100,11 @@ public class AlertingStormAttributes implements Serializable {
         this.outputTopic = outputTopic;
     }
 
-    public StormAttributes getStormAttributes() {
+    public StormAttributesDto getStormAttributes() {
         return stormAttributes;
     }
 
-    public void setStormAttributes(StormAttributes stormAttributes) {
+    public void setStormAttributes(StormAttributesDto stormAttributes) {
         this.stormAttributes = stormAttributes;
     }
 
@@ -123,19 +140,19 @@ public class AlertingStormAttributes implements Serializable {
         this.kafkaWriterBoltNumExecutors = kafkaWriterBoltNumExecutors;
     }
 
-    public Map<String, Object> getKafkaProducerProperties() {
-        return kafkaProducerProperties;
-    }
-
-    public void setKafkaProducerProperties(Map<String, Object> kafkaProducerProperties) {
-        this.kafkaProducerProperties = kafkaProducerProperties;
-    }
-
-    public ZookeperAttributes getZookeperAttributes() {
+    public ZookeperAttributesDto getZookeperAttributes() {
         return zookeperAttributes;
     }
 
-    public void setZookeperAttributes(ZookeperAttributes zookeperAttributes) {
+    public void setZookeperAttributes(ZookeperAttributesDto zookeperAttributes) {
         this.zookeperAttributes = zookeperAttributes;
+    }
+
+    public JsonRawStringDto getKafkaProducerProperties() {
+        return kafkaProducerProperties;
+    }
+
+    public void setKafkaProducerProperties(JsonRawStringDto kafkaProducerProperties) {
+        this.kafkaProducerProperties = kafkaProducerProperties;
     }
 }

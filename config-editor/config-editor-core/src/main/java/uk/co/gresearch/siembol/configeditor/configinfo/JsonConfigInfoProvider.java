@@ -152,6 +152,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         Map<String, String> files = new HashMap<>();
         files.put(releaseFilename, updatedRelease);
         configInfo.setFilesContent(files);
+        configInfo.setConfigInfoType(configType);
 
         return configInfo;
     }
@@ -197,6 +198,11 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     @Override
     public boolean isReleaseFile(String filename) {
         return releaseFilename.equals(filename);
+    }
+
+    @Override
+    public ConfigInfoType getConfigInfoType() {
+        return configType;
     }
 
     public static class Builder {
@@ -245,8 +251,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
             return this;
         }
 
-        public Builder configVersionField(String configVersionField) {
-            this.configVersionField = configVersionField;
+        public Builder configVersionField(String versionField) {
+            this.configVersionField = versionField;
             return this;
         }
 
@@ -290,7 +296,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
 
             commitTemplateNew = String.format(COMMIT_TEMPLATE_NEW, configType.getSingular());
             commitTemplateUpdate = String.format(COMMIT_TEMPLATE_UPDATE, configType.getSingular());
-            commitTemplateRelease = String.format(COMMIT_TEMPLATE_RELEASE, configType.getPlural());
+            commitTemplateRelease = String.format(COMMIT_TEMPLATE_RELEASE, configType.getReleaseName());
 
             return new JsonConfigInfoProvider(this);
         }

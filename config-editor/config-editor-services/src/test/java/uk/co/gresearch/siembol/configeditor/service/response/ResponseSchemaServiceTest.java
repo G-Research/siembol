@@ -7,10 +7,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -234,8 +234,7 @@ public class ResponseSchemaServiceTest {
     @Test
     public void buildUiConfigOK() throws Exception {
         responseSchemaService = builder
-                .uiConfigSchema(Optional.of(emptyUiLayout))
-                .uiConfigTestSchema(Optional.of(emptyUiLayout))
+                .uiConfigSchema(new ConfigEditorUiLayout())
                 .build();
 
         ConfigEditorResult result = responseSchemaService.getSchema();
@@ -246,16 +245,6 @@ public class ResponseSchemaServiceTest {
         Assert.assertEquals(OK, resultTestSchema.getStatusCode());
         Assert.assertNotNull(resultTestSchema.getAttributes());
         Assert.assertNotNull(resultTestSchema.getAttributes().getTestSchema());
-    }
-
-    @Test(expected = java.lang.IllegalStateException.class)
-    public void buildInvalidUiConfig() throws Exception {
-        responseSchemaService = builder.uiConfigSchema(Optional.of("INVALID")).build();
-    }
-
-    @Test(expected = java.lang.IllegalStateException.class)
-    public void buildInvalidUiTestConfig() throws Exception {
-        responseSchemaService = builder.uiConfigTestSchema(Optional.of("INVALID")).build();
     }
 
     @Test(expected = java.lang.IllegalStateException.class)
@@ -356,5 +345,19 @@ public class ResponseSchemaServiceTest {
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.testConfiguration(dummyJsonObject, dummyJsonObject2);
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void getAdminConfigSchemaError() throws Exception {
+        responseSchemaService = builder.build();
+        ConfigEditorResult ret = responseSchemaService.getAdminConfigurationSchema();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+    }
+
+    @Test
+    public void validateAdminConfigError() throws Exception {
+        responseSchemaService = builder.build();
+        ConfigEditorResult ret = responseSchemaService.getAdminConfigurationSchema();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }
 }

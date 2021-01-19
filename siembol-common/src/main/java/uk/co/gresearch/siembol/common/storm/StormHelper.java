@@ -6,6 +6,7 @@ import org.apache.storm.kafka.spout.KafkaSpoutConfig;
 import org.apache.storm.kafka.spout.KafkaSpoutRetryExponentialBackoff;
 import org.apache.storm.kafka.spout.KafkaSpoutRetryService;
 import org.apache.storm.tuple.Fields;
+import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 
 import java.util.List;
 import java.util.Properties;
@@ -17,7 +18,7 @@ public class StormHelper {
     private static final int KAFKA_SPOUT_MAX_DELAY_SEC = 10;
 
     public static <K, V> KafkaSpoutConfig<K, V> createKafkaSpoutConfig(
-            StormAttributes stormAttributes,
+            StormAttributesDto stormAttributes,
             Func<ConsumerRecord<K,V>, List<Object>> func,
             Fields fields) {
         KafkaSpoutRetryService kafkaSpoutRetryService = new KafkaSpoutRetryExponentialBackoff(
@@ -26,11 +27,11 @@ public class StormHelper {
                 KAFKA_SPOUT_MAX_RETRIES,
                 KafkaSpoutRetryExponentialBackoff.TimeInterval.seconds(KAFKA_SPOUT_MAX_DELAY_SEC));
 
-        KafkaSpoutConfig.FirstPollOffsetStrategy pollStrategy = KafkaSpoutConfig.FirstPollOffsetStrategy
-                .valueOf(stormAttributes.getFirstPollOffsetStrategy());
+        KafkaSpoutConfig.FirstPollOffsetStrategy pollStrategy = stormAttributes.getFirstPollOffsetStrategy()
+                .getKafkaSpoutStrategy();
 
         Properties props = new Properties();
-        props.putAll(stormAttributes.getKafkaSpoutProperties());
+        props.putAll(stormAttributes.getKafkaSpoutProperties().getRawMap());
 
         KafkaSpoutConfig.Builder<K, V> builder =  new KafkaSpoutConfig.Builder<K, V>(
                 stormAttributes.getBootstrapServers(),

@@ -72,16 +72,31 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
     public List<ConfigEditorService> getConfigEditorServices(UserInfo user) {
         List<ConfigEditorService> ret = new ArrayList<>();
         for (String serviceName : serviceMap.keySet()) {
-            try {
-                ServiceAggregatorService current = getService(user, serviceName);
+            ServiceAggregatorService currentService = serviceMap.get(serviceName);
+            List<ServiceUserRole> roles = new ArrayList<>();
+            for (ServiceUserRole role: ServiceUserRole.values()) {
+                try {
+                    if (role == ServiceUserRole.SERVICE_ADMIN && !currentService.supportsAdminConfiguration()) {
+                        continue;
+                    }
+
+                    user.setServiceUserRole(role);
+                    getService(user, serviceName);
+                    roles.add(role);
+                } catch (AuthorisationException e) {
+                    continue;
+                }
+            }
+
+            if (!roles.isEmpty()) {
                 ConfigEditorService configEditorService = new ConfigEditorService();
                 configEditorService.setName(serviceName);
-                configEditorService.setType(current.getType());
+                configEditorService.setType(currentService.getType());
+                configEditorService.setUserRoles(roles);
                 ret.add(configEditorService);
-            } catch (AuthorisationException e) {
-                continue;
             }
         }
+
         ret.sort(Comparator.comparing(ConfigEditorService::getName));
         return ret;
     }
@@ -219,13 +234,14 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
             Pair<GitRepository, ExecutorService> releaseRepo = getGitRepository(props,
                     props.getReleaseRepositoryName(), props.getReleaseRepositoryPath());
 
+
             ReleasePullRequestService pullRequestService = new ReleasePullRequestService.Builder()
                     .uri(props.getGithubUrl())
                     .repoName(props.getReleaseRepositoryName())
                     .credentials(props.getGitUserName(), props.getGitPassword())
                     .build();
 
-            return new ConfigStoreImpl.Builder()
+            ConfigStoreImpl.Builder builder = new  ConfigStoreImpl.Builder()
                     .configInfoProvider(configInfoProvider)
                     .gitStoreRepo(storeRepo.getLeft())
                     .storeExecutorService(storeRepo.getRight())
@@ -234,8 +250,24 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                     .pullRequestService(pullRequestService)
                     .configStoreDirectory(props.getStoreDirectory())
                     .releaseDirectory(props.getReleaseDirectory())
-                    .testCaseDirectory(props.getTestCaseDirectory())
-                    .build();
+                    .testCaseDirectory(props.getTestCaseDirectory());
+
+            if (props.getAdminConfigDirectory() != null) {
+                Pair<GitRepository, ExecutorService> adminConfigRepo = getGitRepository(props,
+                        props.getAdminConfigRepositoryName(), props.getAdminConfigRepositoryPath());
+
+                ReleasePullRequestService adminConfigPullRequestService = new ReleasePullRequestService.Builder()
+                        .uri(props.getGithubUrl())
+                        .repoName(props.getAdminConfigRepositoryName())
+                        .credentials(props.getGitUserName(), props.getGitPassword())
+                        .build();
+
+                builder.adminConfigDirectory(props.getAdminConfigDirectory())
+                        .adminConfigExecutorService(adminConfigRepo.getRight())
+                        .gitAdminConfigRepo(adminConfigRepo.getLeft())
+                        .adminConfigPullRequestService(adminConfigPullRequestService);
+            }
+            return builder.build();
         }
     }
 }

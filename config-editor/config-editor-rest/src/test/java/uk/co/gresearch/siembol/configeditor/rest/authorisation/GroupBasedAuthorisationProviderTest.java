@@ -5,30 +5,36 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
+import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 
 public class GroupBasedAuthorisationProviderTest {
     private UserInfo userInfo;
     private Map<String, List<String>> authorisationGroups;
+    private Map<String, List<String>> authorisationAdminGroups;
     private GroupBasedAuthorisationProvider provider;
+    private ServiceUserRole role;
 
     private List<String> userGroups;
     @Before
     public void setUp() {
         userInfo = Mockito.mock(UserInfo.class);
-        userGroups = Arrays.asList("a", "b", "c");
+        userGroups = Arrays.asList("a", "b", "c", "e");
         when(userInfo.getGroups()).thenReturn(userGroups);
+
+        role = ServiceUserRole.SERVICE_USER;
+        when(userInfo.getServiceUserRole()).thenReturn(role);
 
         authorisationGroups = new HashMap<>();
         authorisationGroups.put("alert", Arrays.asList("b", "c", "d"));
-        provider = new GroupBasedAuthorisationProvider(authorisationGroups);
+
+        authorisationAdminGroups = new HashMap<>();
+        authorisationAdminGroups.put("alert", Arrays.asList("c", "e"));
+        provider = new GroupBasedAuthorisationProvider(authorisationGroups, authorisationAdminGroups);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -55,6 +61,24 @@ public class GroupBasedAuthorisationProviderTest {
 
     @Test
     public void testAuthGroupIntersectionForServiceAllowed() {
+        AuthorisationProvider.AuthorisationResult result = provider.getUserAuthorisation(userInfo, "alert");
+        Assert.assertEquals(AuthorisationProvider.AuthorisationResult.ALLOWED, result);
+    }
+
+    @Test
+    public void testUserForAdminServiceForbidden() {
+        when(userInfo.getGroups()).thenReturn(Arrays.asList("a", "b"));
+        when(userInfo.getServiceUserRole()).thenReturn(ServiceUserRole.SERVICE_ADMIN);
+
+        AuthorisationProvider.AuthorisationResult result = provider.getUserAuthorisation(userInfo, "alert");
+        Assert.assertEquals(AuthorisationProvider.AuthorisationResult.FORBIDDEN, result);
+    }
+
+    @Test
+    public void testUserForAdminServiceAllowed() {
+        when(userInfo.getGroups()).thenReturn(Arrays.asList("c"));
+        when(userInfo.getServiceUserRole()).thenReturn(ServiceUserRole.SERVICE_ADMIN);
+
         AuthorisationProvider.AuthorisationResult result = provider.getUserAuthorisation(userInfo, "alert");
         Assert.assertEquals(AuthorisationProvider.AuthorisationResult.ALLOWED, result);
     }

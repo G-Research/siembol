@@ -14,7 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
@@ -93,8 +93,8 @@ public class ParsingApplicationBoltTest {
     private OutputCollector collector;
     ParsingApplicationBolt parsingApplicationBolt;
     ParsingApplicationFactoryAttributes parsingAttributes;
-    ZookeperAttributes zookeperAttributes;
-    StormParsingApplicationAttributes attributes;
+    ZookeperAttributesDto zookeperAttributes;
+    StormParsingApplicationAttributesDto attributes;
     ZookeperConnector zookeperConnector;
     ZookeperConnectorFactory zookeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
@@ -105,8 +105,8 @@ public class ParsingApplicationBoltTest {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser);
 
 
-        zookeperAttributes = new ZookeperAttributes();
-        attributes = new StormParsingApplicationAttributes();
+        zookeperAttributes = new ZookeperAttributesDto();
+        attributes = new StormParsingApplicationAttributesDto();
         attributes.setZookeperAttributes(zookeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);

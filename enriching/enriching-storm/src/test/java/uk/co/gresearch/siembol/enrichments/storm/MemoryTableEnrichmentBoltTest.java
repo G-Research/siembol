@@ -12,7 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
@@ -66,8 +66,8 @@ public class MemoryTableEnrichmentBoltTest {
     private EnrichmentExceptions exceptions;
     private EnrichmentCommands commands;
     MemoryTableEnrichmentBolt memoryTableBolt;
-    ZookeperAttributes zookeperAttributes;
-    StormEnrichmentAttributes attributes;
+    ZookeperAttributesDto zookeperAttributes;
+    StormEnrichmentAttributesDto attributes;
     ZookeperConnector zookeperConnector;
     ZookeperConnectorFactory zookeperConnectorFactory;
     SiembolFileSystemFactory fileSystemFactory;
@@ -76,8 +76,8 @@ public class MemoryTableEnrichmentBoltTest {
 
     @Before
     public void setUp() throws Exception {
-        zookeperAttributes = new ZookeperAttributes();
-        attributes = new StormEnrichmentAttributes();
+        zookeperAttributes = new ZookeperAttributesDto();
+        attributes = new StormEnrichmentAttributesDto();
         attributes.setEnrichingTablesAttributes(zookeperAttributes);
 
         exceptions = new EnrichmentExceptions();

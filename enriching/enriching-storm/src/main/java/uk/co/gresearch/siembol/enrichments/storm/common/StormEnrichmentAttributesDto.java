@@ -1,37 +1,55 @@
 package uk.co.gresearch.siembol.enrichments.storm.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterAttributes;
-import uk.co.gresearch.siembol.common.storm.StormAttributes;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import com.github.reinert.jjschema.Attributes;
+import uk.co.gresearch.siembol.common.model.AdminConfigDto;
+import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
+import uk.co.gresearch.siembol.common.model.StormAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
 
-public class StormEnrichmentAttributes implements Serializable {
+@Attributes(title = "storm enrichment attributes", description = "Attributes for storm enrichment configuration")
+public class StormEnrichmentAttributesDto extends AdminConfigDto implements Serializable {
     @JsonProperty("topology.name")
-    private String topologyName;
+    @Attributes(required = true, description = "The name of storm topology")
+    private String topologyName = "siembol-enrichment";
     @JsonProperty("kafka.spout.num.executors")
-    private Integer kafkaSpoutNumExecutors;
+    @Attributes(required = true, description = "The number of executors for kafka spout", minimum = 1)
+    private Integer kafkaSpoutNumExecutors = 1;
+    @Attributes(required = true, description = "The number of executors for enriching rule engine", minimum = 1)
     @JsonProperty("enriching.engine.bolt.num.executors")
-    private Integer enrichingEngineBoltNumExecutors;
+    private Integer enrichingEngineBoltNumExecutors = 1;
+    @Attributes(required = true, description = "The number of executors for memory enrichments from tables", minimum = 1)
     @JsonProperty("memory.enriching.bolt.num.executors")
-    private Integer memoryEnrichingBoltNumExecutors;
+    private Integer memoryEnrichingBoltNumExecutors = 1;
     @JsonProperty("merging.bolt.num.executors")
-    private Integer mergingBoltNumExecutors;
+    @Attributes(required = true, description = "The number of executors for merging enriched fields", minimum = 1)
+    private Integer mergingBoltNumExecutors = 1;
     @JsonProperty("kafka.writer.bolt.num.executors")
-    private Integer kafkaWriterBoltNumExecutors;
+    @Attributes(required = true, description = "The number of executors for producing output messages", minimum = 1)
+    private Integer kafkaWriterBoltNumExecutors = 1;
+
     @JsonProperty("enriching.rules.zookeeper.attributes")
-    private ZookeperAttributes enrichingRulesZookeperAttributes;
+    @Attributes(required = true, description = "The zookeeper attributes for configuration enriching rules")
+    private ZookeperAttributesDto enrichingRulesZookeperAttributes;
     @JsonProperty("enriching.tables.zookeeper.attributes")
-    private ZookeperAttributes enrichingTablesAttributes;
+    @Attributes(required = true, description = "The zookeeper attributes for enriching tables")
+    private ZookeperAttributesDto enrichingTablesAttributes;
+
     @JsonProperty("kafka.batch.writer.attributes")
-    private KafkaBatchWriterAttributes kafkaBatchWriterAttributes;
+    @Attributes(required = true, description = "Kafka batch writer attributes for producing output messages")
+    private KafkaBatchWriterAttributesDto kafkaBatchWriterAttributes;
+    @Attributes(required = true, description = "Storm attributes for the enrichment topology")
     @JsonProperty("storm.attributes")
-    private StormAttributes stormAttributes;
+    private StormAttributesDto stormAttributes;
+    @Attributes(required = true, description = "Output kafka topic name for correctly processed messages")
     @JsonProperty("enriching.output.topic")
     private String enrichingOutputTopic;
+    @Attributes(required = true, description = "Output kafka topic name for error messages")
     @JsonProperty("enriching.error.topic")
     private String enrichingErrorTopic;
+    @Attributes(required = true, description = "the url for hdfs cluster where enriching tables are stored")
     @JsonProperty("enriching.tables.hdfs.uri")
     private String enrichingTablesHdfsUri;
 
@@ -75,35 +93,35 @@ public class StormEnrichmentAttributes implements Serializable {
         this.kafkaWriterBoltNumExecutors = kafkaWriterBoltNumExecutors;
     }
 
-    public ZookeperAttributes getEnrichingRulesZookeperAttributes() {
+    public ZookeperAttributesDto getEnrichingRulesZookeperAttributes() {
         return enrichingRulesZookeperAttributes;
     }
 
-    public void setEnrichingRulesZookeperAttributes(ZookeperAttributes enrichingRulesZookeperAttributes) {
+    public void setEnrichingRulesZookeperAttributes(ZookeperAttributesDto enrichingRulesZookeperAttributes) {
         this.enrichingRulesZookeperAttributes = enrichingRulesZookeperAttributes;
     }
 
-    public ZookeperAttributes getEnrichingTablesAttributes() {
+    public ZookeperAttributesDto getEnrichingTablesAttributes() {
         return enrichingTablesAttributes;
     }
 
-    public void setEnrichingTablesAttributes(ZookeperAttributes enrichingTablesAttributes) {
+    public void setEnrichingTablesAttributes(ZookeperAttributesDto enrichingTablesAttributes) {
         this.enrichingTablesAttributes = enrichingTablesAttributes;
     }
 
-    public KafkaBatchWriterAttributes getKafkaBatchWriterAttributes() {
+    public KafkaBatchWriterAttributesDto getKafkaBatchWriterAttributes() {
         return kafkaBatchWriterAttributes;
     }
 
-    public void setKafkaBatchWriterAttributes(KafkaBatchWriterAttributes kafkaBatchWriterAttributes) {
+    public void setKafkaBatchWriterAttributes(KafkaBatchWriterAttributesDto kafkaBatchWriterAttributes) {
         this.kafkaBatchWriterAttributes = kafkaBatchWriterAttributes;
     }
 
-    public StormAttributes getStormAttributes() {
+    public StormAttributesDto getStormAttributes() {
         return stormAttributes;
     }
 
-    public void setStormAttributes(StormAttributes stormAttributes) {
+    public void setStormAttributes(StormAttributesDto stormAttributes) {
         this.stormAttributes = stormAttributes;
     }
 

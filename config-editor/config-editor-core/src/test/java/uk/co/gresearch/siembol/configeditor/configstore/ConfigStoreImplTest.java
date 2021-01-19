@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.actuate.health.Status.DOWN;
 import static org.springframework.boot.actuate.health.Status.UP;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
@@ -36,6 +37,7 @@ public class ConfigStoreImplTest {
     private ConfigEditorResult genericResult;
     private UserInfo user;
     private ConfigRelease release;
+    private ConfigRelease adminConfig;
     private ConfigItems configs;
     private ConfigItems testCases;
     private ConfigStoreImpl.Builder builder;
@@ -45,6 +47,7 @@ public class ConfigStoreImplTest {
     public void setUp() throws IOException, GitAPIException {
         executorService = currentThreadExecutorService();
         release = Mockito.mock(ConfigRelease.class);
+        adminConfig = Mockito.mock(ConfigRelease.class);
         configs = Mockito.mock(ConfigItems.class);
         testCases = Mockito.mock(ConfigItems.class);
 
@@ -74,6 +77,8 @@ public class ConfigStoreImplTest {
         when(configs.getDirectoryUri()).thenReturn("configs_directory");
         when(release.getRepoUri()).thenReturn("release");
         when(release.getDirectoryUri()).thenReturn("release_directory");
+        when(adminConfig.getRepoUri()).thenReturn("admin_config");
+        when(adminConfig.getDirectoryUri()).thenReturn("admin_config_directory");
 
         when(testCases.getRepoUri()).thenReturn("test_cases");
         when(testCases.getDirectoryUri()).thenReturn("test_cases_directory");
@@ -83,8 +88,10 @@ public class ConfigStoreImplTest {
         builder.configs = configs;
         builder.storeExecutorService = executorService;
         builder.releaseExecutorService = executorService;
+        builder.adminConfigExecutorService = executorService;
         builder.release = release;
         builder.testCases = testCases;
+        builder.adminConfig = adminConfig;
 
         configStore = new ConfigStoreImpl(builder);
 
@@ -180,6 +187,37 @@ public class ConfigStoreImplTest {
                 .getRulesRepositories().getTestCaseStoreUrl());
         Assert.assertEquals("test_cases_directory", ret.getAttributes()
                 .getRulesRepositories().getTestCaseStoreDirectoryUrl());
+
+        Assert.assertEquals("admin_config", ret.getAttributes()
+                .getRulesRepositories().getAdminConfigUrl());
+        Assert.assertEquals("admin_config_directory", ret.getAttributes()
+                .getRulesRepositories().getAdminConfigDirectoryUrl());
+    }
+
+    @Test
+    public void getRepositoriesNoAdminConfig() {
+        builder.adminConfig = null;
+        configStore = new ConfigStoreImpl(builder);
+        ConfigEditorResult ret = configStore.getRepositories();
+        Assert.assertEquals(OK, ret.getStatusCode());
+
+        Assert.assertNotNull(ret.getAttributes().getRulesRepositories());
+        Assert.assertEquals("configs", ret.getAttributes()
+                .getRulesRepositories().getRuleStoreUrl());
+        Assert.assertEquals("configs_directory", ret.getAttributes()
+                .getRulesRepositories().getRuleStoreDirectoryUrl());
+        Assert.assertEquals("release",
+                ret.getAttributes().getRulesRepositories().getRulesReleaseUrl());
+        Assert.assertEquals("release_directory",
+                ret.getAttributes().getRulesRepositories().getRulesReleaseDirectoryUrl());
+
+        Assert.assertEquals("test_cases", ret.getAttributes()
+                .getRulesRepositories().getTestCaseStoreUrl());
+        Assert.assertEquals("test_cases_directory", ret.getAttributes()
+                .getRulesRepositories().getTestCaseStoreDirectoryUrl());
+
+        Assert.assertNull(ret.getAttributes().getRulesRepositories().getAdminConfigUrl());
+        Assert.assertNull(ret.getAttributes().getRulesRepositories().getAdminConfigDirectoryUrl());
     }
 
     @Test
@@ -245,6 +283,23 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void getAdminConfig() throws GitAPIException, IOException {
+        when(adminConfig.getConfigsRelease()).thenReturn(genericResult);
+        ConfigEditorResult ret = configStore.getAdminConfig();
+        verify(adminConfig).getConfigsRelease();
+        Assert.assertEquals(ret, genericResult);
+    }
+
+    @Test
+    public void getAdminConfigUnsupported() {
+        builder.adminConfig = null;
+        configStore = new ConfigStoreImpl(builder);
+        ConfigEditorResult ret = configStore.getAdminConfig();
+        Assert.assertEquals(ERROR, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getMessage());
+    }
+
+    @Test
     public void getReleaseStatus() throws IOException {
         when(release.getConfigsReleaseStatus()).thenReturn(genericResult);
         ConfigEditorResult ret = configStore.getConfigsReleaseStatus();
@@ -253,11 +308,45 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void getAdminConfigStatus() throws IOException {
+        when(adminConfig.getConfigsReleaseStatus()).thenReturn(genericResult);
+        ConfigEditorResult ret = configStore.getAdminConfigStatus();
+        verify(adminConfig).getConfigsReleaseStatus();
+        Assert.assertEquals(genericResult, ret);
+    }
+
+    @Test
+    public void getAdminConfigStatusUnsupported() {
+        builder.adminConfig = null;
+        configStore = new ConfigStoreImpl(builder);
+        ConfigEditorResult ret = configStore.getAdminConfigStatus();
+        Assert.assertEquals(ERROR, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getMessage());
+    }
+
+    @Test
     public void submitRelease() throws Exception {
         when(release.submitConfigsRelease(eq(user), eq("DUMMY"))).thenReturn(genericResult);
         ConfigEditorResult ret = configStore.submitConfigsRelease(user, "DUMMY");
         verify(release).submitConfigsRelease(user, "DUMMY");
         Assert.assertEquals(ret, genericResult);
+    }
+
+    @Test
+    public void submitAdminConfig() throws Exception {
+        when(adminConfig.submitConfigsRelease(eq(user), eq("DUMMY"))).thenReturn(genericResult);
+        ConfigEditorResult ret = configStore.submitAdminConfig(user, "DUMMY");
+        verify(adminConfig).submitConfigsRelease(user, "DUMMY");
+        Assert.assertEquals(ret, genericResult);
+    }
+
+    @Test
+    public void submitAdminConfigUnsupported() {
+        builder.adminConfig = null;
+        configStore = new ConfigStoreImpl(builder);
+        ConfigEditorResult ret = configStore.submitAdminConfig(user, "DUMMY");
+        Assert.assertEquals(ERROR, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getMessage());
     }
 
     private static ExecutorService currentThreadExecutorService() {

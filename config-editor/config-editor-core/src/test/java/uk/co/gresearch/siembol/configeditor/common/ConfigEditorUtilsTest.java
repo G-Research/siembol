@@ -1,6 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.common;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.adrianwalker.multilinestring.Multiline;
@@ -242,57 +243,62 @@ public class ConfigEditorUtilsTest {
     @Multiline
     public static String valueString;
 
-    private static final ObjectReader JSON_READER = new ObjectMapper()
+    private static final ObjectReader JSON_OBJECT_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
+    private static final ObjectReader FORM_ATTRIBUTES_READER = new ObjectMapper()
+            .readerFor(new TypeReference<Map<String, JsonNode>>() {});
+
 
     @Test
     public void patchSchemaOk() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, layoutConfig);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue(layoutConfig));
         Assert.assertTrue(patched.isPresent());
-        Map<String, Object> schema = JSON_READER.readValue(patched.get());
+        Map<String, Object> schema = JSON_OBJECT_READER.readValue(patched.get());
         Assert.assertNotNull(schema);
     }
 
     @Test
     public void patchSchemaEmptyConfigOk() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, "{}");
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue("{}"));
         Assert.assertTrue(patched.isPresent());
-        Map<String, Object> schema = JSON_READER.readValue(patched.get());
+        Map<String, Object> schema = JSON_OBJECT_READER.readValue(patched.get());
         Assert.assertNotNull(schema);
-    }
-
-    @Test(expected = IOException.class)
-    public void patchSchemaInvalidConfig() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, "INVALID");
     }
 
     @Test
     public void patchSchemaNonExistingPath() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, unknownKeyConfig);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue(unknownKeyConfig));
         Assert.assertFalse(patched.isPresent());
     }
 
     @Test
     public void patchSchemaMultiplePaths() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, multipleKeyConfig);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue(multipleKeyConfig));
         Assert.assertFalse(patched.isPresent());
     }
 
     @Test
     public void patchSchemaNotJsonObject() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueWithString);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue(valueWithString));
         Assert.assertFalse(patched.isPresent());
     }
 
     @Test
     public void patchSchemaEmptyObject() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueEmptyObject);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue(valueEmptyObject));
         Assert.assertTrue(patched.isPresent());
     }
 
     @Test
     public void patchSchemaStringValue() throws IOException {
-        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema, valueString);
+        Optional<String> patched = ConfigEditorUtils.patchJsonSchema(rulesSchema,
+                FORM_ATTRIBUTES_READER.readValue(valueString));
         Assert.assertFalse(patched.isPresent());
     }
 

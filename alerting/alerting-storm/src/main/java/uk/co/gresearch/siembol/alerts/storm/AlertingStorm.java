@@ -12,11 +12,11 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.gresearch.siembol.common.storm.StormAttributes;
+import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertingEngineType;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributes;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
@@ -33,11 +33,13 @@ public class AlertingStorm {
     private static final int ATTRIBUTES_ARG_INDEX = 0;
     private static final String WRONG_ARGUMENT_MSG = "Wrong arguments. The application expects Base64 encoded attributes";
 
-    private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(AlertingStormAttributes attributes) {
-        StormAttributes stormAttributes = attributes.getStormAttributes();
+    private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(AlertingStormAttributesDto attributes) {
+        StormAttributesDto stormAttributes = attributes.getStormAttributes();
         stormAttributes.setKafkaTopics(Arrays.asList(attributes.getInputTopic()));
-        stormAttributes.getKafkaSpoutProperties().put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        stormAttributes.getKafkaSpoutProperties().put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        stormAttributes.getKafkaSpoutProperties().getRawMap()
+                .put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        stormAttributes.getKafkaSpoutProperties().getRawMap()
+                .put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         if (AlertingEngineType.valueOfName(attributes.getAlertingEngine()) == AlertingEngineType.SIEMBOL_ALERTS) {
             return StormHelper.createKafkaSpoutConfig(stormAttributes,
@@ -49,7 +51,7 @@ public class AlertingStorm {
         }
     }
 
-    public static StormTopology createTopology(AlertingStormAttributes attributes,
+    public static StormTopology createTopology(AlertingStormAttributesDto attributes,
                                                ZookeperConnectorFactory zookeperConnectorFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
@@ -68,7 +70,7 @@ public class AlertingStorm {
         return builder.createTopology();
     }
 
-    public static StormTopology createCorrelationAlertingTopology(AlertingStormAttributes attributes,
+    public static StormTopology createCorrelationAlertingTopology(AlertingStormAttributesDto attributes,
                                                                   ZookeperConnectorFactory zookeperConnectorFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
@@ -95,14 +97,14 @@ public class AlertingStorm {
         }
 
         String input = new String(Base64.getDecoder().decode(args[ATTRIBUTES_ARG_INDEX]));
-        AlertingStormAttributes attributes = new ObjectMapper()
-                .readerFor(AlertingStormAttributes.class)
+        AlertingStormAttributesDto attributes = new ObjectMapper()
+                .readerFor(AlertingStormAttributesDto.class)
                 .readValue(input);
 
         AlertingEngineType engineType = AlertingEngineType.valueOfName(attributes.getAlertingEngine());
 
         Config config = new Config();
-        config.putAll(attributes.getStormAttributes().getStormConfig());
+        config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
         ZookeperConnectorFactory zookeperConnectorFactory = new ZookeperConnectorFactory() {};
 
 

@@ -8,7 +8,7 @@ import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributes;
+import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class CorrelationAlertingEngineBolt extends AlertingEngineBolt {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final int cleanIntervalSec;
 
-    public CorrelationAlertingEngineBolt(AlertingStormAttributes attributes,
+    public CorrelationAlertingEngineBolt(AlertingStormAttributesDto attributes,
                                          ZookeperConnectorFactory zookeperConnectorFactory) {
         super(attributes, zookeperConnectorFactory);
         cleanIntervalSec = attributes.getAlertingEngineCleanIntervalSec();

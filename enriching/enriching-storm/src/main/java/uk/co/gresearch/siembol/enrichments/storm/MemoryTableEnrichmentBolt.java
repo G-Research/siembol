@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.HdfsFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperAttributes;
+import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
@@ -53,14 +53,14 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLES = "Invalid type in tuple provided";
 
     private final AtomicReference<Map<String, EnrichmentTable>> enrichmentTables = new AtomicReference<>();
-    private final ZookeperAttributes zookeperAttributes;
+    private final ZookeperAttributesDto zookeperAttributes;
     private final ZookeperConnectorFactory zookeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
 
     private OutputCollector collector;
     private ZookeperConnector zookeperConnector;
 
-    MemoryTableEnrichmentBolt(StormEnrichmentAttributes attributes,
+    MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
                               ZookeperConnectorFactory zookeperConnectorFactory,
                               SiembolFileSystemFactory fileSystemFactory) {
         this.zookeperAttributes = attributes.getEnrichingTablesAttributes();
@@ -68,7 +68,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
         this.fileSystemFactory = fileSystemFactory;
     }
 
-    public MemoryTableEnrichmentBolt(StormEnrichmentAttributes attributes) {
+    public MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes,
                 new ZookeperConnectorFactory() {},
                 new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));

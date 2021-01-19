@@ -1,40 +1,42 @@
 {
-    "$..evaluators": {
-        "widget": {
-            "formlyConfig": {
-                "type": "tab-array"
+    "config_layout": {
+        "$..evaluators": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "tab-array"
+                }
             }
-        }
-    },
-    "$..rule_description": {
-        "widget": {
-            "formlyConfig": {
-                "type": "textarea",
-                "wrappers": []
+        },
+        "$..rule_description": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "textarea",
+                    "wrappers": []
+                }
             }
-        }
-    },
-    "$..matchers.items.properties.data": {
-        "widget": {
-            "formlyConfig": {
-                "type": "textarea",
-                "wrappers": []
+        },
+        "$..matchers.items.properties.data": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "textarea",
+                    "wrappers": []
+                }
             }
-        }
-    },
-    "$..matchers.items": {
-        "widget": {
-            "formlyConfig": {
-                "wrappers": [
-                    "expansion-panel"
-                ]
+        },
+        "$..matchers.items": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "expansion-panel"
+                    ]
+                }
             }
-        }
-    },
-    "$..matchers.items.properties.case_insensitive": {
-        "widget": {
-            "formlyConfig": {
-                "hideExpression": "(model && model.matcher_type != 'IS_IN_SET') || !model"
+        },
+        "$..matchers.items.properties.case_insensitive": {
+            "widget": {
+                "formlyConfig": {
+                    "hideExpression": "(model && model.matcher_type != 'IS_IN_SET') || !model"
+                }
             }
         }
     }

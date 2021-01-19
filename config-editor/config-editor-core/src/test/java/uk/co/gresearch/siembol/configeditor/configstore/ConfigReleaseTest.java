@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.git.ReleasePullRequestService;
@@ -67,6 +68,7 @@ public class ConfigReleaseTest {
         when(configInfoProvider.getReleaseVersion(files)).thenReturn(releaseVersion);
         when(configInfoProvider.isReleaseFile(any())).thenReturn(true);
         when(configInfoProvider.getFileContentType()).thenReturn(ConfigEditorFile.ContentType.STRING);
+        when(configInfoProvider.getConfigInfoType()).thenReturn(ConfigInfoType.CONFIG);
 
         when(gitRepo.getFiles(eq(directory), any())).thenReturn(getFilesResult);
         when(gitRepo.getRepoUri()).thenReturn(dummyRepoUrl);
@@ -144,7 +146,18 @@ public class ConfigReleaseTest {
         ConfigEditorResult result = configRelease.submitConfigsRelease(user, "NEW_DUMMY_RELEASE");
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getPullRequestUrl());
+    }
 
+    @Test
+    public void submitAdminConfigOk() throws Exception {
+        when(configInfoProvider.getConfigInfoType()).thenReturn(ConfigInfoType.ADMIN_CONFIG);
+        pullRequestResult.getAttributes().setPendingPullRequest(false);
+        releaseInfo.setOldVersion(releaseVersion);
+        releaseInfo.setVersion(releaseVersion + 1);
+
+        ConfigEditorResult result = configRelease.submitConfigsRelease(user, "NEW_DUMMY_RELEASE");
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getPullRequestUrl());
     }
 
     @Test
