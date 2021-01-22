@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "ui-config"
+data:
+  ui-config.json: |-
+    {{ tpl (printf "resources/ui-config.json" | .Files.Get | nindent 4 | trim) . }}

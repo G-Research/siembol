@@ -1,0 +1,43 @@
+# -----------------------------------------------------------------------------
+# general Simbol parameters
+# -----------------------------------------------------------------------------
+
+# Enable TLS via certmanager
+tls:
+  enabled: false
+
+# -----------------------------------------------------------------------------
+# config-editor-rest parameters
+# -----------------------------------------------------------------------------
+rest:
+  image: 
+    repository: "gresearchdev/siembol-config-editor-rest"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  appName: "config-editor-rest"
+  applicationProperties: "resources/application.properties"
+  gitConfig: "resources/git.config"
+  mountPath: "/opt/config-editor-rest"
+
+  ingress:
+    enabled: false
+    hostname: "REDACTED-FQDN-BACKEND"
+
+
+# -----------------------------------------------------------------------------
+# config-editor-ui parameters
+# -----------------------------------------------------------------------------
+ui:
+  image: 
+    repository: "gresearchdev/siembol-config-editor-ui"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  # Specify basic configuration details for Siembol
+  serviceName: config-editor-ui
+
+  # Run with an ingress
+  ingress:
+    enabled: false
+    hostname: REDACTED-FQDN-UI

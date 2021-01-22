@@ -1,0 +1,25 @@
+{{- if .Values.ui.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.ui.serviceName }}
+  annotations:
+    ingress.io/ingress.allow-http: "true"
+    ingress.kubernetes.io/ssl-passthrough: "false"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    ingress.kubernetes.io/ssl-passthrough-http-port: "80"
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+  - hosts: 
+    - {{ .Values.ui.ingress.hostname }}
+    secretName: {{ .Values.ui.serviceName }}-tls
+  rules:
+  - host: {{ .Values.ui.ingress.hostname }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ .Values.ui.serviceName }}
+          servicePort: 80
+{{- end -}}

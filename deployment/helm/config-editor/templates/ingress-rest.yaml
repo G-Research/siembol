@@ -1,0 +1,27 @@
+{{- if .Values.rest.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.rest.appName }}
+spec:
+  tls:
+    - hosts:
+      - {{ .Values.rest.appName }}.REDACTED-CLUSTER
+      - {{ .Values.rest.ingress.hostname }}
+      secretName: {{ .Values.rest.appName}}-tls
+  rules:
+  - host: {{ .Values.rest.appName }}.REDACTED-CLUSTER
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ .Values.rest.appName }}
+          servicePort: 8089
+  - host: {{ .Values.rest.ingress.hostname }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ .Values.rest.appName }}
+          servicePort: 8089
+{{- end -}}

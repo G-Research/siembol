@@ -1,0 +1,14 @@
+{{- if .Values.tls.enabled -}}
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: {{ .Values.ui.serviceName }}
+spec:
+  secretName: "{{ .Values.ui.serviceName }}-tls"
+  issuerRef:
+    kind: ClusterIssuer
+    name: k8s-cluster-issuer
+  commonName: {{ .Values.ui.ingress.hostname }}
+  dnsNames:
+  - {{ .Values.ui.ingress.hostname }}
+{{- end -}}

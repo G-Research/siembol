@@ -1,0 +1,6 @@
+{
+    "environment": "demo",
+    "serviceRoot": "http://localhost:8081/",
+    "uiBootstrapPath": "./ui-bootstrap.json",
+    "authType": "disabled"
+}
