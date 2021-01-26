@@ -35,7 +35,7 @@ public class AlertingStorm {
 
     private static KafkaSpoutConfig<String, String> createKafkaSpoutConfig(AlertingStormAttributesDto attributes) {
         StormAttributesDto stormAttributes = attributes.getStormAttributes();
-        stormAttributes.setKafkaTopics(Arrays.asList(attributes.getInputTopic()));
+        stormAttributes.setKafkaTopics(attributes.getInputTopics());
         stormAttributes.getKafkaSpoutProperties().getRawMap()
                 .put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         stormAttributes.getKafkaSpoutProperties().getRawMap()

@@ -36,7 +36,7 @@ public class KafkaWriterBoltTest {
     /**
      *{
      *   "alerts.engine": "siembol_alerts",
-     *   "alerts.input.topic": "enrichmnents",
+     *   "alerts.input.topics": [ "enrichmnents" ],
      *   "alerts.correlation.output.topic": "correlation.alerts",
      *   "kafka.error.topic": "errors",
      *   "alerts.output.topic": "alerts",

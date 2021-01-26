@@ -1,7 +1,9 @@
 package uk.co.gresearch.siembol.common.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import com.github.reinert.jjschema.SchemaIgnore;
 import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 import uk.co.gresearch.siembol.common.storm.FirstPoolOffsetStrategy;
 
@@ -12,8 +14,8 @@ public class StormAttributesDto {
     @JsonProperty("bootstrap.servers")
     @Attributes(required = true, description = "Kafka brokers servers url. Multiple servers are separated by coma")
     private String bootstrapServers;
-    @Attributes(required = true, description = "List of input kafka topics for storm kafka spout", minItems = 1)
-    @JsonProperty(value = "kafka.topics")
+    @SchemaIgnore
+    @JsonIgnore
     private List<String> kafkaTopics;
     @Attributes(required = true, description = "Defines how the kafka spout seeks the offset to be used in the first poll to kafka")
     @JsonProperty("first.pool.offset.strategy")

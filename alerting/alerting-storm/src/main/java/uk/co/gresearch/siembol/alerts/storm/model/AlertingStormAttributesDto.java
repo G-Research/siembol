@@ -8,6 +8,7 @@ import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Attributes(title = "storm alerting attributes", description = "Attributes for siembol alerting")
 public class AlertingStormAttributesDto extends AdminConfigDto implements Serializable {
@@ -20,9 +21,9 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
     @Attributes(required = true, description = "The number of seconds for cleaning correlation context", minimum = 1)
     @JsonProperty("alerts.engine.clean.interval.sec")
     private Integer alertingEngineCleanIntervalSec = 1;
-    @Attributes(required = true, description = "The kafka input topic for reading messages")
-    @JsonProperty("alerts.input.topic")
-    private String inputTopic;
+    @Attributes(required = true, description = "The kafka input topics for reading messages", minItems = 1)
+    @JsonProperty("alerts.input.topics")
+    private List<String> inputTopics;
     @Attributes(required = true, description = "The kafka error topic for error messages")
     @JsonProperty("kafka.error.topic")
     private String kafkaErrorTopic;
@@ -76,12 +77,12 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
         this.alertingEngineCleanIntervalSec = AlertingEngineCleanIntervalSec;
     }
 
-    public String getInputTopic() {
-        return inputTopic;
+    public List<String> getInputTopics() {
+        return inputTopics;
     }
 
-    public void setInputTopic(String inputTopic) {
-        this.inputTopic = inputTopic;
+    public void setInputTopics(List<String> inputTopics) {
+        this.inputTopics = inputTopics;
     }
 
     public String getKafkaErrorTopic() {

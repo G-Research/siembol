@@ -37,6 +37,7 @@ public class StormEnrichingApplicationTest {
      *   "memory.enriching.bolt.num.executors": 1,
      *   "merging.bolt.num.executors": 1,
      *   "kafka.writer.bolt.num.executors": 1,
+     *   "enriching.input.topics" : [ "enrichments" ],
      *   "enriching.output.topic": "output",
      *   "enriching.error.topic": "error",
      *   "enriching.tables.hdfs.uri": "hdfs://secret",
@@ -59,9 +60,6 @@ public class StormEnrichingApplicationTest {
      *     }
      *   },
      *   "storm.attributes": {
-     *     "kafka.topics": [
-     *       "enrichments"
-     *     ],
      *     "first.pool.offset.strategy": "EARLIEST",
      *     "kafka.spout.properties": {
      *       "security.protocol": "PLAINTEXT"

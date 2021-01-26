@@ -47,6 +47,7 @@ public class StormEnrichingApplication {
                 .put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         stormAttributes.getKafkaSpoutProperties().getRawMap()
                 .put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        stormAttributes.setKafkaTopics(attributes.getEnrichingInputTopics());
 
         return StormHelper.createKafkaSpoutConfig(stormAttributes,
                 r -> new Values(r.value()), new Fields(EnrichmentTuples.EVENT.toString()));

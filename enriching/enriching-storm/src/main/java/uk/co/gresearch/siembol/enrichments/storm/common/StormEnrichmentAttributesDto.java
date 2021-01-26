@@ -8,6 +8,7 @@ import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Attributes(title = "storm enrichment attributes", description = "Attributes for storm enrichment configuration")
 public class StormEnrichmentAttributesDto extends AdminConfigDto implements Serializable {
@@ -31,10 +32,12 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
     private Integer kafkaWriterBoltNumExecutors = 1;
 
     @JsonProperty("enriching.rules.zookeeper.attributes")
-    @Attributes(required = true, description = "The zookeeper attributes for configuration enriching rules")
+    @Attributes(title = "rules zookeeper attributes", required = true,
+            description = "The zookeeper attributes for configuration enriching rules")
     private ZookeperAttributesDto enrichingRulesZookeperAttributes;
     @JsonProperty("enriching.tables.zookeeper.attributes")
-    @Attributes(required = true, description = "The zookeeper attributes for enriching tables")
+    @Attributes(title = "tables zookeeper attributes", required = true,
+            description = "The zookeeper attributes for enriching tables")
     private ZookeperAttributesDto enrichingTablesAttributes;
 
     @JsonProperty("kafka.batch.writer.attributes")
@@ -43,6 +46,9 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
     @Attributes(required = true, description = "Storm attributes for the enrichment topology")
     @JsonProperty("storm.attributes")
     private StormAttributesDto stormAttributes;
+    @Attributes(required = true, description = "The kafka input topics for reading messages", minItems = 1)
+    @JsonProperty("enriching.input.topics")
+    private List<String> enrichingInputTopics;
     @Attributes(required = true, description = "Output kafka topic name for correctly processed messages")
     @JsonProperty("enriching.output.topic")
     private String enrichingOutputTopic;
@@ -155,5 +161,13 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
 
     public void setEnrichingTablesHdfsUri(String enrichingTablesHdfsUri) {
         this.enrichingTablesHdfsUri = enrichingTablesHdfsUri;
+    }
+
+    public List<String> getEnrichingInputTopics() {
+        return enrichingInputTopics;
+    }
+
+    public void setEnrichingInputTopics(List<String> enrichingInputTopics) {
+        this.enrichingInputTopics = enrichingInputTopics;
     }
 }

@@ -71,7 +71,7 @@ public class AlertingStormApplicationTest {
     /**
      * {
      *   "alerts.engine": "siembol_alerts",
-     *   "alerts.input.topic": "input",
+     *   "alerts.input.topics": [ "input" ],
      *   "alerts.correlation.output.topic": "correlation.alerts",
      *   "kafka.error.topic": "errors",
      *   "alerts.output.topic": "alerts",

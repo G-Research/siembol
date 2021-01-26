@@ -111,7 +111,7 @@ public class CorrelationAlertingTest {
     /**
      * {
      *   "alerts.engine": "siembol_correlation_alerts",
-     *   "alerts.input.topic": "input",
+     *   "alerts.input.topics": [ "input" ],
      *   "alerts.correlation.output.topic": "correlation.alerts",
      *   "kafka.error.topic": "errors",
      *   "alerts.output.topic": "alerts",

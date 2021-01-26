@@ -31,7 +31,8 @@ public class StormParsingApplicationAttributesDto extends AdminConfigDto impleme
     @JsonProperty("storm.attributes")
     private StormAttributesDto stormAttributes;
 
-    @Attributes(description = "List of overridden settings for individual parsing applications")
+    @Attributes(title = "overridden applications",
+            description = "List of overridden settings for individual parsing applications")
     @JsonProperty("overridden.applications")
     private List<OverriddenApplicationAttributesDto> overriddenApplications;
 
