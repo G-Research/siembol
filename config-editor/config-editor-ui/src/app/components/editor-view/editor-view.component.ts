@@ -1,15 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Component } from '@angular/core';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ConfigData, Config } from '@app/model';
+import { Config } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
-import * as omitEmpty from 'omit-empty';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';

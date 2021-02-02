@@ -11,7 +11,9 @@ import {
   GitFiles,
   PullRequestInfo,
   SchemaInfo,
-  TestSchemaInfo
+  TestSchemaInfo,
+  AdminSchemaInfo,
+  AdminConfig
 } from '@model/config-model';
 import {
   TestCase,
@@ -19,7 +21,7 @@ import {
   TestCaseResult,
   TestCaseWrapper,
 } from '@model/test-case';
-import { UiMetadataMap } from '@model/ui-metadata-map';
+import { ADMIN_VERSION_FIELD_NAME, UiMetadataMap } from '@model/ui-metadata-map';
 
 import { cloneDeep } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
@@ -111,12 +113,37 @@ export class ConfigLoaderService {
       });
   }
 
+  public getAdminSchema(): Observable<JSONSchema7> {
+    return this.http
+      .get<AdminSchemaInfo>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/schema`
+      )
+      .map(x => {
+        try {
+          return x.admin_config_schema;
+        } catch {
+          throw new Error(
+            "Call to schema endpoint didn't return the expected schema"
+          );
+        }
+      });
+  }
+
   public getPullRequestStatus(): Observable<PullRequestInfo> {
     return this.http
       .get<PullRequestInfo>(
         `${this.config.serviceRoot}api/v1/${
           this.serviceName
         }/configstore/release/status`
+      );
+  }
+
+  public getAdminPullRequestStatus(): Observable<PullRequestInfo> {
+    return this.http
+      .get<PullRequestInfo>(
+        `${this.config.serviceRoot}api/v1/${
+          this.serviceName
+        }/configstore/adminconfig/status`
       );
   }
 
@@ -163,6 +190,26 @@ export class ConfigLoaderService {
           }
         })})
       );
+  }
+
+  public getAdminConfig(): Observable<AdminConfig> {
+    return this.http
+      .get<GitFiles<any>>(
+        `${this.config.serviceRoot}api/v1/${
+          this.serviceName
+        }/configstore/adminconfig`
+      )
+      .pipe(
+        map(result => {
+          return result.files[0]
+        }),
+        map(result => {
+          return ({
+            fileHistory: result.file_history,
+            configData: result.content,
+            version: result.content[ADMIN_VERSION_FIELD_NAME],
+        })})
+    );
   }
 
   public getTestCases(): Observable<TestCaseMap> {
@@ -232,6 +279,23 @@ export class ConfigLoaderService {
     );
   }
 
+  public validateAdminConfig(
+    config: AdminConfig
+  ): Observable<any> {
+    const json = JSON.stringify(
+      config.configData,
+      null,
+      2
+    );
+
+    return this.http.post<any>(
+      `${this.config.serviceRoot}api/v1/${
+        this.serviceName
+      }/adminconfig/validate`,
+      json
+    );
+  }
+
   public submitRelease(
     deployment: Deployment
   ): Observable<any> {
@@ -293,6 +357,23 @@ export class ConfigLoaderService {
       `${this.config.serviceRoot}api/v1/${
         this.serviceName
       }/configstore/configs`,
+      json
+    );
+  }
+
+  public submitAdminConfig(
+    config: AdminConfig
+  ): Observable<GitFiles<any>> {
+    const json = JSON.stringify(
+      config.configData,
+      null,
+      2
+    );
+
+    return this.http.post<GitFiles<any>>(
+      `${this.config.serviceRoot}api/v1/${
+        this.serviceName
+      }/configstore/adminconfig`,
       json
     );
   }

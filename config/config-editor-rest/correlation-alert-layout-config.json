@@ -49,5 +49,36 @@
         }
       }
     }
+  },
+  "admin_config_layout": {
+    "$": {
+      "widget": {
+        "formlyConfig": {
+          "type": "admin-tabs"
+        }
+      }
+    },
+    "$..['alerts.input.topics']": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ],
+          "templateOptions": {
+            "genericSettingTab": "true"
+          }
+        }
+      }
+    },
+    "$..['alerts.engine.clean.interval.sec']": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "true"
+        }
+      }
+    },
+    "$..['alerts.engine']": {
+      "enum": ["siembol_correlation_alerts"]
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { Config, ConfigData, Deployment, FileHistory } from ".";
 import { TestCaseMap, TestCaseWrapper } from "./test-case";
+import { AdminConfig } from "./config-model";
 
 export interface ConfigStoreState {
     configs: Config[];
@@ -17,4 +18,5 @@ export interface ConfigStoreState {
     editedConfig: Config;
     editedTestCase: TestCaseWrapper;
     testCaseMap: TestCaseMap;
+    adminConfig: AdminConfig;
 }

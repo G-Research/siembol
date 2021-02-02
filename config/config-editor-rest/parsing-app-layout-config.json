@@ -59,5 +59,23 @@
         }
       }
     }
+  },
+  "admin_config_layout": {
+    "$": {
+      "widget": {
+        "formlyConfig": {
+          "type": "admin-tabs"
+        }
+      }
+    },
+    "$..['overridden.applications'].items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
+      }
+    }
   }
 }

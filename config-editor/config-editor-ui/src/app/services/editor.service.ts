@@ -9,14 +9,19 @@ import { UiMetadataMap } from '../model/ui-metadata-map';
 import { AppService } from './app.service';
 import { mergeMap } from 'rxjs/operators';
 import { ConfigSchemaService } from './config-schema-service';
+import { UserRole } from '@app/model/config-model';
+import { AdminSchemaService } from './admin-schema.service';
+import { SchemaService } from './schema.service';
 
 export class ServiceContext {
   metaDataMap: UiMetadataMap;
   configLoader: ConfigLoaderService;
-  configSchema: ConfigSchemaService;
+  configSchema?: ConfigSchemaService;
+  adminSchema?: AdminSchemaService;
   configStore: ConfigStoreService;
   serviceName: string;
-  testSpecificationSchema: JSONSchema7;
+  testSpecificationSchema?: JSONSchema7;
+  adminMode: boolean;
   constructor() { }
 }
 
@@ -32,6 +37,8 @@ export class EditorService {
   public get configStore() { return this.serviceContext.configStore; }
   public get serviceName() { return this.serviceContext.serviceName; }
   public get configSchema() { return this.serviceContext.configSchema; }
+  public get adminSchema() { return this.serviceContext.adminSchema; }
+  public get adminMode() { return this.serviceContext.adminMode }
 
   public get testSpecificationSchema() { return this.serviceContext.testSpecificationSchema; }
 
@@ -50,11 +57,16 @@ export class EditorService {
     return true;
   }
 
-  public createServiceContext(serviceName: string): Observable<ServiceContext> {
+  private initialiseContext(serviceName: string): [UiMetadataMap, string, ConfigLoaderService, ConfigStoreService]{
     const metaDataMap = this.appService.getUiMetadataMap(serviceName);
     const user = this.appService.user;
     const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, metaDataMap);
     const configStore = new ConfigStoreService(serviceName, user, this.config, configLoader);
+    return [metaDataMap, user, configLoader, configStore];
+  }
+
+  public createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
+    const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);
     const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
       ? configLoader.getTestSpecificationSchema() : Observable.of({});
     const testCaseMapFun = metaDataMap.testing.testCaseEnabled
@@ -66,7 +78,7 @@ export class EditorService {
           Observable.forkJoin(
             configLoader.getConfigs(),
             configLoader.getRelease(),
-            Observable.of(schema),
+            Observable.of(schema),  
             testCaseMapFun,
             testSpecificationFun))).
       map(([configs, deployment, originalSchema, testCaseMap, testSpecSchema]) => {
@@ -78,10 +90,37 @@ export class EditorService {
             configStore: configStore,
             serviceName: serviceName,
             configSchema: new ConfigSchemaService(metaDataMap, user, originalSchema),
-            testSpecificationSchema: testSpecSchema
+            testSpecificationSchema: testSpecSchema,
+            adminMode: false
           };
         } else {
           throwError('Can not load service');
+        }
+      });
+  }
+
+  public createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
+    const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);
+
+    return configLoader.getAdminSchema()
+      .pipe(
+        mergeMap(schema =>
+          Observable.forkJoin(
+            configLoader.getAdminConfig(),
+            Observable.of(schema)))).
+      map(([adminConfig, originalSchema]) => {
+        if (adminConfig && originalSchema) {
+          configStore.updateAdmin(adminConfig);
+          return {
+            metaDataMap: metaDataMap,
+            configLoader: configLoader,
+            configStore: configStore,
+            serviceName: serviceName,
+            adminSchema: new AdminSchemaService(metaDataMap, user, originalSchema),
+            adminMode: true
+          };
+        } else {
+          throwError('Can not load admin service');
         }
       });
   }

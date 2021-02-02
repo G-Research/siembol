@@ -7,7 +7,6 @@ import {
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
-import { StatusCode } from '@app/commons';
 import { map } from 'rxjs/operators';
 import { UiMetadataMap } from '@app/model/ui-metadata-map';
 
@@ -104,5 +103,9 @@ export class AppService {
     public getUiMetadataMap(serviceName: string): UiMetadataMap {
         const serviceType = this.userServicesMap.get(serviceName).type;
         return this.config.uiMetadata[serviceType]; 
+    }
+
+    public getUserServiceRoles(serviceName: string) {
+        return this.appContext.userServicesMap.get(serviceName).user_roles;
     }
 }

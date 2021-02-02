@@ -18,7 +18,7 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
     @Attributes(required = true, description = "The name of storm topology")
     @JsonProperty("alerts.topology.name")
     private String topologyName;
-    @Attributes(required = true, description = "The number of seconds for cleaning correlation context", minimum = 1)
+    @Attributes(description = "The number of seconds for cleaning correlation context", minimum = 1)
     @JsonProperty("alerts.engine.clean.interval.sec")
     private Integer alertingEngineCleanIntervalSec = 1;
     @Attributes(required = true, description = "The kafka input topics for reading messages", minItems = 1)

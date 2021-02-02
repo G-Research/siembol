@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, Routes } from '@angular/router';
+import { Router, Routes, Route } from '@angular/router';
 import { Subject } from 'rxjs';
 import { ConfigManagerComponent, LandingPageComponent } from '..';
 import { HomeComponent, PageNotFoundComponent } from '../../containers';
@@ -12,6 +12,10 @@ import { AppConfigService } from '../../config';
 import { EditorViewComponent } from '../editor-view/editor-view.component';
 import { takeUntil } from 'rxjs/operators';
 import { AuthGuard } from '@app/guards/auth-guard';
+import { AdminViewComponent } from '../admin-view/admin-view.component';
+import { AdminGuard } from '@app/guards/admin.guard';
+import { UserRole } from '@app/model/config-model';
+import { cloneDeep } from 'lodash';
 
 @Component({
     template: '',
@@ -19,7 +23,7 @@ import { AuthGuard } from '@app/guards/auth-guard';
 export class AppInitComponent implements OnInit, OnDestroy {
     private ngUnsubscribe = new Subject();
 
-    private readonly specificEditorRoutes: Routes = [
+    private readonly configRoutes: Routes = [
         {
             path: '',
             component: ConfigManagerComponent,
@@ -36,8 +40,15 @@ export class AppInitComponent implements OnInit, OnDestroy {
                 runGuardsAndResolvers: 'paramsOrQueryParamsChange'
             }],
             runGuardsAndResolvers: 'paramsOrQueryParamsChange',
-        },
-    ]
+        }]
+
+    private readonly adminRoute: Route = 
+        {
+            path: 'admin',
+            component: AdminViewComponent,
+            canActivate: [AuthGuard, AdminGuard],
+        }
+
 
     private appRoutes: Routes = [
         {
@@ -72,8 +83,19 @@ export class AppInitComponent implements OnInit, OnDestroy {
 
     private loadRoutes() {
         const routes = this.appRoutes;
-        this.appService.serviceNames.forEach(r => {
-            this.appRoutes.push({ path: r, component: HomeComponent, children: this.specificEditorRoutes })
+        this.appService.serviceNames.forEach(s => {
+            let userRoles = this.appService.getUserServiceRoles(s);
+            let childrenRoutes = [];
+            if (userRoles.includes(UserRole.SERVICE_USER)) {
+                childrenRoutes = cloneDeep(this.configRoutes);
+            }
+            if (userRoles.includes(UserRole.SERVICE_ADMIN)) {
+                childrenRoutes.push(this.adminRoute);
+            }
+            this.appRoutes.push({
+                path: s, component: HomeComponent, children: childrenRoutes
+            })
+            
         });
         routes.push({
             component: PageNotFoundComponent,

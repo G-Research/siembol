@@ -1,12 +1,10 @@
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
 import { FieldType } from '@ngx-formly/material/form-field';
-import { cloneDeep } from 'lodash';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, take, takeUntil, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -15,9 +13,8 @@ import { debounceTime, take, takeUntil, tap } from 'rxjs/operators';
     <div class="overlay-holder">
         <mat-form-field #formfield>
             <mat-label>{{ to.label }}</mat-label>
-            <textarea class="text-area" highlight matInput #textbox #autocompleteInput cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+            <textarea class="text-area" highlight matInput #textbox cdkTextareaAutosize #autosize="cdkTextareaAutosize"
             spellcheck="false"
-            [matAutocomplete]="auto"
             [class.hide-text]="true"
             [id]="id"
             [name]="to.title"
@@ -30,14 +27,10 @@ import { debounceTime, take, takeUntil, tap } from 'rxjs/operators';
             [readonly]="to.readonly"
             >
             </textarea>
-            <mat-autocomplete
-                #auto="matAutocomplete" [autoActiveFirstOption]='true' (optionSelected)="autoCompleteSelected($event)"
-            >
-            </mat-autocomplete>
             <mat-hint *ngIf="to?.description && (!to?.errorMessage)"
             align="end" [innerHTML]="to?.description"></mat-hint>
         </mat-form-field>
-        <div class="highlighted-overlay" [class.show-overlay]="true" [innerHtml]="modelValue | highlightVariables"></div>
+        <div class="highlighted-overlay" [class.show-overlay]="true" [innerHtml]="value | highlightVariables"></div>
     </div>
   `,
   styles: [`
@@ -85,16 +78,12 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
   @ViewChild(MatInput, {static: false}) formFieldControl!: MatInput;
 
   @ViewChild('textbox', {static: true}) textbox: ElementRef;
-  @ViewChild('autocompleteInput', { read: MatAutocompleteTrigger, static: false }) autocomplete: MatAutocompleteTrigger;
   @ViewChild('formfield', {static: true}) formfield: FormControl;
   @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
 
   public displayOverlay = true;
-  public modelValue;
-    _value;
 
   private ngUnsubscribe: Subject<any> = new Subject();
-  private readonly variableRegex = new RegExp(/\${([a-zA-Z_.:]*)(?![^ ]*})/);
 
   constructor(private ngZone: NgZone) {
       super();
@@ -107,30 +96,5 @@ export class TextAreaTypeComponent extends FieldType implements OnDestroy, After
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
-
-  ngAfterViewInit() {
-    // populate the model value with the current form value
-    this.modelValue = this.value;
-    this.formControl.updateValueAndValidity();
-    this.formControl.valueChanges.pipe(tap(v => {this.modelValue = v}), debounceTime(400), takeUntil(this.ngUnsubscribe)).subscribe(val => {
-        if (val === null || val === undefined) {
-            return;
-        }
-        this._value = val;
-        const matches = this.variableRegex.exec(val);
-        if (matches != null && matches.length > 0) {
-            this.autocomplete.autocompleteDisabled = false;
-            this.autocomplete.openPanel();
-        } else {
-            this.autocomplete.closePanel();
-            this.autocomplete.autocompleteDisabled = true;
-        }
-    });
-  }
-
-  public autoCompleteSelected($event: MatAutocompleteSelectedEvent) {
-    const replacementStr = this._value.replace(this.variableRegex, '${' + $event.option.value + '}');
-    this.field.formControl.setValue(replacementStr);
   }
 }

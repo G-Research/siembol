@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="left-panel" *ngIf="configData">
+        <mat-divider class="vert-divider" [vertical]="false"></mat-divider>
+        <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertX'" [appearance]="'standard'">
+            <re-json-tree [json]="configData" [prevKey]="'$'" [copyOnClick]="false"></re-json-tree>
+        </ng-scrollbar>
+    </div>
+    <mat-divider [vertical]="true"></mat-divider>
+    <div class="viewport">
+        <ng-scrollbar class="scrollbar" [track]="'all'">
+            <re-admin-editor [fields]="fields"></re-admin-editor>
+        </ng-scrollbar>
+    </div>
+</div>

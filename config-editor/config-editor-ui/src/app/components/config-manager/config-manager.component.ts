@@ -62,7 +62,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public deploymentHistory$: Observable<FileHistory[]>;
     public deploymentHistory;
 
-    private readonly BLOCKING_TIMEOUT = 10000;
+    private readonly BLOCKING_TIMEOUT = 30000;
     private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
     @BlockUI() blockUI: NgBlockUI;
     constructor(public dialog: MatDialog, private snackbar: PopupService,

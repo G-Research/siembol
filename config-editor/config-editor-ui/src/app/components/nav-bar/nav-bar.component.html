@@ -1,22 +1,26 @@
 <mat-toolbar>
   <mat-toolbar-row class="nav-content">
     <div>
-      <span class="logo">
+      <button mat-button class="logo" [routerLink]="['/']">
         <img src="/assets/siembol_logo_dark.svg">
-      </span>
-      <h1> {{ serviceName$ | async | titlecase }} Editor</h1>
+      </button>
       <h1 class="env"> {{ environment | titlecase }} </h1>
+      <button mat-button [matMenuTriggerFor]="menu">
+        <h1>{{serviceName | titlecase}}</h1><mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button *ngFor="let service of serviceNames" [routerLink]="['/' + getPath(service)]" mat-menu-item>
+          <mat-icon *ngIf="service == serviceName; else blank">check</mat-icon>
+          <ng-template #blank><mat-icon>blank</mat-icon></ng-template>
+          {{service | titlecase}}
+        </button>
+      </mat-menu>
     </div>
     <div>
-      <button mat-button color="accent" [routerLink]="['/']">Home</button>
-      <mat-button-toggle-group>
-        <mat-button-toggle *ngFor="let serviceName of serviceNames" [routerLink]="['/' + serviceName]"
-          [checked]="serviceName === (serviceName$ | async)">
-          {{ serviceName | titlecase }}
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-      <mat-icon (click)="showAboutApp()">account_box</mat-icon>
+      <mat-slide-toggle *ngIf="userRoles.length > 1" [(ngModel)]="isAdminChecked" (change)="onToggleAdmin()">Admin</mat-slide-toggle>
+      <span><mat-icon (click)="showAboutApp()">account_box</mat-icon>
       <h3>{{ user }}</h3>
+      </span>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>

@@ -1,3 +1,5 @@
+export const ADMIN_VERSION_FIELD_NAME = "config_version";
+
 export interface UiMetadataMap {
     name: string,
     version: string,

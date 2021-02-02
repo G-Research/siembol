@@ -4,6 +4,7 @@ import { moveItemInArray } from "@angular/cdk/drag-drop";
 import { Config, Deployment, FileHistory } from "../model";
 import { TestCaseMap } from "@app/model/test-case";
 import { TestCaseWrapper, TestCaseResult } from "../model/test-case";
+import { AdminConfig } from "@app/model/config-model";
 
 export class ConfigStoreStateBuilder {
     private state: ConfigStoreState;
@@ -19,6 +20,11 @@ export class ConfigStoreStateBuilder {
 
     deployment(deployment: Deployment) {
         this.state.deployment = deployment;
+        return this;
+    }
+
+    adminConfig(config: AdminConfig) {
+        this.state.adminConfig = config;
         return this;
     }
 

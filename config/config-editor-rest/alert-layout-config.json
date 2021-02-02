@@ -48,5 +48,29 @@
                 }
             }
         }
+    },
+    "admin_config_layout": {
+        "$": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "admin-tabs"
+                }
+            }
+        },
+        "$..['alerts.input.topics']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                    "expansion-panel"
+                    ],
+                    "templateOptions": {
+                        "genericSettingTab": "true"
+                    }
+                }
+            }
+        },
+        "$..['alerts.engine']": {
+            "enum": ["siembol_alerts"]
+        }
     }
 }

@@ -11,6 +11,7 @@ import {
   SubmitDialogComponent, LandingPageComponent, SearchComponent
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
+import { InputTypeComponent } from './ngx-formly/components/input.type.component';
 import { DeploymentTileComponent } from '@app/components/tile/deployment-tile.component';
 import { AppConfigService, ConfigModule } from '@app/config';
 import { HomeComponent, PageNotFoundComponent } from '@app/containers';
@@ -26,6 +27,7 @@ import { BlockUIModule } from 'ng-block-ui';
 import { AppComponent } from './app.component';
 import { ChangeHistoryComponent } from './components/change-history/change-history.component';
 import { EditorComponent } from './components/editor/editor.component';
+import { AdminComponent } from './components/admin/admin.component';
 import { TestCaseHelpComponent } from './components/testing/test-case-help/test-case-help.component';
 import { TestCaseEditorComponent } from './components/testing/test-case-editor/test-case-editor.component';
 import { TestCentreComponent } from './components/testing/test-centre/test-centre.component';
@@ -38,9 +40,11 @@ import { UnionTypeComponent } from './ngx-formly/components/union.type.component
 import { NullTypeComponent } from './ngx-formly/components/null.type';
 import { ObjectTypeComponent } from './ngx-formly/components/object.type.component';
 import { PanelWrapperComponent } from './ngx-formly/components/panel-wrapper.component';
+import { FormlyWrapperFormField } from './ngx-formly/components/form-field.wrapper';
 import { TabArrayTypeComponent } from './ngx-formly/components/tab-array.type.component';
 import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
 import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
+import { AdminTabTypeComponent } from './ngx-formly/components/admin-tabs.type.component';
 import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
 import { HighlightVariablesPipe } from './pipes';
 import { PopupService } from './popup.service';
@@ -49,6 +53,7 @@ import { ConfigTestingComponent } from './components/testing/config-testing/conf
 
 import { RouterModule } from '@angular/router';
 import { EditorViewComponent } from './components/editor-view/editor-view.component';
+import { AdminViewComponent } from './components/admin-view/admin-view.component';
 import { AppInitGuard } from './guards/app-init.guard';
 import { AppService } from './services/app.service';
 import { AppInitComponent } from './components/app-init/app-init.component';
@@ -82,6 +87,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     PageNotFoundComponent,
     ErrorDialogComponent,
     EditorViewComponent,
+    AdminViewComponent,
     NavBarComponent,
     JsonViewerComponent,
     ConfigManagerComponent,
@@ -92,14 +98,18 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ConfigTileComponent,
     DeploymentTileComponent,
     EditorComponent,
+    AdminComponent,
     ChangeHistoryComponent,
     ObjectTypeComponent,
     ArrayTypeComponent,
+    InputTypeComponent,
     NullTypeComponent,
     PanelWrapperComponent,
     TabsWrapperComponent,
     TabsetTypeComponent,
+    AdminTabTypeComponent,
     ExpansionPanelWrapperComponent,
+    FormlyWrapperFormField,
     TextAreaTypeComponent,
     HighlightVariablesPipe,
     TestCentreComponent,
@@ -148,7 +158,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { name: 'invalidJson', message: 'Json is not valid' },
       ],
       types: [
-        { name: 'string', extends: 'input', wrappers: ['form-field'] },
+        { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
         { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
         { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
         {
@@ -177,12 +187,14 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { name: 'array', component: ArrayTypeComponent },
         { name: 'object', component: ObjectTypeComponent },
         { name: 'tabs', component: TabsetTypeComponent },
+        { name: 'admin-tabs', component: AdminTabTypeComponent},
         { name: 'multischema', component: UnionTypeComponent },
         { name: 'tab-array', component: TabArrayTypeComponent },
       ],
       wrappers: [
         { name: 'panel', component: PanelWrapperComponent },
         { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
+        { name: 'form-field', component: FormlyWrapperFormField },
       ],
       extras: {
         checkExpressionOn: 'changeDetectionCheck',

@@ -9,6 +9,8 @@ import { UiMetadataMap } from '../model/ui-metadata-map';
 import { ConfigLoaderService } from './config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
+import { AdminConfig } from '@app/model/config-model';
+import { AstMemoryEfficientTransformer } from '@angular/compiler';
 
 const initialConfigStoreState: ConfigStoreState = {
   configs: [],
@@ -26,6 +28,7 @@ const initialConfigStoreState: ConfigStoreState = {
   editedConfig: null,
   testCaseMap: {},
   editedTestCase: null,
+  adminConfig: undefined
 }
 
 const initialPullRequestState: PullRequestInfo = {
@@ -38,6 +41,7 @@ export class ConfigStoreService {
   private testStoreService: TestStoreService;
   private readonly store = new BehaviorSubject<ConfigStoreState>(initialConfigStoreState);
   private readonly pullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
+  private readonly adminPullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
 
   public readonly allConfigs$ = this.store.asObservable().map(x => x.configs);
   public readonly deployment$ = this.store.asObservable().map(x => x.deployment);
@@ -55,6 +59,8 @@ export class ConfigStoreService {
   public readonly editingTestCase$ = this.store.asObservable().map(x => x.editedTestCase !== null);
   public readonly releaseSubmitInFlight$ = this.store.asObservable().map(x => x.releaseSubmitInFlight);
   public readonly pullRequestPending$ = this.pullRequestInfo.asObservable();
+  public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
+  public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
 
   public get testService(): TestStoreService { return this.testStoreService; }
 
@@ -84,6 +90,15 @@ export class ConfigStoreService {
 
     this.store.next(newState);
     this.loadPullRequestStatus();
+  }
+
+  updateAdmin(config: AdminConfig) {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue())
+      .adminConfig(config)
+      .build();
+
+    this.store.next(newState);
+    this.loadAdminPullRequestStatus();
   }
 
   updateSearchTerm(searchTerm: string) {
@@ -184,6 +199,14 @@ export class ConfigStoreService {
     })
   }
 
+  loadAdminPullRequestStatus() {
+    this.configLoaderService.getAdminPullRequestStatus().subscribe((info: PullRequestInfo) => {
+      if (info) {
+        this.adminPullRequestInfo.next(info);
+      }
+    })
+  }
+
   submitRelease(deployment: Deployment) {
     this.updateReleaseSubmitInFlight(true);
     this.configLoaderService.submitRelease(deployment)
@@ -210,6 +233,14 @@ export class ConfigStoreService {
       });
   }
 
+  reloadAdminConfig(): Observable<any> {
+    return this.configLoaderService.getAdminConfig().map(
+      (config: AdminConfig) => {
+        this.updateAdmin(config);
+      }
+    );
+  }
+
   validateEditedConfig(): Observable<any> {
     const config = this.store.getValue().editedConfig;
     if (!config) {
@@ -217,6 +248,15 @@ export class ConfigStoreService {
     }
 
     return this.configLoaderService.validateConfig(config);
+  }
+
+  validateAdminConfig(): Observable<any> {
+    const config = this.store.getValue().adminConfig;
+    if (!config) {
+      throw Error('empty admin config')
+    }
+
+    return this.configLoaderService.validateAdminConfig(config);
   }
 
   submitEditedConfig(): Observable<boolean> {
@@ -245,6 +285,22 @@ export class ConfigStoreService {
 
           return true;
         }
+      });
+  }
+
+  submitAdminConfig(): Observable<boolean> {
+    const adminConfig = this.store.getValue().adminConfig;
+    if (!adminConfig) {
+      throw Error('empty admin config');
+    }
+
+    return this.configLoaderService.submitAdminConfig(adminConfig)
+      .map((result: any) => {
+        if (result) {
+          this.loadAdminPullRequestStatus();
+          return true;
+        }
+        return false;
       });
   }
 

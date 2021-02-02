@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
@@ -33,6 +34,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatSlideToggleModule,
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,
@@ -61,6 +63,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatSlideToggleModule,
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,

@@ -1,0 +1,32 @@
+<mat-card>
+  <mat-card-title>
+    <div class="rule-title">Admin Config</div>
+  </mat-card-title>
+  <mat-card-subtitle>
+    <p>
+      v{{ config?.version }}
+    </p>
+  </mat-card-subtitle>
+  <mat-card-content>
+    <form [formGroup]="form" *ngIf="fields">
+      <formly-form [model]="configData" [fields]="fields" [options]="options" [form]="form"></formly-form>
+    </form>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <span *ngIf="!(adminPullRequestPending$ | async).pull_request_pending; else prMessage">
+      <button class="submit-button" mat-raised-button color="accent" type="submit" [disabled]="!form.valid"
+        (click)="onSubmit()">
+        Create PR
+      </button>
+    </span>
+    <ng-template #prMessage>
+      <span>
+          <a mat-button color="accent" *ngIf="(adminPullRequestPending$ | async).pull_request_url !== undefined" href="{{(adminPullRequestPending$ | async)?.pull_request_url}}"
+              target="_blank">PR for release pending</a>
+          <button class="button" mat-button color="accent" title="sync with git" (click)="onSyncWithGit()">
+              <mat-icon>refresh</mat-icon>
+          </button>
+      </span>
+    </ng-template>
+  </mat-card-actions>
+</mat-card>

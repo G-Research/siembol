@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ServiceInfo, RepositoryLinks } from '../../model/config-model';
 import { AppService } from '../../services/app.service';
+import { UserRole } from '@app/model/config-model';
 
 
 @Component({
@@ -14,6 +15,8 @@ export class LandingPageComponent implements OnInit {
 
   userServices: ServiceInfo[];
   repositoryLinks: { [name: string]: RepositoryLinks } = {};
+  serviceAdmin = UserRole.SERVICE_ADMIN;
+  serviceUser = UserRole.SERVICE_USER;
 
   constructor(
     private appService: AppService) { }

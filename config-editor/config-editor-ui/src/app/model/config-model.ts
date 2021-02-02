@@ -5,7 +5,13 @@ import { Observable } from 'rxjs';
 
 export enum Type {
     CONFIG_TYPE = 'Config',
-    TESTCASE_TYPE = 'TestCase'
+    TESTCASE_TYPE = 'TestCase',
+    ADMIN_TYPE = 'Admin'
+}
+
+export enum UserRole {
+    SERVICE_USER = 'service_user',
+    SERVICE_ADMIN = 'service_admin'
 }
 
 export interface SubmitDialogData {
@@ -35,6 +41,7 @@ export interface Content<T> extends GeneralRule {
 export interface ServiceInfo {
     name: string;
     type: string;
+    user_roles: UserRole[];
 }
 
 export interface UserInfo {
@@ -48,13 +55,19 @@ export interface RepositoryLinksWrapper {
 }
 
 export interface RepositoryLinks {
-    rule_store_url: string;
-    rules_release_url: string;
+    rule_store_directory_url: string;
+    rules_release_directory_url: string;
+    test_case_store_directory_url: string;
+    admin_config_store_directory_url: string;
     service_name: string;
 }
 
 export interface SchemaInfo {
-    rules_schema: JSONSchema7;
+    rules_schema: JSONSchema7; 
+}
+
+export interface AdminSchemaInfo {
+    admin_config_schema: JSONSchema7;
 }
 
 export interface TestSchemaInfo {
@@ -79,6 +92,12 @@ export interface Config {
     tags?: string[];
     fileHistory?: FileHistory[];
     testCases: TestCaseWrapper[];
+}
+
+export interface AdminConfig{
+    configData: ConfigData;
+    version: number;
+    fileHistory?: FileHistory[];
 }
 
 export interface FileHistory {
