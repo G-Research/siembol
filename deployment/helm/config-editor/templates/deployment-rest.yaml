@@ -26,7 +26,7 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.rest.imagePullPolicy | quote }}
         name: {{ .Values.rest.appName }}
         ports:
-          - containerPort: 8080
+          - containerPort: 8081
         resources:
           requests:
             memory: "256Mi"

@@ -9,17 +9,33 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
     ingress.kubernetes.io/ssl-passthrough-http-port: "80"
     ingress.kubernetes.io/ssl-redirect: "false"
+    # kubernetes.io/ingress.global-static-ip-name: "siembol-test"
 spec:
+  {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
     - {{ .Values.ui.ingress.hostname }}
     secretName: {{ .Values.ui.serviceName }}-tls
+  {{- end -}}
   rules:
-  - host: {{ .Values.ui.ingress.hostname }}
-    http:
+  # - host: 34.117.227.141.xip.io
+  - http:
       paths:
       - path: /
         backend:
           serviceName: {{ .Values.ui.serviceName }}
-          servicePort: 80
+          servicePort: 8080
+  # - host: {{ .Values.rest.ingress.hostname }}
+  - http:
+      paths:
+      - path: /api
+        backend:
+          serviceName: {{ .Values.rest.appName }}
+          servicePort: 8081
+  - http:
+      paths:
+      - path: /user
+        backend:
+          serviceName: {{ .Values.rest.appName }}
+          servicePort: 8081
 {{- end -}}

@@ -39,5 +39,5 @@ ui:
 
   # Run with an ingress
   ingress:
-    enabled: false
-    hostname: REDACTED-FQDN-UI
+    enabled: true
+    # hostname: REDACTED-FQDN-UI
