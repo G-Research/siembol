@@ -1,26 +1,88 @@
 <mat-toolbar>
   <mat-toolbar-row class="nav-content">
     <div>
-      <button mat-button class="logo" [routerLink]="['/']">
-        <img src="/assets/siembol_logo_dark.svg">
+      <button mat-button [routerLink]="['/']">
+       <img src="/assets/siembol_logo_dark_no_text.svg">
       </button>
-      <h1 class="env"> {{ environment | titlecase }} </h1>
-      <button mat-button [matMenuTriggerFor]="menu">
-        <h1>{{serviceName | titlecase}}</h1><mat-icon>arrow_drop_down</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        <button *ngFor="let service of serviceNames" [routerLink]="['/' + getPath(service)]" mat-menu-item>
-          <mat-icon *ngIf="service == serviceName; else blank">check</mat-icon>
-          <ng-template #blank><mat-icon>blank</mat-icon></ng-template>
-          {{service | titlecase}}
+      <h1>siembol</h1><h1 class="env"> {{ environment | lowercase }} </h1>
+      <div *ngIf="!isHome">
+        <button mat-button [matMenuTriggerFor]="menu">
+          <h1>{{serviceName$ | async | titlecase}}</h1><mat-icon>arrow_drop_down</mat-icon>
         </button>
-      </mat-menu>
+        <mat-menu #menu="matMenu">
+          <button *ngFor="let service of serviceNames" [routerLink]="['/' + getPath(service)]" mat-menu-item>
+            <mat-icon *ngIf="service == (serviceName$ | async); else blank">check</mat-icon>
+            <ng-template #blank><mat-icon>blank</mat-icon></ng-template>
+            {{service | titlecase}}
+          </button>
+        </mat-menu>
+      </div>
     </div>
     <div>
-      <mat-slide-toggle *ngIf="userRoles.length > 1" [(ngModel)]="isAdminChecked" (change)="onToggleAdmin()">Admin</mat-slide-toggle>
-      <span><mat-icon (click)="showAboutApp()">account_box</mat-icon>
-      <h3>{{ user }}</h3>
-      </span>
+      <mat-slide-toggle 
+        class="right-element"
+        *ngIf="!isHome && userRoles.length > 1" 
+        [(ngModel)]="isAdminChecked" 
+        (change)="onToggleAdmin()"  
+        labelPosition="before"
+      >
+        <h3>Admin</h3>
+      </mat-slide-toggle>
+      <button 
+        mat-icon-button
+        class="right-element"
+        *ngIf="!isHome && (repositoryLinks$ | async)" 
+        [matMenuTriggerFor]="repoMenu" 
+        [matTooltip]="'Repositories'"
+      >
+        <mat-icon>book</mat-icon>
+      </button>
+      <mat-menu #repoMenu="matMenu" >
+        <a mat-menu-item 
+          [href]="(repositoryLinks$ | async)?.rule_store_directory_url" 
+        >
+          {{repoNames.store_directory_name}}
+        </a>
+        <a mat-menu-item
+          [href]="(repositoryLinks$ | async)?.rules_release_directory_url"
+        >
+          {{repoNames.release_directory_name}}
+        </a>
+        <a mat-menu-item  
+          *ngIf="(repositoryLinks$ | async)?.test_case_store_directory_url" 
+          [href]="(repositoryLinks$ | async)?.test_case_store_directory_url"
+        >
+          {{repoNames.testcase_store_directory_name}}
+        </a>
+        <a mat-menu-item  
+          *ngIf="(repositoryLinks$ | async)?.admin_config_directory_url"
+          [href]="(repositoryLinks$ | async)?.admin_config_directory_url"
+        >
+          {{repoNames.admin_config_store_directory_name}}
+        </a>
+      </mat-menu>
+      <button 
+        mat-icon-button
+        class="right-element"
+        [matMenuTriggerFor]="helpMenu" 
+        [matTooltip]="'Help'"
+      >
+        <mat-icon>help</mat-icon>
+      </button>
+      <mat-menu #helpMenu="matMenu" >
+        <a mat-menu-item 
+          (click)="showAboutApp()"
+        >
+          About
+        </a>
+      </mat-menu>
+      <button 
+        mat-icon-button
+        class="right-element"
+        [matTooltip] = "user"
+      >
+        <mat-icon>account_box</mat-icon>
+      </button>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>

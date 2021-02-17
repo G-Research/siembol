@@ -9,7 +9,7 @@ import { UiMetadataMap } from '../model/ui-metadata-map';
 import { AppService } from './app.service';
 import { mergeMap } from 'rxjs/operators';
 import { ConfigSchemaService } from './config-schema-service';
-import { UserRole } from '@app/model/config-model';
+import { UserRole, RepositoryLinks } from '@app/model/config-model';
 import { AdminSchemaService } from './admin-schema.service';
 import { SchemaService } from './schema.service';
 
@@ -22,6 +22,7 @@ export class ServiceContext {
   serviceName: string;
   testSpecificationSchema?: JSONSchema7;
   adminMode: boolean;
+  repositoryLinks$: Observable<RepositoryLinks>;
   constructor() { }
 }
 
@@ -38,7 +39,8 @@ export class EditorService {
   public get serviceName() { return this.serviceContext.serviceName; }
   public get configSchema() { return this.serviceContext.configSchema; }
   public get adminSchema() { return this.serviceContext.adminSchema; }
-  public get adminMode() { return this.serviceContext.adminMode }
+  public get adminMode() { return this.serviceContext.adminMode; }
+  public get repositoryLinks$() { return this.serviceContext.repositoryLinks$; }
 
   public get testSpecificationSchema() { return this.serviceContext.testSpecificationSchema; }
 
@@ -57,16 +59,17 @@ export class EditorService {
     return true;
   }
 
-  private initialiseContext(serviceName: string): [UiMetadataMap, string, ConfigLoaderService, ConfigStoreService]{
+  private initialiseContext(serviceName: string): [UiMetadataMap, string, ConfigLoaderService, ConfigStoreService, Observable<RepositoryLinks>]{
     const metaDataMap = this.appService.getUiMetadataMap(serviceName);
     const user = this.appService.user;
     const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, metaDataMap);
     const configStore = new ConfigStoreService(serviceName, user, this.config, configLoader);
-    return [metaDataMap, user, configLoader, configStore];
+    const repositoryLinks$ = this.appService.getRepositoryLinks(serviceName);
+    return [metaDataMap, user, configLoader, configStore, repositoryLinks$];
   }
 
   public createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);
+    const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
     const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
       ? configLoader.getTestSpecificationSchema() : Observable.of({});
     const testCaseMapFun = metaDataMap.testing.testCaseEnabled
@@ -91,7 +94,8 @@ export class EditorService {
             serviceName: serviceName,
             configSchema: new ConfigSchemaService(metaDataMap, user, originalSchema),
             testSpecificationSchema: testSpecSchema,
-            adminMode: false
+            adminMode: false,
+            repositoryLinks$: repositoryLinks$
           };
         } else {
           throwError('Can not load service');
@@ -100,7 +104,7 @@ export class EditorService {
   }
 
   public createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);
+    const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
 
     return configLoader.getAdminSchema()
       .pipe(
@@ -117,7 +121,8 @@ export class EditorService {
             configStore: configStore,
             serviceName: serviceName,
             adminSchema: new AdminSchemaService(metaDataMap, user, originalSchema),
-            adminMode: true
+            adminMode: true,
+            repositoryLinks$: repositoryLinks$
           };
         } else {
           throwError('Can not load admin service');

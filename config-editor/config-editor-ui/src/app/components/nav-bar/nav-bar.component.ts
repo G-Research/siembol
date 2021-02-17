@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { AppConfigService } from '@app/config/app-config.service';
 import { Observable } from 'rxjs';
@@ -6,8 +6,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog.component';
 import { EditorService } from '../../services/editor.service';
 import { AppService } from '../../services/app.service';
-import { Router } from '@angular/router';
-import { UserRole } from '@app/model/config-model';
+import { Router, ActivatedRoute } from '@angular/router';
+import { UserRole, RepositoryLinks, repoNames } from '@app/model/config-model';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,30 +18,40 @@ import { UserRole } from '@app/model/config-model';
 export class NavBarComponent implements OnInit {
     user: String;
     userRoles: string[];
-    loading$: Observable<boolean>;
     serviceName$: Observable<string>;
     serviceName: string;
     serviceNames: string[];
     environment: string;
     isAdminChecked: boolean;
-    private readonly ADMIN_PATH = "/admin";
+    isHome: boolean;
+    repositoryLinks$: Observable<RepositoryLinks>;
+    readonly repoNames = repoNames;
 
     constructor(private config: AppConfigService, 
         private appService: AppService, 
         private editorService: EditorService, 
-        private dialog: MatDialog, private router: Router) {
+        private dialog: MatDialog,
+        private activeRoute: ActivatedRoute,
+        private router: Router) {
         this.user = this.appService.user;
         this.serviceName$ = this.editorService.serviceName$;
         this.serviceNames = this.appService.serviceNames;
         this.environment = this.config.environment;
         this.isAdminChecked = this.editorService.adminMode;
+        this.repositoryLinks$ = this.editorService.repositoryLinks$;
     }
 
     ngOnInit() {
         this.serviceName$.subscribe(service => {
-            this.userRoles = this.appService.getUserServiceRoles(service);
+            if (service) {
+                this.userRoles = this.appService.getUserServiceRoles(service);
+            }
             this.serviceName = service;
-        })
+        });
+
+        this.activeRoute.url.subscribe(url => {
+            this.isHome = this.config.isHomePath('/' + url[0].path);
+        });
     }
 
     public showAboutApp() {
@@ -49,7 +59,7 @@ export class NavBarComponent implements OnInit {
     }
 
     public onToggleAdmin() {
-        let path = this.isAdminChecked ? this.ADMIN_PATH : "";
+        let path = this.isAdminChecked ? this.config.adminPath : "";
         this.router.navigate([this.serviceName + path]);
     }
 
@@ -58,7 +68,7 @@ export class NavBarComponent implements OnInit {
         const roles = this.appService.getUserServiceRoles(service);
         let hasMultipleUserRoles = roles.length > 1;
         if ((hasMultipleUserRoles && this.isAdminChecked) || (!hasMultipleUserRoles && roles.includes(UserRole.SERVICE_ADMIN))) {
-            path += this.ADMIN_PATH;
+            path += this.config.adminPath;
         }
         return path;  
     }

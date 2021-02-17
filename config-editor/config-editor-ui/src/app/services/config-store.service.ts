@@ -10,7 +10,6 @@ import { ConfigLoaderService } from './config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
 import { AdminConfig } from '@app/model/config-model';
-import { AstMemoryEfficientTransformer } from '@angular/compiler';
 
 const initialConfigStoreState: ConfigStoreState = {
   configs: [],

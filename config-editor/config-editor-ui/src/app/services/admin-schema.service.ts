@@ -83,6 +83,7 @@ export class AdminSchemaService extends SchemaService {
         var re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, "g");
         this.formatAdminConfig(config.configData, '', re, '\.');
         config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
+        config.configData = this.produceOrderedJson(config.configData, '/');
         config.configData = omitEmpty(config.configData);
         return config;
     }

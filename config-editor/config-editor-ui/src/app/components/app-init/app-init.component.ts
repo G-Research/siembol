@@ -99,7 +99,7 @@ export class AppInitComponent implements OnInit, OnDestroy {
         });
         routes.push({
             component: PageNotFoundComponent,
-            path: '**',
+            path: '**'
         });
         this.router.resetConfig(routes);
     }

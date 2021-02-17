@@ -26,6 +26,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     public form: FormGroup = new FormGroup({});
     public adminConfig$: Observable<AdminConfig>;
     public config: AdminConfig;
+    public serviceName: string;
     public adminPullRequestPending$: Observable<PullRequestInfo>;
     private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
     private readonly BLOCKING_TIMEOUT = 30000;
@@ -36,6 +37,7 @@ export class AdminComponent implements OnInit, OnDestroy {
         private editorService: EditorService, private router: Router) {
         this.adminConfig$ = editorService.configStore.adminConfig$;
         this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
+        this.serviceName = editorService.serviceName;
     }
 
     ngOnInit() {

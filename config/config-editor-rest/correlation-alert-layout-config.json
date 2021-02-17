@@ -79,6 +79,66 @@
     },
     "$..['alerts.engine']": {
       "enum": ["siembol_correlation_alerts"]
+    },
+    "$..['kafka.spout.properties']": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field", "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://kafka.apache.org/0102/documentation.html#consumerconfigs"
+          }
+        }
+      }
+    },
+    "$..['offset.commit.period.ms']": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field", "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
+          }
+        }
+      }
+    },
+    "$..['max.uncommitted.offsets']": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field", "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
+          }
+        }
+      }
+    },
+    "$..['storm.config']": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field", "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://storm.apache.org/releases/current/Configuration.html"
+          }
+        }
+      }
+    },
+    "$..['kafka.producer.properties']": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field", "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"
+          }
+        }
+      }
     }
   }
 }

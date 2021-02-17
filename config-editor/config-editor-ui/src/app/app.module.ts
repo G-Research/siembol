@@ -7,7 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  ErrorDialogComponent, NavBarComponent, JsonViewerComponent, ConfigManagerComponent, DeployDialogComponent,
+  ErrorDialogComponent, NavBarComponent, SideNavComponent, JsonViewerComponent, ConfigManagerComponent, DeployDialogComponent,
   SubmitDialogComponent, LandingPageComponent, SearchComponent
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
@@ -53,6 +53,7 @@ import { ConfigTestingComponent } from './components/testing/config-testing/conf
 
 import { RouterModule } from '@angular/router';
 import { EditorViewComponent } from './components/editor-view/editor-view.component';
+import { HomeViewComponent } from './components/home-view/home-view.component';
 import { AdminViewComponent } from './components/admin-view/admin-view.component';
 import { AppInitGuard } from './guards/app-init.guard';
 import { AppService } from './services/app.service';
@@ -60,6 +61,8 @@ import { AppInitComponent } from './components/app-init/app-init.component';
 import { AuthGuard } from './guards/auth-guard';
 import { HttpErrorInterceptor } from './http-error-interceptor';
 import { GlobalErrorHandler } from './error-handler';
+import { HelpLinkWrapperComponent } from './ngx-formly/components/help-link.wrapper';
+import { UrlHistoryService } from './services/url-history.service';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -87,8 +90,10 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     PageNotFoundComponent,
     ErrorDialogComponent,
     EditorViewComponent,
+    HomeViewComponent,
     AdminViewComponent,
     NavBarComponent,
+    SideNavComponent,
     JsonViewerComponent,
     ConfigManagerComponent,
     DeployDialogComponent,
@@ -110,6 +115,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     AdminTabTypeComponent,
     ExpansionPanelWrapperComponent,
     FormlyWrapperFormField,
+    HelpLinkWrapperComponent,
     TextAreaTypeComponent,
     HighlightVariablesPipe,
     TestCentreComponent,
@@ -195,6 +201,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { name: 'panel', component: PanelWrapperComponent },
         { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
         { name: 'form-field', component: FormlyWrapperFormField },
+        { name: 'help-link', component: HelpLinkWrapperComponent },
       ],
       extras: {
         checkExpressionOn: 'changeDetectionCheck',
@@ -211,8 +218,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     AppService,
     AppInitGuard,
-    HighlightVariablesPipe
+    HighlightVariablesPipe,
+    UrlHistoryService
   ],
 
 })
-export class AppModule { }
+export class AppModule {}

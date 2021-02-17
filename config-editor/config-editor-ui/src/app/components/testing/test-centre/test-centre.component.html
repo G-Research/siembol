@@ -71,6 +71,8 @@
                                 [popperPlacement]="'left-start'"
                                 [popperHideOnScroll]="true"
                                 [popperDisableStyle]="true"
+                                [popperAppendTo]="'body'"
+                                [popperModifiers]="{preventOverflow: {boundariesElement: 'viewport'}}"
                                 >
                                 <popper-content #testCaseResult>
                                     <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>

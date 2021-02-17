@@ -7,6 +7,7 @@ import { UiMetadataMap } from '../model/ui-metadata-map';
 import { IAuthenticationService, DefaultAuthenticationService, KerberosAuthenticationService } from '../services/authentication.service';
 import { Oauth2AuthenticationService } from '@app/services/oauth2-authentication.service';
 import { AppConfig, AuthenticationType, BuildInfo } from '../model';
+import { HomeHelpLink } from '@app/model/app-config';
 
 @Injectable({
     providedIn: 'root',
@@ -77,6 +78,18 @@ export class AppConfigService {
             }).catch(err => console.info('could not load build info'));
     }
 
+    public isHomePath(path: string): boolean {
+        if (path == "/home" || path == "/") {
+            return true;
+        }
+        return false;
+    }
+
+
+    public get adminPath(): string {
+        return "/admin";
+    }
+
     public get config(): AppConfig {
         return this._config;
     }
@@ -99,5 +112,13 @@ export class AppConfigService {
 
     public get authenticationService(): IAuthenticationService {
         return this._authenticationService;
+    }
+
+    public get homeHelpLinks(): HomeHelpLink[] {
+        return this._config.homeHelpLinks;
+    }
+
+    public get historyMaxSize(): number {
+        return this._config.historyMaxSize? this._config.historyMaxSize: 5;
     }
 }

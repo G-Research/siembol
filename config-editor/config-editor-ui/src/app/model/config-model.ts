@@ -2,6 +2,13 @@ import { TestCase, TestCaseWrapper, TestCaseEvaluationResult } from './test-case
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from 'rxjs';
 
+export const repoNames  = {
+    store_directory_name: "Config Store Folder",
+    release_directory_name: "Config Deployment Folder",
+    testcase_store_directory_name: "Config Testcase Folder",
+    admin_config_store_directory_name: "Admin Config Folder"
+}
+
 
 export enum Type {
     CONFIG_TYPE = 'Config',
@@ -58,7 +65,7 @@ export interface RepositoryLinks {
     rule_store_directory_url: string;
     rules_release_directory_url: string;
     test_case_store_directory_url: string;
-    admin_config_store_directory_url: string;
+    admin_config_directory_url: string;
     service_name: string;
 }
 
@@ -136,5 +143,12 @@ export interface TestCaseResultAttributes {
     exception?: string;
     message?: string;
     test_case_result?: TestCaseEvaluationResult;
+}
+
+export interface UrlInfo {
+    service?: string,
+    mode?: string,
+    configName?: string,
+    testcaseName?: string
 }
 

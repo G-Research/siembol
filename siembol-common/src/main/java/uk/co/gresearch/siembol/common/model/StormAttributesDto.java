@@ -21,22 +21,19 @@ public class StormAttributesDto {
     @JsonProperty("first.pool.offset.strategy")
     private FirstPoolOffsetStrategy firstPollOffsetStrategy = FirstPoolOffsetStrategy.UNCOMMITTED_LATEST;
     @Attributes(required = true, description = "Defines kafka consumer attributes for kafka spout such as group.id, " +
-            "protocol, https://kafka.apache.org/0102/documentation.html#consumerconfigs")
+            "protocol")
     @JsonProperty("kafka.spout.properties")
     private JsonRawStringDto kafkaSpoutProperties;
     @Attributes(description = "Kafka consumer parameter poll.timeout.ms used in kafka spout")
     @JsonProperty("poll.timeout.ms")
     private Long pollTimeoutMs;
-    @Attributes(description = "Specifies the period of time (in milliseconds) after which the spout commits to Kafka, " +
-            "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html")
+    @Attributes(description = "Specifies the period of time (in milliseconds) after which the spout commits to Kafka")
     @JsonProperty("offset.commit.period.ms")
     private Long offsetCommitPeriodMs;
-    @Attributes(description = "defines the maximum number of polled offsets (records) that can be pending commit before another poll can take place" +
-            "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html")
+    @Attributes(description = "defines the maximum number of polled offsets (records) that can be pending commit before another poll can take place")
     @JsonProperty("max.uncommitted.offsets")
     private Integer maxUncommittedOffsets;
-    @Attributes(required = true, description = "Defines storm attributes for a topology, " +
-            "https://storm.apache.org/releases/current/Configuration.html")
+    @Attributes(required = true, description = "Defines storm attributes for a topology")
     @JsonProperty("storm.config")
     private JsonRawStringDto stormConfig;
 

@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { PopupService } from '@app/popup.service';
+import { copyTextToClipboard } from '@app/commons';
 
 export interface Segment {
   key: string;
@@ -107,7 +108,7 @@ export class JsonTreeComponent implements OnChanges {
   onClick(path, key) {
     if (this.copyOnClick) {
       this.snackbar.openNotification(
-        this.copyTextToClipboard(this.composePath(path, key))
+        copyTextToClipboard(this.composePath(path, key))
           ? 'JSON path copied to clipboard!'
           : 'Error copying to clipboard'
       );
@@ -126,26 +127,5 @@ export class JsonTreeComponent implements OnChanges {
     } else {
         return part1 + '.' + part2;
     }
-  }
-
-  // copies passed text into the user clipboard https://stackoverflow.com/questions/45768583/angular-4-copy-text-to-clipboard
-  private copyTextToClipboard(text: string): boolean {
-    const textArea = document.createElement('textarea');
-    textArea.style.position = 'fixed';
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.opacity = '0';
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    let success;
-    try {
-        success = document.execCommand('copy');
-    } catch (err) {
-        console.error('error copying to clipboard, ', err);
-    }
-    document.body.removeChild(textArea);
-
-    return success;
   }
 }

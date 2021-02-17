@@ -20,6 +20,14 @@ export interface AppConfig {
     aboutApp: BuildInfo;
     authType: AuthenticationType,
     authAttributes: Oauth2Attributes | any
+    homeHelpLinks?: HomeHelpLink[];
+    historyMaxSize?: number;
+}
+
+export interface HomeHelpLink {
+    title: string;
+    icon: string;
+    link: string;
 }
 
 export interface Oauth2Attributes {

@@ -1,0 +1,41 @@
+.sidenav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #eee;
+    background: #2a2a2a;
+    font-size: 1em;
+    min-width: 250px;
+    padding: 0 10px;
+    // height: 100vh;
+    mat-divider {
+        border-top-width: 1px;
+        min-width: 100%;
+        padding: 0 0px;
+    }
+    .main-divider {
+        border-top-width: 2px;
+    }
+    h2 {
+        font-size: 1.2em;
+        display: inline-block;
+        margin: 20px 10px 10px 30px;
+        font-weight: 300;
+    }
+    mat-icon {
+        margin: 5px;
+        display: inline-block;
+    }
+}
+
+::ng-deep .mat-list-item-content {
+    padding-left: 30px !important;
+    padding-right: 0px !important;
+    padding-top: 25px !important;
+    padding-bottom: 25px !important;
+}
+
+::ng-deep .mat-menu-panel.myMenu  {
+    margin-top: -35px !important;
+    margin-left: 30px !important;
+}

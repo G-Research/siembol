@@ -2,5 +2,16 @@
     "environment": "demo",
     "serviceRoot": "https://config-editor/",
     "uiBootstrapPath": "./ui-bootstrap.json",
-    "authType": "disabled"
+    "authType": "disabled",
+    "homeLinks": [
+        {
+            "icon": "library_books",
+            "title": "Documentation",
+            "link": "https://github.com/G-Research/siembol/tree/master/docs"
+        },
+        {   
+            "icon": "live_help",
+            "title": "Issues",
+            "link":  "https://github.com/G-Research/siembol/issues"}
+        ]
 }

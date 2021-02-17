@@ -34,8 +34,7 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
     @JsonProperty("alerts.correlation.output.topic")
     private String correlationOutputTopic;
     @JsonProperty("kafka.producer.properties")
-    @Attributes(required = true, description = "Defines kafka producer properties, " +
-            "https://kafka.apache.org/0102/documentation.html#producerconfigs")
+    @Attributes(required = true, description = "Defines kafka producer properties")
     private JsonRawStringDto kafkaProducerProperties;
     @JsonProperty("zookeeper.attributes")
     @Attributes(required = true, description = "The zookeeper attributes for alerting rules")

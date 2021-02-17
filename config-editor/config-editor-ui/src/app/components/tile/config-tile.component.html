@@ -5,7 +5,9 @@
             [popperTrigger]="'hover'"
             [popperPlacement]="'left-start'"
             [popperHideOnScroll]="true"
-            [popperDisableStyle]="true">
+            [popperDisableStyle]="true"
+            [popperAppendTo]="'body'"
+            [popperModifiers]="{preventOverflow: {boundariesElement: 'viewport'}}">
         <popper-content #fileHistory>
             <re-change-history [history]="config.fileHistory"></re-change-history>
         </popper-content>

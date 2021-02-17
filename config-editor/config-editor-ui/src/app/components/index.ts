@@ -1,4 +1,5 @@
 export { NavBarComponent } from './nav-bar/nav-bar.component';
+export { SideNavComponent } from './side-nav/side-nav.component';
 export { JsonViewerComponent } from './json-viewer/json-viewer.component';
 export { ConfigManagerComponent } from './config-manager/config-manager.component';
 export { SubmitDialogComponent } from './submit-dialog/submit-dialog.component';

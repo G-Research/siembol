@@ -10,8 +10,7 @@ public class KafkaBatchWriterAttributesDto {
     @Attributes(required = true, description = "The max size of batch for producing messages", minimum = 1)
     private Integer batchSize = 1;
     @JsonProperty("producer.properties")
-    @Attributes(required = true, description = "Defines kafka producer properties, " +
-            "https://kafka.apache.org/0102/documentation.html#producerconfigs")
+    @Attributes(required = true, description = "Defines kafka producer properties")
     private JsonRawStringDto producerProperties;
 
     public Integer getBatchSize() {

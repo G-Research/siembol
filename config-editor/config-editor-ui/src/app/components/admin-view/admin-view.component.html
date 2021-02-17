@@ -1,7 +1,7 @@
 <div class="container">
     <div class="left-panel" *ngIf="configData">
         <mat-divider class="vert-divider" [vertical]="false"></mat-divider>
-        <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertX'" [appearance]="'standard'">
+        <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertAll'" [appearance]="'standard'">
             <re-json-tree [json]="configData" [prevKey]="'$'" [copyOnClick]="false"></re-json-tree>
         </ng-scrollbar>
     </div>
