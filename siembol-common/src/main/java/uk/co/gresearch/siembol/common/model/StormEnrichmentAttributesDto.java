@@ -1,11 +1,7 @@
-package uk.co.gresearch.siembol.enrichments.storm.common;
+package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.model.AdminConfigDto;
-import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
-import uk.co.gresearch.siembol.common.model.StormAttributesDto;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -34,11 +30,11 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
     @JsonProperty("enriching.rules.zookeeper.attributes")
     @Attributes(title = "rules zookeeper attributes", required = true,
             description = "The zookeeper attributes for configuration enriching rules")
-    private ZookeperAttributesDto enrichingRulesZookeperAttributes;
+    private ZookeeperAttributesDto enrichingRulesZookeperAttributes;
     @JsonProperty("enriching.tables.zookeeper.attributes")
     @Attributes(title = "tables zookeeper attributes", required = true,
             description = "The zookeeper attributes for enriching tables")
-    private ZookeperAttributesDto enrichingTablesAttributes;
+    private ZookeeperAttributesDto enrichingTablesAttributes;
 
     @JsonProperty("kafka.batch.writer.attributes")
     @Attributes(required = true, description = "Kafka batch writer attributes for producing output messages")
@@ -99,19 +95,19 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
         this.kafkaWriterBoltNumExecutors = kafkaWriterBoltNumExecutors;
     }
 
-    public ZookeperAttributesDto getEnrichingRulesZookeperAttributes() {
+    public ZookeeperAttributesDto getEnrichingRulesZookeperAttributes() {
         return enrichingRulesZookeperAttributes;
     }
 
-    public void setEnrichingRulesZookeperAttributes(ZookeperAttributesDto enrichingRulesZookeperAttributes) {
+    public void setEnrichingRulesZookeperAttributes(ZookeeperAttributesDto enrichingRulesZookeperAttributes) {
         this.enrichingRulesZookeperAttributes = enrichingRulesZookeperAttributes;
     }
 
-    public ZookeperAttributesDto getEnrichingTablesAttributes() {
+    public ZookeeperAttributesDto getEnrichingTablesAttributes() {
         return enrichingTablesAttributes;
     }
 
-    public void setEnrichingTablesAttributes(ZookeperAttributesDto enrichingTablesAttributes) {
+    public void setEnrichingTablesAttributes(ZookeeperAttributesDto enrichingTablesAttributes) {
         this.enrichingTablesAttributes = enrichingTablesAttributes;
     }
 

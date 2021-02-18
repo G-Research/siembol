@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.configeditor.service.common;
 
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.common.ServiceType;
 import uk.co.gresearch.siembol.configeditor.configinfo.JsonRuleConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.configeditor.service.alerts.AlertingRuleSchemaService;
@@ -15,30 +16,30 @@ import uk.co.gresearch.siembol.configeditor.service.response.ResponseSchemaServi
 import java.util.Map;
 import java.util.Optional;
 
-public enum ConfigEditorServiceType implements ConfigSchemaServiceFactory {
-    RESPONSE("response", JsonRuleConfigInfoProvider.create(),
+public enum ConfigEditorServiceFactory implements ConfigSchemaServiceFactory {
+    RESPONSE_FACTORY(ServiceType.RESPONSE, JsonRuleConfigInfoProvider.create(),
             (x, y) -> ResponseSchemaService.createResponseSchemaService(x, y)),
-    ALERT("alert", JsonRuleConfigInfoProvider.create(),
+    ALERT_FACTORY(ServiceType.ALERT, JsonRuleConfigInfoProvider.create(),
             (x, y) -> AlertingRuleSchemaService.createAlertingRuleSchemaService(x)),
-    CORRELATION_ALERT("correlationalert", JsonRuleConfigInfoProvider.create(),
+    CORRELATION_ALERT_FACTORY(ServiceType.CORRELATION_ALERT, JsonRuleConfigInfoProvider.create(),
             (x, y) -> AlertingRuleSchemaService.createAlertingCorrelationRuleSchemaService(x)),
-    PARSER_CONFIG("parserconfig", ParserConfigConfigInfoProvider.create(),
+    PARSER_CONFIG_FACTORY(ServiceType.PARSER_CONFIG, ParserConfigConfigInfoProvider.create(),
             (x, y) -> ParserConfigSchemaService.createParserConfigSchemaService(x)),
-    PARSING_APP("parsingapp", ParsingAppConfigInfoProvider.create(),
+    PARSING_APP_FACTORY(ServiceType.PARSING_APP, ParsingAppConfigInfoProvider.create(),
             (x, y) -> ParsingAppConfigSchemaService.createParsingAppConfigSchemaService(x)),
-    ENRICHMENT("enrichment", JsonRuleConfigInfoProvider.create(),
+    ENRICHMENT_FACTORY(ServiceType.ENRICHMENT, JsonRuleConfigInfoProvider.create(),
             (x, y) -> EnrichmentSchemaService.createEnrichmentsSchemaService(x));
 
-    private static final String UNSUPPORTED_SERVICE_NAME = "Unsupported service name";
-    private final String name;
+    private static final String UNSUPPORTED_SERVICE_TYPE = "Unsupported service type";
+    private final ServiceType serviceType;
     private final ConfigInfoProvider configInfoProvider;
     private final ConfigSchemaServiceFactory configSchemaServiceFactory;
 
-    ConfigEditorServiceType(
-            String name,
+    ConfigEditorServiceFactory(
+            ServiceType serviceType,
             ConfigInfoProvider configInfoProvider,
             ConfigSchemaServiceFactory configSchemaServiceFactory) {
-        this.name = name;
+        this.serviceType = serviceType;
         this.configInfoProvider = configInfoProvider;
         this.configSchemaServiceFactory = configSchemaServiceFactory;
     }
@@ -51,17 +52,21 @@ public enum ConfigEditorServiceType implements ConfigSchemaServiceFactory {
     }
 
     public String getName() {
-        return name;
+        return serviceType.getName();
     }
 
-    public static ConfigEditorServiceType fromName(String name) {
-        for (ConfigEditorServiceType serviceType : ConfigEditorServiceType.values()) {
-            if (serviceType.getName().equalsIgnoreCase(name)) {
-                return serviceType;
+    public static ConfigEditorServiceFactory fromServiceType(ServiceType serviceType) {
+        for (ConfigEditorServiceFactory factory : ConfigEditorServiceFactory.values()) {
+            if (factory.serviceType.equals(serviceType)) {
+                return factory;
             }
         }
 
-        throw new IllegalArgumentException(UNSUPPORTED_SERVICE_NAME);
+        throw new IllegalArgumentException(UNSUPPORTED_SERVICE_TYPE);
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 
     public ConfigInfoProvider getConfigInfoProvider() {

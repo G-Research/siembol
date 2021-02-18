@@ -45,6 +45,11 @@ public class TestCaseInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
+    public int getReleaseVersion(String content) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
     public boolean isReleaseFile(String filename) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }

@@ -3,9 +3,9 @@ package uk.co.gresearch.siembol.response.stream.ruleservice;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.engine.ResponseEngine;
@@ -27,35 +27,35 @@ public class ZookeeperRulesProvider implements RulesProvider {
     private static final String PARSERS_UPDATE_COMPLETED = "Response rules update completed";
 
     private final AtomicReference<ResponseEngine> currentEngine = new AtomicReference<>();
-    private final ZookeperConnector zookeperConnector;
+    private final ZookeeperConnector zookeeperConnector;
     private final RespondingCompiler respondingCompiler;
 
 
-    public ZookeeperRulesProvider(ZookeperAttributesDto zookeperAttributes,
+    public ZookeeperRulesProvider(ZookeeperAttributesDto zookeperAttributes,
                                   RespondingCompiler respondingCompiler) throws Exception {
-        this(new ZookeperConnectorFactory() {}, zookeperAttributes, respondingCompiler);
+        this(new ZookeeperConnectorFactory() {}, zookeperAttributes, respondingCompiler);
     }
 
-    ZookeeperRulesProvider(ZookeperConnectorFactory factory,
-                           ZookeperAttributesDto zookeperAttributes,
+    ZookeeperRulesProvider(ZookeeperConnectorFactory factory,
+                           ZookeeperAttributesDto zookeperAttributes,
                            RespondingCompiler respondingCompiler) throws Exception {
         LOG.info(INIT_START);
 
         this.respondingCompiler = respondingCompiler;
-        zookeperConnector = factory.createZookeperConnector(zookeperAttributes);
+        zookeeperConnector = factory.createZookeeperConnector(zookeperAttributes);
 
         updateRules();
         if (currentEngine.get() == null) {
             throw new IllegalStateException(ERROR_INIT_MESSAGE);
         }
-        zookeperConnector.addCacheListener(this::updateRules);
+        zookeeperConnector.addCacheListener(this::updateRules);
         LOG.info(INIT_COMPLETED);
     }
 
     private void updateRules() {
         try {
             LOG.info(PARSERS_UPDATE_START);
-            String jsonRules = zookeperConnector.getData();
+            String jsonRules = zookeeperConnector.getData();
             LOG.info(UPDATE_TRY_MSG_FORMAT, jsonRules.substring(0, Integer.min(jsonRules.length(), MAX_CHARS_TO_LOG)));
             RespondingResult result = respondingCompiler.compile(jsonRules);
             if (result.getStatusCode() != RespondingResult.StatusCode.OK) {

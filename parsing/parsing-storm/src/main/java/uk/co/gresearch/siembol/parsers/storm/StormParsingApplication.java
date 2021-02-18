@@ -13,10 +13,11 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
@@ -39,8 +40,6 @@ public class StormParsingApplication {
     private static final int PARSING_ATTR_INDEX = 1;
     private static final String WRONG_ARGUMENT_MSG =  "Wrong arguments. The application expects " +
             "Base64 encoded storm attributes and parsing app attributes";
-    private static final String KAFKA_PRINCIPAL_FORMAT_MSG = "%s.%s";
-    private static final String TOPOLOGY_NAME_FORMAT_MSG = "parsing-%s";
     private static final String SUBMIT_INFO_LOG = "Submitted parsing application storm topology: {} " +
             "with storm attributes: {}\nparsing application attributes: {}";
 
@@ -59,14 +58,11 @@ public class StormParsingApplication {
 
     public static StormTopology createTopology(StormParsingApplicationAttributesDto stormAppAttributes,
                                                ParsingApplicationFactoryAttributes parsingAttributes,
-                                               ZookeperConnectorFactory zookeperConnectorFactory) throws Exception {
+                                               ZookeeperConnectorFactory zookeeperConnectorFactory) throws Exception {
         stormAppAttributes.getStormAttributes().getKafkaSpoutProperties().getRawMap()
-                .put(GROUP_ID_CONFIG, String.format(KAFKA_PRINCIPAL_FORMAT_MSG,
-                        stormAppAttributes.getGroupIdPrefix(), parsingAttributes.getName()));
-
+                .put(GROUP_ID_CONFIG, stormAppAttributes.getGroupId(parsingAttributes.getName()));
         stormAppAttributes.getKafkaBatchWriterAttributes().getProducerProperties().getRawMap()
-                .put(CLIENT_ID_CONFIG, String.format(KAFKA_PRINCIPAL_FORMAT_MSG,
-                        stormAppAttributes.getClientIdPrefix(), parsingAttributes.getName()));
+                .put(CLIENT_ID_CONFIG, stormAppAttributes.getClientId(parsingAttributes.getName()));
         stormAppAttributes.getStormAttributes().setKafkaTopics(parsingAttributes.getInputTopics());
 
         TopologyBuilder builder = new TopologyBuilder();
@@ -75,7 +71,7 @@ public class StormParsingApplication {
                 parsingAttributes.getInputParallelism());
 
         builder.setBolt(parsingAttributes.getName(),
-                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zookeperConnectorFactory),
+                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zookeeperConnectorFactory),
                 parsingAttributes.getParsingParallelism())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
@@ -107,20 +103,10 @@ public class StormParsingApplication {
         }
 
         ParsingApplicationFactoryAttributes parsingAttributes = result.getAttributes();
-        if (stormAttributes.getOverriddenApplications() != null) {
-            stormAttributes.getOverriddenApplications().forEach(x -> {
-                if (x.getApplicationName().equals(parsingAttributes.getName())) {
-                    stormAttributes.setKafkaBatchWriterAttributes(x.getKafkaBatchWriterAttributes());
-                    stormAttributes.setStormAttributes(x.getStormAttributes());
-                }
-            });
-        }
-
         Config config = new Config();
         config.putAll(stormAttributes.getStormAttributes().getStormConfig().getRawMap());
-        StormTopology topology = createTopology(stormAttributes, parsingAttributes, new ZookeperConnectorFactory() {
-        });
-        String topologyName = String.format(TOPOLOGY_NAME_FORMAT_MSG, parsingAttributes.getName());
+        StormTopology topology = createTopology(stormAttributes, parsingAttributes, new ZookeeperConnectorFactory() {});
+        String topologyName = stormAttributes.getTopologyName(parsingAttributes.getName());
         LOG.info(SUBMIT_INFO_LOG, topologyName, stormAttributesStr, parsingAttributesStr);
         StormSubmitter.submitTopology(topologyName, config, topology);
     }

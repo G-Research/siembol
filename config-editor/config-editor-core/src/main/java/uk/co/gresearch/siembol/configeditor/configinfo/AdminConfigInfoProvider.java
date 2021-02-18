@@ -43,6 +43,11 @@ public class AdminConfigInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
+    public int getReleaseVersion(String content) {
+        return jsonHelperProvider.getReleaseVersion(content);
+    }
+
+    @Override
     public boolean isReleaseFile(String filename) {
         return jsonHelperProvider.isReleaseFile(filename);
     }

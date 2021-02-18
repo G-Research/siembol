@@ -1,12 +1,12 @@
 package uk.co.gresearch.siembol.common.zookeper;
 
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 
 import java.io.Serializable;
 
-public interface ZookeperConnectorFactory extends Serializable {
-    default ZookeperConnector createZookeperConnector(ZookeperAttributesDto attributes) throws Exception {
-        return new ZookeperConnectorImpl.Builder()
+public interface ZookeeperConnectorFactory extends Serializable {
+    default ZookeeperConnector createZookeeperConnector(ZookeeperAttributesDto attributes) throws Exception {
+        return new ZookeeperConnectorImpl.Builder()
                 .zkServer(attributes.getZkUrl())
                 .path(attributes.getZkPath())
                 .baseSleepTimeMs(attributes.getZkBaseSleepMs())

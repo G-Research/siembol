@@ -1,7 +1,9 @@
 package uk.co.gresearch.siembol.configeditor.rest.common;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
+import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
 
 import java.util.Map;
 
@@ -10,6 +12,12 @@ public class ServiceConfigurationProperties {
     private String type;
     @NestedConfigurationProperty
     private ConfigStoreProperties configStore;
+    @NestedConfigurationProperty
+    private ZookeeperAttributesDto releaseZookeeper;
+    @NestedConfigurationProperty
+    private String topologyImage;
+    private SynchronisationType synchronisation;
+
 
     private String uiConfigFileName = UNKNOWN_FILE_NAME;
     private Map<String, String> attributes;
@@ -44,5 +52,29 @@ public class ServiceConfigurationProperties {
 
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+
+    public ZookeeperAttributesDto getReleaseZookeeper() {
+        return releaseZookeeper;
+    }
+
+    public void setReleaseZookeeper(ZookeeperAttributesDto releaseZookeeper) {
+        this.releaseZookeeper = releaseZookeeper;
+    }
+
+    public String getTopologyImage() {
+        return topologyImage;
+    }
+
+    public void setTopologyImage(String topologyImage) {
+        this.topologyImage = topologyImage;
+    }
+
+    public SynchronisationType getSynchronisation() {
+        return synchronisation;
+    }
+
+    public void setSynchronisation(SynchronisationType synchronisation) {
+        this.synchronisation = synchronisation;
     }
 }

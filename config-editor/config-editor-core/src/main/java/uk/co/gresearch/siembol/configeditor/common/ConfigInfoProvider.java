@@ -25,6 +25,8 @@ public interface ConfigInfoProvider {
 
     int getReleaseVersion(List<ConfigEditorFile> files);
 
+    int getReleaseVersion(String content);
+
     ConfigEditorFile.ContentType getFileContentType();
 
     default ConfigInfo configInfoFromUser(UserInfo user) {

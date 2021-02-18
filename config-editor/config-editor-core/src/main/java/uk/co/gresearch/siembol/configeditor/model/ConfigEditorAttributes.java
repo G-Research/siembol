@@ -1,10 +1,8 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.List;
@@ -63,6 +61,13 @@ public class ConfigEditorAttributes {
     @JsonProperty("admin_config_schema")
     @JsonRawValue
     private String adminConfigSchema;
+
+    private ConfigEditorServiceContext serviceContext;
+
+    private List<StormTopologyDto> topologies;
+
+    @JsonProperty("topology_name")
+    private String topologyName;
 
     public String getException() {
         return exception;
@@ -220,5 +225,33 @@ public class ConfigEditorAttributes {
 
     public void setConfigVersion(Integer configVersion) {
         this.configVersion = configVersion;
+    }
+
+    public ConfigEditorServiceContext getServiceContext() {
+        return serviceContext;
+    }
+
+    public void setServiceContext(ConfigEditorServiceContext serviceContext) {
+        this.serviceContext = serviceContext;
+    }
+
+    public void setTestSpecification(String testSpecification) {
+        this.testSpecification = testSpecification;
+    }
+
+    public List<StormTopologyDto> getTopologies() {
+        return topologies;
+    }
+
+    public void setTopologies(List<StormTopologyDto> topologies) {
+        this.topologies = topologies;
+    }
+
+    public String getTopologyName() {
+        return topologyName;
+    }
+
+    public void setTopologyName(String topologyName) {
+        this.topologyName = topologyName;
     }
 }

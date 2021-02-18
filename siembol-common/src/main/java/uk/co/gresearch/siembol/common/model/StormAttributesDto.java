@@ -20,8 +20,7 @@ public class StormAttributesDto {
     @Attributes(required = true, description = "Defines how the kafka spout seeks the offset to be used in the first poll to kafka")
     @JsonProperty("first.pool.offset.strategy")
     private FirstPoolOffsetStrategy firstPollOffsetStrategy = FirstPoolOffsetStrategy.UNCOMMITTED_LATEST;
-    @Attributes(required = true, description = "Defines kafka consumer attributes for kafka spout such as group.id, " +
-            "protocol")
+    @Attributes(required = true, description = "Defines kafka consumer attributes for kafka spout such as group.id, protocol")
     @JsonProperty("kafka.spout.properties")
     private JsonRawStringDto kafkaSpoutProperties;
     @Attributes(description = "Kafka consumer parameter poll.timeout.ms used in kafka spout")

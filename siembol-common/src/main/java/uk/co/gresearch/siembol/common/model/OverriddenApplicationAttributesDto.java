@@ -1,10 +1,7 @@
-package uk.co.gresearch.siembol.parsers.storm;
+package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
-import uk.co.gresearch.siembol.common.model.StormAttributesDto;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
 

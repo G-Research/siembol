@@ -157,7 +157,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return configInfo;
     }
 
-    private int getReleaseVersion(String content) {
+    @Override
+    public int getReleaseVersion(String content) {
         Map<String, Object> metadata;
         try {
             metadata = JSON_READER.readValue(content);

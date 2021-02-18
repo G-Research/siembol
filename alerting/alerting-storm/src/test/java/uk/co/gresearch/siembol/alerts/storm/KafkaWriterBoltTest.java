@@ -18,7 +18,7 @@ import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
+import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 import java.util.List;
 import java.util.Map;

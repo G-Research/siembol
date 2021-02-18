@@ -22,6 +22,7 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.protection.RuleProtectionSystem;
 import uk.co.gresearch.siembol.alerts.protection.RuleProtectionSystemImpl;
 import uk.co.gresearch.siembol.alerts.storm.model.*;
+import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 public class KafkaWriterBolt extends BaseRichBolt {
     private static final Logger LOG =

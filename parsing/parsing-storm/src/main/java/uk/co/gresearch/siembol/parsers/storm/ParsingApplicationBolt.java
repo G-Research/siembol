@@ -10,11 +10,12 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
@@ -41,24 +42,24 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLE = "Invalid type in tuple";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
-    private final ZookeperAttributesDto zookeperAttributes;
+    private final ZookeeperAttributesDto zookeperAttributes;
     private final String parsingAppSpecification;
 
     private OutputCollector collector;
-    private ZookeperConnector zookeperConnector;
-    private final ZookeperConnectorFactory zookeperConnectorFactory;
+    private ZookeeperConnector zookeeperConnector;
+    private final ZookeeperConnectorFactory zookeeperConnectorFactory;
 
     ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                            ParsingApplicationFactoryAttributes parsingAttributes,
-                           ZookeperConnectorFactory zookeperConnectorFactory) throws Exception {
-        this.zookeperAttributes = attributes.getZookeperAttributes();
+                           ZookeeperConnectorFactory zookeeperConnectorFactory) throws Exception {
+        this.zookeperAttributes = attributes.getZookeeperAttributes();
         this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
-        this.zookeperConnectorFactory = zookeperConnectorFactory;
+        this.zookeeperConnectorFactory = zookeeperConnectorFactory;
     }
 
     public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this(attributes, parsingAttributes, new ZookeperConnectorFactory() {});
+        this(attributes, parsingAttributes, new ZookeeperConnectorFactory() {});
     }
 
     @Override
@@ -66,13 +67,13 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(INIT_START);
-            zookeperConnector = zookeperConnectorFactory.createZookeperConnector(zookeperAttributes);
+            zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
 
             updateParsers();
             if (parsingApplicationParser.get() == null) {
                 throw new IllegalStateException(ERROR_INIT_MESSAGE);
             }
-            zookeperConnector.addCacheListener(this::updateParsers);
+            zookeeperConnector.addCacheListener(this::updateParsers);
             LOG.info(INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -86,7 +87,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             ParsingApplicationFactory factory =  new ParsingApplicationFactoryImpl();
 
             LOG.info(PARSERS_UPDATE_START);
-            String parserConfigs = zookeperConnector.getData();
+            String parserConfigs = zookeeperConnector.getData();
             LOG.info(String.format(PARSERCONFIG_UPDATE_TRY_MSG_FORMAT, parsingAppSpecification, parserConfigs));
             ParsingApplicationFactoryResult result = factory.create(parsingAppSpecification, parserConfigs);
             if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK) {

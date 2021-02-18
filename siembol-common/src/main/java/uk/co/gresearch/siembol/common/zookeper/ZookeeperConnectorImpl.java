@@ -11,18 +11,25 @@ import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class ZookeperConnectorImpl implements ZookeperConnector {
+public class ZookeeperConnectorImpl implements ZookeeperConnector {
     private final CuratorFramework client;
     private final NodeCache cache;
+    private final String path;
 
-    ZookeperConnectorImpl(Builder builder) {
+    ZookeeperConnectorImpl(Builder builder) {
         this.client = builder.client;
         this.cache = builder.cache;
+        this.path = builder.path;
     }
 
     public String getData() {
         ChildData childData =  cache.getCurrentData();
         return new String(childData.getData(), UTF_8);
+    }
+
+    @Override
+    public void setData(String data) throws Exception {
+        client.setData().forPath(this.path, data.getBytes(UTF_8));
     }
 
     public void addCacheListener(NodeCacheListener listener) {
@@ -63,7 +70,7 @@ public class ZookeperConnectorImpl implements ZookeperConnector {
             return this;
         }
 
-        public ZookeperConnectorImpl build() throws Exception {
+        public ZookeeperConnectorImpl build() throws Exception {
             if (zkServer == null
                     || path == null
                     || baseSleepTimeMs == null
@@ -77,7 +84,7 @@ public class ZookeperConnectorImpl implements ZookeperConnector {
             cache = new NodeCache(client, path);
             cache.start(true);
 
-            return new ZookeperConnectorImpl(this);
+            return new ZookeeperConnectorImpl(this);
         }
     }
 }

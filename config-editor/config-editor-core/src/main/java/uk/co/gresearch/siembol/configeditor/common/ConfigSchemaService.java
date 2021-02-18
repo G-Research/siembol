@@ -34,4 +34,8 @@ public interface ConfigSchemaService extends HealthCheckable {
     default ConfigEditorResult validateAdminConfiguration(String configuration) {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
+
+    default ConfigEditorResult getAdminConfigTopologyName(String configuration) {
+        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
+    }
 }

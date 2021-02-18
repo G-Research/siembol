@@ -55,6 +55,11 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
     }
 
     @Override
+    public List<ServiceAggregatorService> getAggregatorServices() {
+        return serviceMap.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
     public List<ConfigStore> getConfigStoreServices() {
         return serviceMap.keySet().stream()
                 .map(x -> serviceMap.get(x).getConfigStore())
@@ -91,7 +96,7 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
             if (!roles.isEmpty()) {
                 ConfigEditorService configEditorService = new ConfigEditorService();
                 configEditorService.setName(serviceName);
-                configEditorService.setType(currentService.getType());
+                configEditorService.setType(currentService.getType().getName());
                 configEditorService.setUserRoles(roles);
                 ret.add(configEditorService);
             }
@@ -177,18 +182,18 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
             this.authProvider = authProvider;
         }
 
-        Builder addService(String name, String type, ConfigStore configStore, ConfigSchemaService schemaService) {
+        Builder addService(String name, ServiceType type, ConfigStore configStore, ConfigSchemaService schemaService) {
             if (serviceMap.containsKey(name)) {
                 throw new IllegalArgumentException(SERVICE_ALREADY_REGISTERED);
             }
 
-            ServiceAggregatorService current = new ServiceAggregatorService(type, configStore, schemaService);
+            ServiceAggregatorService current = new ServiceAggregatorService(name, type, configStore, schemaService);
             serviceMap.put(name, current);
             return this;
         }
 
         public Builder addService(String name,
-                                  String type,
+                                  ServiceType type,
                                   ConfigStoreProperties storeProperties,
                                   ConfigInfoProvider configInfoProvider,
                                   ConfigSchemaService schemaService) throws Exception {

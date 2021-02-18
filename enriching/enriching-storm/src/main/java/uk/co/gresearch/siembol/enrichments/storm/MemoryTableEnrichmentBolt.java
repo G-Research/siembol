@@ -18,9 +18,10 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.HdfsFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
+import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
 import uk.co.gresearch.siembol.enrichments.table.EnrichmentMemoryTable;
@@ -53,24 +54,24 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLES = "Invalid type in tuple provided";
 
     private final AtomicReference<Map<String, EnrichmentTable>> enrichmentTables = new AtomicReference<>();
-    private final ZookeperAttributesDto zookeperAttributes;
-    private final ZookeperConnectorFactory zookeperConnectorFactory;
+    private final ZookeeperAttributesDto zookeperAttributes;
+    private final ZookeeperConnectorFactory zookeeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
 
     private OutputCollector collector;
-    private ZookeperConnector zookeperConnector;
+    private ZookeeperConnector zookeeperConnector;
 
     MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
-                              ZookeperConnectorFactory zookeperConnectorFactory,
+                              ZookeeperConnectorFactory zookeeperConnectorFactory,
                               SiembolFileSystemFactory fileSystemFactory) {
         this.zookeperAttributes = attributes.getEnrichingTablesAttributes();
-        this.zookeperConnectorFactory = zookeperConnectorFactory;
+        this.zookeeperConnectorFactory = zookeeperConnectorFactory;
         this.fileSystemFactory = fileSystemFactory;
     }
 
     public MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes,
-                new ZookeperConnectorFactory() {},
+                new ZookeeperConnectorFactory() {},
                 new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));
     }
 
@@ -80,7 +81,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
         try {
             LOG.info(TABLES_INIT_START);
-            zookeperConnector = zookeperConnectorFactory.createZookeperConnector(zookeperAttributes);
+            zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
 
             updateTables();
             if (enrichmentTables.get() == null) {
@@ -88,7 +89,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
                 throw new IllegalStateException(TABLES_UPDATE_EMPTY_TABLES);
             }
 
-            zookeperConnector.addCacheListener(this::updateTables);
+            zookeeperConnector.addCacheListener(this::updateTables);
             LOG.info(TABLES_INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -101,7 +102,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
         try {
             LOG.info(TABLES_UPDATES_START);
 
-            String tablesUpdateStr = zookeperConnector.getData();
+            String tablesUpdateStr = zookeeperConnector.getData();
             LOG.info(String.format(TABLES_UPDATE_MESSAGE_FORMAT, tablesUpdateStr));
             Map<String, EnrichmentTable> tables = new HashMap<>();
             TablesUpdate tablesUpdate = TABLES_UPDATE_READER.readValue(tablesUpdateStr);

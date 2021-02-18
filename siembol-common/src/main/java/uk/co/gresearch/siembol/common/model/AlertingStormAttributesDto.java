@@ -1,11 +1,8 @@
-package uk.co.gresearch.siembol.alerts.storm.model;
+package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
-import uk.co.gresearch.siembol.common.model.AdminConfigDto;
-import uk.co.gresearch.siembol.common.model.StormAttributesDto;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -38,7 +35,7 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
     private JsonRawStringDto kafkaProducerProperties;
     @JsonProperty("zookeeper.attributes")
     @Attributes(required = true, description = "The zookeeper attributes for alerting rules")
-    private ZookeperAttributesDto zookeperAttributes;
+    private ZookeeperAttributesDto zookeperAttributes;
     @Attributes(required = true, description = "Storm attributes for the topology")
     @JsonProperty("storm.attributes")
     private StormAttributesDto stormAttributes;
@@ -140,11 +137,11 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
         this.kafkaWriterBoltNumExecutors = kafkaWriterBoltNumExecutors;
     }
 
-    public ZookeperAttributesDto getZookeperAttributes() {
+    public ZookeeperAttributesDto getZookeperAttributes() {
         return zookeperAttributes;
     }
 
-    public void setZookeperAttributes(ZookeperAttributesDto zookeperAttributes) {
+    public void setZookeperAttributes(ZookeeperAttributesDto zookeperAttributes) {
         this.zookeperAttributes = zookeperAttributes;
     }
 

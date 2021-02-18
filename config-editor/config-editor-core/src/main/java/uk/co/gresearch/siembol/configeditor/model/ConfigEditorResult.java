@@ -81,6 +81,13 @@ public class ConfigEditorResult {
                 attributes);
     }
 
+    public static ConfigEditorResult fromServiceContext(ConfigEditorServiceContext context) {
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setServiceContext(context);
+        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK,
+                attributes);
+    }
+
     public static ConfigEditorResult fromValidationResult(SiembolResult siembolResult) {
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
         attributes.setMessage(siembolResult.getAttributes().getMessage());

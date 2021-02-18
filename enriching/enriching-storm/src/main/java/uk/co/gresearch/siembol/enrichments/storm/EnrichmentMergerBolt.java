@@ -18,7 +18,7 @@ import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluatorLibrary
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentExceptions;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
+import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;

@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.common.jsonschema;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.reinert.jjschema.Attributes;
@@ -13,7 +14,7 @@ public class JsonRawStringDto {
     @SchemaIgnore
     private Map<String, Object> rawMap = new HashMap<>();
 
-    @JsonIgnore
+    @JsonAnyGetter
     public Map<String, Object> getRawMap() {
         return rawMap;
     }
@@ -22,4 +23,5 @@ public class JsonRawStringDto {
     public void set(String fieldName, Object value){
         this.rawMap.put(fieldName, value);
     }
+
 }

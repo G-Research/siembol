@@ -1,29 +1,32 @@
-package uk.co.gresearch.siembol.parsers.storm;
+package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.model.AdminConfigDto;
-import uk.co.gresearch.siembol.common.model.StormAttributesDto;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
-import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Attributes(title = "storm parsing application attributes", description = "Storm parsing application attributes")
 public class StormParsingApplicationAttributesDto extends AdminConfigDto implements Serializable {
+    private static final String KAFKA_PRINCIPAL_FORMAT_MSG = "%s.%s";
+    private static final String TOPOLOGY_NAME_FORMAT_MSG = "%s-%s";
+
+    @Attributes(description = "The prefix that will be used to create a topology name using application name",
+            required = true)
+    @JsonProperty("topology.name.prefix")
+    private String topologyNamePrefix = "parsing";
     @Attributes(description = "The prefix that will be used to create a kafka producer client id using application name",
             required = true)
     @JsonProperty("client.id.prefix")
-    private String clientIdPrefix = "siembol-parsing-app";
+    private String clientIdPrefix = "siembol.parsing.writer";
     @JsonProperty("group.id.prefix")
     @Attributes(description = "The prefix that will be used to create a kafka group id reader using application name",
             required = true)
-    private String groupIdPrefix = "siembol-parsing-app";;
+    private String groupIdPrefix = "siembol.parsing.reader";
     @JsonProperty("zookeeper.attributes")
     @Attributes(description = "Zookeeper attributes for updating parser configurations",
             required = true)
-    private ZookeperAttributesDto zookeperAttributes;
+    private ZookeeperAttributesDto zookeeperAttributes;
     @Attributes(description = "Global settings for kafka batch writer used if are not overridden", required = true)
     @JsonProperty("kafka.batch.writer.attributes")
     private KafkaBatchWriterAttributesDto kafkaBatchWriterAttributes;
@@ -53,12 +56,12 @@ public class StormParsingApplicationAttributesDto extends AdminConfigDto impleme
         this.groupIdPrefix = groupIdPrefix;
     }
 
-    public ZookeperAttributesDto getZookeperAttributes() {
-        return zookeperAttributes;
+    public ZookeeperAttributesDto getZookeeperAttributes() {
+        return zookeeperAttributes;
     }
 
-    public void setZookeperAttributes(ZookeperAttributesDto zookeperAttributes) {
-        this.zookeperAttributes = zookeperAttributes;
+    public void setZookeeperAttributes(ZookeeperAttributesDto zookeeperAttributes) {
+        this.zookeeperAttributes = zookeeperAttributes;
     }
 
     public KafkaBatchWriterAttributesDto getKafkaBatchWriterAttributes() {
@@ -84,4 +87,25 @@ public class StormParsingApplicationAttributesDto extends AdminConfigDto impleme
     public void setOverriddenApplications(List<OverriddenApplicationAttributesDto> overriddenApplications) {
         this.overriddenApplications = overriddenApplications;
     }
+
+    public String getTopologyNamePrefix() {
+        return topologyNamePrefix;
+    }
+
+    public void setTopologyNamePrefix(String topologyNamePrefix) {
+        this.topologyNamePrefix = topologyNamePrefix;
+    }
+
+    public String getTopologyName(String parsingAppName) {
+        return String.format(TOPOLOGY_NAME_FORMAT_MSG, topologyNamePrefix, parsingAppName);
+    }
+
+    public String getClientId(String parsingAppName) {
+        return String.format(KAFKA_PRINCIPAL_FORMAT_MSG, clientIdPrefix, parsingAppName);
+    }
+
+    public String getGroupId(String parsingAppName) {
+        return String.format(KAFKA_PRINCIPAL_FORMAT_MSG, groupIdPrefix, parsingAppName);
+    }
+
 }

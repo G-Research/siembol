@@ -12,7 +12,7 @@ import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceCo
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
-import uk.co.gresearch.siembol.parsers.storm.StormParsingApplicationAttributesDto;
+import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;

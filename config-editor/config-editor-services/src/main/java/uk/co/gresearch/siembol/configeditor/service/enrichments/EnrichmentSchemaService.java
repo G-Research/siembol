@@ -1,8 +1,11 @@
 package uk.co.gresearch.siembol.configeditor.service.enrichments;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
@@ -13,14 +16,20 @@ import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceCo
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentResult;
 import uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompiler;
 import uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompilerImpl;
-import uk.co.gresearch.siembol.enrichments.storm.common.StormEnrichmentAttributesDto;
+import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+
 public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final String INIT_ERROR = "Error during initialisation of enrichments rules and testing schema";
+    private static final String INIT_ERROR = "Error during initialisation of enrichment rules and testing schema";
+    private static final ObjectReader ADMIN_CONFIG_READER = new ObjectMapper()
+            .readerFor(StormEnrichmentAttributesDto.class);
+
     private final EnrichmentCompiler compiler;
 
     EnrichmentSchemaService(EnrichmentCompiler compiler, ConfigSchemaServiceContext context) {
@@ -58,6 +67,18 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
 
         ret.getAttributes().setTestResultComplete(true);
         return ret;
+    }
+
+    @Override
+    public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
+        try {
+            StormEnrichmentAttributesDto adminConfig = ADMIN_CONFIG_READER.readValue(configuration);
+            ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+            attributes.setTopologyName(adminConfig.getTopologyName());
+            return new ConfigEditorResult(OK, attributes);
+        } catch (IOException e) {
+            return ConfigEditorResult.fromException(e);
+        }
     }
 
     private ConfigEditorResult fromEnrichmentResult(EnrichmentResult enrichmentResultresult) {

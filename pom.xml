@@ -7,7 +7,7 @@
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
     <name>siembol</name>
-    <version>1.72-SNAPSHOT</version>
+    <version>1.73-SNAPSHOT</version>
     <description>A scalable, advanced security analytics framework based on open-source big data technologies.</description>
     <inceptionYear>2019</inceptionYear>
     <url>https://github.com/G-Research</url>
@@ -128,26 +128,6 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <stagingProgressTimeoutMinutes>60</stagingProgressTimeoutMinutes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                        <configuration>
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

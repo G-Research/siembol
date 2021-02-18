@@ -12,9 +12,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
+import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
 
@@ -66,17 +67,17 @@ public class MemoryTableEnrichmentBoltTest {
     private EnrichmentExceptions exceptions;
     private EnrichmentCommands commands;
     MemoryTableEnrichmentBolt memoryTableBolt;
-    ZookeperAttributesDto zookeperAttributes;
+    ZookeeperAttributesDto zookeperAttributes;
     StormEnrichmentAttributesDto attributes;
-    ZookeperConnector zookeperConnector;
-    ZookeperConnectorFactory zookeperConnectorFactory;
+    ZookeeperConnector zookeeperConnector;
+    ZookeeperConnectorFactory zookeeperConnectorFactory;
     SiembolFileSystemFactory fileSystemFactory;
     SiembolFileSystem fileSystem;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
     public void setUp() throws Exception {
-        zookeperAttributes = new ZookeperAttributesDto();
+        zookeperAttributes = new ZookeeperAttributesDto();
         attributes = new StormEnrichmentAttributesDto();
         attributes.setEnrichingTablesAttributes(zookeperAttributes);
 
@@ -85,22 +86,22 @@ public class MemoryTableEnrichmentBoltTest {
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeperConnectorFactory = Mockito.mock(ZookeperConnectorFactory.class);
+        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class);
         fileSystemFactory = Mockito.mock(SiembolFileSystemFactory.class);
         fileSystem = Mockito.mock(SiembolFileSystem.class);
 
-        zookeperConnector = Mockito.mock(ZookeperConnector.class);
-        when(zookeperConnectorFactory.createZookeperConnector(zookeperAttributes)).thenReturn(zookeperConnector);
+        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
         when(fileSystemFactory.create()).thenReturn(fileSystem);
 
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
         when(tuple.getValueByField(eq(EnrichmentTuples.COMMANDS.toString()))).thenReturn(commands);
         when(tuple.getValueByField(eq(EnrichmentTuples.EXCEPTIONS.toString()))).thenReturn(exceptions);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
-        when(zookeperConnector.getData()).thenReturn(tablesUpdate);
+        when(zookeeperConnector.getData()).thenReturn(tablesUpdate);
         when(fileSystem.openInputStream(anyString())).thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
 
-        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zookeperConnectorFactory, fileSystemFactory);
+        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zookeeperConnectorFactory, fileSystemFactory);
         memoryTableBolt.prepare(null, null, collector);
     }
 

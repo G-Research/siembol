@@ -8,6 +8,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.common.ServiceType;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
@@ -25,7 +26,7 @@ public class ServiceAggregatorImplTest {
     private AuthorisationProvider authProvider;
     private ConfigStore store;
     private ConfigSchemaService schemaService;
-    private String serviceType = "my_type";
+    private ServiceType serviceType = ServiceType.ALERT;
     private ServiceAggregatorImpl.Builder builder;
     private ServiceAggregator serviceAggregator;
     private UserInfo user;

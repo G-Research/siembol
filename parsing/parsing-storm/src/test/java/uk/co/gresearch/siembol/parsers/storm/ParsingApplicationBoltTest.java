@@ -13,10 +13,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
+import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
-import uk.co.gresearch.siembol.common.model.ZookeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 
 import java.io.IOException;
@@ -93,10 +94,10 @@ public class ParsingApplicationBoltTest {
     private OutputCollector collector;
     ParsingApplicationBolt parsingApplicationBolt;
     ParsingApplicationFactoryAttributes parsingAttributes;
-    ZookeperAttributesDto zookeperAttributes;
+    ZookeeperAttributesDto zookeperAttributes;
     StormParsingApplicationAttributesDto attributes;
-    ZookeperConnector zookeperConnector;
-    ZookeperConnectorFactory zookeperConnectorFactory;
+    ZookeeperConnector zookeeperConnector;
+    ZookeeperConnectorFactory zookeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
@@ -105,18 +106,18 @@ public class ParsingApplicationBoltTest {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser);
 
 
-        zookeperAttributes = new ZookeperAttributesDto();
+        zookeperAttributes = new ZookeeperAttributesDto();
         attributes = new StormParsingApplicationAttributesDto();
-        attributes.setZookeperAttributes(zookeperAttributes);
+        attributes.setZookeeperAttributes(zookeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeperConnectorFactory = Mockito.mock(ZookeperConnectorFactory.class);
+        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class);
 
-        zookeperConnector = Mockito.mock(ZookeperConnector.class);
-        when(zookeperConnectorFactory.createZookeperConnector(zookeperAttributes)).thenReturn(zookeperConnector);
-        when(zookeperConnector.getData()).thenReturn(testParsersConfigs);
+        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
+        when(zookeeperConnector.getData()).thenReturn(testParsersConfigs);
 
         when(tuple.getStringByField(eq(ParsingApplicationTuples.METADATA.toString()))).thenReturn(metadata);
         when(tuple.getValueByField(eq(ParsingApplicationTuples.LOG.toString()))).thenReturn(log.trim().getBytes());
@@ -124,7 +125,7 @@ public class ParsingApplicationBoltTest {
 
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeeperConnectorFactory);
         parsingApplicationBolt.prepare(null, null, collector);
     }
 
@@ -150,7 +151,7 @@ public class ParsingApplicationBoltTest {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser.replace(
                 "\"parse_metadata\" : false", "\"parse_metadata\" : true"
         ));
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeeperConnectorFactory);
         parsingApplicationBolt.prepare(null, null, collector);
 
         when(tuple.getStringByField(eq(ParsingApplicationTuples.METADATA.toString()))).thenReturn("INVALID");
@@ -181,7 +182,7 @@ public class ParsingApplicationBoltTest {
                 "\"parse_metadata\" : false", "\"parse_metadata\" : true"
         ));
 
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeeperConnectorFactory);
         parsingApplicationBolt.prepare(null, null, collector);
         parsingApplicationBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
@@ -200,8 +201,8 @@ public class ParsingApplicationBoltTest {
 
     @Test(expected = IllegalStateException.class)
     public void testExceptionData() throws Exception {
-        when(zookeperConnector.getData()).thenReturn("INVALID");
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeperConnectorFactory);
+        when(zookeeperConnector.getData()).thenReturn("INVALID");
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zookeeperConnectorFactory);
         parsingApplicationBolt.prepare(null, null, collector);
     }
 }

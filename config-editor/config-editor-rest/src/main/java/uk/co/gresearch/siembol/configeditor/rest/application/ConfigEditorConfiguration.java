@@ -1,30 +1,45 @@
 package uk.co.gresearch.siembol.configeditor.rest.application;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.util.ResourceUtils;
+import uk.co.gresearch.siembol.common.testing.TestingZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
+import uk.co.gresearch.siembol.configeditor.common.ServiceType;
+import uk.co.gresearch.siembol.configeditor.sync.common.ConfigServiceHelper;
+import uk.co.gresearch.siembol.configeditor.sync.service.StormApplicationProvider;
+import uk.co.gresearch.siembol.configeditor.sync.service.StormApplicationProviderImpl;
+import uk.co.gresearch.siembol.configeditor.sync.service.SynchronisationService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorHelper;
 import uk.co.gresearch.siembol.configeditor.rest.common.ServiceConfigurationProperties;
-import uk.co.gresearch.siembol.configeditor.service.common.ConfigEditorServiceType;
+import uk.co.gresearch.siembol.configeditor.service.common.ConfigEditorServiceFactory;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregatorImpl;
+import uk.co.gresearch.siembol.configeditor.sync.service.SynchronisationServiceImpl;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluatorImpl;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableConfigurationProperties(ConfigEditorConfigurationProperties.class)
 public class ConfigEditorConfiguration implements DisposableBean {
+
     @Autowired
     private ConfigEditorConfigurationProperties properties;
 
@@ -42,16 +57,17 @@ public class ConfigEditorConfiguration implements DisposableBean {
         for (String name : properties.getServices().keySet()) {
             ServiceConfigurationProperties serviceProperties = properties.getServices().get(name);
 
-            ConfigEditorServiceType serviceType = ConfigEditorServiceType.fromName(serviceProperties.getType());
+            ServiceType serviceType = ServiceType.fromName(serviceProperties.getType());
+            ConfigEditorServiceFactory serviceFactory = ConfigEditorServiceFactory.fromServiceType(serviceType);
 
             ConfigEditorUiLayout uiLayout = ConfigEditorUtils.readUiLayoutFile(serviceProperties.getUiConfigFileName());
             Optional<Map<String, String>> attributes = Optional.ofNullable(serviceProperties.getAttributes());
-            ConfigSchemaService schemaService = serviceType.createConfigSchemaService(uiLayout, attributes);
+            ConfigSchemaService schemaService = serviceFactory.createConfigSchemaService(uiLayout, attributes);
 
             builder.addService(name,
-                    serviceProperties.getType(),
+                    serviceType,
                     configStorePropertiesMap.get(name),
-                    serviceType.getConfigInfoProvider() ,
+                    serviceFactory.getConfigInfoProvider() ,
                     schemaService);
         }
         serviceAggregator = builder.build();
@@ -62,6 +78,49 @@ public class ConfigEditorConfiguration implements DisposableBean {
     TestCaseEvaluator testCaseEvaluator() throws Exception {
         ConfigEditorUiLayout uiLayout = ConfigEditorUtils.readUiLayoutFile(properties.getTestCasesUiConfigFileName());
         return new TestCaseEvaluatorImpl(uiLayout);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
+    StormApplicationProvider stormApplicationProvider() throws Exception {
+        return StormApplicationProviderImpl.create(zookeeperConnectorFactory(), properties.getStormTopologiesZookeeper());
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
+    SynchronisationService synchronisationService() throws Exception {
+        serviceAggregator = serviceAggregator();
+        ZookeeperConnectorFactory zookeeperConnectorFactory = zookeeperConnectorFactory();
+        StormApplicationProvider stormApplicationProvider = stormApplicationProvider();
+        List<ConfigServiceHelper> aggregatorServices = serviceAggregator
+                .getAggregatorServices()
+                .stream()
+                .map(x -> new ConfigServiceHelperImpl(x, properties, zookeeperConnectorFactory))
+                .collect(Collectors.toList());
+
+        SynchronisationService ret = new SynchronisationServiceImpl.Builder(stormApplicationProvider)
+                .addConfigServiceHelpers(aggregatorServices)
+                .build();
+
+        ret.synchroniseAllServices(properties.getSynchronisation());
+        return ret;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
+    ZookeeperConnectorFactory zookeeperConnectorFactory() throws Exception {
+        if (properties.getTestingZookeeperFiles() == null) {
+            return new ZookeeperConnectorFactory() {};
+        }
+
+        TestingZookeeperConnectorFactory ret = new TestingZookeeperConnectorFactory();
+        for (Map.Entry<String, String> entry: properties.getTestingZookeeperFiles().entrySet()){
+            File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + entry.getValue());
+            String content = new String(Files.readAllBytes(file.toPath()));
+            ret.setData(entry.getKey(), content);
+        }
+
+        return ret;
     }
 
     @Override

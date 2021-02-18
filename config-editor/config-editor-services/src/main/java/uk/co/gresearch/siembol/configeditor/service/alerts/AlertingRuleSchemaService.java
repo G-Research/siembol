@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingStormAttributesDto;
+import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+
 public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
@@ -38,6 +40,9 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(AlertingAttributes.class)
             .with(SerializationFeature.INDENT_OUTPUT);
+
+    private static final ObjectReader ADMIN_CONFIG_READER = new ObjectMapper()
+            .readerFor(AlertingStormAttributesDto.class);
 
     private static final String SCHEMA_INIT_ERROR = "Error during computing rules schema";
     private static final String TESTING_ERROR = "Unexpected rule testing service result";
@@ -157,10 +162,22 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         return fromAlertingTestResult(alertingCompiler.testRules(rule, specificationDto.getEventContent()));
     }
 
+    @Override
+    public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
+        try {
+            AlertingStormAttributesDto adminConfig = ADMIN_CONFIG_READER.readValue(configuration);
+            ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+            attributes.setTopologyName(adminConfig.getTopologyName());
+            return new ConfigEditorResult(OK, attributes);
+        } catch (IOException e) {
+            return ConfigEditorResult.fromException(e);
+        }
+    }
+
     private ConfigEditorResult fromAlertingValidateResult(AlertingResult alertingResult) {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         ConfigEditorResult.StatusCode statusCode = alertingResult.getStatusCode() == AlertingResult.StatusCode.OK
-                ? ConfigEditorResult.StatusCode.OK
+                ? OK
                 : ConfigEditorResult.StatusCode.ERROR;
 
         attr.setMessage(alertingResult.getAttributes().getMessage());
@@ -194,6 +211,6 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
             return ConfigEditorResult.fromException(e);
         }
 
-        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
+        return new ConfigEditorResult(OK, attr);
     }
 }

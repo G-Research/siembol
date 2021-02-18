@@ -11,8 +11,9 @@ import org.apache.storm.generated.StormTopology;
 import org.junit.*;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
@@ -113,8 +114,8 @@ public class StormParsingApplicationTest {
 
     private ParsingApplicationFactoryAttributes parsingAttributes;
     private StormParsingApplicationAttributesDto stormAttributes;
-    private ZookeperConnector zookeperConnector;
-    private ZookeperConnectorFactory zookeperConnectorFactory;
+    private ZookeeperConnector zookeeperConnector;
+    private ZookeeperConnectorFactory zookeeperConnectorFactory;
     private StormTopology topology;
 
     @Before
@@ -131,13 +132,13 @@ public class StormParsingApplicationTest {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser);
 
 
-        zookeperConnector = Mockito.mock(ZookeperConnector.class, withSettings().serializable());
-        when(zookeperConnector.getData()).thenReturn(testParsersConfigs);
+        zookeeperConnector = Mockito.mock(ZookeeperConnector.class, withSettings().serializable());
+        when(zookeeperConnector.getData()).thenReturn(testParsersConfigs);
 
-        zookeperConnectorFactory = Mockito.mock(ZookeperConnectorFactory.class, withSettings().serializable());
-        when(zookeperConnectorFactory.createZookeperConnector(
-                stormAttributes.getZookeperAttributes()))
-                .thenReturn(zookeperConnector);
+        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class, withSettings().serializable());
+        when(zookeeperConnectorFactory.createZookeeperConnector(
+                stormAttributes.getZookeeperAttributes()))
+                .thenReturn(zookeeperConnector);
 
 
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
@@ -148,7 +149,7 @@ public class StormParsingApplicationTest {
         kafkaRule.waitForStartup();
         topology = StormParsingApplication.createTopology(stormAttributes,
                 parsingAttributes,
-                zookeperConnectorFactory);
+                zookeeperConnectorFactory);
 
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();
