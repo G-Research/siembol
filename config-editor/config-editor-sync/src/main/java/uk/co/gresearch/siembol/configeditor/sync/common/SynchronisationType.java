@@ -1,7 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.sync.common;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 import java.util.Optional;
 
 public enum SynchronisationType {
