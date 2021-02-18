@@ -26,7 +26,7 @@ jobs:
         if: failure()
         run: mvn --batch-mode surefire-report:report-only
       - name: Publish unit test results
-        uses: EnricoMi/publish-unit-test-result-action@v1.6
+        uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1
         with:
           check_name: unit-test-results
           comment_title: Unit Test Results
