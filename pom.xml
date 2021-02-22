@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
     <name>siembol</name>
@@ -35,7 +34,6 @@
         <system>GitHub Issues</system>
         <url>https://github.com/G-Research/siembol/issues</url>
     </issueManagement>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -57,8 +55,8 @@
         <springdoc_openapi_version>1.4.8</springdoc_openapi_version>
         <commons_beanutils_version>1.9.4</commons_beanutils_version>
         <multiline_string_version>0.1.2</multiline_string_version>
+        <http_client_version>4.5.12</http_client_version>
     </properties>
-
     <modules>
         <module>siembol-common</module>
         <module>parsing</module>
@@ -66,10 +64,9 @@
         <module>enriching</module>
         <module>responding</module>
         <module>config-editor</module>
+        <module>deployment/storm-topology-manager</module>
     </modules>
-
     <packaging>pom</packaging>
-
     <distributionManagement>
         <repository>
             <id>ossrh</id>
@@ -81,7 +78,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
     <repositories>
         <repository>
             <id>central</id>
@@ -100,10 +96,8 @@
             </snapshots>
         </repository>
     </repositories>
-
     <dependencies>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

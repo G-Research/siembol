@@ -1,7 +1,9 @@
 package uk.co.gresearch.siembol.common.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import com.github.reinert.jjschema.SchemaIgnore;
 
 import java.io.Serializable;
 import java.util.List;
@@ -96,14 +98,20 @@ public class StormParsingApplicationAttributesDto extends AdminConfigDto impleme
         this.topologyNamePrefix = topologyNamePrefix;
     }
 
+    @SchemaIgnore
+    @JsonIgnore
     public String getTopologyName(String parsingAppName) {
         return String.format(TOPOLOGY_NAME_FORMAT_MSG, topologyNamePrefix, parsingAppName);
     }
 
+    @SchemaIgnore
+    @JsonIgnore
     public String getClientId(String parsingAppName) {
         return String.format(KAFKA_PRINCIPAL_FORMAT_MSG, clientIdPrefix, parsingAppName);
     }
 
+    @SchemaIgnore
+    @JsonIgnore
     public String getGroupId(String parsingAppName) {
         return String.format(KAFKA_PRINCIPAL_FORMAT_MSG, groupIdPrefix, parsingAppName);
     }
