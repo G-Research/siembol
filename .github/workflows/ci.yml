@@ -59,10 +59,10 @@ jobs:
           name: responding-stream
           path: responding/responding-stream/target/responding-stream-*.jar
       - name: Upload storm-topology-manager jar
-          uses: actions/upload-artifact@v2
-          with:
-            name: storm-topology-manager
-            path: deployment/storm-topology-manager/target/storm-topology-manager-*.jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: storm-topology-manager
+          path: deployment/storm-topology-manager/target/storm-topology-manager-*.jar
 
   build-docker-storm:
     runs-on: ubuntu-latest
