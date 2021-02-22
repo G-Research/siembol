@@ -10,6 +10,7 @@
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
         <version>1.73-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <dependencyManagement>
         <dependencies>
