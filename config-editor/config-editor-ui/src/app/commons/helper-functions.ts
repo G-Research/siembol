@@ -27,7 +27,7 @@ export function parseUrl(path: string): UrlInfo {
     let service = paths[0];
     let mode = paths[1] == "admin" ? "admin" : "";
     let configName = url.searchParams.get("configName");
-    let testcaseName = url.searchParams.get("testcaseName");
+    let testCaseName = url.searchParams.get("testCaseName");
     
-    return { service: service, mode: mode, configName: configName, testcaseName: testcaseName };    
+    return { service: service, mode: mode, configName: configName, testCaseName: testCaseName };    
 }

@@ -16,7 +16,7 @@
         "labelsFunc": "const ret = []; if (model.evaluators && model.evaluators.length > 0){for(const e of model.evaluators) {ret.push(e.evaluator_type);} } return ret;",
         "testing": {
             "perConfigTestEnabled": true,
-            "deploymentTestEnabled": true,
+            "deploymentTestEnabled": false,
             "testCaseEnabled": false
         }
     },
@@ -37,7 +37,7 @@
         "labelsFunc": "const ret = ['SourceType:' + model.source_type]; if (model.tags !== undefined) { ret.push(...model.tags.map(t => t.tag_name + ':' + t.tag_value));} return ret;",
         "testing": {
             "perConfigTestEnabled": true,
-            "deploymentTestEnabled": true,
+            "deploymentTestEnabled": false,
             "testCaseEnabled": true
         }
     },
@@ -75,7 +75,7 @@
         "labelsFunc": "const ret = []; if (model.parser_attributes) {ret.push(model.parser_attributes.parser_type);} if (model.parser_extractors && model.parser_extractors.length > 0){for(const p of model.parser_extractors) {ret.push(p.extractor_type)} } return ret;",
         "testing": {
             "perConfigTestEnabled": true,
-            "deploymentTestEnabled": true,
+            "deploymentTestEnabled": false,
             "testCaseEnabled": true
         }
     },

@@ -149,6 +149,6 @@ export interface UrlInfo {
     service?: string,
     mode?: string,
     configName?: string,
-    testcaseName?: string
+    testCaseName?: string
 }
 

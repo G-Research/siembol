@@ -10,7 +10,7 @@
                 *ngFor="let url of history.slice().reverse();">
                   <mat-expansion-panel [expanded]="false" (click)="routeTo(url)" [hideToggle]="true">
                         <mat-expansion-panel-header [matTooltip]="root + url" #panelH  *ngIf="parseUrl(url); let tag" (click)="panelH._toggle()">
-                            <div *ngFor="let key of ['service', 'mode', 'configName', 'testcaseName']">
+                            <div *ngFor="let key of ['service', 'mode', 'configName', 'testCaseName']">
                               <div class="tag-chip" *ngIf="tag[key] != undefined && tag[key] != null && tag[key] != ''">
                                     <div class="tag-text">
                                     {{key | titlecase}}: {{tag[key]}}
