@@ -54,7 +54,7 @@ spec:
         {{ if .Values.tls.enabled -}}
         - name: JAVA_OPTS
           value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
-        {{- end -}}
+        {{ end }}
         - name: GIT_PSWD
           valueFrom:
             secretKeyRef:
@@ -66,7 +66,7 @@ spec:
           mountPath: /etc/ssl/certs/java/cacerts
           subPath: cacerts
           readOnly: true        
-        {{- end -}}
+        {{ end -}}
         - name: {{ .Values.rest.appName }}
           mountPath: /etc/gitconfig
           subPath: gitconfig 
@@ -82,7 +82,7 @@ spec:
       - name: cacerts
         secret:
           secretName: certs
-      {{- end -}}
+      {{- end }}
       - name: {{ .Values.rest.appName }}
         configMap:
           name: {{ .Values.rest.appName }}

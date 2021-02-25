@@ -1,41 +1,37 @@
 {{- if .Values.ui.ingress.enabled -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.ui.serviceName }}
   annotations:
-    ingress.io/ingress.allow-http: "true"
-    ingress.kubernetes.io/ssl-passthrough: "false"
-    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
-    ingress.kubernetes.io/ssl-passthrough-http-port: "80"
-    ingress.kubernetes.io/ssl-redirect: "false"
-    # kubernetes.io/ingress.global-static-ip-name: "siembol-test"
+    cert-manager.io/issuer: ca-issuer
 spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
     - {{ .Values.ui.ingress.hostname }}
+    - {{ .Values.rest.ingress.hostname }}
     secretName: {{ .Values.ui.serviceName }}-tls
-  {{- end -}}
+  {{ end }}
   rules:
-  # - host: 34.117.227.141.xip.io
-  - http:
+  - host: {{ .Values.ui.ingress.hostname }}
+    http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ .Values.ui.serviceName }}
-          servicePort: 8080
-  # - host: {{ .Values.rest.ingress.hostname }}
-  - http:
+          service:
+            name: {{ .Values.ui.serviceName }}
+            port: 
+              number: 8080
+  - host: {{ .Values.rest.ingress.hostname }}
+    http:
       paths:
-      - path: /api
+      - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ .Values.rest.appName }}
-          servicePort: 8081
-  - http:
-      paths:
-      - path: /user
-        backend:
-          serviceName: {{ .Values.rest.appName }}
-          servicePort: 8081
+          service:
+            name: {{ .Values.rest.appName }}
+            port: 
+              number: 8081
 {{- end -}}

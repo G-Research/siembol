@@ -4,7 +4,7 @@
 
 # Enable TLS via certmanager
 tls:
-  enabled: false
+  enabled: true
 
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
@@ -21,8 +21,8 @@ rest:
   mountPath: "/opt/config-editor-rest"
 
   ingress:
-    enabled: false
-    hostname: "REDACTED-FQDN-BACKEND"
+    enabled: true
+    hostname: rest.siembol.local
 
 
 # -----------------------------------------------------------------------------
@@ -40,4 +40,4 @@ ui:
   # Run with an ingress
   ingress:
     enabled: true
-    # hostname: REDACTED-FQDN-UI
+    hostname: ui.siembol.local
