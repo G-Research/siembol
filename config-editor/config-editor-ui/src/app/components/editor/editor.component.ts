@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, Config } from '@app/model';
+import { ConfigData, Config, NAME_REGEX } from '@app/model';
 import { Type } from '@app/model/config-model';
 import { PopupService } from '@app/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -19,6 +19,10 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
     templateUrl: './editor.component.html',
 })
 export class EditorComponent implements OnInit, OnDestroy {
+    titleFormControl = new FormControl('', [
+        Validators.pattern(NAME_REGEX)
+    ]);
+
     public ngUnsubscribe = new Subject();
     public configName: string;
     public configData: ConfigData = {};

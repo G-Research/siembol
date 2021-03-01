@@ -17,7 +17,7 @@
                     </re-generic-editor>
                 </mat-tab>
                 <mat-tab [label]="TESTING_TAB.name" [disabled]="!testingEnabled()">
-                    <re-config-testing>
+                    <re-config-testing [testingType]="testingType">  
                     </re-config-testing>
                 </mat-tab>
                 <mat-tab [label]="TEST_CASE_TAB.name" [disabled]="!testCaseEnabled()">

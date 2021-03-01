@@ -8,7 +8,7 @@ import java.util.List;
 @Attributes(title = "rule", description = "Response rule that should handle response to a siembol alert")
 public class RuleDto {
     @JsonProperty("rule_name")
-    @Attributes(required = true, description = "ResponseRule name that uniquely identifies the rule")
+    @Attributes(required = true, description = "ResponseRule name that uniquely identifies the rule", pattern = "^[a-zA-Z0-9_\\-]+$")
     private String ruleName;
 
     @JsonProperty("rule_author")

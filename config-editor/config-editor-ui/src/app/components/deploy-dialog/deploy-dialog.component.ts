@@ -1,20 +1,20 @@
 import { UiMetadataMap } from '../../model/ui-metadata-map';
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { FormGroup } from '@angular/forms';
 import { AppConfigService } from '@app/config';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, Config, Deployment } from '@app/model';
+import { ConfigData, Deployment } from '@app/model';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
 import { take, catchError } from 'rxjs/operators';
-import { throwError, Observable, of } from 'rxjs';
+import { throwError, of } from 'rxjs';
 import { DiffResults } from 'ngx-text-diff/lib/ngx-text-diff.model';
 import { AppService } from '@app/services/app.service';
-import { DeploymentWrapper } from '@app/model/config-model';
+import { DeploymentWrapper, TestingType } from '@app/model/config-model';
 
 @Component({
     selector: 're-deploy-dialog',
@@ -36,6 +36,7 @@ export class DeployDialogComponent {
     serviceName: string;
     uiMetadata: UiMetadataMap;
     extrasData = {};
+    testingType = TestingType.DEPLOYMENT_TESTING;
 
     testEnabled = false;
     public options: FormlyFormOptions = {formState: {}};
@@ -45,7 +46,8 @@ export class DeployDialogComponent {
 
     private readonly OUTDATED_DEPLOYMENT_MESSAGE = `Old version detected, latest deployment 
         have now been reloaded. Please prepare your deployment again.`;
-    private readonly INVALID_MESSAGE = 'Deployment is invalid.'
+    private readonly INVALID_MESSAGE = 'Deployment is invalid.';
+    private readonly MAX_HEIGHT = '90vh';
 
     constructor(public dialogref: MatDialogRef<DeployDialogComponent>,
         private config: AppConfigService,
@@ -133,8 +135,10 @@ export class DeployDialogComponent {
         this.dialogref.close(deployment);
     }
 
-    onClickTest() {
-        //TODO: add testing deployment
+    onClickTest(templateRef: TemplateRef<any>) {
+        this.dialog.open(templateRef, {
+            maxHeight: this.MAX_HEIGHT
+        })
     }
 
     onClickClose() {

@@ -11,7 +11,7 @@ import java.util.List;
 @Attributes(title = "test case", description = "Test case for testing configurations")
 public class TestCaseDto {
     @JsonProperty("test_case_name")
-    @Attributes(required = true, description = "The name of the test case")
+    @Attributes(required = true, description = "The name of the test case", pattern = "^[a-zA-Z0-9_\\-]+$")
     private String testCaseName;
     @Attributes(required = true, description = "Version of the test case")
     private Integer version;

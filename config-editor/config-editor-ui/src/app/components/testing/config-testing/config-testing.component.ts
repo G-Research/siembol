@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyForm } from '@ngx-formly/core';
-import { ConfigTestResult } from '../../../model/config-model';
+import { ConfigTestResult, TestingType } from '../../../model/config-model';
 import { take } from 'rxjs/operators';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
@@ -23,6 +23,7 @@ export class ConfigTestingComponent implements OnInit {
       rawObjects: {}
     }
   };
+  @Input() testingType: TestingType;
   @ViewChild('formly', { static: true }) formly: FormlyForm;
   public form: FormGroup = new FormGroup({});
   public isInvalid = false;
@@ -44,13 +45,13 @@ export class ConfigTestingComponent implements OnInit {
   runTest() {
     const cleanedTestSpecification = this.editorService.configSchema
       .cleanRawObjects(this.form.value, this.formly.options.formState.rawObjects);
-
-    this.editorService.configStore.testService.testEditedConfig(cleanedTestSpecification).pipe(take(1))
+    
+    this.editorService.configStore.testService.test(cleanedTestSpecification, this.testingType).pipe(take(1))
       .subscribe((r: ConfigTestResult) => {
         this.output = r;
         this.isInvalid = r !== undefined ? false : true;
         this.cd.markForCheck();
       }
-      );
+    )
   }
 }

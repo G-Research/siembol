@@ -5,7 +5,6 @@ export interface BuildInfo {
     appVersion: number;
     buildDate: Date;
     angularVersion: string;
-    siembolCompileTimeVersion: string;
 }
 
 export enum AuthenticationType {

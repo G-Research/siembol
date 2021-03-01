@@ -378,9 +378,16 @@ export class ConfigLoaderService {
     );
   }
   
-  public testDeploymentConfig(
-    testDto: ConfigTestDto
-  ): Observable<ConfigTestResult> {
+  public testDeploymentConfig(deployment: Deployment, testSpecification: any): Observable<ConfigTestResult> {
+    const testDto: ConfigTestDto = {
+      files: [
+        {
+          content: deployment
+        }
+      ],
+      test_specification: testSpecification
+    };
+
     testDto.files[0].content = this.marshalDeploymentFormat(
       testDto.files[0].content
     );
