@@ -28,7 +28,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
 
         .highlighted-overlay {
             position: absolute;
-            top: 5px;
+            top: 6px;
         }
     `]
 })

@@ -65,7 +65,6 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
                 this.testCaseWrapper = testCaseWrapper;
                 this.testCase = testCaseWrapper !== null ? cloneDeep(this.testCaseWrapper.testCase) : {};
 
-                this.form = new FormGroup({});
                 this.options.formState = {
                     mainModel: this.testCase,
                     rawObjects: {},
@@ -101,7 +100,8 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
                             relativeTo: this.activeRoute,
                             queryParams: {
                                 testCaseName: currentTestCase.testCase.test_case_name,
-                                newTestCase: null
+                                newTestCase: null,
+                                cloneTestCase: null
                             },
                             queryParamsHandling: 'merge',
                         }

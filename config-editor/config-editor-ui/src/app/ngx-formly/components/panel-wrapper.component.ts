@@ -8,12 +8,8 @@ import { FieldWrapper } from '@ngx-formly/core';
   template: `
     <mat-card>
       <mat-card-header>
-        <mat-card-title>
-            {{ to.label }}
-        </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-        <p class="description" *ngIf="to.description">{{ to.description }}</p>
         <ng-container #fieldComponent></ng-container>
       </mat-card-content>
     <mat-card>

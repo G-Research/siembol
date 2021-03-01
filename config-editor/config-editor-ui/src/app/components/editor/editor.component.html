@@ -2,7 +2,16 @@
   <mat-card-title>
     <div class="rule-title" *ngIf="config?.isNew; else: showTitle">
       <mat-form-field>
-        <input matInput placeholder="Config name" [(ngModel)]="configName" name="Config name" />
+        <input 
+        matInput 
+        placeholder="Config name" 
+        [(ngModel)]="configName" 
+        name="Config name"
+        [formControl]="titleFormControl"
+        />
+        <mat-error 
+        *ngIf="titleFormControl.hasError('pattern')">Please enter a valid name
+        </mat-error>
       </mat-form-field>
     </div>
     <ng-template #showTitle>
@@ -21,7 +30,7 @@
     </form>
   </mat-card-content>
   <mat-card-actions align="end">
-    <button class="submit-button" mat-raised-button color="accent" type="submit" [disabled]="!form.valid"
+    <button class="submit-button" mat-raised-button color="accent" type="submit" [disabled]="!form.valid || titleFormControl.hasError('pattern')"
       (click)="onSubmit()">
       Submit
     </button>

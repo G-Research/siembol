@@ -9,7 +9,12 @@ import { PopupService } from '@app/popup.service';
   template: `
     <ng-container #fieldComponent></ng-container>
     <ng-template #matSuffix>
-      <button mat-icon-button matToolTipClass="link-tooltip" [matTooltip]="to.link" (click)="onClick()" (contextmenu)="onRightClick()">
+      <button 
+          *ngIf="to.showHelpLink != false" 
+          mat-icon-button matToolTipClass="link-tooltip" 
+          [matTooltip]="to.link" 
+          (click)="onClick()" 
+          (contextmenu)="onRightClick()">
           <mat-icon>{{ suffixIcon }}</mat-icon>
         </button>
     </ng-template>
@@ -33,11 +38,7 @@ export class HelpLinkWrapperComponent extends FieldWrapper implements AfterViewI
     if (this.matSuffix ) {
       setTimeout(() => this.to.suffix = this.matSuffix);
     }
-    if (!this.to.suffixIcon) {
-      this.suffixIcon = "help_outline";
-    } else {
-      this.suffixIcon = this.to.suffixIcon;
-    }
+    this.suffixIcon = this.to.suffixIcon ? this.to.suffixIcon : "help_outline";
   }
     
   onClick() {

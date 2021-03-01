@@ -7,7 +7,11 @@ import { FieldArrayType } from '@ngx-formly/core';
   selector: 'formly-array-type',
   template: `
     <legend *ngIf="to.label">{{ to.label }}</legend>
-    <p class="description" *ngIf="to.description">{{ to.description }}</p>
+    <p class="description" *ngIf="to.description">{{ to.description }}
+        <ng-container matSuffix *ngIf="to.suffix">
+            <ng-container *ngTemplateOutlet="to.suffix"></ng-container>
+        </ng-container>
+    </p>
     <div class="alert alert-danger" role="alert" *ngIf="showError && formControl.errors">
       <formly-validation-message [field]="field"></formly-validation-message>
     </div>
@@ -46,6 +50,8 @@ import { FieldArrayType } from '@ngx-formly/core';
         padding: 0 10px 10px 15px;
         font-size: 0.9em;
         color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        justify-content: space-between;
     }
 
     .row {

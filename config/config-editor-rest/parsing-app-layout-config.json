@@ -10,8 +10,7 @@
     "$..parsing_app_description": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     },
@@ -56,6 +55,19 @@
       "widget": {
         "formlyConfig": {
           "hideExpression": "!model.parse_metadata"
+        }
+      }
+    },
+    "$..routing_field_pattern": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
         }
       }
     }

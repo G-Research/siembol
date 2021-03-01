@@ -3,7 +3,7 @@ import { ConfigStoreState } from "../model/store-state";
 import { ConfigLoaderService } from "./config-loader.service";
 import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from "../model/test-case";
 import { ConfigStoreStateBuilder } from "./config-store-state.builder";
-import { ConfigTestResult } from "../model/config-model";
+import { ConfigTestResult, TestingType } from "../model/config-model";
 import { cloneDeep } from 'lodash';
 
 
@@ -180,6 +180,13 @@ export class TestStoreService {
         return this.configLoaderService.validateTestCase(testCase.testCase);
     }
 
+    test(testSpecification: any, type: TestingType): Observable<ConfigTestResult> {
+        if (type == TestingType.CONFIG_TESTING) {
+            return this.testEditedConfig(testSpecification);
+        }
+        return this.testDeployment(testSpecification);
+    }
+
     testEditedConfig(testSpecification: any): Observable<ConfigTestResult> {
         const config = this.store.getValue().editedConfig;
         if (!config) {
@@ -187,5 +194,10 @@ export class TestStoreService {
         }
 
         return this.configLoaderService.testSingleConfig(config.configData, testSpecification);
+    }
+
+    testDeployment(testSpecification: any): Observable<ConfigTestResult> {
+        const deployment = this.store.getValue().deployment;
+        return this.configLoaderService.testDeploymentConfig(deployment, testSpecification);
     }
 }

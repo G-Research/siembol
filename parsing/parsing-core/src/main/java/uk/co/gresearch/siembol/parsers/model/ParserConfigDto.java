@@ -6,7 +6,7 @@ import java.util.List;
 @Attributes(title = "parser config", description = "Parser specification")
 public class ParserConfigDto {
     @JsonProperty("parser_name")
-    @Attributes(required = true, description = "Name of the parser")
+    @Attributes(required = true, description = "Name of the parser", pattern = "^[a-zA-Z0-9_\\-]+$")
     private String parserName;
 
     @JsonProperty("parser_version")

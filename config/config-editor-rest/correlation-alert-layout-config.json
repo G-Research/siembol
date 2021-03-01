@@ -10,8 +10,7 @@
     "$..rule_description": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     },

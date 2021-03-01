@@ -2,6 +2,8 @@ import { TestCase, TestCaseWrapper, TestCaseEvaluationResult } from './test-case
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from 'rxjs';
 
+export const NAME_REGEX = "^[a-zA-Z0-9_\\-]+$";
+
 export const repoNames  = {
     store_directory_name: "Config Store Folder",
     release_directory_name: "Config Deployment Folder",
@@ -9,6 +11,10 @@ export const repoNames  = {
     admin_config_store_directory_name: "Admin Config Folder"
 }
 
+export enum TestingType {
+    DEPLOYMENT_TESTING = 'deployment_testing',
+    CONFIG_TESTING = 'config_testing'
+}
 
 export enum Type {
     CONFIG_TYPE = 'Config',

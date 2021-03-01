@@ -46,7 +46,11 @@
 </ng-container>
 
 <div mat-dialog-actions class="button-row">
-  <button mat-raised-button color="primary" [disabled]="!testEnabled || !isValid" (click)="onClickTest()">TEST</button>
+  <button mat-raised-button color="primary" [disabled]="!testEnabled || !isValid" (click)="onClickTest(testingDialog)">TEST</button>
   <button mat-raised-button color="primary" [disabled]="!isValid" (click)="onClickDeploy()">DEPLOY</button>
   <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
 </div>
+
+<ng-template #testingDialog>
+  <re-config-testing [testingType]="testingType"></re-config-testing>
+</ng-template>

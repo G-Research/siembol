@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 @Attributes(title = "parsing application", description = "Parser application specification")
 public class ParsingApplicationDto {
     @JsonProperty("parsing_app_name")
-    @Attributes(required = true, description = "The name of the parsing application")
+    @Attributes(required = true, description = "The name of the parsing application", pattern = "^[a-zA-Z0-9_\\-]+$")
     private String parsingApplicationName;
 
     @JsonProperty("parsing_app_version")

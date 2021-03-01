@@ -10,8 +10,7 @@
         "$..rule_description": {
             "widget": {
                 "formlyConfig": {
-                    "type": "textarea",
-                    "wrappers": []
+                    "type": "textarea"
                 }
             }
         },
@@ -19,7 +18,73 @@
             "widget": {
                 "formlyConfig": {
                     "type": "textarea",
-                    "wrappers": []
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    },
+                    "expressionProperties": {
+                        "templateOptions.showHelpLink": "model.matcher_type !== 'IS_IN_SET'"
+                    }
+                }
+            }
+        },
+        "$..oneOf[?(@.title == 'array_markdown_table_formatter')]..including_fields": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    }
+                }
+            }
+        },
+        "$..oneOf[?(@.title == 'array_markdown_table_formatter')]..excluding_fields": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    }
+                }
+            }
+        },
+        "$..oneOf[?(@.title == 'array_reducer')]..properties.including_fields": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    }
+                }
+            }
+        },
+        "$..oneOf[?(@.title == 'array_reducer')]..excluding_fields": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    }
+                }
+            }
+        },
+        "$..oneOf[?(@.title == 'markdown_table_formatter')]..including_fields": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    }
+                }
+            }
+        },
+        "$..oneOf[?(@.title == 'markdown_table_formatter')]..excluding_fields": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": ["form-field", "help-link"],
+                    "templateOptions": {
+                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                    }
                 }
             }
         },

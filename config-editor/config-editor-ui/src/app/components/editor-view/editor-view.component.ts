@@ -11,6 +11,7 @@ import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
+import { TestingType } from '@app/model/config-model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +35,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   schema: JSONSchema7;
   selectedTab = this.NO_TAB;
   previousTab = this.NO_TAB;
+  testingType = TestingType.CONFIG_TESTING;
 
   fields: FormlyFieldConfig[] = [];
 

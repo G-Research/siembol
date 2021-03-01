@@ -165,7 +165,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
       ],
       types: [
         { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
-        { name: 'textarea', component: TextAreaTypeComponent, wrappers: [] },
+        { name: 'textarea', component: TextAreaTypeComponent, wrappers: ['form-field'] },
         { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
         {
           name: 'number',

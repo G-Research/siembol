@@ -7,7 +7,7 @@ import java.util.List;
 @Attributes(title = "rule", description = "Rule for real-time alert matching")
 public class RuleDto {
     @JsonProperty("rule_name")
-    @Attributes(required = true, description = "Rule name that uniquely identifies the rule")
+    @Attributes(required = true, description = "Rule name that uniquely identifies the rule", pattern = "^[a-zA-Z0-9_\\-]+$")
     private String ruleName;
 
     @JsonProperty("rule_author")

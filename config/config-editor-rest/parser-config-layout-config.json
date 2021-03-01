@@ -47,7 +47,14 @@
     "$..parser_extractors..regular_expressions": {
       "widget": {
         "formlyConfig": {
-          "hideExpression": "field.parent.parent.model.extractor_type  !== 'pattern_extractor'"
+          "hideExpression": "field.parent.parent.model.extractor_type  !== 'pattern_extractor'",
+          "wrappers": [
+            "help-link",
+            "panel"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
         }
       }
     },
@@ -243,24 +250,6 @@
         }
       }
     },
-    "$..transformations..fields_filter..including_fields": {
-      "widget": {
-        "formlyConfig": {
-          "wrappers": [
-            "panel"
-          ]
-        }
-      }
-    },
-    "$..transformations..fields_filter..excluding_fields": {
-      "widget": {
-        "formlyConfig": {
-          "wrappers": [
-            "panel"
-          ]
-        }
-      }
-    },
     "$..transformations..string_replace_target": {
       "widget": {
         "formlyConfig": {
@@ -300,14 +289,101 @@
           "hideExpression": "!(field.parent.parent.model.transformation_type === 'field_name_change_case')"
         }
       }
+    },
+    "$..attributes..time_formats": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ],
+          "hideExpression": "!(field.parent.parent.model.post_processing_functions && field.parent.parent.model.post_processing_functions.includes('format_timestamp'))"
+        }
+      }
+    },
+    "$..attributes..time_format": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html"
+          }
+        }
+      }
+    },
+    "$..attributes..validation_regex": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
+        }
+      }
+    },
+    "$..attributes..patterns..pattern": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
+        }
+      }
+    },
+    "$..transformations..including_fields": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "help-link",
+            "panel"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
+        }
+      }
+    },
+    "$..transformations..excluding_fields": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
+        }
+      }
+    },
+    "$..transformations..message_filter..pattern": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "form-field",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
+        }
+      }
     }
   },
   "test_layout": {
     "$..properties.log": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     }

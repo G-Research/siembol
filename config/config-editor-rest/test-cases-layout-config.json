@@ -31,8 +31,7 @@
     "properties.description": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     },
@@ -48,24 +47,21 @@
     "$..json_path": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     },
     "$..expected_pattern": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     },
     "$..assertions..properties.description": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea",
-          "wrappers": []
+          "type": "textarea"
         }
       }
     }
