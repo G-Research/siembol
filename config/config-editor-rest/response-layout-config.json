@@ -31,7 +31,7 @@
         "$..oneOf[?(@.title == 'array_markdown_table_formatter')]..including_fields": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": ["form-field", "help-link"],
+                    "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
                     }
@@ -41,7 +41,7 @@
         "$..oneOf[?(@.title == 'array_markdown_table_formatter')]..excluding_fields": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": ["form-field", "help-link"],
+                    "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
                     }
@@ -51,7 +51,7 @@
         "$..oneOf[?(@.title == 'array_reducer')]..properties.including_fields": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": ["form-field", "help-link"],
+                    "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
                     }
@@ -61,7 +61,7 @@
         "$..oneOf[?(@.title == 'array_reducer')]..excluding_fields": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": ["form-field", "help-link"],
+                    "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
                     }
@@ -71,7 +71,7 @@
         "$..oneOf[?(@.title == 'markdown_table_formatter')]..including_fields": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": ["form-field", "help-link"],
+                    "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
                     }
@@ -81,7 +81,7 @@
         "$..oneOf[?(@.title == 'markdown_table_formatter')]..excluding_fields": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": ["form-field", "help-link"],
+                    "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
                     }
