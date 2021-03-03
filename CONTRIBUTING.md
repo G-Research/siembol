@@ -27,7 +27,7 @@ If you want to brainstorm a potential new feature, hop on over to our Gitter roo
 
 ## Gitter
 
-Sometimes, it's good to hash things out in real time.  We have a Gitter community where you can chat with other siembol developers and get feedback and support (even if it's just moral support!).
+Sometimes, it's good to hash things out in real time.  We have a Gitter community where you can chat with other Siembol developers and get feedback and support (even if it's just moral support!).
 
 To join our Gitter community, use this link:
 
@@ -35,6 +35,6 @@ To join our Gitter community, use this link:
 
 ## License
 
-siembol is licensed with the Apache 2.0 license.  You can find it published here:
+Siembol is licensed with the Apache 2.0 license.  You can find it published here:
 
 * [https://github.com/G-Research/siembol/blob/master/LICENSE](https://github.com/G-Research/siembol/blob/master/LICENSE)
