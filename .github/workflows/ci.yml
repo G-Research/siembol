@@ -139,6 +139,10 @@ jobs:
             mkdir deployment/docker/config-editor-rest/ui-config
             cp config/config-editor-rest/*.json deployment/docker/config-editor-rest/ui-config/
           fi
+          if [ "${{ matrix.component }}" == "storm-topology-manager" ]
+          then
+            cp config/storm-topology-manager/storm-submit.yaml deployment/docker/${{ matrix.component }}/
+          fi
       - name: Get component info
         id: info
         run: |
