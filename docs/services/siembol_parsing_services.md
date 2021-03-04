@@ -3,9 +3,9 @@
 Siembol provides parsing services for normalising logs into messages with one layer of key/value pairs. Clean normalised data are very important for further processing such as alerting.
 ### Key concepts
 - `Parser` is a siembol configuration that defines how to normalise a log 
-- `Parsing app` is a stream application (storm topology) that combine one or multiple parsers and reads a log from kafka topics and produces normalised log to output kafka topics
+- `Parsing app` is a stream application (storm topology) that combines one or multiple parsers and reads a log from kafka topics and produces normalised log to output kafka topics
 ### Common fields
-These fields are included in all siembol messages after parsing:
+These common fields are included in all siembol messages after parsing:
 - `original_string` - The original log before normalisation
 - `timestamp` - Timestamp extracted form the log in milliseconds since the UNIX epoch
 - `source_type` - Data source - a siembol parser that was used for parsing the log 
@@ -18,19 +18,19 @@ The configuration defines how the log is normalised
 - `parser_description`- Description of the parser
 ### Parser Attributes
 - `parser_type` - The type of the parser
-    - Netflow v9 parser - parses netflow payload and produces list of normalised messages. Netflow v9 parsing is based on templates and the parser is learning templates from receiving messages for parsing.
+    - Netflow v9 parser - parses netflow payload and produces list of normalised messages. Netflow v9 parsing is based on templates and the parser is learning templates during parsing messages.
     - Generic parser - Creates two fields
         - `original_string` - The log copied from the input
-        - `timestamp` - Current epoch time of parsing in  milliseconds. This timestamp can be overridden in further parsing.
+        - `timestamp` - Current epoch time of parsing in  milliseconds. This timestamp can be overwriten in further parsing
     - Syslog Parser
-        - `syslog_version` -  Expected version of syslog message - `RFC_3164`, `RFC_5424`, `RFC_3164, RFC_5424`
+        - `syslog_version` -  Expected version of the syslog message - `RFC_3164`, `RFC_5424`, `RFC_3164, RFC_5424`
         - `merge_sd_elements` - Merge SD elements of syslog message into one parsed object
-        - `time_formats` - Time formats used for time formatting. If not provided syslog default time formats are used
+        - `time_formats` - Time formats used for time formatting. Syslog default time formats are used if not provided 
         - `timezone` - Time zone used in syslog default time formats
 ### Parser Exctractors
-Extractors are used for further parsing and extracting and normalising parts of the message. 
+Extractors are used for further extracting and normalising parts of the message. 
 #### Overview
-An extractor reads input field and produces set of key value pairs extacted from the field. Each extractor is called in the chain and its produced messages are merged into the parsed message after finishing extraction. This way next extractor in the chain can use outputs of previous extractors. If the input field does not exist the extractor execution is skipped and the next extractor in the chain is called. A preprocessing function of the extractor is called before the extraction in order to normalise or clean input field. Post-processing functions are called on extractor outputs in order to normalise output messages of the extractor.
+An extractor reads input field and produces the set of key value pairs extacted from the field. Each extractor is called in the chain and its produced messages are merged into the parsed message after finishing the extraction. This way next extractor in the chain can use outputs of the previous extractors. If the input field of the extractor is not part of the parsed message then the extractor execution is skipped and the next extractor in the chain is called. A preprocessing function of the extractor is called before the extraction in order to normalise and clean input field. Post-processing functions are called on extractor outputs in order to normalise output messages of the extractor.
 #### Common extractor attributes
 - `name` - The name of the extractor
 - `field` - The field on which the extractor is applied
@@ -43,13 +43,13 @@ An extractor reads input field and produces set of key value pairs extacted from
         - `validation_regex` - validation regular expression for checking format of the timestamp, if no match of the pattern then next formatter from the list is tried to apply
         - `time_format` using syntax from `https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html`
         - `timezone` - Time zone used by the time formatter
-    - `convert_to_string` - converts all extracted fields as strings except fields from the list `conversion_exclusions`
+    - `convert_to_string` - Convert all extracted fields as strings except fields from the list `conversion_exclusions`
 - `extractor_type` - The extractor type - one from `pattern_extractor`, `key_value_extractor`, `csv_extractor`, `json_extractor` 
 - flags
     - `should_overwrite_fields` - Extractor should overwrite an existing field with the same name, otherwise create new field with prefix `duplicate`
     - `should_remove_field` - Extractor should remove input field after extraction
     - `remove_quotes` - Extractor removes quotes in the extracted values
-    - `skip_empty_values` - Extractor will remove empty strings after extraction
+    - `skip_empty_values` - Extractor will remove empty strings after the extraction
     - `thrown_exception_on_error`- Extractor throws an exception on error (recommended for testing), otherwise it skips the further processing
 #### Pattern extractor
 Extracting key value pairs by matching a list of regular expressions with named-capturing groups, where names  of the groups are used for naming fields. Siembol supports syntax from `https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html` except allowing to to use underscores in the names of captured groups
@@ -57,7 +57,7 @@ Extracting key value pairs by matching a list of regular expressions with named-
 - `dot_all_regex_flag` - The regular expression `.` matches any character - including a line terminator
 - `should_match_pattern` - At least one pattern should match otherwise the extractor throws an exception
 #### Key value Extractor
-Key value extractor extracts values in the form `key1=value1 ... keyN=valueN`
+Key value extractor extracts values from the field which has the form `key1=value1 ... keyN=valueN`
  - `word_delimiter`- Word delimiter used for splitting words, by dafault ` `
  - `key_value_delimiter`- Key-value delimiter used for splitting key value pairs, by default `=`;
  - `escaped_character`- Escaped character for escaping quotes, delimiters, brackets, by default `\\`;
@@ -73,7 +73,7 @@ Json extractor extracts valid json message and unfold json into flatten json key
 - `nested_separator` - The separator added during unfolding nested json objects
 ### Parser Transformations
 #### Overview
-All key value pairs generated by parser and extractor can be modified by a chain of transformations. This stage allows the parser to clean data by renaming fields, removing some fields or even filtering the whole message. 
+All key value pairs generated by parser and extractor can be modified by a chain of transformations. This stage allows the parser to clean data by renaming fields, removing  fields or even to filter the whole message. 
 #### 
 #### field name string replace
 Replace the first occurrence of `string_replace_target` in field names by `string_replace_replacement`
@@ -115,8 +115,8 @@ Parsers are integrated in a stream application (storm topology) that combines on
     - `parse_metadata` - Parsing json metadata from input key records using `metadata_prefix` added to metadata field names, by default `metadata_`
 - `parsing_settings` - Parsing settings depends on parsing application type
 ### Single Parser
-The application integrates single parser
--  `parser_name` - The name of the parser from parser configurations
+The application integrates single parser only.
+- `parser_name` - The name of the parser from parser configurations
 - `output_topic`- The kafka topic for publishing parsed messages
 ### Router parsing
 The application integrates multiple parsers. First, the router parser parses the input message and after its processing  the next parser is selected from the list of parsers based on pattern matching of the routing field.
