@@ -52,44 +52,44 @@ public class KubernetesProviderImpl implements KubernetesProvider {
     public void createOrReplaceJob(StormTopologyDto attr) {
         String template = makeJobYaml(stormSubmitJobTemplate, attr, namespace, stormNimbusServers);
         InputStream job = new ByteArrayInputStream(template.getBytes(UTF_8));
-        LOG.info("Launching job: {}", attr.getTopologyName());
+        LOG.info("Launching topology with job name: {}, {}", attr.getTopologyName(), attr.getTopologyId());
 
-        if(jobIsActive(attr.getTopologyName())){
+        if(jobIsActive(attr.getTopologyId())){
             LOG.warn("Trying to submit a job that is still active in K8s. This is likely due to multiple calls to " +
                      "synchronise within a short time period");
             return;
-        } else if (jobExistsInCluster(attr.getTopologyName())) {
+        } else if (jobExistsInCluster(attr.getTopologyId())) {
             // NOTE: If job exists and is replaced with the same config, it wont trigger a CRUD event and launch
-            LOG.info("Deleting existing job {} in K8s", attr.getTopologyName());
-            client.batch().jobs().inNamespace(namespace).withName(attr.getTopologyName()).delete();
+            LOG.info("Deleting existing job {} in K8s", attr.getTopologyId());
+            client.batch().jobs().inNamespace(namespace).withName(attr.getTopologyId()).delete();
         }
 
         LOG.debug("Job template: {}", template);
         client.load(job).inNamespace(namespace).createOrReplace();
     }
 
-    private boolean jobExistsInCluster(String topologyName) {
+    private boolean jobExistsInCluster(String topologyId) {
         return Optional.ofNullable(
                 client.batch()
                     .jobs()
                     .inNamespace(namespace)
-                    .withName(topologyName)
+                    .withName(topologyId)
                     .get()
         ).isPresent();
     }
 
-    private boolean jobIsActive(String topologyName) {
+    private boolean jobIsActive(String topologyId) {
         Optional<Job> activeJobs = Optional.ofNullable(client.batch()
                 .jobs()
                 .inNamespace(namespace)
-                .withName(topologyName)
+                .withName(topologyId)
                 .get());
 
         return activeJobs.isPresent() && activeJobs.get().getStatus().getActive() > 0;
     }
 
     private static String makeJobYaml(String template, StormTopologyDto attr, String namespace, String nimbus) {
-        template = template.replaceAll(NAME_PLACEHOLDER, attr.getTopologyName());
+        template = template.replaceAll(NAME_PLACEHOLDER, attr.getTopologyId());
         template = template.replaceAll(NAMESPACE_PLACEHOLDER, namespace);
         template = template.replaceAll(NIMBUS_PLACEHOLDER, nimbus);
         template = template.replaceAll(IMAGE_PLACEHOLDER, attr.getImage());
