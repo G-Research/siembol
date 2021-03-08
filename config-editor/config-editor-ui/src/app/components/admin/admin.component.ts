@@ -46,7 +46,8 @@ export class AdminComponent implements OnInit, OnDestroy {
             this.configData = this.editorService.adminSchema.wrapConfig(config.configData);
             this.editorService.adminSchema.wrapAdminConfig(this.configData);
             this.options.formState = {
-                mainModel: this.configData
+                mainModel: this.configData,
+                rawObjects: {},
             }
         });
     }

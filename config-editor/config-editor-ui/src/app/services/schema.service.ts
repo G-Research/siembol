@@ -14,8 +14,8 @@ export class SchemaService {
     constructor(protected uiMetadata: UiMetadataMap, protected user: string, protected originalSchema: JSONSchema7) { }
     
     public wrapConfig(obj: object): object {
-        const ret = cloneDeep(obj);
-        let config = this.wrapOptionalsInArray(ret);
+        let ret = cloneDeep(obj);
+        this.wrapOptionalsInArray(ret);
         if (this.unionPath && Object.keys(ret).length !== 0) {
             this.wrapUnionConfig(ret, this.unionPath);
         }
@@ -142,8 +142,6 @@ export class SchemaService {
         for (const optional of this.optionalObjects) {
             this.findAndWrap(obj, optional);
         }
-
-        return obj;
     }
 
     private findAndWrap(obj: any, optionalKey: string) {
