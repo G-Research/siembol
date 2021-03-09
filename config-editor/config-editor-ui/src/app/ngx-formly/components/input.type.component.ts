@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MatInput } from '@angular/material/input';
 import { FieldType } from '@ngx-formly/material/form-field';
 
@@ -9,7 +9,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
     <input
       matInput
       spellcheck="false"
-      [class.hide-text]="true"
+      [class.hide-text]="false"
       [name]="to.title"
       [id]="id"
       [readonly]="to.readonly"
@@ -19,7 +19,6 @@ import { FieldType } from '@ngx-formly/material/form-field';
       [formlyAttributes]="field"
       [tabindex]="to.tabindex || 0"
       [placeholder]="to.placeholder">
-      <div class="highlighted-overlay" [innerHtml]="value | highlightVariables"></div>
   `,
     styles: [`
         .hide-text {
@@ -32,7 +31,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
         }
     `]
 })
-export class InputTypeComponent extends FieldType implements OnInit {
+export class InputTypeComponent extends FieldType {
   @ViewChild(MatInput, { static: true }) formFieldControl!: MatInput;
 
   get type() {

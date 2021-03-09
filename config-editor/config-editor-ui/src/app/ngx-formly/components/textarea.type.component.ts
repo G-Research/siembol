@@ -1,10 +1,6 @@
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, ViewChild } from '@angular/core';
 import { MatInput } from '@angular/material/input';
 import { FieldType } from '@ngx-formly/material/form-field';
-import { Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -59,8 +55,13 @@ import { take } from 'rxjs/operators';
         left: 0;
         z-index: 10; 
     }
+
+    ::ng-deep .mat-input-element {
+        position: relative;
+        z-index: 20;
+    }
   `],
 })
-export class TextAreaTypeComponent extends FieldType implements AfterViewInit {
-  @ViewChild(MatInput, {static: true}) formFieldControl!: MatInput;
+export class TextAreaTypeComponent extends FieldType {
+  @ViewChild(MatInput, { static: true }) formFieldControl!: MatInput;
 }
