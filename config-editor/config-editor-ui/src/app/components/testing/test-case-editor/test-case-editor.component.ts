@@ -119,8 +119,8 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     private getTestCaseWrapper(): TestCaseWrapper {
         const ret = cloneDeep(this.testCaseWrapper) as TestCaseWrapper;
         ret.testCase = copyHiddenTestCaseFields(cloneDeep(this.form.value), this.testCase);
-        ret.testCase.test_specification = this.editorService.configSchema
-            .cleanRawObjects(ret.testCase.test_specification, this.formly.options.formState.rawObjects);
+        ret.testCase = this.editorService.configSchema
+            .cleanRawObjects(ret.testCase, this.formly.options.formState.rawObjects);
         return ret;
     }
 }

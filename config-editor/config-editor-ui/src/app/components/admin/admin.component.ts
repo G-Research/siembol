@@ -60,7 +60,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     updateConfigInStore() {
         const configToClean = cloneDeep(this.config) as AdminConfig;
         configToClean.configData = cloneDeep(this.form.value);
-        const configToUpdate = this.editorService.adminSchema.unwrapAdminConfig(configToClean);
+        configToClean.configData  = this.editorService.adminSchema.cleanRawObjects(configToClean.configData, this.options.formState.rawObjects);
+        let configToUpdate = this.editorService.adminSchema.unwrapAdminConfig(configToClean);
+        
         this.editorService.configStore.updateAdmin(configToUpdate);
     }
 

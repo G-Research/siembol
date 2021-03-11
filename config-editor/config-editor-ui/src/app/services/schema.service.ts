@@ -1,6 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { UiMetadataMap } from '@model/ui-metadata-map';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, set } from 'lodash';
 import { ConfigData } from '@app/model';
 import { JSONSchema7 } from 'json-schema';
 
@@ -204,12 +204,12 @@ export class SchemaService {
         return value === null ? undefined : value;
     }
 
-    public cleanRawObjects(objectToClean: any, rawObjects: any): any {
-        const current = cloneDeep(objectToClean);
+    public cleanRawObjects( config: any, rawObjects: any): any {
         for (const element in rawObjects) {
-            current[element] = rawObjects[element];
+            let paths = element.split('.');
+            set(config, paths, JSON.parse(JSON.stringify(rawObjects[element], this.replacer)));
         }
-        return JSON.parse(JSON.stringify(current, this.replacer));
+        return config;
     }
 
     public formatTitlesInSchema(obj: any, propKey?: string): any {

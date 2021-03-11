@@ -80,7 +80,8 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
                     this.formControl.setErrors(null);
                     this.valid = true;
                     this.tree = parsed;
-                    this.options.formState['rawObjects'][key] = parsed;
+                    let path = this.getFieldPath(key);
+                    this.options.formState['rawObjects'][path] = parsed;
                     this.changeDetector.markForCheck();
                 }
             } catch (ex) {
@@ -94,5 +95,16 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
 
     triggerResize() {
         this.ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
+    }
+
+    private getFieldPath(key: string | number): string {
+        let field = this.field;
+        let keys = [];
+        keys.push(key);
+        while (field.parent.key) {
+            keys.push(field.parent.key);
+            field = field.parent;
+        }
+        return keys.reverse().join(".");
     }
 }
