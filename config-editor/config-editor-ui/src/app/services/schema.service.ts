@@ -207,9 +207,9 @@ export class SchemaService {
     public cleanRawObjects( config: any, rawObjects: any): any {
         for (const element in rawObjects) {
             let paths = element.split('.');
-            set(config, paths, JSON.parse(JSON.stringify(rawObjects[element], this.replacer)));
+            set(config, paths, rawObjects[element]);
         }
-        return config;
+        return JSON.parse(JSON.stringify(config, this.replacer));
     }
 
     public formatTitlesInSchema(obj: any, propKey?: string): any {
