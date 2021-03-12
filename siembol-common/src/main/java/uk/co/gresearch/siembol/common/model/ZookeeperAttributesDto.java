@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Attributes(title = "zookeeper attributes", description = "Zookeeper attributes for node cache")
 public class ZookeeperAttributesDto implements Serializable {
     @JsonProperty("zk.url")
-    @Attributes(required = true, description = "Zookeeper servers url. Multiple servers are separated by coma")
+    @Attributes(required = true, description = "Zookeeper servers url. Multiple servers are separated by comma")
     private String zkUrl;
     @Attributes(required = true, description = "Path to a zookeeper node")
     @JsonProperty("zk.path")

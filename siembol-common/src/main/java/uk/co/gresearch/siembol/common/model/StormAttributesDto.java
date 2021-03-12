@@ -12,7 +12,7 @@ import java.util.List;
 @Attributes(title = "storm attributes", description = "Attributes for storm configuration")
 public class StormAttributesDto {
     @JsonProperty("bootstrap.servers")
-    @Attributes(required = true, description = "Kafka brokers servers url. Multiple servers are separated by coma")
+    @Attributes(required = true, description = "Kafka brokers servers url. Multiple servers are separated by comma")
     private String bootstrapServers;
     @SchemaIgnore
     @JsonIgnore
