@@ -81,7 +81,7 @@ spec:
       {{ if .Values.tls.enabled -}}
       - name: cacerts
         secret:
-          secretName: certs
+          secretName: cacerts
       {{- end }}
       - name: {{ .Values.rest.appName }}
         configMap:

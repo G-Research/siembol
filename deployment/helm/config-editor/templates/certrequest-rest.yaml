@@ -1,15 +1,15 @@
-{{- if .Values.tls.enabled -}}
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: Certificate
-metadata:
-  name: {{ .Values.rest.appName }}
-spec:
-  secretName: {{ .Values.rest.appName }}-tls
-  issuerRef:
-    name: k8s-cluster-issuer
-    kind: ClusterIssuer
-  commonName: {{ .Values.rest.ingress.hostname }}
-  dnsNames:
-  - {{ .Values.rest.ingress.hostname }}
-  - {{ .Values.rest.appName}}.REDACTED-CLUSTER
-{{- end -}}
+# {{- if .Values.tls.enabled -}}
+# apiVersion: certmanager.k8s.io/v1alpha1
+# kind: Certificate
+# metadata:
+#   name: {{ .Values.rest.appName }}
+# spec:
+#   secretName: {{ .Values.rest.appName }}-tls
+#   issuerRef:
+#     name: k8s-cluster-issuer
+#     kind: ClusterIssuer
+#   commonName: {{ .Values.rest.ingress.hostname }}
+#   dnsNames:
+#   - {{ .Values.rest.ingress.hostname }}
+#   - {{ .Values.rest.appName}}.REDACTED-CLUSTER
+# {{- end -}}
