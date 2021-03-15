@@ -62,6 +62,7 @@ public class GetParsingAppStormTopologyAction implements SynchronisationAction {
                 //NOTE: we replace the main admin config attributes for an overridden application
                 //THe reason is not to change attributes for storm topologies that are not related to the config change
                 currentAdminConfig.setOverriddenApplications(null);
+                currentAdminConfig.setConfigVersion(null);
                 for (OverriddenApplicationAttributesDto overriddenApplication: adminConfig.getOverriddenApplications()) {
                     if (overriddenApplication.getApplicationName().equals(application.getParsingApplicationName())) {
                         currentAdminConfig.setStormAttributes(

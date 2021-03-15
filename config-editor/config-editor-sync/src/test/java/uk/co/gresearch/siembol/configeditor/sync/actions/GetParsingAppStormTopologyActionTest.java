@@ -176,12 +176,17 @@ public class GetParsingAppStormTopologyActionTest {
         Assert.assertNotNull(topologyPublic.getTopologyId());
         Assert.assertEquals(2, topologySecret.getAttributes().size());
         Assert.assertEquals(2, topologyPublic.getAttributes().size());
-        StormParsingApplicationAttributesDto adminConfigSecret = ADMIN_CONFIG_READER.readValue(
-                new String(Base64.getDecoder().decode(topologySecret.getAttributes().get(0))));
-        StormParsingApplicationAttributesDto adminConfigPublic = ADMIN_CONFIG_READER.readValue(
-                new String(Base64.getDecoder().decode(topologyPublic.getAttributes().get(0))));
-        Assert.assertNull(adminConfigSecret.getOverriddenApplications());
-        Assert.assertNull(adminConfigPublic.getOverriddenApplications());
+
+        String adminConfigSecretStr = new String(Base64.getDecoder().decode(topologySecret.getAttributes().get(0)));
+        StormParsingApplicationAttributesDto adminConfigSecret = ADMIN_CONFIG_READER.readValue(adminConfigSecretStr);
+
+        String adminConfigPublicStr = new String(Base64.getDecoder().decode(topologyPublic.getAttributes().get(0)));
+        StormParsingApplicationAttributesDto adminConfigPublic = ADMIN_CONFIG_READER.readValue(adminConfigPublicStr);
+
+        Assert.assertFalse(adminConfigSecretStr.contains("overridden.applications"));
+        Assert.assertFalse(adminConfigSecretStr.contains("config_version"));
+        Assert.assertFalse(adminConfigPublicStr.contains("overridden.applications"));
+        Assert.assertFalse(adminConfigPublicStr.contains("config_version"));
 
         Assert.assertEquals(1, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
         Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
@@ -221,5 +226,4 @@ public class GetParsingAppStormTopologyActionTest {
         ConfigEditorResult result = getStormTopologyAction.execute(context);
         Assert.assertEquals(ERROR, result.getStatusCode());
     }
-
 }
