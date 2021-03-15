@@ -69,13 +69,6 @@
         }
       }
     },
-    "$..['alerts.engine.clean.interval.sec']": {
-      "widget": {
-        "formlyConfig": {
-          "hideExpression": "true"
-        }
-      }
-    },
     "$..['alerts.engine']": {
       "enum": ["siembol_correlation_alerts"]
     },
