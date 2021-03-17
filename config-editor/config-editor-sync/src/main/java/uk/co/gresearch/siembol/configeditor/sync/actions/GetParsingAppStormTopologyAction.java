@@ -34,7 +34,10 @@ public class GetParsingAppStormTopologyAction implements SynchronisationAction {
             .writerFor(ParsingApplicationDto.class);
     private static final String MISSING_ATTRIBUTES_MSG = "Missing admin config and release for the service: %s";
     private static final String WRONG_CONFIG_MSG = "Exception during json processing in the service {}, exception {}";
+    private static final String SKIPPING_RELEASING_TOPOLOGY =
+            "Skipping releasing topology for the service {} since it has init admin config or release";
     private final ConfigServiceHelper serviceHelper;
+
     public GetParsingAppStormTopologyAction(ConfigServiceHelper serviceHelper) {
         this.serviceHelper = serviceHelper;
     }
@@ -45,6 +48,12 @@ public class GetParsingAppStormTopologyAction implements SynchronisationAction {
             String msg = String.format(MISSING_ATTRIBUTES_MSG, serviceHelper.getName());
             LOGGER.error(msg);
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, msg);
+        }
+
+        if (serviceHelper.isInitAdminConfig(context.getAdminConfig())
+                || serviceHelper.isInitRelease(context.getConfigRelease())) {
+            LOGGER.warn(SKIPPING_RELEASING_TOPOLOGY, serviceHelper.getName());
+            return ConfigEditorResult.fromServiceContext(context);
         }
 
         final String adminConfigStr = context.getAdminConfig();

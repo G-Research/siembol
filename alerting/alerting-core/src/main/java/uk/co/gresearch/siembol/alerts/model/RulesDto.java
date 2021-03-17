@@ -17,7 +17,7 @@ public class RulesDto {
     }
 
     @JsonProperty("rules_version")
-    @Attributes(required = true, description = "The version of the rules")
+    @Attributes(required = true, description = "The version of the rules", minimum = 0)
     Integer rulesVersion;
 
     @JsonProperty("tags")

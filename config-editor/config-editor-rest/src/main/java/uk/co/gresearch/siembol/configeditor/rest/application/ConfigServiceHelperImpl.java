@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.ServiceType;
 import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -22,6 +23,7 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
     private static final String MISSING_ZOOKEEPER_ATTRIBUTES = "Missing release zookeeper attributes in service %s";
     private static final String MISSING_TOPOLOGY_ATTRIBUTES = "Missing topology-image in service %s properties";
     private static final String ZOOKEEPER_CONNECTOR_ERROR = "Problem during initialising zookeeper connector for {}";
+    private static final String INIT_RELEASE_ITEM = "{}";
     private static final String RELEASE_ERROR_MSG =
             "Error during getting release item for the service: {} message: {}, exception: {}";
     private static final String VALIDATION_ERROR_MSG =
@@ -85,7 +87,7 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
         return aggregatorService.getType();
     }
 
-    private Optional<String> fromReleaseResult(ConfigEditorResult result) {
+    private Optional<String> fromReleaseResult(ConfigEditorResult result, ConfigInfoType type) {
         if (result.getStatusCode() != ConfigEditorResult.StatusCode.OK) {
             LOGGER.error(RELEASE_ERROR_MSG,
                     getName(),
@@ -93,12 +95,19 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
                     result.getAttributes().getException());
             return Optional.empty();
         }
+
+        int version = result.getAttributes().getReleaseVersion(type);
+        if (configInfoProvider.isInitReleaseVersion(version)) {
+            return Optional.of(INIT_RELEASE_ITEM);
+        }
+
         return Optional.of(result.getAttributes().getFiles().get(0).getContent());
     }
 
     @Override
     public Optional<String> getConfigsRelease() {
-        return fromReleaseResult(aggregatorService.getConfigStore().getConfigsRelease());
+        return fromReleaseResult(aggregatorService.getConfigStore().getConfigsRelease(),
+                configInfoProvider.getConfigInfoType());
     }
 
     @Override
@@ -115,22 +124,22 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
             return false;
         }
         return true;
-
     }
 
     @Override
     public boolean validateConfigurations(String release) {
-        return fromValidationResult(aggregatorService.getConfigSchemaService().validateConfigurations(release));
+        return isInitRelease(release) || fromValidationResult(
+                aggregatorService.getConfigSchemaService().validateConfigurations(release));
     }
 
     @Override
     public Optional<String> getAdminConfig() {
-        return fromReleaseResult(aggregatorService.getConfigStore().getAdminConfig());
+        return fromReleaseResult(aggregatorService.getConfigStore().getAdminConfig(), ConfigInfoType.ADMIN_CONFIG);
     }
 
     @Override
     public boolean validateAdminConfiguration(String adminConfiguration) {
-        return fromValidationResult(
+        return isInitAdminConfig(adminConfiguration) || fromValidationResult(
                 aggregatorService.getConfigSchemaService().validateAdminConfiguration(adminConfiguration));
     }
 
@@ -165,6 +174,16 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
     @Override
     public boolean isAdminConfigSupported() {
         return aggregatorService.supportsAdminConfiguration();
+    }
+
+    @Override
+    public boolean isInitAdminConfig(String adminConfig) {
+        return INIT_RELEASE_ITEM.equals(adminConfig);
+    }
+
+    @Override
+    public boolean isInitRelease(String release) {
+        return INIT_RELEASE_ITEM.equals(release);
     }
 
     @Override

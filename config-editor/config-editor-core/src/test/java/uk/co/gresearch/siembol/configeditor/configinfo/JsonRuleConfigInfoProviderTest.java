@@ -192,17 +192,27 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(version, 1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rulesVersionTestMissingFile() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("a.json", release, ConfigEditorFile.ContentType.RAW_JSON_STRING));
         int version = infoProvider.getReleaseVersion(files);
+        Assert.assertEquals(0, version);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rulesVersionMissingVersion() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("rules.json", "{}", ConfigEditorFile.ContentType.RAW_JSON_STRING));
         int version = infoProvider.getReleaseVersion(files);
+        Assert.assertEquals(0, version);
+    }
+
+    @Test
+    public void rulesVersionInvalidJson() {
+        List<ConfigEditorFile> files = new ArrayList<>();
+        files.add(new ConfigEditorFile("rules.json", "INVALID", ConfigEditorFile.ContentType.RAW_JSON_STRING));
+        int version = infoProvider.getReleaseVersion(files);
+        Assert.assertEquals(0, version);
     }
 }

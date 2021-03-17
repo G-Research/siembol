@@ -1,10 +1,11 @@
 package uk.co.gresearch.siembol.common.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StormTopologiesDto {
     private Long timestamp;
-    private List<StormTopologyDto> topologies;
+    private List<StormTopologyDto> topologies = new ArrayList<>();
 
     public List<StormTopologyDto> getTopologies() {
         return topologies;

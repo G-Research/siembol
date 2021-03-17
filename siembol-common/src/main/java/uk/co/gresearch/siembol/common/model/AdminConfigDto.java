@@ -6,8 +6,8 @@ import com.github.reinert.jjschema.Attributes;
 @Attributes(title = "admin config", description = "Generic Attributes for admin configuration")
 public class AdminConfigDto {
     @JsonProperty("config_version")
-    @Attributes(required = true, description = "The version of the admin configuration", minimum = 1)
-    private Integer configVersion = 1;
+    @Attributes(required = true, description = "The version of the admin configuration", minimum = 0)
+    private Integer configVersion = 0;
 
     public Integer getConfigVersion() {
         return configVersion;

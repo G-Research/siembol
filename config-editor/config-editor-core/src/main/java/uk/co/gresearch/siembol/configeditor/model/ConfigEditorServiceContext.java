@@ -8,7 +8,6 @@ import java.util.Optional;
 public class ConfigEditorServiceContext {
     private String serviceName;
     private String configRelease;
-    private Integer adminConfigVersion;
     private String adminConfig;
     private Optional<List<StormTopologyDto>> stormTopologies = Optional.empty();
 
@@ -18,14 +17,6 @@ public class ConfigEditorServiceContext {
 
     public void setConfigRelease(String configRelease) {
         this.configRelease = configRelease;
-    }
-
-    public Integer getAdminConfigVersion() {
-        return adminConfigVersion;
-    }
-
-    public void setAdminConfigVersion(Integer adminConfigVersion) {
-        this.adminConfigVersion = adminConfigVersion;
     }
 
     public String getAdminConfig() {

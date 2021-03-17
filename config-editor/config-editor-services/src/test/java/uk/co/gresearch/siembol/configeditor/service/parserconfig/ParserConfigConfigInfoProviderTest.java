@@ -213,20 +213,23 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals(1, version);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void RulesVersionTestMissingFile() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("a.json", release, ConfigEditorFile.ContentType.RAW_JSON_STRING));
         infoProvider.getReleaseVersion(files);
+        int version = infoProvider.getReleaseVersion(files);
+        Assert.assertEquals(0, version);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void RulesVersionMissingVersion() {
         List<ConfigEditorFile> files = new ArrayList<>();
         files.add(new ConfigEditorFile("parsers.json",
                 "{}",
                 ConfigEditorFile.ContentType.RAW_JSON_STRING));
-        infoProvider.getReleaseVersion(files);
+        int version = infoProvider.getReleaseVersion(files);
+        Assert.assertEquals(0, version);
     }
 }
 

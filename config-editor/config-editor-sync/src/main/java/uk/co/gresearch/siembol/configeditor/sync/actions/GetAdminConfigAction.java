@@ -37,7 +37,6 @@ public class GetAdminConfigAction implements SynchronisationAction {
             return ConfigEditorResult.fromMessage(ERROR, msg);
         }
 
-        context.setAdminConfigVersion(serviceHelper.getAdminConfigVersion(adminConfig.get()));
         context.setAdminConfig(adminConfig.get());
         return ConfigEditorResult.fromServiceContext(context);
     }

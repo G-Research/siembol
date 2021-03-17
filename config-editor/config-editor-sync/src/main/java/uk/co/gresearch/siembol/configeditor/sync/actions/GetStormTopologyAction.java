@@ -18,6 +18,8 @@ public class GetStormTopologyAction implements SynchronisationAction {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_ADMIN_CONFIG = "Missing admin configuration for the service %s";
     private static final String MISSING_TOPOLOGY_NAME_OR_IMAGE = "Missing topology name or image for the service %s";
+    private static final String SKIPPING_RELEASING_TOPOLOGY =
+            "Skipping releasing topology for the service {} since it has init admin config";
 
     private final ConfigServiceHelper serviceHelper;
 
@@ -34,6 +36,11 @@ public class GetStormTopologyAction implements SynchronisationAction {
         }
 
         final String adminConfig = context.getAdminConfig();
+        if (serviceHelper.isInitAdminConfig(adminConfig)) {
+            LOGGER.warn(SKIPPING_RELEASING_TOPOLOGY, serviceHelper.getName());
+            return ConfigEditorResult.fromServiceContext(context);
+        }
+
         StormTopologyDto topology = new StormTopologyDto();
         Optional<String> topologyName = serviceHelper.getStormTopologyName(adminConfig);
         Optional<String> topologyImage = serviceHelper.getStormTopologyImage();

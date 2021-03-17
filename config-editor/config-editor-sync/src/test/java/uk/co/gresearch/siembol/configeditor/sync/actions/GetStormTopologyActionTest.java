@@ -35,6 +35,7 @@ public class GetStormTopologyActionTest {
         when(serviceHelper.getStormTopologyName(eq(adminConfig))).thenReturn(Optional.of(topologyName));
         when(serviceHelper.getStormTopologyImage()).thenReturn(Optional.of(topologyImage));
         when(serviceHelper.getName()).thenReturn(serviceName);
+        when(serviceHelper.isInitAdminConfig(eq(adminConfig))).thenReturn(false);
 
         getStormTopologyAction = new GetStormTopologyAction(serviceHelper);
     }
@@ -47,6 +48,7 @@ public class GetStormTopologyActionTest {
         Assert.assertTrue(result.getAttributes().getServiceContext().getStormTopologies().isPresent());
         Assert.assertEquals(1, result.getAttributes().getServiceContext().getStormTopologies().get().size());
         verify(serviceHelper, times(1)).getStormTopologyName(eq(adminConfig));
+        verify(serviceHelper, times(1)).isInitAdminConfig(eq(adminConfig));
         verify(serviceHelper, times(1)).getStormTopologyImage();
         verify(serviceHelper, times(1)).getName();
 
@@ -57,6 +59,18 @@ public class GetStormTopologyActionTest {
         Assert.assertNotNull(topology.getTopologyId());
         Assert.assertEquals(1, topology.getAttributes().size());
         Assert.assertEquals(adminConfig, new String(Base64.getDecoder().decode(topology.getAttributes().get(0))));
+    }
+
+    @Test
+    public void getStormTopologyInitOk() {
+        when(serviceHelper.isInitAdminConfig(eq(adminConfig))).thenReturn(true);
+        ConfigEditorResult result = getStormTopologyAction.execute(context);
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getServiceContext());
+        Assert.assertFalse(result.getAttributes().getServiceContext().getStormTopologies().isPresent());
+        verify(serviceHelper, times(0)).getStormTopologyName(eq(adminConfig));
+        verify(serviceHelper, times(1)).isInitAdminConfig(eq(adminConfig));
+        verify(serviceHelper, times(0)).getStormTopologyImage();
     }
 
     @Test

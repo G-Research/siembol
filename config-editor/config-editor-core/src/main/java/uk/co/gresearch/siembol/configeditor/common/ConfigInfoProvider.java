@@ -11,6 +11,7 @@ public interface ConfigInfoProvider {
     String MISSING_ARGUMENTS_MSG = "missing user info attributes";
     String UNKNOWN_USER_INFO = "unknown";
     int MILLI_SECONDS = 1000;
+    int INIT_RELEASE_VERSION = 0;
 
     ConfigInfo getConfigInfo(UserInfo user, String config);
 
@@ -54,6 +55,10 @@ public interface ConfigInfoProvider {
 
     default boolean isReleaseFile(String fileName) {
         return true;
+    }
+
+    default boolean isInitReleaseVersion(int version) {
+        return INIT_RELEASE_VERSION == version;
     }
 
     ConfigInfoType getConfigInfoType();

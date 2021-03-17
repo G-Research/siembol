@@ -45,6 +45,12 @@ public class GitRepository implements Closeable {
         return new String(Files.readAllBytes(path), UTF_8);
     }
 
+    private void createDirectoryIfNotExists(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+    }
+
     private GitRepository(Builder builder) {
         credentialsProvider = builder.credentialsProvider;
         git = builder.git;
@@ -59,8 +65,6 @@ public class GitRepository implements Closeable {
             ConfigInfo configInfo,
             String directory,
             Function<String, Boolean> fileNameFilter) throws GitAPIException, IOException {
-        Path currentPath = Paths.get(repoFolder, directory);
-
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
@@ -70,6 +74,8 @@ public class GitRepository implements Closeable {
             git.checkout().setName(configInfo.getBranchName()).call();
         }
 
+        Path currentPath = Paths.get(repoFolder, directory);
+        createDirectoryIfNotExists(currentPath);
         if (configInfo.shouldCleanDirectory()) {
             FileUtils.cleanDirectory(currentPath.toFile());
         }
@@ -108,11 +114,12 @@ public class GitRepository implements Closeable {
 
     public ConfigEditorResult getFiles(String directory,
                                        Function<String, Boolean> fileNameFilter) throws IOException, GitAPIException {
-        Path path = Paths.get(repoFolder, directory);
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
+        Path path = Paths.get(repoFolder, directory);
+        createDirectoryIfNotExists(path);
         Map<String, ConfigEditorFile> files = new HashMap<>();
         try (Stream<Path> paths = Files.walk(path)) {
             paths

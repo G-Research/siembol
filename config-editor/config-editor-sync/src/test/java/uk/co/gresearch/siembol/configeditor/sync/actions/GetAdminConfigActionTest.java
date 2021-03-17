@@ -39,9 +39,7 @@ public class GetAdminConfigActionTest {
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getServiceContext());
         Assert.assertEquals(adminConfig, result.getAttributes().getServiceContext().getAdminConfig());
-        Assert.assertEquals(version, result.getAttributes().getServiceContext().getAdminConfigVersion().intValue());
         verify(serviceHelper, times(1)).getAdminConfig();
-        verify(serviceHelper, times(1)).getAdminConfigVersion(eq(adminConfig));
         verify(serviceHelper, times(1)).validateAdminConfiguration(eq(adminConfig));
     }
 

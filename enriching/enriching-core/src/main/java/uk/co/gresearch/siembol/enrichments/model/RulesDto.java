@@ -8,7 +8,7 @@ import java.util.List;
 public class RulesDto {
 
     @JsonProperty("rules_version")
-    @Attributes(required = true, description = "The version of the rules")
+    @Attributes(required = true, description = "The version of the rules", minimum = 0)
     private Integer rulesVersion;
 
     @JsonProperty("rules")

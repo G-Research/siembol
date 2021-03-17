@@ -36,8 +36,10 @@ public class UpdateRulesInZookeeperActionTest {
 
         serviceHelper = Mockito.mock(ConfigServiceHelper.class);
         when(serviceHelper.getReleaseVersion(eq(currentRelease))).thenReturn(5);
+        when(serviceHelper.isInitRelease(eq(currentRelease))).thenReturn(false);
         when(serviceHelper.getReleaseVersion(eq(release))).thenReturn(6);
         when(serviceHelper.getZookeeperReleaseConnector()).thenReturn(Optional.of(zookeeperConnector));
+        when(serviceHelper.getName()).thenReturn("dummy_service");
 
         updateReleaseInZookeeperAction = new UpdateReleaseInZookeeperAction(serviceHelper);
         verify(serviceHelper, times(1)).getZookeeperReleaseConnector();
@@ -49,8 +51,21 @@ public class UpdateRulesInZookeeperActionTest {
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getServiceContext());
         verify(serviceHelper, times(1)).getReleaseVersion(eq(currentRelease));
+        verify(serviceHelper, times(1)).isInitRelease(eq(release));
         verify(serviceHelper, times(1)).getReleaseVersion(eq(release));
         verify(zookeeperConnector, times(1)).setData(eq(release));
+    }
+
+    @Test
+    public void getUpdateInitReleaseOk() throws Exception {
+        when(serviceHelper.isInitRelease(eq(release))).thenReturn(true);
+        ConfigEditorResult result = updateReleaseInZookeeperAction.execute(context);
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getServiceContext());
+        verify(serviceHelper, times(0)).getReleaseVersion(eq(release));
+        verify(serviceHelper, times(1)).isInitRelease(eq(release));
+        verify(serviceHelper, times(0)).getReleaseVersion(eq(release));
+        verify(zookeeperConnector, times(0)).setData(eq(release));
     }
 
     @Test

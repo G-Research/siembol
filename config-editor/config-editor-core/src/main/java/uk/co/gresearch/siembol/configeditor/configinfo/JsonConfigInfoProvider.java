@@ -2,6 +2,8 @@ package uk.co.gresearch.siembol.configeditor.configinfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
@@ -9,6 +11,7 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +20,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JsonConfigInfoProvider implements ConfigInfoProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String RULE_COMMIT_TEMPLATE_NEW = "Adding new %s: %s";
     private static final String RULE_COMMIT_TEMPLATE_UPDATE = "Updating %s: %s to version: %d";
     private static final String RULE_COMMIT_TEMPLATE_RELEASE = "%s released to version: %d";
     private static final ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() { });
-    private static final String WRONG_RELEASE_FORMAT = "Wrong config release json file format";
+    private static final String WRONG_RELEASE_FORMAT = "Wrong config release json file format in {}";
+    private static final String MISSING_VERSION_RELEASE = "Missing version in release {}, probably init version";
     private static final String WRONG_CONFIG_FORMAT = "Wrong config json file format";
-    private static final String MISSING_FILENAME_MSG = "Missing filename: %s";
+    private static final String MISSING_FILENAME_MSG = "Missing filename: {}, probably init version";
     private static final String WRONG_FILENAME_MSG = "Wrong config name: %s";
     private static final String PREFIX_NAME_FORMAT = "%s-%s";
     private static final String PREFIX_NAME_CHECK_FORMAT = "%s_%s";
@@ -163,11 +168,13 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         try {
             metadata = JSON_READER.readValue(content);
         } catch (IOException e) {
-            throw new IllegalArgumentException(WRONG_RELEASE_FORMAT);
+            LOG.warn(WRONG_RELEASE_FORMAT, content);
+            return INIT_RELEASE_VERSION;
         }
         if (metadata == null
                 || !(metadata.get(configsVersionField) instanceof Number)) {
-            throw new IllegalArgumentException(WRONG_RELEASE_FORMAT);
+            LOG.warn(MISSING_VERSION_RELEASE, content);
+            return INIT_RELEASE_VERSION;
         }
 
         return ((Number)metadata.get(configsVersionField)).intValue();
@@ -180,7 +187,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                 .filter(x -> x.getFileName().equals(releaseFilename))
                 .findFirst();
         if (!release.isPresent()) {
-            throw new IllegalArgumentException(String.format(MISSING_FILENAME_MSG, releaseFilename));
+            LOG.warn(MISSING_FILENAME_MSG, releaseFilename);
+            return INIT_RELEASE_VERSION;
         }
 
         return getReleaseVersion(release.get().getContent());

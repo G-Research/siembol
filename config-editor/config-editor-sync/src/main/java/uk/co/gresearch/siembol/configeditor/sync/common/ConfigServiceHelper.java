@@ -18,6 +18,8 @@ public interface ConfigServiceHelper {
     boolean shouldSyncAdminConfig();
     boolean shouldSyncRelease();
     boolean isAdminConfigSupported();
+    boolean isInitAdminConfig(String adminConfig);
+    boolean isInitRelease(String release);
     Optional<ZookeeperConnector> getZookeeperReleaseConnector();
     Optional<String> getStormTopologyImage();
     Optional<String> getStormTopologyName(String adminConfig);

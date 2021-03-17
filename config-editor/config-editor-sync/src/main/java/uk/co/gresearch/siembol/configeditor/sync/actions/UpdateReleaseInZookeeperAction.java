@@ -19,6 +19,8 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
     private static final String UPDATE_COMPLETED_MSG = "updating release in zookeeper completed";
     private static final String UPDATE_ERROR_MSG = "Error during updating release for service {} in zookeeper {}";
     private static final String MISSING_ZOOKEEPER_CONNECTOR = "Missing zookeeper connector for the service %s";
+    private static final String SKIPPING_UPDATING_ZOOKEEPER =
+            "Skipping updating release in zookeeper for the service {} since it has init release";
 
     private final ConfigServiceHelper serviceHelper;
     private final ZookeeperConnector zookeeperConnector;
@@ -39,6 +41,11 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
             String msg = String.format(MISSING_RELEASE_ATTRIBUTES, serviceHelper.getName());
             LOGGER.error(msg);
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, msg);
+        }
+
+        if (serviceHelper.isInitRelease(context.getConfigRelease())) {
+            LOGGER.warn(SKIPPING_UPDATING_ZOOKEEPER, serviceHelper.getName());
+            return ConfigEditorResult.fromServiceContext(context);
         }
 
         String currentRelease = zookeeperConnector.getData();
