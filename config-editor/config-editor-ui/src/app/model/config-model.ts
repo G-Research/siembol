@@ -38,6 +38,14 @@ export interface GitFiles<T> {
     files: T[];
 }
 
+export interface AdminConfigGitFiles<T> extends GitFiles<T> {
+    config_version: number;
+}
+
+export interface DeploymentGitFiles<T> extends GitFiles<T> {
+    rules_version: number;
+}
+
 export interface TestCaseEvaluation {
     files: Content<TestCase>[];
     test_result_raw_output: string;

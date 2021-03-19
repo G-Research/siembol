@@ -13,7 +13,9 @@ import {
   SchemaInfo,
   TestSchemaInfo,
   AdminSchemaInfo,
-  AdminConfig
+  AdminConfig,
+  AdminConfigGitFiles,
+  DeploymentGitFiles
 } from '@model/config-model';
 import {
   TestCase,
@@ -149,66 +151,86 @@ export class ConfigLoaderService {
 
   public getRelease(): Observable<DeploymentWrapper> {
     return this.http
-      .get<GitFiles<any>>(
+      .get<DeploymentGitFiles<any>>(
         `${this.config.serviceRoot}api/v1/${
           this.serviceName
         }/configstore/release`
       )
       .pipe(
         map(result => {
-          return result.files[0]
-        }),
-        map(result => {
-          let extras = {};
-          if (this.uiMetadata.deployment.extras) {
-            extras = this.uiMetadata.deployment.extras
-              .reduce((a, x) => (
-                { ...a, [x]: result.content[x] }), {}
-              )
+          let file = result.files[0]
+          if (file) {
+            let extras = {};
+            if (this.uiMetadata.deployment.extras) {
+              extras = this.uiMetadata.deployment.extras
+                .reduce((a, x) => (
+                  { ...a, [x]: file.content[x] }), {}
+                )
+            }
+            return ({
+              deploymentHistory: file.file_history,
+              storedDeployment: {
+                ...extras,
+                ... {
+                  deploymentVersion:
+                    file.content[this.uiMetadata.deployment.version],
+                  configs: file.content[
+                    this.uiMetadata.deployment.config_array
+                  ].map(configData => ({
+                    isNew: false,
+                    configData: configData,
+                    savedInBackend: true,
+                    name: configData[this.uiMetadata.name],
+                    description: configData[this.uiMetadata.description],
+                    author: configData[this.uiMetadata.author],
+                    version: configData[this.uiMetadata.version],
+                    versionFlag: -1,
+                    tags: this.labelsFunc(configData)
+                  }))
+                }
+              }
+            })
           }
-          return ({
-          deploymentHistory: result.file_history,
-          storedDeployment: {
-            ... extras,
-            ... {
-              deploymentVersion:
-                result.content[this.uiMetadata.deployment.version],
-              configs: result.content[
-                this.uiMetadata.deployment.config_array
-              ].map(configData => ({
-                isNew: false,
-                configData: configData,
-                savedInBackend: true,
-                name: configData[this.uiMetadata.name],
-                description: configData[this.uiMetadata.description],
-                author: configData[this.uiMetadata.author],
-                version: configData[this.uiMetadata.version],
-                versionFlag: -1,
-                tags: this.labelsFunc(configData)
-              }))
+          if (result.rules_version !== 0) {
+            throw new Error("Unexpected files from backend")
+          }
+          return {
+            deploymentHistory: [],
+            storedDeployment: {
+              deploymentVersion: 0,
+              configs: []
             }
           }
-        })})
+          })
       );
   }
 
   public getAdminConfig(): Observable<AdminConfig> {
     return this.http
-      .get<GitFiles<any>>(
+      .get<AdminConfigGitFiles<any>>(
         `${this.config.serviceRoot}api/v1/${
           this.serviceName
         }/configstore/adminconfig`
       )
       .pipe(
         map(result => {
-          return result.files[0]
-        }),
-        map(result => {
+          let file = result.files[0];
+          if (file) {
+            return ({
+              fileHistory: file.file_history,
+              configData: file.content,
+              version: file.content[ADMIN_VERSION_FIELD_NAME],
+            })
+          }
+          if (result.config_version !== 0) {
+            throw new Error("Unexpected files from backend")
+          }
           return ({
-            fileHistory: result.file_history,
-            configData: result.content,
-            version: result.content[ADMIN_VERSION_FIELD_NAME],
-        })})
+            fileHistory: [],
+            configData: undefined,
+            version: 0
+          })
+        })
     );
   }
 
