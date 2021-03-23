@@ -1,7 +1,7 @@
-# How to Setup OAUTH2 OIDC in Siembol UI
+# How to setup OAUTH2 OIDC in siembol UI
 Siembol UI supports OAUTH2/OIDC authorisation which we are using at GR with the internal identity provider. In the future we are planning to test the implementation on major identity providers. 
 
-## Scopes and Claims
+## Scopes and claims
 You need to register siembol application in the identity provider and define:
 - clients and withn the list of redirect urls for 
     - siembol UI 
@@ -60,7 +60,7 @@ Siembol currently supports only Authorization Code Flow with Proof Key for Code 
     - `springdoc.swagger-ui.oauth.usePkceWithAuthorizationCodeGrant` - This value must be `TRUE`
 
 ## Auhtorisation of services based on groups claim
-You can find more details in [how_to_set_up_service](https://github.com/G-Research/siembol/blob/master/docs/services/how-tos/how_to_set_up_service_in_config_editor_rest.md) The access to the service is based on checking OIDC `group` scope membership.
+You can find more details in [how_to_set_up_service](../../services/how-tos/how_to_set_up_service_in_config_editor_rest.md) The access to the service is based on checking OIDC `group` scope membership.
 
 #### Authorisation for service users
 - `config-editor-auth.authorisation-groups.service-name` - The list of groups for accessing the service

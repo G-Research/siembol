@@ -2,8 +2,7 @@
 The ui-layout files are read by the backend and used to generate the schema then sent to the UI. They are useful to add/overwrite parts of the schema. 
 
 ## Prepared layout files per service types
-The default layout files can be found in the git repo here:
-https://github.com/G-Research/siembol/tree/master/config/config-editor-rest
+The default layout files can be found in the git repo [here] (../../../config/config-editor-rest).
 
 There is one per service and one for all testcases. The files are all in JSON format. The per service files are separated into 'config_layout' and 'admin_config_layout'. 
 ## How to change

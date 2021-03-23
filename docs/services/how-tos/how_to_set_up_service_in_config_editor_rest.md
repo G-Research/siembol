@@ -1,4 +1,4 @@
-# How to Set-Up a Service in Config Editor Rest
+# How to set-up a service in config editor rest
 The service is added into siembol UI by editing application properties of config editor rest.
 Before you start editing the properties you need to prepare git repositories for storing service configurations. 
 ## Service name and type
@@ -45,7 +45,7 @@ The ui-layout files are used to modify the config schema which is sent to the si
 - `config-editor.services.my-new-service.ui-config-file-name` - The path to the ui layout configuration file
 
 ### Synchronisation settings
-- `config-editor.services.my-new-service.synchronisation` - This field enable or disable synchronisation of the service with zookeeper and storm topology manager that is responsible for releasing storm topologies. The synchronisation is triggered by calling the webhook api, see [how_to_setup_webhook](https://github.com/G-Research/siembol/blob/master/docs/deployment/how-tos/how_to_setup_github_webhook.md) 
+- `config-editor.services.my-new-service.synchronisation` - This field enable or disable synchronisation of the service with zookeeper and storm topology manager that is responsible for releasing storm topologies. The synchronisation is triggered by calling the webhook api, see [how_to_setup_webhook](../../deployment/how-tos/how_to_setup_github_webhook.md) 
     - `RELEASE` - synchronise service release (deployment) with the zookeeper node defined in the property `config-editor.services.my-new-service.release-zookeeper`. This type of synchronisation is applicable only to services from `alert`, `correlationalert`, `parserconfig`, `enrichment`
     - `ADMIN_CONFIG`- synchronise admin configuration with desired state for storm topology manager. This type of synchronisation is applicable only to services from `alert`, `correlationalert`, `enrichment`
     - `ALL` - it synchronizes both `RELEASE` and `ADMIN_CONFIG` if possible. This needs to be enabled to synchronise `parsingapp` service since it depends on both admin configuration and release.
