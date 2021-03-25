@@ -45,16 +45,16 @@ The ui-layout files are used to modify the config schema which is sent to the si
 - `config-editor.services.my-new-service.ui-config-file-name` - The path to the ui layout configuration file
 
 ### Synchronisation settings
-- `config-editor.services.my-new-service.synchronisation` - This field enable or disable synchronisation of the service with zookeeper and storm topology manager that is responsible for releasing storm topologies. The synchronisation is triggered by calling the webhook api, see [how_to_setup_webhook](../../deployment/how-tos/how_to_setup_github_webhook.md) 
-    - `RELEASE` - synchronise service release (deployment) with the zookeeper node defined in the property `config-editor.services.my-new-service.release-zookeeper`. This type of synchronisation is applicable only to services from `alert`, `correlationalert`, `parserconfig`, `enrichment`
-    - `ADMIN_CONFIG`- synchronise admin configuration with desired state for storm topology manager. This type of synchronisation is applicable only to services from `alert`, `correlationalert`, `enrichment`
-    - `ALL` - it synchronizes both `RELEASE` and `ADMIN_CONFIG` if possible. This needs to be enabled to synchronise `parsingapp` service since it depends on both admin configuration and release.
+- `config-editor.services.my-new-service.synchronisation` - This field enable or disable synchronisation of the service with zookeeper and storm topology manager that is responsible for releasing storm topologies. The synchronisation is triggered by calling the webhook api, see [how to setup a webhook](../../deployment/how-tos/how_to_setup_github_webhook.md)
+    - `RELEASE` - It synchronizes service release (deployment) with the zookeeper node defined in the property `config-editor.services.my-new-service.release-zookeeper`. This type of synchronisation is applicable only to services from `alert`, `correlationalert`, `parserconfig`, `enrichment`
+    - `ADMIN_CONFIG`- It synchronizes admin configuration with desired state for storm topology manager. This type of synchronisation is applicable only to services from `alert`, `correlationalert`, `enrichment`
+    - `ALL` - It synchronizes both `RELEASE` and `ADMIN_CONFIG` if possible. This needs to be enabled to synchronise `parsingapp` service since it depends on both admin configuration and release
 ```
 Note: you need to enable synchronisation for all services in the property: config-editor.synchronisation. Similarly you can disable synchronisation for all services using this property.
 ```    
 #### Release zookeeper settings for service deployment
-- `config-editor.services.my-new-service.release-zookeeper.zk-path` - path to Zookeeper node for synchronisation of the deployment and related application. 
-- `config-editor.services.my-new-service.release-zookeeper.zk-url` -  Zookeeper servers url. Multiple servers are separated by comma
+- `config-editor.services.my-new-service.release-zookeeper.zk-path` - A path to Zookeeper node for synchronisation of the deployment and related application 
+- `config-editor.services.my-new-service.release-zookeeper.zk-url` - Zookeeper servers url. Multiple servers are separated by comma
 
 #### Topology image for topology deployment
 - `config-editor.services.alert.topology-image` - Url for downloading the topology image used during releasing the related service topology by storm topology manager
@@ -63,4 +63,4 @@ Authorisation are applicable only if `oauth2` authentication is enabled in siemb
 #### Authorisation for service users
 - `config-editor-auth.authorisation-groups.my-new-service` - The list of groups for accessing the service
 #### Authorisation for service administrators
-- `config-editor-auth.authorisation-admin-groups.my-new-service` - - The list of groups for accessing the admin configuration of the service. This property is applicable only to services from `alert`, `correlationalert`, `enrichment`, `parsingapp`
+- `config-editor-auth.authorisation-admin-groups.my-new-service` - The list of groups for accessing the admin configuration of the service. This property is applicable only to services from `alert`, `correlationalert`, `enrichment`, `parsingapp`
