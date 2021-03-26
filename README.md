@@ -24,7 +24,7 @@ Siembol provides a scalable, advanced security analytics framework based on open
     - [Siembol response service](/docs/services/siembol_response_service.md)
         - [How to write response plugin](/docs/services/how-tos/how_to_write_response_plugin.md)
 - [Siembol deployment](/docs/deployment/deployment.md)
-    - [How to set-up zookeeper nodes](/docs/deployment/how-tos/how_to_set_up_zookeper_nodes.md)
+    - [How to set-up zookeeper nodes](/docs/deployment/how-tos/how_to_set_up_zookeeper_nodes.md)
     - [How to set-up a github webhook](/docs/deployment/how-tos/how_to_setup_github_webhook.md)
     - [How to tune the performance of storm topologies](/docs/deployment/how-tos/how_to_tune_performance_of_storm_topologies.md)
     - [How to set-up kerberos for external dependencies](/docs/deployment/how-tos/how_to_set_up_kerberos_for_external_dependencies.md)
