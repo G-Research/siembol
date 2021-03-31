@@ -29,6 +29,7 @@ public class ConfigStoreImpl implements ConfigStore {
     private static final String ADMIN_CONFIG_UNSUPPORTED_MSG = "Admin configuration is not supported for the service";
     private static final String GENERIC_EXCEPTION_LOG_MSG = "Exception {} during getting or updating git repositories";
     private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for config store initialisation";
+    private static final String ERROR_RESULT_LOG_MSG = "The command finished with status: {}, message: {}";
 
     private final AtomicReference<Exception> exception = new AtomicReference<>();
     private final ExecutorService storeExecutorService;
@@ -189,7 +190,11 @@ public class ConfigStoreImpl implements ConfigStore {
         }
 
         try {
-            return executorService.submit(command).get();
+            ConfigEditorResult result = executorService.submit(command).get();
+            if (result.getStatusCode() != OK) {
+                LOG.error(ERROR_RESULT_LOG_MSG, result.getStatusCode().toString(), result.getAttributes().getMessage());
+            }
+            return result;
         } catch (Exception e) {
             exception.set(e);
             LOG.error(GENERIC_EXCEPTION_LOG_MSG, ExceptionUtils.getStackTrace(e));

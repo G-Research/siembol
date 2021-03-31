@@ -10,6 +10,8 @@ import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
@@ -31,6 +33,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class GitRepository implements Closeable {
     private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for git repository initialisation";
     private static final String ERROR_INIT_MSG = "Error during git repository initialisation";
+    private static final String ERROR_PUSH_MSG = "Error during git repository push with message: %s";
     public static final String MAIN_BRANCH = "master";
     private static final String GIT_REPO_DIRECTORY_URL_FORMAT = "%s/%s/tree/master/%s";
     private final CredentialsProvider credentialsProvider;
@@ -95,12 +98,20 @@ public class GitRepository implements Closeable {
                 .setMessage(configInfo.getCommitMessage())
                 .call();
 
-        git.push()
+        Iterable<PushResult> pushResults = git.push()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
-        ConfigEditorResult result = getFiles(directory, fileNameFilter);
+        for (PushResult pushResult: pushResults) {
+            for (RemoteRefUpdate update: pushResult.getRemoteUpdates()) {
+                if (!update.getStatus().equals(RemoteRefUpdate.Status.OK)) {
+                    return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR,
+                            String.format(ERROR_PUSH_MSG, update.getMessage()));
+                }
+            }
+        }
 
+        ConfigEditorResult result = getFiles(directory, fileNameFilter);
         if (!MAIN_BRANCH.equals(configInfo.getBranchName())) {
             git.checkout().setName(MAIN_BRANCH).call();
         }
