@@ -1,5 +1,5 @@
-# How to add links to siembol ui home page
-The siembol home page has an 'Explore Siembol' section at the button of its home page as can be seen in the screenshot below. It is used for quick access to useful resources such as documentation, ticket tracking systems etc... By default there is a link to the documentation and to the issues page on the git repo.
+# How to add links to the siembol ui home page
+The siembol home page has an 'Explore Siembol' section at the button of its home page, as can be seen in the screenshot below. It is used for quick access to useful resources such as documentation, ticket tracking systems etc. By default there is a link to the documentation and to the issues page on the git repo.
 
 ![image](../screenshots/home_page.png)
 
@@ -26,7 +26,7 @@ Below is the default config file provided where the two default links are in "ho
 
 
 
-To add a new one you need three things:
-- the url where the user will be redirected to on click
-- the icon to be displayed: this has to be the name of a material icon (you can find them all here: https://material.io/)
-- the title displayed below the icon 
+To add a new link you need three things:
+- the url to which the user will be redirected on clicking the link
+- the icon to be displayed; this has to be the name of a material icon (you can find them all here: https://material.io/)
+- the title to display below the icon 
