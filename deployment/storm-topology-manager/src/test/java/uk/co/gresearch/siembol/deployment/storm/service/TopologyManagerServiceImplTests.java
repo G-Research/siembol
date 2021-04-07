@@ -10,15 +10,18 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 import uk.co.gresearch.siembol.common.testing.TestingZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.deployment.storm.model.StormResponseDto;
+import uk.co.gresearch.siembol.deployment.storm.model.TopologyManagerInfoDto;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProvider;
 import uk.co.gresearch.siembol.deployment.storm.providers.StormProvider;
 
 import static org.mockito.Mockito.*;
+import static uk.co.gresearch.siembol.deployment.storm.model.TopologyStateDto.*;
 
 public class TopologyManagerServiceImplTests {
     private static final ObjectReader READER = new ObjectMapper()
@@ -129,21 +132,25 @@ public class TopologyManagerServiceImplTests {
     KubernetesProvider kubernetesProvider = mock(KubernetesProvider.class);
     StormProvider stormProvider = mock(StormProvider.class);
     ZookeeperConnector desiredZookeeper;
-    ZookeeperConnector savedZookeper;
+    ZookeeperConnector savedZookeeper;
+    TestingZookeeperConnectorFactory zookeeperConnectorFactory;
+    ZookeeperAttributesDto desiredSpec;
+    ZookeeperAttributesDto savedSpec;
 
     public TopologyManagerServiceImplTests() throws JsonProcessingException {
     }
 
     @Before
     public void setUp() {
-        ZookeeperAttributesDto desiredSpec = new ZookeeperAttributesDto();
-        ZookeeperAttributesDto savedSpec = new ZookeeperAttributesDto();
+        desiredSpec = new ZookeeperAttributesDto();
+        savedSpec = new ZookeeperAttributesDto();
         desiredSpec.setZkPath("/siembol/desired");
         savedSpec.setZkPath("/siembol/saved");
 
-        desiredZookeeper = new TestingZookeeperConnectorFactory().createZookeeperConnector(desiredSpec);
-        savedZookeper = new TestingZookeeperConnectorFactory().createZookeeperConnector(savedSpec);
-        service = new TopologyManagerServiceImpl(stormProvider, kubernetesProvider, desiredZookeeper, savedZookeper, 0);
+        zookeeperConnectorFactory = new TestingZookeeperConnectorFactory();
+        desiredZookeeper = zookeeperConnectorFactory.createZookeeperConnector(desiredSpec);
+        savedZookeeper = zookeeperConnectorFactory.createZookeeperConnector(savedSpec);
+        service = new TopologyManagerServiceImpl(stormProvider, kubernetesProvider, desiredZookeeper, savedZookeeper, 0);
     }
 
     @Test
@@ -156,7 +163,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto desired = READER.readValue(topologies1);
 
         desiredZookeeper.setData(WRITER.writeValueAsString(saved));
-        savedZookeper.setData(WRITER.writeValueAsString(desired));
+        savedZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
 
@@ -164,11 +171,12 @@ public class TopologyManagerServiceImplTests {
         verify(kubernetesProvider, times(1)).createOrReplaceJob(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
 
     @Test
@@ -180,7 +188,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto saved = READER.readValue(topologies1);
         StormTopologiesDto desired = READER.readValue(topologies4);
 
-        savedZookeper.setData(WRITER.writeValueAsString(saved));
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
         desiredZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
@@ -189,11 +197,12 @@ public class TopologyManagerServiceImplTests {
         verify(kubernetesProvider, times(3)).createOrReplaceJob(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
 
     @Test
@@ -205,7 +214,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto saved = READER.readValue(topologies1);
         StormTopologiesDto desired = READER.readValue(topologies1changed);
 
-        savedZookeper.setData(WRITER.writeValueAsString(saved));
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
         desiredZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
@@ -215,11 +224,12 @@ public class TopologyManagerServiceImplTests {
         verify(kubernetesProvider, times(1)).createOrReplaceJob(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
 
     @Test
@@ -231,7 +241,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto saved = READER.readValue(topologies1);
         StormTopologiesDto desired = READER.readValue(topologies4changed);
 
-        savedZookeper.setData(WRITER.writeValueAsString(saved));
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
         desiredZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
@@ -241,11 +251,12 @@ public class TopologyManagerServiceImplTests {
         verify(kubernetesProvider, times(4)).createOrReplaceJob(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
 
     @Test
@@ -258,7 +269,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto desired = READER.readValue(empty);
 
 
-        savedZookeper.setData(WRITER.writeValueAsString(saved));
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
         desiredZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
@@ -267,11 +278,12 @@ public class TopologyManagerServiceImplTests {
         verify(stormProvider, times(4)).killTopology(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
 
     @Test
@@ -283,7 +295,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto saved = READER.readValue(empty);
         StormTopologiesDto desired = READER.readValue(topologies1);
 
-        savedZookeper.setData(WRITER.writeValueAsString(saved));
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
         desiredZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
@@ -293,11 +305,12 @@ public class TopologyManagerServiceImplTests {
         verify(kubernetesProvider, times(1)).createOrReplaceJob(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
 
     @Test
@@ -309,7 +322,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto saved = READER.readValue(topologies2);
         StormTopologiesDto desired = READER.readValue(topologies2);
 
-        savedZookeper.setData(WRITER.writeValueAsString(saved));
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
         desiredZookeeper.setData(WRITER.writeValueAsString(desired));
 
         Thread.sleep(100);
@@ -318,11 +331,75 @@ public class TopologyManagerServiceImplTests {
         verify(kubernetesProvider, times(1)).createOrReplaceJob(any());
 
         StormTopologiesDto desiredState = READER.readValue(desiredZookeeper.getData());
-        StormTopologiesDto savedState = READER.readValue(savedZookeper.getData());
+        StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
                 EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
         );
+        Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
+    }
+
+    @Test
+    public void testThrowException() throws Exception {
+        when(stormProvider.listTopologies()).thenThrow(new IllegalStateException("test exception"));
+        StormTopologiesDto saved = READER.readValue(topologies2);
+        StormTopologiesDto desired = READER.readValue(topologies2);
+
+        savedZookeeper.setData(WRITER.writeValueAsString(saved));
+        desiredZookeeper.setData(WRITER.writeValueAsString(desired));
+
+        Thread.sleep(100);
+        Assert.assertEquals(Status.DOWN, service.checkHealth().getStatus());
+    }
+
+    @Test
+    public void testManagerInfoAllSynced() {
+        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies4);
+        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies4);
+        TopologyManagerInfoDto info = service.getTopologyManagerInfo();
+        Assert.assertEquals(4, info.getNumberSynchronised());
+        Assert.assertEquals(0, info.getNumberDifferent());
+        Assert.assertEquals(4, info.getTopologies().size());
+        info.getTopologies().values().forEach(x -> Assert.assertEquals(SYNCHRONISED, x));
+    }
+
+    @Test
+    public void testManagerInfoDifferent() {
+        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies2);
+        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies2changed);
+        TopologyManagerInfoDto info = service.getTopologyManagerInfo();
+        Assert.assertEquals(0, info.getNumberSynchronised());
+        Assert.assertEquals(2, info.getNumberDifferent());
+        info.getTopologies().values().forEach(x -> Assert.assertEquals(DIFFERENT, x));
+    }
+
+    @Test
+    public void testManagerInfoMissingDesired() {
+        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies2);
+        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies3);
+        TopologyManagerInfoDto info = service.getTopologyManagerInfo();
+        Assert.assertEquals(2, info.getNumberSynchronised());
+        Assert.assertEquals(1, info.getNumberDifferent());
+        Assert.assertEquals(SAVED_STATE_ONLY, info.getTopologies().get("topology3"));
+    }
+
+    @Test
+    public void testManagerInfoMissingSaved() {
+        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies3);
+        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies2);
+        TopologyManagerInfoDto info = service.getTopologyManagerInfo();
+        Assert.assertEquals(2, info.getNumberSynchronised());
+        Assert.assertEquals(1, info.getNumberDifferent());
+        Assert.assertEquals(DESIRED_STATE_ONLY, info.getTopologies().get("topology3"));
+    }
+
+    @Test
+    public void testManagerInfoInvalidSpecification() {
+        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), "INVALID");
+        TopologyManagerInfoDto info = service.getTopologyManagerInfo();
+        Assert.assertNotNull(info);
+        Assert.assertNull(info.getTopologies());
+        Assert.assertEquals(Status.DOWN, service.checkHealth().getStatus());
     }
 }
 

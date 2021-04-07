@@ -85,7 +85,10 @@ public class KubernetesProviderImpl implements KubernetesProvider {
                 .withName(topologyId)
                 .get());
 
-        return activeJobs.isPresent() && activeJobs.get().getStatus().getActive() > 0;
+        return activeJobs.isPresent()
+                && activeJobs.get().getStatus() != null
+                && activeJobs.get().getStatus().getActive() != null
+                && activeJobs.get().getStatus().getActive() > 0;
     }
 
     private static String makeJobYaml(String template, StormTopologyDto attr, String namespace, String nimbus) {

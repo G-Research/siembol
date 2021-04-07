@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.deployment.storm.model.StormResponseTopologyDto;
+import uk.co.gresearch.siembol.deployment.storm.model.TopologyManagerInfoDto;
+import uk.co.gresearch.siembol.deployment.storm.model.TopologyStateDto;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProvider;
 import uk.co.gresearch.siembol.deployment.storm.providers.StormProvider;
 
@@ -16,6 +19,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,15 +27,15 @@ import java.util.stream.Stream;
 public class TopologyManagerServiceImpl implements TopologyManagerService {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
+    private static final ObjectReader TOPOLOGY_READER = new ObjectMapper()
+            .readerFor(StormTopologiesDto.class);
 
     private final StormProvider stormProvider;
     private final ZookeeperConnector zookeeperDesiredState;
     private final ZookeeperConnector zookeeperSavedState;
     private final KubernetesProvider kubernetesProvider;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
-    private static final ObjectReader TOPOLOGY_READER = new ObjectMapper()
-            .readerFor(StormTopologiesDto.class);
+    private final AtomicReference<Optional<Exception>> exception = new AtomicReference<>(Optional.empty());
 
     public TopologyManagerServiceImpl(StormProvider stormProvider,
                                       KubernetesProvider kubernetesProvider,
@@ -51,6 +55,48 @@ public class TopologyManagerServiceImpl implements TopologyManagerService {
                     scheduleAtFixedRate,
                     TimeUnit.SECONDS);
         }
+    }
+
+    @Override
+    public void invokeSynchronise() {
+        this.executorService.execute(this::synchronise);
+    }
+
+    @Override
+    public TopologyManagerInfoDto getTopologyManagerInfo() {
+        TopologyManagerInfoDto ret = new TopologyManagerInfoDto();
+        try {
+            Map<String, StormTopologyDto> desiredState = getZookeeperState(zookeeperDesiredState.getData());
+            Map<String, StormTopologyDto> savedState = getZookeeperState(zookeeperSavedState.getData());
+
+            Set<String> topologyNames = new HashSet<>();
+            topologyNames.addAll(desiredState.keySet());
+            topologyNames.addAll(savedState.keySet());
+
+            Map<String, TopologyStateDto> topologies = new HashMap<>();
+            int numSynchronised = 0;
+            for (String topologyName : topologyNames) {
+                TopologyStateDto state = getTopologyState(topologyName, desiredState, savedState);
+                topologies.put(topologyName, state);
+                if (state.equals(TopologyStateDto.SYNCHRONISED)) {
+                    numSynchronised++;
+                }
+            }
+            ret.setTopologies(topologies);
+            ret.setNumberSynchronised(numSynchronised);
+            ret.setNumberDifferent(topologies.size() - numSynchronised);
+
+        } catch (JsonProcessingException e) {
+            LOG.error("Exception during getting topology manager Info: ", e);
+            exception.set(Optional.of(e));
+        }
+        return ret;
+    }
+
+    @Override
+    public Health checkHealth() {
+        Optional<Exception> e = exception.get();
+        return e.isPresent() ? Health.down(e.get()).build() : Health.up().build();
     }
 
     private void synchronise() {
@@ -83,11 +129,9 @@ public class TopologyManagerServiceImpl implements TopologyManagerService {
 
         } catch (Exception e) {
             LOG.error("Exception in synchronise: ", e);
+            exception.set(Optional.of(e));
+            executorService.shutdown();
         }
-    }
-
-    public void invokeSynchronise() {
-        this.executorService.execute(this::synchronise);
     }
 
     private Map<String, StormTopologyDto> getZookeeperState(String zookeeperState) throws JsonProcessingException {
@@ -141,5 +185,20 @@ public class TopologyManagerServiceImpl implements TopologyManagerService {
 
     private void saveState(String stateToSave) throws Exception {
         zookeeperSavedState.setData(stateToSave);
+    }
+
+    private TopologyStateDto getTopologyState(String name,
+                                              Map<String, StormTopologyDto> desiredStateMap,
+                                              Map<String, StormTopologyDto> savedStateMap) {
+        if (desiredStateMap.containsKey(name)) {
+            if (savedStateMap.containsKey(name)) {
+                return desiredStateMap.get(name).getTopologyId().equals(savedStateMap.get(name).getTopologyId())
+                        ? TopologyStateDto.SYNCHRONISED : TopologyStateDto.DIFFERENT;
+            } else {
+                return TopologyStateDto.DESIRED_STATE_ONLY;
+            }
+        } else {
+            return TopologyStateDto.SAVED_STATE_ONLY;
+        }
     }
 }
