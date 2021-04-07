@@ -41,3 +41,30 @@ ui:
   ingress:
     enabled: true
     hostname: ui.siembol.local
+
+
+# -----------------------------------------------------------------------------
+# storm-topology-manager parameters
+# -----------------------------------------------------------------------------
+manager:
+  appName: "storm-topology-manager"
+  serviceAccount: "storm-topology-manager"
+  image: 
+    repository: "gresearchdev/siembol-storm-topology-manager"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  serviceAccount: "storm-topology-manager"
+  applicationProperties: "resources/application.manager.properties"
+  stormSubmit: "resources/storm-submit.yaml"
+  mountPath: "/opt/storm-topology-manager"
+
+  # Run with an ingress
+  ingress:
+    enabled: true
+    hostname: manager.siembol.local
+
+storm:
+  ingress:
+    enabled: true
+    hostname: storm.siembol.local
