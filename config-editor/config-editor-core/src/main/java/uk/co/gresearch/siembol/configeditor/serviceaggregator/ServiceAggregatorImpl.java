@@ -239,11 +239,12 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
             Pair<GitRepository, ExecutorService> releaseRepo = getGitRepository(props,
                     props.getReleaseRepositoryName(), props.getReleaseRepositoryPath());
 
-
+            String defaultReleaseBranch = releaseRepo.getKey().getDefaultBranch();
             ReleasePullRequestService pullRequestService = new ReleasePullRequestService.Builder()
                     .uri(props.getGithubUrl())
                     .repoName(props.getReleaseRepositoryName())
                     .credentials(props.getGitUserName(), props.getGitPassword())
+                    .branchTo(defaultReleaseBranch)
                     .build();
 
             ConfigStoreImpl.Builder builder = new  ConfigStoreImpl.Builder()

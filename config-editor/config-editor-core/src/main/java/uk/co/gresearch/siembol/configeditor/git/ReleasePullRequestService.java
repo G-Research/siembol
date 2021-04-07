@@ -62,7 +62,7 @@ public class ReleasePullRequestService {
         private String repoName;
         private RepositoryId repoId;
         private PullRequestService service;
-        private String branchTo = GitRepository.MAIN_BRANCH;
+        private String branchTo;
 
         public Builder uri(String uri) {
             this.uri = uri;
@@ -77,6 +77,11 @@ public class ReleasePullRequestService {
         public Builder credentials(String user, String password) {
             this.user = user;
             this.password = password;
+            return this;
+        }
+
+        public Builder branchTo(String branchTo) {
+            this.branchTo = branchTo;
             return this;
         }
 

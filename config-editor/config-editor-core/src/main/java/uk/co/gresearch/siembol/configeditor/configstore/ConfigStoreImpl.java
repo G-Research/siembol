@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.configinfo.TestCaseInfoProvider;

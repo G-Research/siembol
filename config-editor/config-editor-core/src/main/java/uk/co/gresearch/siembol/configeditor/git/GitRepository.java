@@ -34,14 +34,14 @@ public class GitRepository implements Closeable {
     private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for git repository initialisation";
     private static final String ERROR_INIT_MSG = "Error during git repository initialisation";
     private static final String ERROR_PUSH_MSG = "Error during git repository push with message: %s";
-    public static final String MAIN_BRANCH = "master";
-    private static final String GIT_REPO_DIRECTORY_URL_FORMAT = "%s/%s/tree/master/%s";
+    private static final String GIT_REPO_DIRECTORY_URL_FORMAT = "%s/%s/tree/%s/%s";
     private final CredentialsProvider credentialsProvider;
     private final Git git;
     private final String gitUrl;
     private final String repoName;
     private final String repoFolder;
     private final String repoUri;
+    private final String defaultBranch;
     private final ConfigEditorFile.ContentType contentType;
 
     private static String readFile(Path path) throws IOException {
@@ -62,6 +62,7 @@ public class GitRepository implements Closeable {
         repoFolder = builder.repoFolder;
         gitUrl = builder.gitUrl;
         repoName = builder.repoName;
+        defaultBranch = builder.defaultBranch;
     }
 
     public ConfigEditorResult transactCopyAndCommit(
@@ -72,7 +73,7 @@ public class GitRepository implements Closeable {
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
-        if (!MAIN_BRANCH.equals(configInfo.getBranchName())) {
+        if (!defaultBranch.equals(configInfo.getBranchName())) {
             git.branchCreate().setName(configInfo.getBranchName()).call();
             git.checkout().setName(configInfo.getBranchName()).call();
         }
@@ -112,8 +113,8 @@ public class GitRepository implements Closeable {
         }
 
         ConfigEditorResult result = getFiles(directory, fileNameFilter);
-        if (!MAIN_BRANCH.equals(configInfo.getBranchName())) {
-            git.checkout().setName(MAIN_BRANCH).call();
+        if (!defaultBranch.equals(configInfo.getBranchName())) {
+            git.checkout().setName(defaultBranch).call();
         }
         return result;
     }
@@ -196,7 +197,11 @@ public class GitRepository implements Closeable {
     }
 
     public String getDirectoryUrl(String directory) {
-        return String.format(GIT_REPO_DIRECTORY_URL_FORMAT, gitUrl, repoName, directory);
+        return String.format(GIT_REPO_DIRECTORY_URL_FORMAT, gitUrl, repoName, defaultBranch, directory);
+    }
+
+    public String getDefaultBranch() {
+        return defaultBranch;
     }
 
     @Override
@@ -210,6 +215,7 @@ public class GitRepository implements Closeable {
         private String repoUri;
         private String gitUrl;
         private String repoFolder;
+        private String defaultBranch;
         private CredentialsProvider credentialsProvider;
         private Git git;
         private ConfigEditorFile.ContentType contentType = ConfigEditorFile.ContentType.RAW_JSON_STRING;
@@ -257,7 +263,8 @@ public class GitRepository implements Closeable {
                     .setDirectory(repoFolderDir)
                     .call();
 
-            if (git == null || !repoFolderDir.exists()) {
+            defaultBranch = git.getRepository().getBranch();
+            if (git == null || defaultBranch == null || !repoFolderDir.exists()) {
                 throw new IllegalStateException(ERROR_INIT_MSG);
             }
 
