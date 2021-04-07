@@ -1,0 +1,67 @@
+/* ==========================================================================
+   About Gallery
+   ========================================================================== */
+
+.features-thumb {
+	
+	margin-bottom: 10px;
+	border-bottom-right-radius: 60px;
+	border-right: 1px solid @brand-main-color;
+	border-bottom: 1px solid @brand-main-color;
+	.transition(all, @transitions-delay, ease);
+
+	.thumb-header {
+
+		width: 100%;
+		border-top-left-radius: 60px;
+		padding: 5px 0 5px 0;
+		.transition(all, @transitions-delay, ease);
+
+		background-color: @brand-main-color;
+
+		h3 {
+			color: @brand-secondary-color;
+		}
+
+	}
+
+	.thumb-content {
+
+		padding: 15px 15px;
+		border-left: 1px solid @brand-main-color;
+		border-bottom-right-radius: 60px;
+		.transition(all, @transitions-delay, ease);
+
+		i.fa {
+			.transition(all, @transitions-delay, ease);
+		}
+
+		p {
+			.transition(all, @transitions-delay, ease);
+		}
+
+	}
+
+	&:hover {
+
+		.thumb-header {
+			background-color: darken(@brand-main-color, 5);
+		}
+
+		.thumb-content {
+
+			background-color: @brand-main-color;
+
+			i.fa {
+				color: @brand-secondary-color;
+				.longShadow(darken(@brand-main-color, 10%), 25);
+			}
+
+			p {
+				color: @brand-secondary-color;
+			}
+
+		}
+	}
+
+}

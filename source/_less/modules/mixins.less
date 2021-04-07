@@ -1,0 +1,137 @@
+
+/* ==========================================================================
+   Mixins
+   ========================================================================== */
+
+// Cover Background Images
+// -------------------------
+
+.cover-image(@image-url) {
+
+	background: transparent url(@image-url) center 0 no-repeat fixed;
+
+	-webkit-background-size: cover;
+	   -moz-background-size: cover;
+	     -o-background-size: cover;
+	        background-size: cover;
+            
+    // Fix for image cover on mobile devices
+    @media (max-device-width: 1024px) {
+        background-attachment: scroll;
+
+    }
+
+}
+
+// Transitions
+// -------------------------
+
+.transition(@property, @duration, @timing) {
+
+    -webkit-transition-property: @property;
+       -moz-transition-property: @property;
+         -o-transition-property: @property;
+            transition-property: @property;
+
+    -webkit-transition-duration: ~"@{duration}s";
+       -moz-transition-duration: ~"@{duration}s";
+         -o-transition-duration: ~"@{duration}s";
+            transition-duration: ~"@{duration}s";
+
+    -webkit-transition-timing-function: @timing;
+       -moz-transition-timing-function: @timing;
+         -o-transition-timing-function: @timing;
+            transition-timing-function: @timing;
+
+}
+
+// Transforms
+// -------------------------
+
+.scale (@factor) {
+
+    -webkit-transform: scale(@factor);
+       -moz-transform: scale(@factor);
+        -ms-transform: scale(@factor);
+         -o-transform: scale(@factor);
+            transform: scale(@factor);
+
+}
+
+// Opacity
+// -------------------------
+
+.opacity (@opacity) {
+
+    -webkit-opacity: @opacity;
+       -moz-opacity: @opacity;
+       -o-transform: @opacity;
+            opacity: @opacity;
+
+    @opacityPercentage: @opacity * 100;
+    -ms-filter: ~"progid:DXImageTransform.Microsoft.Alpha(opacity=(@{opacityPercentage}))"; 
+    filter: ~`"alpha(opacity=" + "@{opacityPercentage}" + ")"`;
+    zoom: 1;
+
+}
+
+// Blur
+// -------------------------
+
+.blur(@factor){
+
+    -webkit-filter: blur(~"@{factor}px");
+       -moz-filter: blur(~"@{factor}px");
+        -ms-filter: blur(~"@{factor}px");
+         -o-filter: blur(~"@{factor}px");
+            filter: blur(~"@{factor}px");
+
+}
+
+// Border Radius
+// -------------------------
+
+.border-radius(@radius) {
+
+     -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+     border-radius: @radius;
+
+}
+
+// HEX to RGBA
+// -------------------------
+
+.background-opacity(@color, @opacity) {
+    @rgba-color: rgba(red(@color), green(@color), blue(@color), @opacity);
+
+    background-color: @rgba-color;
+
+    // IE8
+    background: none\9; // Only IE8
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d')", argb(@rgba-color), argb(@rgba-color))); // IE9 and down
+    // IE9
+    &:not([dummy]) {
+      filter: progid:DXImageTransform.Microsoft.gradient(enabled='false'); // Only IE9
+    }
+}
+
+// Long Shadow
+// -------------------------
+
+.longShadow(@color, @size, @spread: 100, @flag: 1, @tmp: '') when (@size > 0) {
+
+     @percent: round(@flag / @size * 100) * @spread;
+     @shadowColor: fade(@color, @percent);
+     @shadow: ~"@{size}px @{size}px 1px @{shadowColor}";
+     @ends: ~"@{shadow}, @{tmp}";
+     @shadowString: ~"@{ends} 0px 0px 1px #000";
+
+     .longShadowLoop(@string, @index) when (@index < 1) {
+          text-shadow: @string;
+     }
+
+     .longShadowLoop(@shadowString, @size - 1);
+     .longShadow(@color, @size - 1, @spread, @flag + 1, @ends);
+
+}

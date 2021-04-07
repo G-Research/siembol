@@ -1,0 +1,31 @@
+		<section id="work" class="section-content secondary-background-color">
+			<img class="top-diagonal hidden-xs hidden-sm" src="media/img/top-diagonal.png" alt="">
+
+			<div class="container padding-top-100 padding-bottom-100">
+				<div class="row">
+					<div class="col-lg-12">
+						<h1 class="text-center">Work.</h1>
+						<hr class="margin-bottom-50">
+
+						<div class="mosaic-gallery-wrapper margin-top-50">
+							<ul class="mosaic-list">
+								{% for thumbs in site.work_thumbs %}
+								<li class="mosaic-gallery-item col-lg-3 col-ms-3 col-sm-6">
+									<img src="{{ thumbs.image }}" alt="{{ thumbs.title }}">
+									<div class="mosaic-thumb-overlay">
+										<a href="{{ thumbs.url }}">
+											<div class="mosaic-thumb-detail">
+												<h3>{{ thumbs.title }}</h3>
+												<span>{{ thumbs.description }}</span>
+												<i class="fa fa-plus-square-o"></i>
+											</div>
+										</a>
+									</div>
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>

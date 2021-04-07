@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Mosaic Gallery
+   ========================================================================== */
+
+.mosaic-gallery-wrapper {
+     overflow: hidden;
+}
+
+.mosaic-list {
+
+     width: 100%;
+     padding: 0 0;
+
+     li {
+          position: relative;
+          float: left;
+          padding: 0px 0px;
+          overflow: hidden;
+          border: 5px solid transparent;
+
+          img {
+               width: 100%;
+               max-width: 100%;
+               .transition(all, (@transitions-delay / 2), ease);
+          }
+
+          &:hover img {
+               .scale(2);
+               .blur(1);
+          }
+     }
+
+     .mosaic-thumb-overlay {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          max-width: 100%;
+          height: 100%;
+          .opacity(0);
+          .transition(opacity, @transitions-delay, ease);
+          .background-opacity(@brand-main-color, 0.5);
+          border: 3px solid @brand-main-color;
+
+          &:hover {
+               .opacity(1);
+          }
+
+          &:hover i {
+               font-size: 200px;
+               margin: -80px 0 0 -80px;
+          }
+
+          a {
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+          }
+     }
+
+     .mosaic-thumb-detail {
+          position: absolute;
+          left: 0;
+          bottom: 50%;
+          margin-bottom: -2.5em;
+          width: 100%;
+          text-align: center;
+          color: #fff;
+
+          h3 {
+               color: @brand-secondary-color;
+          }
+
+          span {
+               font-family: @brand-secondary-font;
+          }
+
+          i {
+               font-size: 100px;
+               position: absolute;
+               left: 50%;
+               top: 50%;
+               margin: -40px 0 0 -40px;
+               .opacity(0.2);
+               .transition(all, @transitions-delay, ease);
+          }
+     }
+}

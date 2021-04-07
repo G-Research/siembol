@@ -1,0 +1,98 @@
+/* ==========================================================================
+   Pricing Tables
+   ========================================================================== */
+
+.promos-wrapper {
+    margin: 0 auto;
+}
+
+.promo {
+
+    margin-top: 20px;
+    text-align: center;
+    border-top-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+    background: @brand-secondary-color;
+    border: 1px solid darken(@brand-main-color, 20);
+
+    .features {
+        margin: 0;
+        padding: 0 20px 0 20px;
+        list-style-type: none;
+    }
+
+    .cost-ribbon {
+    	color: @brand-secondary-color;
+		font-family: @brand-main-font;
+		font-weight: 300;
+		font-size: 30px;
+		margin-bottom: 30px;
+		background-color: darken(@brand-main-color, 5);
+    }
+}
+
+// Mobile
+@media (min-width: @screen-sm-min) {
+
+	.promo { 
+		float: left;
+		display: inline-block;
+		width: 33.333%;
+
+		&.two {
+			float: right;
+		}
+	}
+
+    h2 {
+		padding: 10px 0 10px 0;
+    }
+    .cost-ribbon {
+    	padding: 0px 0px; 
+	}
+
+	.featured {
+		.scale(1.1);
+		background: @brand-main-color;
+	}
+
+}
+
+// Desktop
+@media (min-width: @screen-lg-min) {
+
+	.promo { 
+		float: left;
+		display: inline-block;
+		width: 33.333%;
+		padding: 30px 0 30px 0 !important;
+
+		&.two {
+			float: right;
+		}
+	}
+
+    h2 {
+		padding: 20px 0 20px 0;
+    }
+
+    .cost-ribbon {
+		padding: 30px 0 30px 0;
+    }
+
+	.featured {
+		.scale(1.2);
+		background: @brand-main-color;
+
+		.btn-default {
+			color: darken(@brand-main-color, 15);
+			border-color: darken(@brand-main-color, 15);
+    		
+    		&:hover {
+    			color: @brand-main-color;
+    			background-color: @brand-secondary-color;
+    		}
+    	}
+	}
+
+}
