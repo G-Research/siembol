@@ -12,6 +12,10 @@
     padding-right: 40px !important;
 }
 
+.navbar-header .visible-sm img, .navbar-header .visible-xs img {
+    width: 115px !important;   
+}
+
 /* HERO IMAGE */
 
 .hero-image{
