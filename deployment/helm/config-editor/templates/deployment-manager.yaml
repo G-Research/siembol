@@ -51,18 +51,7 @@ spec:
         #     scheme: HTTP
         #   initialDelaySeconds: 30
         #   periodSeconds: 10
-        env:
-        {{ if .Values.tls.enabled -}}
-        - name: JAVA_OPTS
-          value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
-        {{ end }}
         volumeMounts:
-        {{ if .Values.tls.enabled -}}
-        - name: cacerts
-          mountPath: /etc/ssl/certs/java/cacerts
-          subPath: cacerts
-          readOnly: true        
-        {{ end -}}
         - name: {{ .Values.manager.appName }}
           mountPath: {{ .Values.manager.mountPath }}/application.properties
           subPath: application.properties
@@ -72,11 +61,6 @@ spec:
           subPath: storm-submit.yaml
           readOnly: true
       volumes:
-      {{ if .Values.tls.enabled -}}
-      - name: cacerts
-        secret:
-          secretName: cacerts
-      {{- end }}
       - name: {{ .Values.manager.appName }}
         configMap:
           name: {{ .Values.manager.appName }}
