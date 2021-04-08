@@ -68,3 +68,34 @@ storm:
   ingress:
     enabled: true
     hostname: storm.siembol.local
+
+
+# -----------------------------------------------------------------------------
+# Example app to run
+# -----------------------------------------------------------------------------
+example:
+  enabled: true
+  
+  # -----------------------------------------------------------------------------
+  # Log generator script
+  # -----------------------------------------------------------------------------
+  image: 
+    repository: "python"
+    tag: "slim"
+    pullPolicy: IfNotPresent
+  mountPath: "/opt/log-generator-example"
+  script: "resources/logger.py"
+  requirements: "resources/requirements.txt"
+
+  # -----------------------------------------------------------------------------
+  # Kafka UI - helps visualize the example
+  # -----------------------------------------------------------------------------
+  kafka:
+    ui:
+      appName: kafka-ui
+      enabled: true
+      hostname: kafka-ui.siembol.local
+      image: 
+        repository: provectuslabs/kafka-ui
+        tag: latest   
+  appName: "log-generator-example"
