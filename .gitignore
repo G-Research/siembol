@@ -6,14 +6,11 @@ target
 .idea
 *.sc
 out
-*.sc
 metastore_db
 *.csv
 
 # Intellij
 .idea/
-*.iml
-*.iws
 
 # Maven
 log/
