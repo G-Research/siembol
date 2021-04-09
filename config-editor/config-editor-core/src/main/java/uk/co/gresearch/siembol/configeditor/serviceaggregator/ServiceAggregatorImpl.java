@@ -262,10 +262,12 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                 Pair<GitRepository, ExecutorService> adminConfigRepo = getGitRepository(props,
                         props.getAdminConfigRepositoryName(), props.getAdminConfigRepositoryPath());
 
+                String defaultAdminConfigBranch = adminConfigRepo.getKey().getDefaultBranch();
                 ReleasePullRequestService adminConfigPullRequestService = new ReleasePullRequestService.Builder()
                         .uri(props.getGithubUrl())
                         .repoName(props.getAdminConfigRepositoryName())
                         .credentials(props.getGitUserName(), props.getGitPassword())
+                        .branchTo(defaultAdminConfigBranch)
                         .build();
 
                 builder.adminConfigDirectory(props.getAdminConfigDirectory())
