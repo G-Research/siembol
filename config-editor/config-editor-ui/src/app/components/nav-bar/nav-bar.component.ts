@@ -1,6 +1,6 @@
 import { Component, OnInit} from '@angular/core';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { AppConfigService } from '@app/config/app-config.service';
+import { AppConfigService } from '@app/services/app-config.service';
 import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog.component';

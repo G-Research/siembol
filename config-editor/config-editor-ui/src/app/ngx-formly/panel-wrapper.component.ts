@@ -8,8 +8,8 @@ import { FieldWrapper } from '@ngx-formly/core';
   template: `
     <mat-card>
       <mat-card-header>
-        </mat-card-header>
-        <mat-card-content>
+      </mat-card-header>
+      <mat-card-content>
         <ng-container #fieldComponent></ng-container>
       </mat-card-content>
     <mat-card>

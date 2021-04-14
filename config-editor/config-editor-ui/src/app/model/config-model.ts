@@ -112,7 +112,7 @@ export interface Config {
     description: string;
     tags?: string[];
     fileHistory?: FileHistory[];
-    testCases: TestCaseWrapper[];
+    testCases?: TestCaseWrapper[];
 }
 
 export interface AdminConfig{

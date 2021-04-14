@@ -6,14 +6,14 @@ import { HomeComponent, PageNotFoundComponent } from '../../containers';
 
 import { TestCaseHelpComponent } from '../testing/test-case-help/test-case-help.component';
 import { AppService } from '../../services/app.service';
-import { EditorServiceGuard } from '../../guards/editor-service.guard';
-import { ConfigEditGuard } from '../../guards/config-edit.guard';
-import { AppConfigService } from '../../config';
+import { EditorServiceGuard } from '@app/guards';
+import { ConfigEditGuard } from '@app/guards';
+import { AppConfigService } from '@app/services/app-config.service';
 import { EditorViewComponent } from '../editor-view/editor-view.component';
 import { takeUntil } from 'rxjs/operators';
-import { AuthGuard } from '@app/guards/auth-guard';
+import { AuthGuard } from '@app/guards';
 import { AdminViewComponent } from '../admin-view/admin-view.component';
-import { AdminGuard } from '@app/guards/admin.guard';
+import { AdminGuard } from '@app/guards';
 import { UserRole } from '@app/model/config-model';
 import { cloneDeep } from 'lodash';
 

@@ -40,13 +40,13 @@
               {{service.name | titlecase}} Editor
             </button>
             <span *ngIf="repositoryLinks[service.name]"> 
-              <a mat-menu-item [href]="repositoryLinks[service.name].rule_store_directory_url" >{{repoNames.store_directory_name}}</a>
-              <a mat-menu-item [href]="repositoryLinks[service.name].rules_release_directory_url">{{repoNames.release_directory_name}}</a>
+              <a mat-menu-item [href]="repositoryLinks[service.name].rule_store_directory_url" target="_blank">{{repoNames.store_directory_name}}</a>
+              <a mat-menu-item [href]="repositoryLinks[service.name].rules_release_directory_url" target="_blank">{{repoNames.release_directory_name}}</a>
               <a *ngIf="repositoryLinks[service.name].test_case_store_directory_url" mat-menu-item 
-                [href]="repositoryLinks[service.name].test_case_store_directory_url">{{repoNames.testcase_store_directory_name}}
+                [href]="repositoryLinks[service.name].test_case_store_directory_url" target="_blank">{{repoNames.testcase_store_directory_name}}
               </a>
               <a *ngIf="repositoryLinks[service.name].admin_config_directory_url" mat-menu-item 
-                [href]="repositoryLinks[service.name].admin_config_directory_url">{{repoNames.admin_config_store_directory_name}}
+                [href]="repositoryLinks[service.name].admin_config_directory_url" target="_blank" >{{repoNames.admin_config_store_directory_name}}
               </a>
             </span>
           </span>

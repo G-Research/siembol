@@ -1,7 +1,7 @@
 import { Component, ViewChild, ViewContainerRef, TemplateRef, AfterViewInit } from '@angular/core';
 import { FieldWrapper } from '@ngx-formly/core';
 import { copyTextToClipboard } from '@app/commons';
-import { PopupService } from '@app/popup.service';
+import { PopupService } from '@app/services/popup.service';
 
 
 @Component({
@@ -30,13 +30,13 @@ export class HelpLinkWrapperComponent extends FieldWrapper implements AfterViewI
   @ViewChild('fieldComponent', { read: ViewContainerRef }) fieldComponent: ViewContainerRef;
   @ViewChild('matSuffix') matSuffix: TemplateRef<any>;
 
-    constructor(private snackbar: PopupService) {
-      super();
-    }
+  constructor(private snackbar: PopupService) {
+    super();
+  }
     
   ngAfterViewInit() {
     if (this.matSuffix ) {
-      setTimeout(() => this.to.suffix = this.matSuffix);
+      this.to.suffix = this.matSuffix;
     }
     this.suffixIcon = this.to.suffixIcon ? this.to.suffixIcon : "help_outline";
   }

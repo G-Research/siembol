@@ -2,23 +2,37 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { ChangeDetectorRef, Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FieldType } from '@ngx-formly/material/form-field';
 import { Subject } from 'rxjs';
-import { debounceTime, take } from 'rxjs/operators';
+import { debounceTime, take, takeUntil } from 'rxjs/operators';
+import { MatInput } from '@angular/material/input';
+import { FormControl } from '@angular/forms';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'json-object-type',
-  template: `
-    <span class="row">
-        <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize"
-          spellcheck="false" [ngModel]="val" (ngModelChange)="jsonChange$.next($event)" [errorStateMatcher]="errorStateMatcher">
-        </textarea>
-        <ng-container *ngIf="valid; else invalidJson">
-            <re-json-tree [json]="tree"></re-json-tree>
+    template: `
+    <mat-form-field [style.width]="'100%'" #formfield>
+        <mat-label *ngIf="to.label">
+        {{ to.label }}
+        <span *ngIf="to.required" class="mat-form-field-required-marker">*</span>
+      </mat-label>
+        <span class="row">
+            <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+            spellcheck="false" [ngModel]="val" (ngModelChange)="jsonChange$.next($event)" [errorStateMatcher]="errorStateMatcher">
+            </textarea>
+            <ng-container *ngIf="valid; else invalidJson">
+                <re-json-tree [json]="tree"></re-json-tree>
+            </ng-container>
+            <ng-template #invalidJson>
+                <mat-icon>cancel</mat-icon> json is invalid
+            </ng-template>
+        </span>
+        <ng-container matSuffix *ngIf="to.suffix">
+            <ng-container *ngTemplateOutlet="to.suffix"></ng-container>
         </ng-container>
-        <ng-template #invalidJson>
-            <mat-icon>cancel</mat-icon> json is invalid
-        </ng-template>
-    </span>
+        <mat-hint *ngIf="to?.description && (!to?.errorMessage)"
+                align="end" [innerHTML]="to?.description">
+        </mat-hint>
+    </mat-form-field>
     `,
   styles: [`
     mat-card:last-child {
@@ -51,7 +65,11 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
     _val: string;
     jsonChange$: Subject<string> = new Subject<string>();
     tree: object = {};
-    @ViewChild('autosize') autosize: CdkTextareaAutosize;
+    @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
+    @ViewChild(MatInput, {static: false}) formFieldControl!: MatInput;
+    @ViewChild('formfield', {static: true}) formfield: FormControl;
+
+    private ngUnsubscribe: Subject<any> = new Subject();
 
     constructor(private changeDetector: ChangeDetectorRef, private ngZone: NgZone) {
         super();
@@ -72,7 +90,7 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
             }
         };
         this.changeDetector.markForCheck();
-        this.jsonChange$.pipe(debounceTime(500)).subscribe(s => {
+        this.jsonChange$.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(s => {
             this._val = s;
             try {
                 const parsed = JSON.parse(s);
@@ -106,5 +124,11 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit {
             field = field.parent;
         }
         return keys.reverse().join(".");
+    }
+
+
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
     }
 }

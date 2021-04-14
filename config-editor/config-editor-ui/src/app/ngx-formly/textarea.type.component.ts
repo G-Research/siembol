@@ -1,16 +1,18 @@
-import { Component, ViewChild } from '@angular/core';
-import { MatInput } from '@angular/material/input';
+import { Component, ViewChild, NgZone, AfterViewInit } from '@angular/core';
 import { FieldType } from '@ngx-formly/material/form-field';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { take } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'formly-field-mat-textarea',
   template: `
-        <textarea 
+        <textarea
+          cdkTextareaAutosize 
+          #autosize="cdkTextareaAutosize"
           class="text-area" 
           highlight 
           matInput          
-          cdkTextareaAutosize 
           spellcheck="false"
           [class.hide-text]="true"
           [id]="id"
@@ -21,7 +23,6 @@ import { FieldType } from '@ngx-formly/material/form-field';
           [formlyAttributes]="field"
           [placeholder]="to.placeholder"
           [tabindex]="to.tabindex || 0"
-          [readonly]="to.readonly"
           >
         </textarea>
         <div 
@@ -62,6 +63,18 @@ import { FieldType } from '@ngx-formly/material/form-field';
     }
   `],
 })
-export class TextAreaTypeComponent extends FieldType {
-  @ViewChild(MatInput, { static: true }) formFieldControl!: MatInput;
+export class TextAreaTypeComponent extends FieldType implements AfterViewInit  {
+  @ViewChild('autosize') autosize: CdkTextareaAutosize;
+
+  constructor(private ngZone: NgZone) {
+    super();
+  } 
+
+  ngAfterViewInit() {
+    this.triggerResize();
+  }
+  
+  triggerResize() {
+    this.ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
+  }
 }

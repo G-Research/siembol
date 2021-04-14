@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +30,6 @@ import { MatGridListModule } from '@angular/material/grid-list';
 @NgModule({
   imports: [
     CommonModule,
-    FlexLayoutModule,
     FormsModule,
     MatAutocompleteModule,
     MatButtonModule,
@@ -62,7 +60,6 @@ import { MatGridListModule } from '@angular/material/grid-list';
   ],
   exports: [
     CommonModule,
-    FlexLayoutModule,
     FormsModule,
     MatAutocompleteModule,
     MatButtonModule,

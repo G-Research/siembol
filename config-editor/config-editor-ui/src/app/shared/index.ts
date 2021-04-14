@@ -1,1 +1,1 @@
-// export { SharedModule } from './shared.module';
+export { SharedModule } from './shared.module';

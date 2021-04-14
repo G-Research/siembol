@@ -1,6 +1,6 @@
 import { ErrorHandler, Injectable, NgZone } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StatusCode } from './commons';
+import { StatusCode } from './model';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 

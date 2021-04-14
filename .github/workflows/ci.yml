@@ -200,7 +200,7 @@ jobs:
             npm-config-editor-ui-
       - name: Install NPM packages
         run: |
-          npm install typescript@3.7.5
+          npm install typescript@4.1.5
           npm ci
       - name: Testing
         run: npm run test-ci

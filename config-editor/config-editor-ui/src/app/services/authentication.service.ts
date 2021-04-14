@@ -1,5 +1,5 @@
-import { Observable } from "rxjs";
-import { HttpRequest } from "@angular/common/http";
+import { Observable, of } from 'rxjs';
+import { HttpRequest } from '@angular/common/http';
 
 export interface IAuthenticationService {
   loadedUser: boolean;
@@ -8,11 +8,12 @@ export interface IAuthenticationService {
   loadUser(): void;
   modifyRequest(req: HttpRequest<any>): HttpRequest<any>;
   isCallbackUrl(url: string): boolean;
-};
+}
 
 export class DefaultAuthenticationService implements IAuthenticationService {
-  private readonly REDIRECTED_URI_KEY = "siembol_redirected_url";
+  private readonly REDIRECTED_URI_KEY = 'siembol_redirected_url';
 
+  // eslint-disable-next-line no-unused-vars
   isCallbackUrl(url: string): boolean {
     return false;
   }
@@ -30,10 +31,10 @@ export class DefaultAuthenticationService implements IAuthenticationService {
   }
 
   get loadedUser$() {
-    return Observable.of(true);
+    return of(true);
   }
 
-  loadUser(): void { }
+  loadUser(): void {}
 
   modifyRequest(req: HttpRequest<any>): HttpRequest<any> {
     return req;

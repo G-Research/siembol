@@ -7,16 +7,23 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  ErrorDialogComponent, NavBarComponent, SideNavComponent, JsonViewerComponent, ConfigManagerComponent, DeployDialogComponent,
-  SubmitDialogComponent, LandingPageComponent, SearchComponent
+  ErrorDialogComponent,
+  NavBarComponent,
+  SideNavComponent,
+  JsonViewerComponent,
+  ConfigManagerComponent,
+  DeployDialogComponent,
+  SubmitDialogComponent,
+  LandingPageComponent,
+  SearchComponent,
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
-import { InputTypeComponent } from './ngx-formly/components/input.type.component';
+import { InputTypeComponent } from './ngx-formly/input.type.component';
 import { DeploymentTileComponent } from '@app/components/tile/deployment-tile.component';
-import { AppConfigService, ConfigModule } from '@app/config';
+import { AppConfigService } from '@app/services/app-config.service';
 import { HomeComponent, PageNotFoundComponent } from '@app/containers';
 import { CredentialsInterceptor } from '@app/credentials-interceptor';
-import { SharedModule } from '@app/shared/shared.module';
+import { SharedModule } from '@app/shared';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
 import { NgxPopperModule } from 'ngx-popper';
@@ -32,22 +39,21 @@ import { TestCaseHelpComponent } from './components/testing/test-case-help/test-
 import { TestCaseEditorComponent } from './components/testing/test-case-editor/test-case-editor.component';
 import { TestCentreComponent } from './components/testing/test-centre/test-centre.component';
 import { TestResultsComponent } from './components/testing/test-results/test-results.component';
-import { JsonTreeComponent } from './json-tree/json-tree.component';
-import { ArrayTypeComponent } from './ngx-formly/components/array.type';
-import { ExpansionPanelWrapperComponent } from './ngx-formly/components/expansion-panel-wrapper.component';
-import { JsonObjectTypeComponent } from './ngx-formly/components/json-object.type.component';
-import { UnionTypeComponent } from './ngx-formly/components/union.type.component';
-import { NullTypeComponent } from './ngx-formly/components/null.type';
-import { ObjectTypeComponent } from './ngx-formly/components/object.type.component';
-import { PanelWrapperComponent } from './ngx-formly/components/panel-wrapper.component';
-import { FormlyWrapperFormField } from './ngx-formly/components/form-field.wrapper';
-import { TabArrayTypeComponent } from './ngx-formly/components/tab-array.type.component';
-import { TabsWrapperComponent } from './ngx-formly/components/tabs-wrapper.component';
-import { TabsetTypeComponent } from './ngx-formly/components/tabset.type.component';
-import { AdminTabTypeComponent } from './ngx-formly/components/admin-tabs.type.component';
-import { TextAreaTypeComponent } from './ngx-formly/components/textarea.type.component';
+import { JsonTreeComponent } from './components/json-tree/json-tree.component';
+import { ArrayTypeComponent } from './ngx-formly/array.type';
+import { ExpansionPanelWrapperComponent } from './ngx-formly/expansion-panel-wrapper.component';
+import { JsonObjectTypeComponent } from './ngx-formly/json-object.type.component';
+import { UnionTypeComponent } from './ngx-formly/union.type.component';
+import { NullTypeComponent } from './ngx-formly/null.type';
+import { ObjectTypeComponent } from './ngx-formly/object.type.component';
+import { PanelWrapperComponent } from './ngx-formly/panel-wrapper.component';
+import { TabArrayTypeComponent } from './ngx-formly/tab-array.type.component';
+import { TabsWrapperComponent } from './ngx-formly/tabs-wrapper.component';
+import { TabsetTypeComponent } from './ngx-formly/tabset.type.component';
+import { AdminTabTypeComponent } from './ngx-formly/admin-tabs.type.component';
+import { TextAreaTypeComponent } from './ngx-formly/textarea.type.component';
 import { HighlightVariablesPipe } from './pipes';
-import { PopupService } from './popup.service';
+import { PopupService } from './services/popup.service';
 import { BuildInfoDialogComponent } from './components/build-info-dialog/build-info-dialog.component';
 import { ConfigTestingComponent } from './components/testing/config-testing/config-testing.component';
 
@@ -55,13 +61,12 @@ import { RouterModule } from '@angular/router';
 import { EditorViewComponent } from './components/editor-view/editor-view.component';
 import { HomeViewComponent } from './components/home-view/home-view.component';
 import { AdminViewComponent } from './components/admin-view/admin-view.component';
-import { AppInitGuard } from './guards/app-init.guard';
+import { AppInitGuard, AuthGuard } from './guards';
 import { AppService } from './services/app.service';
 import { AppInitComponent } from './components/app-init/app-init.component';
-import { AuthGuard } from './guards/auth-guard';
 import { HttpErrorInterceptor } from './http-error-interceptor';
 import { GlobalErrorHandler } from './error-handler';
-import { HelpLinkWrapperComponent } from './ngx-formly/components/help-link.wrapper';
+import { HelpLinkWrapperComponent } from './ngx-formly/help-link.wrapper';
 import { UrlHistoryService } from './services/url-history.service';
 
 export function configServiceFactory(config: AppConfigService) {
@@ -73,11 +78,11 @@ export function buildInfoServiceFactory(config: AppConfigService) {
 }
 
 const PROD_PROVIDERS = [
-  { provide: APP_INITIALIZER, useFactory: configServiceFactory, deps: [AppConfigService], multi: true },
-  { provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory, deps: [AppConfigService], multi: true },
-  { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true },
-  { provide: ErrorHandler, useClass: GlobalErrorHandler},
-  { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
+  { deps: [AppConfigService], multi: true, provide: APP_INITIALIZER, useFactory: configServiceFactory },
+  { deps: [AppConfigService], multi: true, provide: APP_INITIALIZER, useFactory: buildInfoServiceFactory },
+  { multi: true, provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor },
+  { provide: ErrorHandler, useClass: GlobalErrorHandler },
+  { multi: true, provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor },
 ];
 
 const DEV_PROVIDERS = [...PROD_PROVIDERS];
@@ -114,7 +119,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     TabsetTypeComponent,
     AdminTabTypeComponent,
     ExpansionPanelWrapperComponent,
-    FormlyWrapperFormField,
     HelpLinkWrapperComponent,
     TextAreaTypeComponent,
     HighlightVariablesPipe,
@@ -132,85 +136,88 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
   imports: [
     BrowserModule,
     BlockUIModule.forRoot(),
-    RouterModule.forRoot([
-      {
-        path: '',
-        canActivate: [AuthGuard],
-        children: [
-          {
-            path: '**',
-            canActivate: [AppInitGuard],
-            component: AppInitComponent,
-          }]
-      }], { useHash: false }),
+    RouterModule.forRoot(
+      [
+        {
+          canActivate: [AuthGuard],
+          children: [
+            {
+              canActivate: [AppInitGuard],
+              component: AppInitComponent,
+              path: '**',
+            },
+          ],
+          path: '',
+        },
+      ],
+      { useHash: false }
+    ),
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
-    ConfigModule,
     DragDropModule,
     NgScrollbarModule,
     NgxTextDiffModule,
     ScrollingModule,
     FormlyModule.forRoot({
-      validationMessages: [
-        { name: 'required', message: 'This field is required' },
-        { name: 'null', message: 'should be null' },
-        { name: 'minlength', message: 'Min length is' },
-        { name: 'maxlength', message: 'Max length is' },
-        { name: 'min', message: 'Min is' },
-        { name: 'max', message: 'Max is' },
-        { name: 'minItems', message: 'Min items required' },
-        { name: 'maxItems', message: 'Max items' },
-        { name: 'invalidJson', message: 'Json is not valid' },
-      ],
-      types: [
-        { name: 'string', component: InputTypeComponent, wrappers: ['form-field'] },
-        { name: 'textarea', component: TextAreaTypeComponent, wrappers: ['form-field'] },
-        { name: 'rawobject', component: JsonObjectTypeComponent, wrappers: ['form-field'] },
-        {
-          name: 'number',
-          extends: 'input',
-          wrappers: ['form-field'],
-          defaultOptions: {
-            templateOptions: {
-              type: 'number',
-            },
-          },
-        },
-        {
-          name: 'integer',
-          extends: 'input',
-          wrappers: ['form-field'],
-          defaultOptions: {
-            templateOptions: {
-              type: 'number',
-            },
-          },
-        },
-        { name: 'boolean', extends: 'checkbox' },
-        { name: 'enum', extends: 'select' },
-        { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
-        { name: 'array', component: ArrayTypeComponent },
-        { name: 'object', component: ObjectTypeComponent },
-        { name: 'tabs', component: TabsetTypeComponent },
-        { name: 'admin-tabs', component: AdminTabTypeComponent},
-        { name: 'multischema', component: UnionTypeComponent },
-        { name: 'tab-array', component: TabArrayTypeComponent },
-      ],
-      wrappers: [
-        { name: 'panel', component: PanelWrapperComponent },
-        { name: 'expansion-panel', component: ExpansionPanelWrapperComponent },
-        { name: 'form-field', component: FormlyWrapperFormField },
-        { name: 'help-link', component: HelpLinkWrapperComponent },
-      ],
       extras: {
         checkExpressionOn: 'changeDetectionCheck',
-        resetFieldOnHide: true
+        lazyRender: false,
       },
+      types: [
+        { component: InputTypeComponent, name: 'string', wrappers: ['form-field'] },
+        { component: TextAreaTypeComponent, name: 'textarea', wrappers: ['form-field'] },
+        { component: JsonObjectTypeComponent, name: 'rawobject' },
+        {
+          defaultOptions: {
+            templateOptions: {
+              type: 'number',
+            },
+          },
+          extends: 'input',
+          name: 'number',
+          wrappers: ['form-field'],
+        },
+        {
+          defaultOptions: {
+            templateOptions: {
+              type: 'number',
+            },
+          },
+          extends: 'input',
+          name: 'integer',
+          wrappers: ['form-field'],
+        },
+        { extends: 'checkbox', name: 'boolean' },
+        { extends: 'select', name: 'enum' },
+        { component: NullTypeComponent, name: 'null', wrappers: ['form-field'] },
+        { component: ArrayTypeComponent, name: 'array' },
+        { component: ObjectTypeComponent, name: 'object' },
+        { component: TabsetTypeComponent, name: 'tabs' },
+        { component: AdminTabTypeComponent, name: 'admin-tabs' },
+        { component: UnionTypeComponent, name: 'multischema' },
+        { component: TabArrayTypeComponent, name: 'tab-array' },
+      ],
+      validationMessages: [
+        { message: 'This field is required', name: 'required' },
+        { message: 'should be null', name: 'null' },
+        { message: 'Min length is', name: 'minlength' },
+        { message: 'Max length is', name: 'maxlength' },
+        { message: 'Min is', name: 'min' },
+        { message: 'Max is', name: 'max' },
+        { message: 'Min items required', name: 'minItems' },
+        { message: 'Max items', name: 'maxItems' },
+        { message: 'Json is not valid', name: 'invalidJson' },
+      ],
+      wrappers: [
+        { component: PanelWrapperComponent, name: 'panel' },
+        { component: ExpansionPanelWrapperComponent, name: 'expansion-panel' },
+        { component: HelpLinkWrapperComponent, name: 'help-link' },
+      ],
     }),
     ReactiveFormsModule,
     FormlyMaterialModule,
-    NgxPopperModule.forRoot({})
+    NgxPopperModule.forRoot({}),
   ],
   providers: [
     environment.production ? PROD_PROVIDERS : DEV_PROVIDERS,
@@ -219,8 +226,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     AppService,
     AppInitGuard,
     HighlightVariablesPipe,
-    UrlHistoryService
+    UrlHistoryService,
   ],
-
 })
 export class AppModule {}

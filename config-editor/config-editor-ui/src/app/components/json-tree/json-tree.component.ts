@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { PopupService } from '@app/popup.service';
+import { PopupService } from '@app/services/popup.service';
 import { copyTextToClipboard } from '@app/commons';
 
 export interface Segment {

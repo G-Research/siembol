@@ -343,8 +343,8 @@
       "widget": {
         "formlyConfig": {
           "wrappers": [
-            "help-link",
-            "panel"
+            "panel",
+            "help-link"
           ],
           "templateOptions": {
             "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"

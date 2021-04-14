@@ -8,25 +8,21 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
     // Currently fails AOT builds when true.  Can be updated periodically and run locally to remove unnecessary code.
     "noUnusedParameters": false,
     "esModuleInterop": true,
     "target": "es2015",
     "resolveJsonModule": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "typeRoots": [ "node_modules/@types" ],
+    "lib": [ "es2018", "dom" ],
     "paths": {
       "@app/*": ["app/*"],
       "@env/*": ["environments/*"],
       "@model/*": ["app/model/*"],
       "@model": ["app/model/index"],
-      "@services/*": ["app/services/*"],
+      "@services/*": ["app/services/*"]
     }
   }
 }

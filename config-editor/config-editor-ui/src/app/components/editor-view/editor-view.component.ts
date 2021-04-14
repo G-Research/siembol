@@ -12,6 +12,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
 import { TestingType } from '@app/model/config-model';
+import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,7 +53,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
     this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema)),
+      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
     ];
   }
 
@@ -70,7 +71,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   public ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema)),
+        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
       ];
 
       this.testingEnabled = () => this.editorService.metaDataMap.testing.perConfigTestEnabled

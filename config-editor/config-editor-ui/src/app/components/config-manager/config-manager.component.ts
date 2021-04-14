@@ -8,14 +8,14 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { Config, Deployment, PullRequestInfo } from '@app/model';
-import { PopupService } from '@app/popup.service';
+import { PopupService } from '@app/services/popup.service';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { DeployDialogComponent } from '../deploy-dialog/deploy-dialog.component';
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
-import { ConfigStoreService } from '../../services/config-store.service';
+import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 

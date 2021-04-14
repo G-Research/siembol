@@ -18,7 +18,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
       [formControl]="formControl"
       [formlyAttributes]="field"
       [tabindex]="to.tabindex || 0"
-      [placeholder]="to.placeholder">
+      [placeholder]="to.placeholder"/>
   `,
     styles: [`
         .hide-text {

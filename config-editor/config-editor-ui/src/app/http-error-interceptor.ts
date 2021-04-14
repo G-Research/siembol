@@ -1,8 +1,8 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError, timer } from 'rxjs';
 import { retryWhen, mergeMap} from 'rxjs/operators';
-import { StatusCode } from './commons';
+import { StatusCode } from './model';
 
 @Injectable({
     providedIn: 'root',

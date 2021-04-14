@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { ConfigData, PullRequestInfo } from '@app/model';
 import { Type, AdminConfig } from '@app/model/config-model';
-import { PopupService } from '@app/popup.service';
+import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';

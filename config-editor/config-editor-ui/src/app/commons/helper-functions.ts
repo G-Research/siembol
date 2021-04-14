@@ -31,3 +31,7 @@ export function parseUrl(path: string): UrlInfo {
     
     return { service: service, mode: mode, configName: configName, testCaseName: testCaseName };    
 }
+
+export function replacer(key, value) {
+    return value === null ? undefined : value;
+}

@@ -1,0 +1,135 @@
+{
+  "extends": [
+    "plugin:@angular-eslint/ng-cli-compat",
+    "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
+    "plugin:@angular-eslint/template/process-inline-templates",
+    "eslint:recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "sort-keys-fix"
+  ],
+  "rules": {
+    "@angular-eslint/component-selector": [
+      "error",
+      { "type": "element", "prefix": "re", "style": "kebab-case" }
+    ],
+    "no-prototype-builtins": "off",
+    "sort-keys-fix/sort-keys-fix": "warn",
+    "arrow-parens": [
+      "error",
+      "as-needed"
+    ],
+    "brace-style": [
+      "error",
+      "1tbs"
+    ],
+    "comma-dangle": [
+      "error",
+      {
+        "objects": "always-multiline",
+        "arrays": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "never"
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*.spec.ts"
+        ]
+      }
+    ],
+    "no-console": "off",
+    "no-duplicate-case": "error",
+    "no-duplicate-imports": "error",
+    "no-else-return": "error",
+    "no-multiple-empty-lines": "error",
+    "no-return-await": "error",
+    "no-shadow": "off",
+    "no-underscore-dangle": "off",
+    "no-useless-constructor": "off",
+    "prefer-arrow/prefer-arrow-functions": "off",
+    "sort-keys": "error",
+    "@angular-eslint/prefer-output-readonly": "error",
+    "@angular-eslint/use-component-view-encapsulation": "error",
+    "@typescript-eslint/array-type": [
+      "error",
+      {
+        "default": "array"
+      }
+    ],
+    "@typescript-eslint/consistent-type-definitions": "error",
+    "@typescript-eslint/dot-notation": "off",
+    "@typescript-eslint/member-ordering": [
+      "error",
+      {
+        "default": {
+          "memberTypes": [
+            "public-static-field",
+            "protected-static-field",
+            "private-static-field",
+            "public-decorated-field",
+            "protected-decorated-field",
+            "private-decorated-field",
+            "public-instance-field",
+            "protected-instance-field",
+            "private-instance-field",
+            "public-abstract-field",
+            "protected-abstract-field",
+            "private-abstract-field",
+            "public-field",
+            "protected-field",
+            "private-field",
+            "static-field",
+            "instance-field",
+            "abstract-field",
+            "decorated-field",
+            "field",
+            "constructor",
+            "public-static-method",
+            "protected-static-method",
+            "private-static-method",
+            "public-decorated-method",
+            "protected-decorated-method",
+            "private-decorated-method",
+            "public-instance-method",
+            "protected-instance-method",
+            "private-instance-method",
+            "public-abstract-method",
+            "protected-abstract-method",
+            "private-abstract-method",
+            "public-method",
+            "protected-method",
+            "private-method",
+            "static-method",
+            "instance-method",
+            "abstract-method",
+            "decorated-method",
+            "method"
+          ]
+        }
+      }
+    ],
+    "@typescript-eslint/no-var-requires": "error",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "enumMember",
+        "format": [
+          "PascalCase"
+        ]
+      }
+    ],
+    "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/no-unused-expressions": [
+      "error",
+      {
+        "allowTernary": true
+      }
+    ],
+    "@typescript-eslint/no-useless-constructor": "error"
+  }
+}

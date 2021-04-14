@@ -15,7 +15,8 @@ export interface TestCase {
     config_name: string,
     test_case_name: string,
     test_specification: any,
-    assertions: Assertion[]
+    assertions: Assertion[],
+    description?: string
 }
 
 export interface TestCaseWrapper {
@@ -49,7 +50,7 @@ export interface Assertion {
     assertion_type: string;
     json_path: string;
     expected_pattern: string;
-    negated_pattern: string;
+    negated_pattern: boolean;
     description: string;
     active: boolean;
 }

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UrlHistoryService } from '@app/services/url-history.service';
-import { AppConfigService } from '@app/config';
+import { AppConfigService } from '@app/services/app-config.service';
 import { Router } from '@angular/router';
 import { HomeHelpLink } from '@app/model/app-config';
 import { ServiceInfo } from '@app/model/config-model';

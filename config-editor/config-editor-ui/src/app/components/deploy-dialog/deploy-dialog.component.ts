@@ -1,10 +1,10 @@
-import { UiMetadataMap } from '../../model/ui-metadata-map';
+import { UiMetadata } from '../../model/ui-metadata-map';
 
 import { Component, Inject, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { FormGroup } from '@angular/forms';
-import { AppConfigService } from '@app/config';
+import { AppConfigService } from '@app/services/app-config.service';
 import { EditorService } from '@services/editor.service';
 import { ConfigData, Deployment } from '@app/model';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -34,7 +34,7 @@ export class DeployDialogComponent {
     statusCode: string;
     deploymentSchema = {};
     serviceName: string;
-    uiMetadata: UiMetadataMap;
+    uiMetadata: UiMetadata;
     extrasData = {};
     testingType = TestingType.DEPLOYMENT_TESTING;
 

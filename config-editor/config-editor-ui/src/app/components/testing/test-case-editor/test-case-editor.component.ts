@@ -4,16 +4,16 @@ import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case'
 import { Type } from '@app/model/config-model';
 import { FormlyForm, FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
-import { EditorService } from '../../../services/editor.service';
+import { EditorService } from '@app/services/editor.service';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
-import { AppConfigService } from '../../../config/app-config.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TestStoreService } from '../../../services/test-store.service';
+import { TestStoreService } from '@app/services/store/test-store.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppService } from '../../../services/app.service';
+import { AppService } from '@app/services/app.service';
+import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
     selector: 're-test-case-editor',
@@ -57,7 +57,8 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
             const schemaConverter = new FormlyJsonschema();
             this.editorService.configSchema.formatTitlesInSchema(schema, '');
             this.options = {
-                resetOnHide: false
+                resetOnHide: false,
+                map: SchemaService.renameDescription
             }
             this.fields = [schemaConverter.toFieldConfig(schema, this.options)];
 

@@ -88,7 +88,7 @@
             "widget": {
                 "formlyConfig": {
                     "wrappers": [
-                        "form-field", "help-link"
+                        "help-link"
                     ],
                     "templateOptions": {
                         "link": "https://kafka.apache.org/0102/documentation.html#consumerconfigs"
@@ -124,7 +124,7 @@
             "widget": {
                 "formlyConfig": {
                     "wrappers": [
-                        "form-field", "help-link"
+                        "help-link"
                     ],
                     "templateOptions": {
                         "link": "https://storm.apache.org/releases/current/Configuration.html"
@@ -136,7 +136,7 @@
             "widget": {
                 "formlyConfig": {
                     "wrappers": [
-                        "form-field", "help-link"
+                        "help-link"
                     ],
                     "templateOptions": {
                         "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"

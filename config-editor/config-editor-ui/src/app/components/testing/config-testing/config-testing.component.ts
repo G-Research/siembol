@@ -6,6 +6,7 @@ import { FormlyForm } from '@ngx-formly/core';
 import { ConfigTestResult, TestingType } from '../../../model/config-model';
 import { take } from 'rxjs/operators';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
   selector: 're-config-testing',
@@ -38,7 +39,7 @@ export class ConfigTestingComponent implements OnInit {
     if (this.editorService.metaDataMap.testing.perConfigTestEnabled) {
       let schema = this.editorService.testSpecificationSchema;
       this.editorService.configSchema.formatTitlesInSchema(schema, '');
-      this.fields = [new FormlyJsonschema().toFieldConfig(schema)];
+      this.fields = [new FormlyJsonschema().toFieldConfig(schema, {map: SchemaService.renameDescription})];
     }
   }
 

@@ -11,7 +11,7 @@
         </button>
         <mat-menu #menu="matMenu">
           <button *ngFor="let service of serviceNames" [routerLink]="['/' + getPath(service)]" mat-menu-item>
-            <mat-icon *ngIf="service == (serviceName$ | async); else blank">check</mat-icon>
+            <mat-icon *ngIf="service === (serviceName$ | async); else blank">check</mat-icon>
             <ng-template #blank><mat-icon>blank</mat-icon></ng-template>
             {{service | titlecase}}
           </button>
@@ -39,24 +39,28 @@
       </button>
       <mat-menu #repoMenu="matMenu" >
         <a mat-menu-item 
-          [href]="(repositoryLinks$ | async)?.rule_store_directory_url" 
+          [href]="(repositoryLinks$ | async)?.rule_store_directory_url"
+          target="_blank"
         >
           {{repoNames.store_directory_name}}
         </a>
         <a mat-menu-item
           [href]="(repositoryLinks$ | async)?.rules_release_directory_url"
+          target="_blank"
         >
           {{repoNames.release_directory_name}}
         </a>
         <a mat-menu-item  
           *ngIf="(repositoryLinks$ | async)?.test_case_store_directory_url" 
           [href]="(repositoryLinks$ | async)?.test_case_store_directory_url"
+          target="_blank"
         >
           {{repoNames.testcase_store_directory_name}}
         </a>
         <a mat-menu-item  
           *ngIf="(repositoryLinks$ | async)?.admin_config_directory_url"
           [href]="(repositoryLinks$ | async)?.admin_config_directory_url"
+          target="_blank"
         >
           {{repoNames.admin_config_store_directory_name}}
         </a>

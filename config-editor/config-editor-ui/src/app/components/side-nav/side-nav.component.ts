@@ -6,7 +6,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import {
     UserRole, RepositoryLinks, repoNames, ServiceInfo
 } from '@app/model/config-model';
-import { AppConfigService } from '@app/config';
+import { AppConfigService } from '@app/services/app-config.service';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,

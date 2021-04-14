@@ -10,6 +10,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AdminComponent } from '../admin/admin.component';
 import { AdminConfig } from '@app/model/config-model';
+import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,14 +38,14 @@ export class AdminViewComponent implements OnDestroy {
     this.schema = editorService.adminSchema.schema;
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema)),
+      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
     ];
   }
 
   public ngAfterViewInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema)),
+        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
       ];
 
       this.configData = config.configData;

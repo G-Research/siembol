@@ -1,47 +1,46 @@
 import { cloneDeep } from 'lodash';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import 'rxjs/add/operator/finally';
-import { AppConfigService } from '../config/app-config.service';
-import { Config, Deployment, PullRequestInfo } from '../model';
-import { ConfigStoreState } from '../model/store-state';
-import { TestCaseMap, TestCaseWrapper } from '../model/test-case';
-import { UiMetadataMap } from '../model/ui-metadata-map';
-import { ConfigLoaderService } from './config-loader.service';
+import { AppConfigService } from '../app-config.service';
+import { Config, Deployment, PullRequestInfo } from '../../model';
+import { ConfigStoreState } from '../../model/store-state';
+import { TestCaseMap, TestCaseWrapper } from '../../model/test-case';
+import { UiMetadata } from '../../model/ui-metadata-map';
+import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
 import { AdminConfig } from '@app/model/config-model';
 
 const initialConfigStoreState: ConfigStoreState = {
+  adminConfig: undefined,
   configs: [],
   deployment: undefined,
-  initialDeployment: undefined,
   deploymentHistory: [],
-  sortedConfigs: [],
-  filteredConfigs: [],
-  filteredDeployment: undefined,
-  searchTerm: undefined,
+  editedConfig: null,
+  editedTestCase: null,
   filterMyConfigs: false,
   filterUndeployed: false,
   filterUpgradable: false,
+  filteredConfigs: [],
+  filteredDeployment: undefined,
+  initialDeployment: undefined,
   releaseSubmitInFlight: false,
-  editedConfig: null,
+  searchTerm: undefined,
+  sortedConfigs: [],
   testCaseMap: {},
-  editedTestCase: null,
-  adminConfig: undefined
-}
+};
 
 const initialPullRequestState: PullRequestInfo = {
   pull_request_pending: undefined,
-  pull_request_url: undefined
-}
+  pull_request_url: undefined,
+};
 
 export class ConfigStoreService {
-  private metaDataMap: UiMetadataMap;
-  private testStoreService: TestStoreService;
   private readonly store = new BehaviorSubject<ConfigStoreState>(initialConfigStoreState);
   private readonly pullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
   private readonly adminPullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
 
+  /*eslint-disable */
   public readonly allConfigs$ = this.store.asObservable().map(x => x.configs);
   public readonly deployment$ = this.store.asObservable().map(x => x.deployment);
   public readonly initialDeployment$ = this.store.asObservable().map(x => x.initialDeployment);
@@ -60,21 +59,26 @@ export class ConfigStoreService {
   public readonly pullRequestPending$ = this.pullRequestInfo.asObservable();
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
   public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
+  /*eslint-enable */
 
-  public get testService(): TestStoreService { return this.testStoreService; }
+  private metaDataMap: UiMetadata;
+  private testStoreService: TestStoreService;
+
+  public get testService(): TestStoreService {
+    return this.testStoreService;
+  }
 
   constructor(
     private serviceName: string,
     private user: string,
     private config: AppConfigService,
-    private configLoaderService: ConfigLoaderService) {
+    private configLoaderService: ConfigLoaderService
+  ) {
     this.metaDataMap = config.uiMetadata[serviceName];
     this.testStoreService = new TestStoreService(this.user, this.store, this.configLoaderService);
   }
 
-  initialise(configs: Config[],
-    deployment: any,
-    testCaseMap: TestCaseMap) {
+  initialise(configs: Config[], deployment: any, testCaseMap: TestCaseMap) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .testCaseMap(testCaseMap)
       .configs(configs)
@@ -92,9 +96,7 @@ export class ConfigStoreService {
   }
 
   updateAdmin(config: AdminConfig) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .adminConfig(config)
-      .build();
+    const newState = new ConfigStoreStateBuilder(this.store.getValue()).adminConfig(config).build();
 
     this.store.next(newState);
     this.loadAdminPullRequestStatus();
@@ -195,7 +197,7 @@ export class ConfigStoreService {
       if (info) {
         this.pullRequestInfo.next(info);
       }
-    })
+    });
   }
 
   loadAdminPullRequestStatus() {
@@ -203,47 +205,46 @@ export class ConfigStoreService {
       if (info) {
         this.adminPullRequestInfo.next(info);
       }
-    })
+    });
   }
 
   submitRelease(deployment: Deployment) {
     this.updateReleaseSubmitInFlight(true);
-    this.configLoaderService.submitRelease(deployment)
+    this.configLoaderService
+      .submitRelease(deployment)
       .finally(() => {
         this.updateReleaseSubmitInFlight(false);
       })
       .subscribe((result: any) => {
-      if (result) {
-        this.loadPullRequestStatus();
-      }
-    })
-  }
-
-  reloadStoreAndDeployment(): Observable<any> {
-    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled
-      ? this.configLoaderService.getTestCases() : Observable.of({});
-    return Observable.forkJoin(
-      this.configLoaderService.getConfigs(),
-      this.configLoaderService.getRelease(),
-      testCaseMapFun).map(([configs, deployment, testCaseMap]) => {
-        if (configs && deployment && testCaseMap) {
-          this.initialise(configs, deployment, testCaseMap);
+        if (result) {
+          this.loadPullRequestStatus();
         }
       });
   }
 
-  reloadAdminConfig(): Observable<any> {
-    return this.configLoaderService.getAdminConfig().map(
-      (config: AdminConfig) => {
-        this.updateAdmin(config);
+  reloadStoreAndDeployment(): Observable<any> {
+    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled ? this.configLoaderService.getTestCases() : of({});
+    return Observable.forkJoin(
+      this.configLoaderService.getConfigs(),
+      this.configLoaderService.getRelease(),
+      testCaseMapFun
+    ).map(([configs, deployment, testCaseMap]) => {
+      if (configs && deployment && testCaseMap) {
+        this.initialise(configs, deployment, testCaseMap);
       }
-    );
+    });
+  }
+
+  reloadAdminConfig(): Observable<any> {
+    return this.configLoaderService.getAdminConfig().map((config: AdminConfig) => {
+      this.updateAdmin(config);
+    });
   }
 
   validateEditedConfig(): Observable<any> {
     const config = this.store.getValue().editedConfig;
     if (!config) {
-      throw Error('empty edited config')
+      throw Error('empty edited config');
     }
 
     return this.configLoaderService.validateConfig(config);
@@ -252,7 +253,7 @@ export class ConfigStoreService {
   validateAdminConfig(): Observable<any> {
     const config = this.store.getValue().adminConfig;
     if (!config) {
-      throw Error('empty admin config')
+      throw Error('empty admin config');
     }
 
     return this.configLoaderService.validateAdminConfig(config);
@@ -261,30 +262,29 @@ export class ConfigStoreService {
   submitEditedConfig(): Observable<boolean> {
     const config = this.store.getValue().editedConfig;
     if (!config) {
-      throw Error('empty edited config')
+      throw Error('empty edited config');
     }
 
-    return this.configLoaderService.submitConfig(config)
-      .map(configs => {
-        if (configs) {
-          const currentEdited = configs.find(x => x.name === config.name);
-          if (!currentEdited) {
-            throw Error('Unexpected response from server during submitting config');
-          }
-
-          const newState = new ConfigStoreStateBuilder(this.store.getValue())
-            .configs(configs)
-            .updateTestCasesInConfigs()
-            .detectOutdatedConfigs()
-            .reorderConfigsByDeployment()
-            .computeFiltered(this.user)
-            .editedConfigByName(config.name)
-            .build();
-          this.store.next(newState);
-
-          return true;
+    return this.configLoaderService.submitConfig(config).map(configs => {
+      if (configs) {
+        const currentEdited = configs.find(x => x.name === config.name);
+        if (!currentEdited) {
+          throw Error('Unexpected response from server during submitting config');
         }
-      });
+
+        const newState = new ConfigStoreStateBuilder(this.store.getValue())
+          .configs(configs)
+          .updateTestCasesInConfigs()
+          .detectOutdatedConfigs()
+          .reorderConfigsByDeployment()
+          .computeFiltered(this.user)
+          .editedConfigByName(config.name)
+          .build();
+        this.store.next(newState);
+
+        return true;
+      }
+    });
   }
 
   submitAdminConfig(): Observable<boolean> {
@@ -293,26 +293,25 @@ export class ConfigStoreService {
       throw Error('empty admin config');
     }
 
-    return this.configLoaderService.submitAdminConfig(adminConfig)
-      .map((result: any) => {
-        if (result) {
-          this.loadAdminPullRequestStatus();
-          return true;
-        }
-        return false;
-      });
+    return this.configLoaderService.submitAdminConfig(adminConfig).map((result: any) => {
+      if (result) {
+        this.loadAdminPullRequestStatus();
+        return true;
+      }
+      return false;
+    });
   }
 
   /**
-  * Updates config and test case. If config is already loaded it does not overwrite it.
-  * @param configName
-  * @param testCaseName
-  * @returns false if config or test case don't exist, else true
-  */
+   * Updates config and test case. If config is already loaded it does not overwrite it.
+   *
+   * @param configName
+   * @param testCaseName
+   * @returns false if config or test case don't exist, else true
+   */
   setEditedConfigAndTestCaseByName(configName: string, testCaseName: string): boolean {
     const editedConfig = this.store.value.editedConfig;
-    const config = (editedConfig && configName === editedConfig.name) ?
-      editedConfig : this.getConfigByName(configName);
+    const config = editedConfig && configName === editedConfig.name ? editedConfig : this.getConfigByName(configName);
     if (config === undefined) {
       return false;
     }
@@ -328,24 +327,23 @@ export class ConfigStoreService {
     return true;
   }
 
-
   setEditedClonedConfigByName(configName: string) {
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
-      throw Error("no config with such name");
+      throw Error('no config with such name');
     }
     const cloned = {
-      isNew: true,
+      author: this.user,
       configData: Object.assign({}, cloneDeep(configToClone.configData), {
         [this.metaDataMap.name]: `${configToClone.name}_clone`,
         [this.metaDataMap.version]: 0,
       }),
-      savedInBackend: false,
-      name: `${configToClone.name}_clone`,
-      author: this.user,
-      version: 0,
       description: `cloned from ${configToClone.name}`,
+      isNew: true,
+      name: `${configToClone.name}_clone`,
+      savedInBackend: false,
       testCases: [],
+      version: 0,
     };
     this.updateEditedConfigAndTestCase(cloned, null);
   }
@@ -353,29 +351,27 @@ export class ConfigStoreService {
   setEditedConfigNew() {
     const currentState = this.store.getValue();
     const newConfig = {
-      isNew: true,
-      configData: {},
-      savedInBackend: false,
-      name: `new_entry_${currentState.configs.length}`,
-      version: 0,
-      description: 'no description',
       author: this.user,
+      configData: {},
+      description: 'no description',
+      isNew: true,
+      name: `new_entry_${currentState.configs.length}`,
+      savedInBackend: false,
       testCases: [],
+      version: 0,
     };
 
     this.updateEditedConfigAndTestCase(newConfig, null);
   }
 
-  private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .releaseSubmitInFlight(releaseSubmitInFlight)
-      .build();
+  updateEditedConfig(config: Config) {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue()).editedConfig(config).build();
     this.store.next(newState);
   }
 
-  updateEditedConfig(config: Config) {
+  private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .editedConfig(config)
+      .releaseSubmitInFlight(releaseSubmitInFlight)
       .build();
     this.store.next(newState);
   }
@@ -394,5 +390,4 @@ export class ConfigStoreService {
 
     return cloneDeep(config);
   }
-
 }

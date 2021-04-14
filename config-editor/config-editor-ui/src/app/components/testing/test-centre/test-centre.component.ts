@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PopupService } from '@app/popup.service';
+import { PopupService } from '@app/services/popup.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorService } from '@services/editor.service';
 import { TestCaseWrapper } from '@model/test-case';
-import { TestStoreService } from '../../../services/test-store.service';
+import { TestStoreService } from '../../../services/store/test-store.service';
 import { TestCaseResult } from '../../../model/test-case';
 import { Router, ActivatedRoute } from '@angular/router';
 
