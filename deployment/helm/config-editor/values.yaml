@@ -41,3 +41,61 @@ ui:
   ingress:
     enabled: true
     hostname: ui.siembol.local
+
+
+# -----------------------------------------------------------------------------
+# storm-topology-manager parameters
+# -----------------------------------------------------------------------------
+manager:
+  appName: "storm-topology-manager"
+  serviceAccount: "storm-topology-manager"
+  image: 
+    repository: "gresearchdev/siembol-storm-topology-manager"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  serviceAccount: "storm-topology-manager"
+  applicationProperties: "resources/application.manager.properties"
+  stormSubmit: "resources/storm-submit.yaml"
+  mountPath: "/opt/storm-topology-manager"
+
+  # Run with an ingress
+  ingress:
+    enabled: true
+    hostname: manager.siembol.local
+
+storm:
+  ingress:
+    enabled: true
+    hostname: storm.siembol.local
+
+
+# -----------------------------------------------------------------------------
+# Example app to run
+# -----------------------------------------------------------------------------
+example:
+  enabled: true
+  
+  # -----------------------------------------------------------------------------
+  # Log generator script
+  # -----------------------------------------------------------------------------
+  image: 
+    repository: "python"
+    tag: "slim"
+    pullPolicy: IfNotPresent
+  mountPath: "/opt/log-generator-example"
+  script: "resources/logger.py"
+  requirements: "resources/requirements.txt"
+
+  # -----------------------------------------------------------------------------
+  # Kafka UI - helps visualize the example
+  # -----------------------------------------------------------------------------
+  kafka:
+    ui:
+      appName: kafka-ui
+      enabled: true
+      hostname: kafka-ui.siembol.local
+      image: 
+        repository: provectuslabs/kafka-ui
+        tag: latest   
+  appName: "log-generator-example"

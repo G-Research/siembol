@@ -1,0 +1,139 @@
+{{ if .Values.example.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.example.appName }} 
+data:
+  logger.py: |-
+{{ .Files.Get .Values.example.script | indent 4 }}
+  requirements.txt: |-
+{{ .Files.Get .Values.example.requirements | indent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.example.appName }}
+  name: {{ .Values.example.appName }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ .Values.example.appName }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.example.appName}}
+      name: {{ .Values.example.appName }}
+    spec:
+      containers:
+      - image: {{ .Values.example.image.repository }}:{{ .Values.example.image.tag }}
+        workingDir: {{ .Values.example.mountPath }}
+        name: {{ .Values.example.appName }}
+        ports:
+        - containerPort: 8080
+        securityContext:
+          runAsUser: 101
+        volumeMounts:
+        - name: {{ .Values.example.appName }}
+          mountPath: {{ .Values.example.mountPath }}/requirements.txt
+          subPath: requirements.txt
+          readOnly: true
+        - name: {{ .Values.example.appName }}
+          mountPath: {{ .Values.example.mountPath }}/logger.py
+          subPath: logger.py
+          readOnly: true
+        - name: local-dir
+          mountPath: /.local
+        command: 
+        - "bash"
+        - "-c"
+        - "pip install --no-cache-dir --user -r requirements.txt && python logger.py"
+      volumes:
+      - name: {{ .Values.example.appName }}
+        configMap:
+          name: {{ .Values.example.appName }}
+      - name: local-dir
+        emptyDir: {}
+      terminationGracePeriodSeconds: 300
+{{ if .Values.example.kafka.ui.enabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.example.kafka.ui.appName }}
+  name: {{ .Values.example.kafka.ui.appName }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ .Values.example.kafka.ui.appName }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.example.kafka.ui.appName }}
+      name: {{ .Values.example.kafka.ui.appName }}
+    spec:
+      containers:
+      - image: {{ .Values.example.kafka.ui.image.repository }}:{{ .Values.example.kafka.ui.image.tag }}
+        name: {{ .Values.example.kafka.ui.appName }}
+        securityContext:
+          runAsUser: 101
+        env:
+        - name: KAFKA_CLUSTERS_0_NAME
+          value: siembol
+        - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+          value: siembol-storm-kafka-headless.siembol.svc.cluster.local:9092
+        - name: KAFKA_CLUSTERS_0_ZOOKEEPER
+          value: siembol-storm-zookeeper:2181
+      terminationGracePeriodSeconds: 300
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.example.kafka.ui.appName }}
+spec:
+  selector:
+    app: {{ .Values.example.kafka.ui.appName }}
+  ports:
+  - protocol: TCP
+    port: 8080
+    name: web
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.example.kafka.ui.appName }}
+  annotations:
+    cert-manager.io/issuer: ca-issuer
+spec:
+  {{ if .Values.tls.enabled -}}
+  tls:
+  - hosts:
+    - {{ .Values.example.kafka.ui.hostname }}
+    secretName: {{ .Values.ui.serviceName }}-tls
+  {{ end -}}
+  rules:
+  - host: {{ .Values.example.kafka.ui.hostname }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.example.kafka.ui.appName }}
+            port: 
+              number: 8080
+{{ end }}
+{{ end }}
