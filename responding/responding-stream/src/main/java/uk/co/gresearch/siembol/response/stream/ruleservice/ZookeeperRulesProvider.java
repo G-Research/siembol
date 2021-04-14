@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.engine.ResponseEngine;
@@ -33,7 +34,7 @@ public class ZookeeperRulesProvider implements RulesProvider {
 
     public ZookeeperRulesProvider(ZookeeperAttributesDto zookeperAttributes,
                                   RespondingCompiler respondingCompiler) throws Exception {
-        this(new ZookeeperConnectorFactory() {}, zookeperAttributes, respondingCompiler);
+        this(new ZookeeperConnectorFactoryImpl(), zookeperAttributes, respondingCompiler);
     }
 
     ZookeeperRulesProvider(ZookeeperConnectorFactory factory,

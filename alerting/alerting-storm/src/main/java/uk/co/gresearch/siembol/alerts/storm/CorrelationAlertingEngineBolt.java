@@ -16,6 +16,7 @@ import static org.apache.storm.utils.TupleUtils.isTick;
 import static org.apache.storm.utils.TupleUtils.putTickFrequencyIntoComponentConfig;
 
 public class CorrelationAlertingEngineBolt extends AlertingEngineBolt {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final int cleanIntervalSec;
 

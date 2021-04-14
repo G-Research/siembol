@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
@@ -23,10 +24,10 @@ import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -187,7 +188,7 @@ public class AlertingEngineBoltTest {
                 .thenReturn(event.replaceAll("is_alert", "unknown"));
 
         AlertingEngineBolt.execute(tuple);
-        verify(collector, never()).emit(any());
+        verify(collector, never()).emit(ArgumentMatchers.<List<Object>>any());
         verify(collector, times(1)).ack(eq(tuple));
     }
 

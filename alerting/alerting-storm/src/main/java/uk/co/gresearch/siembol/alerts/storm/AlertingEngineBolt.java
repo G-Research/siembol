@@ -25,12 +25,14 @@ import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AlertingEngineBolt extends BaseRichBolt {
+    private static final long serialVersionUID = 1L;
     private static final String EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during evaluating event: %s";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during initialising alerts engine";
     private static final String UPDATE_EXCEPTION_LOG = "Exception during alerts rules update: {}";
@@ -59,9 +61,10 @@ public class AlertingEngineBolt extends BaseRichBolt {
     }
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes) {
-        this(attributes, new ZookeeperConnectorFactory() {});
+        this(attributes, new ZookeeperConnectorFactoryImpl());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

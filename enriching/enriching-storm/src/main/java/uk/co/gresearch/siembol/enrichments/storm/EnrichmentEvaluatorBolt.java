@@ -15,6 +15,7 @@ import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentResult;
 import uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompilerImpl;
 import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluator;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.OK;
 
 public class EnrichmentEvaluatorBolt extends BaseRichBolt {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Enriching rule engine exception: %s during initialising alerts engine";
@@ -56,9 +58,10 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
     }
 
     public EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes) {
-        this(attributes, new ZookeeperConnectorFactory() {});
+        this(attributes, new ZookeeperConnectorFactoryImpl());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

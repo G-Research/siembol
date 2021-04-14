@@ -19,7 +19,7 @@ public class SiembolNetflowParser implements SiembolParser {
     public static final String NETFLOW_UNKNOWN_TEMPLATE = "netflow_unknown_template";
     public static final String UNSUPPORTED_MSG = "The method is unsupported because netflow parsing requires metadata";
 
-    private final NetflowParser netflowParser;
+    private final NetflowParser<?> netflowParser;
 
     private Map<String, Object> getUnknownTemplateObject(NetflowParsingResult parsingResult, byte[] bytes) {
         Map<String, Object> ret = new HashMap<>();

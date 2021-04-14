@@ -17,6 +17,7 @@ import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertingEngineType;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Base64;
@@ -104,7 +105,7 @@ public class AlertingStorm {
 
         Config config = new Config();
         config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
-        ZookeeperConnectorFactory zookeeperConnectorFactory = new ZookeeperConnectorFactory() {};
+        ZookeeperConnectorFactory zookeeperConnectorFactory = new ZookeeperConnectorFactoryImpl();
 
 
         StormTopology topology = engineType == AlertingEngineType.SIEMBOL_ALERTS

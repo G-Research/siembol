@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SiembolParserWrapper implements SiembolParser, Serializable {
+    private static final long serialVersionUID = 1L;
     private final RouterCondition condition;
     private final SerializableSiembolParser parser;
     private final String topic;

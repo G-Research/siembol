@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
@@ -11,7 +12,8 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 import java.util.*;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 public class RuleTest {
@@ -30,7 +32,7 @@ public class RuleTest {
         constants = Arrays.asList(Pair.of("detection_source", "alerts"));
         protections = Arrays.asList(Pair.of(AlertingFields.MAX_PER_HOUR_FIELD.toString(), Integer.valueOf(1)));
         matcher = Mockito.mock(RuleMatcher.class);
-        when(matcher.match(any())).thenReturn(EvaluationResult.MATCH);
+        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.MATCH);
     }
 
     @Test
@@ -120,7 +122,7 @@ public class RuleTest {
 
     @Test
     public void testGoodNoMatch() {
-        when(matcher.match(any())).thenReturn(EvaluationResult.NO_MATCH);
+        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.NO_MATCH);
         rule = Rule.builder()
                 .matchers(Arrays.asList(matcher))
                 .name(name)
@@ -136,7 +138,7 @@ public class RuleTest {
 
     @Test(expected = RuntimeException.class)
     public void testThrowsException() throws RuntimeException {
-        when(matcher.match(any())).thenThrow(new RuntimeException());
+        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenThrow(new RuntimeException());
         rule = Rule.builder()
                 .matchers(Arrays.asList(matcher))
                 .name(name)

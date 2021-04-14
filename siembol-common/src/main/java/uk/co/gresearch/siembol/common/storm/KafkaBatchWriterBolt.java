@@ -25,6 +25,7 @@ import static org.apache.storm.utils.TupleUtils.isTick;
 import static org.apache.storm.utils.TupleUtils.putTickFrequencyIntoComponentConfig;
 
 public class KafkaBatchWriterBolt extends BaseRichBolt {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int ACK_INTERVAL_ACK_IN_SEC = 1;
@@ -75,6 +76,7 @@ public class KafkaBatchWriterBolt extends BaseRichBolt {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

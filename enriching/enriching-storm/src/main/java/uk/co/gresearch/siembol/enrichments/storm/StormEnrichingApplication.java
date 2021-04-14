@@ -18,6 +18,7 @@ import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 
@@ -99,7 +100,7 @@ public class StormEnrichingApplication {
         Config config = new Config();
         config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
         StormTopology topology = createTopology(attributes,
-                new ZookeeperConnectorFactory() {},
+                new ZookeeperConnectorFactoryImpl(),
                 new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));
 
         LOG.info(SUBMIT_INFO_MSG, attributesStr);

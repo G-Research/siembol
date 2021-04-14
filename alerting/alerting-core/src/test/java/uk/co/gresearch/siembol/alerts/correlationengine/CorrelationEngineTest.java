@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.utils.TimeProvider;
 import uk.co.gresearch.siembol.alerts.common.*;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -54,11 +55,11 @@ public class CorrelationEngineTest {
         resultRule2 = AlertingResult.fromEvaluationResult(EvaluationResult.MATCH, outEvent);
 
         when(rule1.getAlertNames()).thenReturn(Arrays.asList("alert1", "alert2"));
-        when(rule1.match(any())).thenReturn(resultRule1);
+        when(rule1.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(resultRule1);
 
 
         when(rule2.getAlertNames()).thenReturn(Arrays.asList("alert2"));
-        when(rule2.match(any())).thenReturn(resultRule2);
+        when(rule2.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(resultRule2);
 
         when(timeProvider.getCurrentTimeInMs()).thenReturn(currentTime);
         doNothing().when(rule1).clean(currentTime);
@@ -109,7 +110,7 @@ public class CorrelationEngineTest {
 
     @Test
     public void testMatchFirstRule() {
-        when(rule2.match(any())).thenReturn(AlertingResult.fromEvaluationResult(NO_MATCH, outEvent));
+        when(rule2.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(AlertingResult.fromEvaluationResult(NO_MATCH, outEvent));
         alert.put(AlertingFields.RULE_NAME.getAlertingName(), "alert2");
         AlertingResult result = engine.evaluate(alert);
         Assert.assertEquals(OK, result.getStatusCode());
@@ -124,7 +125,7 @@ public class CorrelationEngineTest {
     @Test
     public void testMatchFirstAndExceptionSecond() {
         resultRule2 = new AlertingResult(ERROR, resultRule2.getAttributes());
-        when(rule2.match(any())).thenReturn(resultRule2);
+        when(rule2.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(resultRule2);
 
         alert.put(AlertingFields.RULE_NAME.getAlertingName(), "alert2");
         AlertingResult result = engine.evaluate(alert);

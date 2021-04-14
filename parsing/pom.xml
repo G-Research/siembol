@@ -11,7 +11,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>siembol</artifactId>
-        <version>1.79-SNAPSHOT</version>
+        <version>1.80-SNAPSHOT</version>
     </parent>
     <modules>
         <module>parsing-core</module>
@@ -21,19 +21,5 @@
     <dependencies>
     </dependencies>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <source>${java_version}</source>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
-                    <target>${java_version}</target>
-                    <showWarnings>true</showWarnings>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 </project>

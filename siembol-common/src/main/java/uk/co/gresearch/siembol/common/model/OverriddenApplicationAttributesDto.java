@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 @Attributes(title = "overridden application attributes", description = "Storm parsing application attributes")
 public class OverriddenApplicationAttributesDto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("application.name")
     @Attributes(description = "The name of the application with the overridden attributes", required = true)
     private String applicationName;

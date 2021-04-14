@@ -14,10 +14,8 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 
-import java.util.Optional;
-
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -71,8 +69,8 @@ public class AlertingRuleSchemaServiceTest {
 
         alertingAttributes = new AlertingAttributes();
         alertingResult = new AlertingResult(AlertingResult.StatusCode.OK, alertingAttributes);
-        Mockito.when(alertingCompiler.validateRules(any())).thenReturn(alertingResult);
-        Mockito.when(alertingCompiler.validateRule(any())).thenReturn(alertingResult);
+        Mockito.when(alertingCompiler.validateRules(anyString())).thenReturn(alertingResult);
+        Mockito.when(alertingCompiler.validateRule(anyString())).thenReturn(alertingResult);
         Mockito.when(alertingCompiler.testRule(testRule, testEvent.trim())).thenReturn(alertingResult);
         Mockito.when(alertingCompiler.testRule(testRules, testEvent.trim())).thenReturn(alertingResult);
     }
@@ -140,7 +138,7 @@ public class AlertingRuleSchemaServiceTest {
         alertingAttributes.setMessage("error");
         alertingAttributes.setException("exception");
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);
-        Mockito.when(alertingCompiler.validateRules(any())).thenReturn(alertingResult);
+        Mockito.when(alertingCompiler.validateRules(anyString())).thenReturn(alertingResult);
         ConfigEditorResult ret = alertingRuleSchemaService.validateConfigurations(testRules);
         verify(alertingCompiler, times(1)).validateRules(testRules);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -153,7 +151,7 @@ public class AlertingRuleSchemaServiceTest {
         alertingAttributes.setMessage("error");
         alertingAttributes.setException("exception");
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);
-        Mockito.when(alertingCompiler.validateRule(any())).thenReturn(alertingResult);
+        Mockito.when(alertingCompiler.validateRule(anyString())).thenReturn(alertingResult);
         ConfigEditorResult ret = alertingRuleSchemaService.validateConfiguration(testRule);
         verify(alertingCompiler, times(1)).validateRule(testRule);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());

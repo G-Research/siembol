@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 public class EnrichingRuleTest {
@@ -39,7 +41,7 @@ public class EnrichingRuleTest {
         enrichmentTags.add(Pair.of("is_test", "true"));
         matcher = Mockito.mock(RuleMatcher.class);
         event = new HashMap<>();
-        when(matcher.match(any())).thenReturn(EvaluationResult.MATCH);
+        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.MATCH);
     }
 
     @Test

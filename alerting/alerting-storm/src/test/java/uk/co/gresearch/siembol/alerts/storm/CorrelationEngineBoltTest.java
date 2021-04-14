@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
@@ -24,6 +25,7 @@ import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -208,6 +210,6 @@ public class CorrelationEngineBoltTest {
             correlationAlertingEngineBolt.execute(tuple);
         }
         verify(collector, times(10)).ack(eq(tuple));
-        verify(collector, never()).emit(any());
+        verify(collector, never()).emit(ArgumentMatchers.<List<Object>>any());
     }
 }

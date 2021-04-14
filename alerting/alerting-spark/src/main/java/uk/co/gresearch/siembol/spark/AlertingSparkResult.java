@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AlertingSparkResult implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
             .writerFor(new TypeReference<Map<String, Object>>() { });
     private static final String ERROR_STATUS_CODE_MSG = "Status code: %s";

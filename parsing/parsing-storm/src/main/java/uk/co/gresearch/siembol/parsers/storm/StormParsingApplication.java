@@ -18,6 +18,7 @@ import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
@@ -105,7 +106,7 @@ public class StormParsingApplication {
         ParsingApplicationFactoryAttributes parsingAttributes = result.getAttributes();
         Config config = new Config();
         config.putAll(stormAttributes.getStormAttributes().getStormConfig().getRawMap());
-        StormTopology topology = createTopology(stormAttributes, parsingAttributes, new ZookeeperConnectorFactory() {});
+        StormTopology topology = createTopology(stormAttributes, parsingAttributes, new ZookeeperConnectorFactoryImpl());
         String topologyName = stormAttributes.getTopologyName(parsingAttributes.getName());
         LOG.info(SUBMIT_INFO_LOG, topologyName, stormAttributesStr, parsingAttributesStr);
         StormSubmitter.submitTopology(topologyName, config, topology);

@@ -8,6 +8,8 @@ import java.util.List;
 
 @Attributes(title = "storm enrichment attributes", description = "Attributes for storm enrichment configuration")
 public class StormEnrichmentAttributesDto extends AdminConfigDto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("topology.name")
     @Attributes(required = true, description = "The name of storm topology")
     private String topologyName = "siembol-enrichment";

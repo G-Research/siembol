@@ -6,6 +6,7 @@ public enum AlertingEngineType implements Serializable {
     SIEMBOL_ALERTS("siembol_alerts"),
     SIEMBOL_CORRELATION_ALERTS("siembol_correlation_alerts");
 
+    private static final long serialVersionUID = 1L;
     private static final String ENGINE_STR = "%s_engine";
     private static final String UNKNOWN_MSG = "unknown type: %s";
     private final String name;

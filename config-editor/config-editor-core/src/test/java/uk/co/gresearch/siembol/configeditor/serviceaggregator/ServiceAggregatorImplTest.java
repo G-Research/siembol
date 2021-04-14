@@ -17,8 +17,7 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorService;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -40,7 +39,7 @@ public class ServiceAggregatorImplTest {
         when(schemaService.getAdminConfigurationSchema()).thenReturn(
                 new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, new ConfigEditorAttributes()));
         builder = new ServiceAggregatorImpl.Builder(authProvider);
-        when(authProvider.getUserAuthorisation(any(), any()))
+        when(authProvider.getUserAuthorisation(any(UserInfo.class), anyString()))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.ALLOWED);
         builder.addService("a", serviceType, store, schemaService);
         builder.addService("b", serviceType, store, schemaService);

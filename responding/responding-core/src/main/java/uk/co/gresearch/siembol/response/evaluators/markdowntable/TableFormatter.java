@@ -50,6 +50,7 @@ public class TableFormatter implements Evaluable {
         return tableBuilder.build().toString();
     }
 
+    @SuppressWarnings("unchecked")
     private static String formatArray(ResponseAlert responseAlert, String arrayField, FieldFilter fieldFilter) {
         Table.Builder tableBuilder = new Table.Builder();
         List<Map<String, Object>> arrayObj;

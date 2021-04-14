@@ -10,6 +10,7 @@ import java.util.List;
 
 @Attributes(title = "storm parsing application attributes", description = "Storm parsing application attributes")
 public class StormParsingApplicationAttributesDto extends AdminConfigDto implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final String KAFKA_PRINCIPAL_FORMAT_MSG = "%s.%s";
     private static final String TOPOLOGY_NAME_FORMAT_MSG = "%s-%s";
 

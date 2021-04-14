@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
 import uk.co.gresearch.siembol.common.testing.TestingZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
@@ -110,7 +111,7 @@ public class ConfigEditorConfiguration implements DisposableBean {
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
     ZookeeperConnectorFactory zookeeperConnectorFactory() throws Exception {
         if (properties.getTestingZookeeperFiles() == null) {
-            return new ZookeeperConnectorFactory() {};
+            return new ZookeeperConnectorFactoryImpl();
         }
 
         TestingZookeeperConnectorFactory ret = new TestingZookeeperConnectorFactory();

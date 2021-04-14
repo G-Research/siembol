@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingleApplicationParser extends ParsingApplicationParser {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
     static final String MISSING_ARGUMENTS = "Missing arguments in single application parser";
@@ -29,6 +30,7 @@ public class SingleApplicationParser extends ParsingApplicationParser {
 
     public static Builder<SingleApplicationParser> builder() {
         return new Builder<SingleApplicationParser>() {
+            private static final long serialVersionUID = 1L;
             @Override
             public SingleApplicationParser build() {
                 if (parser == null) {
@@ -43,6 +45,7 @@ public class SingleApplicationParser extends ParsingApplicationParser {
 
     public static abstract class Builder<T extends SingleApplicationParser> extends
             ParsingApplicationParser.Builder<T> {
+        private static final long serialVersionUID = 1L;
         protected SiembolParserWrapper parser;
 
         public Builder<T> parser(String topic, SerializableSiembolParser siembolParser) throws Exception {

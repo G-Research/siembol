@@ -9,13 +9,15 @@ import java.util.Map;
 import java.util.Optional;
 
 public class AlertMessage implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final String MISSING_FIELDS_MSG = "Missing siembol alerting fields in alert: %s";
     private static final String MISSING_CORRELATION_KEY = "Missing correlation key field in alert: %s";
 
     public enum Flags implements Serializable {
         CORRELATION_ENGINE,
         CORRELATION_ALERT,
-        VISIBLE_ALERT
+        VISIBLE_ALERT;
+        private static final long serialVersionUID = 1L;
     }
 
     private final String fullRuleName;

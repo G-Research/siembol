@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
@@ -13,7 +14,7 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 import java.util.*;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 public class AlertingEngineImplTest {
@@ -46,10 +47,10 @@ public class AlertingEngineImplTest {
         when(rule1.getRuleName()).thenReturn("rule1");
         when(rule1.getFullRuleName()).thenReturn("rule1_v1");
 
-        when(rule1.match(any())).thenReturn(resultRule1);
+        when(rule1.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(resultRule1);
         when(rule2.getRuleName()).thenReturn("rule2");
         when(rule2.getFullRuleName()).thenReturn("rule2_v1");
-        when(rule2.match(any())).thenReturn(resultRule2);
+        when(rule2.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(resultRule2);
 
         rules = Arrays.asList(Pair.of(sourceType, rule1),
                 Pair.of("*", rule2));
@@ -141,7 +142,7 @@ public class AlertingEngineImplTest {
 
     @Test
     public void testMatchAndException() {
-        when(rule1.match(any())).thenThrow(new RuntimeException());
+        when(rule1.match(ArgumentMatchers.<Map<String, Object>>any())).thenThrow(new RuntimeException());
         AlertingResult ret = engine.evaluate(knownSourceType);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(EvaluationResult.MATCH, ret.getAttributes().getEvaluationResult());

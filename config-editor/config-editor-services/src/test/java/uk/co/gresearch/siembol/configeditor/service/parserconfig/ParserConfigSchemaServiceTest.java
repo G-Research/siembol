@@ -4,6 +4,7 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -16,7 +17,8 @@ import uk.co.gresearch.siembol.parsers.factory.ParserFactoryResult;
 
 import java.util.ArrayList;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 public class ParserConfigSchemaServiceTest {
@@ -62,11 +64,11 @@ public class ParserConfigSchemaServiceTest {
         parserFactoryAttributes = new ParserFactoryAttributes();
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, parserFactoryAttributes);
         parserResult = new ParserResult();
-        Mockito.when(parserFactory.create(any())).thenReturn(parserFactoryResult);
+        Mockito.when(parserFactory.create(anyString())).thenReturn(parserFactoryResult);
 
-        Mockito.when(parserFactory.validateConfiguration(any())).thenReturn(parserFactoryResult);
-        Mockito.when(parserFactory.validateConfigurations(any())).thenReturn(parserFactoryResult);
-        Mockito.when(parserFactory.test(any(), any(), any())).thenReturn(parserFactoryResult);
+        Mockito.when(parserFactory.validateConfiguration(anyString())).thenReturn(parserFactoryResult);
+        Mockito.when(parserFactory.validateConfigurations(anyString())).thenReturn(parserFactoryResult);
+        Mockito.when(parserFactory.test(anyString(), eq(null), ArgumentMatchers.<byte[]>any())).thenReturn(parserFactoryResult);
     }
 
     @Test
@@ -108,7 +110,7 @@ public class ParserConfigSchemaServiceTest {
     public void validateRulesError() {
         parserFactoryAttributes.setMessage("error");
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
-        Mockito.when(parserFactory.validateConfigurations(any())).thenReturn(parserFactoryResult);
+        Mockito.when(parserFactory.validateConfigurations(anyString())).thenReturn(parserFactoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parserFactory, times(1)).validateConfigurations(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -120,7 +122,7 @@ public class ParserConfigSchemaServiceTest {
         parserFactoryAttributes.setMessage("error");
         
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
-        Mockito.when(parserFactory.validateConfiguration(any())).thenReturn(parserFactoryResult);
+        Mockito.when(parserFactory.validateConfiguration(anyString())).thenReturn(parserFactoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parserFactory, times(1)).validateConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());

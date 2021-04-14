@@ -22,9 +22,11 @@ import java.util.stream.Collectors;
 public abstract class ParsingApplicationParser implements Serializable {
     public enum Flags implements Serializable {
         PARSE_METADATA,
-        ADD_GUID_TO_MESSAGES
+        ADD_GUID_TO_MESSAGES;
+        private static final long serialVersionUID = 1L;
     }
 
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
@@ -34,7 +36,6 @@ public abstract class ParsingApplicationParser implements Serializable {
     private static final String ERROR_MESSAGE = "Exception during parsing, parsing_app: {} message: {}, " +
             "metadata: {}, exception: {}";
     private static final String MISSING_ARGUMENTS = "Missing arguments required for Parsing application parser";
-
 
     private final EnumSet<Flags> flags;
     private final String name;
@@ -132,6 +133,7 @@ public abstract class ParsingApplicationParser implements Serializable {
     }
 
     public static abstract class Builder<T extends ParsingApplicationParser> implements Serializable {
+        private static final long serialVersionUID = 1L;
         private static final String METADATA_FORMAT_MSG = "%s";
         protected EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
         protected String name;

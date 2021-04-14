@@ -89,7 +89,7 @@ public class ModelHelper {
         return ret;
     }
 
-    private static boolean isInterestingType(Class type) {
+    private static boolean isInterestingType(Class<?> type) {
         return !ClassUtils.isPrimitiveOrWrapper(type)
                 && !type.equals(String.class)
                 && !type.isEnum();

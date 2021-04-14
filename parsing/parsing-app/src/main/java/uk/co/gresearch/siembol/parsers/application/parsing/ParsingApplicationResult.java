@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ParsingApplicationResult implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String topic;
     private final ArrayList<String> messages;
 

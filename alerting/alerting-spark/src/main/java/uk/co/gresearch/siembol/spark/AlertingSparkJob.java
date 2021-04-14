@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AlertingSparkJob implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final JavaRDD<String> rdd;
     private final AlertingSparkEngine alertingSparkEngine;
     private final int maxResult;
@@ -89,7 +90,7 @@ public class AlertingSparkJob implements Serializable {
             return this;
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"rawtypes", "unchecked"})
         public AlertingSparkJob build() throws Exception {
             if (rules == null
                     || logPath == null

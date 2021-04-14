@@ -25,8 +25,8 @@ import uk.co.gresearch.siembol.alerts.storm.model.*;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 public class KafkaWriterBolt extends BaseRichBolt {
-    private static final Logger LOG =
-            LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String WRONG_ALERTS_FIELD_MESSAGE = "Wrong alerts type in tuple";
     private static final String WRONG_EXCEPTION_FIELD_MESSAGE = "Wrong exceptions type in tuple";
 
@@ -121,6 +121,7 @@ public class KafkaWriterBolt extends BaseRichBolt {
         collector.ack(tuple);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

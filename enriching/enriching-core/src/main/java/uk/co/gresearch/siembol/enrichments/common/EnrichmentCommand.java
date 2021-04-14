@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EnrichmentCommand implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String tableName;
     private String key;
     private ArrayList<Pair<String, String>> tags;

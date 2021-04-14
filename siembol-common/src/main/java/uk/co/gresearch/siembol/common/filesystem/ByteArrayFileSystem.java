@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 
 public class ByteArrayFileSystem implements SiembolFileSystem, Serializable {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private String data;

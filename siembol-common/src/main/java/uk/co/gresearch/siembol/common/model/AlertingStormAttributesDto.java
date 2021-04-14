@@ -9,6 +9,7 @@ import java.util.List;
 
 @Attributes(title = "storm alerting attributes", description = "Attributes for siembol alerting")
 public class AlertingStormAttributesDto extends AdminConfigDto implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Attributes(required = true, description = "The type of siembol alerting engine")
     @JsonProperty("alerts.engine")
     private String alertingEngine;

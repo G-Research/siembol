@@ -16,8 +16,8 @@ import uk.co.gresearch.siembol.enrichments.common.EnrichmentAttributes;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentResult;
 import uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompiler;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,12 +60,12 @@ public class EnrichmentSchemaServiceTest {
         this.enrichmentsSchemaService = new EnrichmentSchemaService(compiler, context);
         enrichmentAttributes = new EnrichmentAttributes();
         enrichmentResult = new EnrichmentResult(OK, enrichmentAttributes);
-        Mockito.when(compiler.compile(any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.compile(anyString())).thenReturn(enrichmentResult);
 
-        Mockito.when(compiler.validateConfiguration(any())).thenReturn(enrichmentResult);
-        Mockito.when(compiler.validateConfigurations(any())).thenReturn(enrichmentResult);
-        Mockito.when(compiler.testConfiguration(any(), any())).thenReturn(enrichmentResult);
-        Mockito.when(compiler.testConfigurations(any(), any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.validateConfiguration(anyString())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.validateConfigurations(anyString())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.testConfigurations(anyString(), anyString())).thenReturn(enrichmentResult);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class EnrichmentSchemaServiceTest {
     public void validateConfigurationsError() {
         enrichmentAttributes.setMessage("error");
         enrichmentResult = new EnrichmentResult(ERROR, enrichmentAttributes);
-        Mockito.when(compiler.validateConfigurations(any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.validateConfigurations(anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(compiler, times(1)).validateConfigurations(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -111,7 +111,7 @@ public class EnrichmentSchemaServiceTest {
     public void validateConfigurationError() {
         enrichmentAttributes.setMessage("error");
         enrichmentResult = new EnrichmentResult(ERROR, enrichmentAttributes);
-        Mockito.when(compiler.validateConfiguration(any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.validateConfiguration(anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.validateConfiguration(testConfigs);
         Mockito.verify(compiler, times(1)).validateConfiguration(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -122,7 +122,7 @@ public class EnrichmentSchemaServiceTest {
     public void testConfigurationOK() {
         enrichmentAttributes.setTestResult(testResult);
         enrichmentAttributes.setTestRawResult(testRawResult);
-        Mockito.when(compiler.testConfiguration(any(), any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.testConfiguration(testConfig, testSpecification);
         Mockito.verify(compiler, times(1)).testConfiguration(testConfig, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
@@ -136,7 +136,7 @@ public class EnrichmentSchemaServiceTest {
     public void testConfigurationsOK() {
         enrichmentAttributes.setTestResult(testResult);
         enrichmentAttributes.setTestRawResult(testRawResult);
-        Mockito.when(compiler.testConfiguration(any(), any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.testConfigurations(testConfigs, testSpecification);
         Mockito.verify(compiler, times(1)).testConfigurations(testConfigs, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
@@ -150,7 +150,7 @@ public class EnrichmentSchemaServiceTest {
     public void testConfigurationError() {
         enrichmentAttributes.setMessage("error");
         enrichmentResult = new EnrichmentResult(ERROR, enrichmentAttributes);
-        Mockito.when(compiler.testConfiguration(any(), any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.testConfiguration(testConfig, testSpecification);
         Mockito.verify(compiler, times(1)).testConfiguration(testConfig, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -161,7 +161,7 @@ public class EnrichmentSchemaServiceTest {
     public void testConfigurationsError() {
         enrichmentAttributes.setMessage("error");
         enrichmentResult = new EnrichmentResult(ERROR, enrichmentAttributes);
-        Mockito.when(compiler.testConfigurations(any(), any())).thenReturn(enrichmentResult);
+        Mockito.when(compiler.testConfigurations(anyString(), anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.testConfigurations(testConfigs, testSpecification);
         Mockito.verify(compiler, times(1)).testConfigurations(testConfigs, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());

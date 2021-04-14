@@ -22,6 +22,7 @@ import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
 import uk.co.gresearch.siembol.enrichments.table.EnrichmentMemoryTable;
@@ -36,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MemoryTableEnrichmentBolt extends BaseRichBolt {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader TABLES_UPDATE_READER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -71,10 +73,11 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
     public MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes,
-                new ZookeeperConnectorFactory() {},
+                new ZookeeperConnectorFactoryImpl(),
                 new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

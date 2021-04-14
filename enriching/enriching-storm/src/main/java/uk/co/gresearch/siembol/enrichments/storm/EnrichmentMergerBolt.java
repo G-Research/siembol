@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class EnrichmentMergerBolt extends BaseRichBolt {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INVALID_TYPE_IN_TUPLES = "Invalid type in tuple provided";
     private static final String MERGING_ERROR = "Unable to merge the event: {} with the enrichments : {}";
@@ -39,6 +40,7 @@ public class EnrichmentMergerBolt extends BaseRichBolt {
         this.errorTopic = attributes.getEnrichingErrorTopic();
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         collector = outputCollector;

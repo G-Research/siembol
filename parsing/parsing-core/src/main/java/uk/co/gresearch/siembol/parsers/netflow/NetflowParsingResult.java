@@ -15,22 +15,22 @@ public class NetflowParsingResult {
 
     private final StatusCode code;
     private final NetflowHeader header;
-    private final NetflowTransportMessage transportMessage;
+    private final NetflowTransportMessage<?> transportMessage;
     private final List<List<Pair<String, Object>>> dataFlowSet;
 
     NetflowParsingResult(StatusCode code,
-                         NetflowTransportMessage transportMessage) {
+                         NetflowTransportMessage<?> transportMessage) {
         this(code, transportMessage, null, null);
     }
 
     NetflowParsingResult(StatusCode code,
-                         NetflowTransportMessage transportMessage,
+                         NetflowTransportMessage<?> transportMessage,
                          NetflowHeader header) {
         this(code, transportMessage, header,  null);
     }
 
     NetflowParsingResult(StatusCode code,
-                         NetflowTransportMessage transportMessage,
+                         NetflowTransportMessage<?> transportMessage,
                          NetflowHeader header,
                          List<List<Pair<String, Object>>> dataFlowSet){
         this.code = code;

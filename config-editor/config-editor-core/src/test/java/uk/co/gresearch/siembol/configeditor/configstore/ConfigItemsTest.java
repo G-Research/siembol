@@ -3,6 +3,7 @@ package uk.co.gresearch.siembol.configeditor.configstore;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import org.junit.Before;
@@ -18,11 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
@@ -54,9 +54,9 @@ public class ConfigItemsTest {
 
         configInfo.setName("test");
         configInfo.setVersion(1);
-        when(configInfoProvider.getConfigInfo(any(), any())).thenReturn(configInfo);
+        when(configInfoProvider.getConfigInfo(any(UserInfo.class), anyString())).thenReturn(configInfo);
 
-        when(configInfoProvider.isStoreFile(any())).thenReturn(true);
+        when(configInfoProvider.isStoreFile(anyString())).thenReturn(true);
         when(configInfoProvider.getFileContentType()).thenReturn(ConfigEditorFile.ContentType.STRING);
         filesContent.put("File.json", "DUMMY_CONTENT");
         files = new ArrayList<>();
@@ -67,7 +67,8 @@ public class ConfigItemsTest {
         attr.setFiles(files);
         getFilesResult = new ConfigEditorResult(OK, attr);
 
-        when(gitRepo.getFiles(eq(directory), any())).thenReturn(getFilesResult);
+        when(gitRepo.getFiles(eq(directory), ArgumentMatchers.<Function<String, Boolean>>any()))
+                .thenReturn(getFilesResult);
         when(gitRepo.getRepoUri()).thenReturn(dummyRepoUrl);
         when(gitRepo.getDirectoryUrl(eq(directory))).thenReturn(dummyDirectoryRepoUrl);
 
@@ -78,7 +79,10 @@ public class ConfigItemsTest {
         ConfigEditorAttributes attrTransact = new ConfigEditorAttributes();
         attrTransact.setFiles(transactFiles);
         transactGetFilesResult = new ConfigEditorResult(OK, attrTransact);
-        when(gitRepo.transactCopyAndCommit(eq(configInfo), eq(directory), any())).thenReturn(transactGetFilesResult);
+        when(gitRepo.transactCopyAndCommit(any(ConfigInfo.class),
+                eq(directory),
+                ArgumentMatchers.<Function<String, Boolean>>any()))
+                .thenReturn(transactGetFilesResult);
 
         configItems = new ConfigItems(gitRepo, configInfoProvider, directory);
         user = new UserInfo();
@@ -103,7 +107,8 @@ public class ConfigItemsTest {
     @Test
     public void initOK() throws IOException, GitAPIException {
         configItems.init();
-        verify(gitRepo, times(1)).getFiles(eq(directory), any());
+        verify(gitRepo, times(1))
+                .getFiles(eq(directory), ArgumentMatchers.<Function<String, Boolean>>any());
         ConfigEditorResult result = configItems.getFiles();
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getFiles());

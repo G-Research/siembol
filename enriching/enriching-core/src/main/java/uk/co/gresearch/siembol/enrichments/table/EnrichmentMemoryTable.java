@@ -7,10 +7,12 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class EnrichmentMemoryTable implements EnrichmentTable {
+public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
+    private static final long serialVersionUID = 1L;
     private static final String INVALID_JSON_TABLE_OBJECT = "Json table should be a json object";
     private static final String INVALID_JSON_TABLE_FIELD_MSG = "Invalid json table field: %s key: %s, " +
             "only strings fields are supported ";

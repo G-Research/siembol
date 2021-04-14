@@ -30,6 +30,7 @@ public class ArrayReducerEvaluator implements Evaluable {
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         try {
+            @SuppressWarnings("unchecked")
             List<Map<String, Object>> array = (List<Map<String, Object>>)alert.get(arrayFieldName);
             if (array == null) {
                 return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, alert);

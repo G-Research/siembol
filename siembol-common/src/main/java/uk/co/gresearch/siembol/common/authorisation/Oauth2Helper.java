@@ -36,7 +36,9 @@ public class Oauth2Helper {
     public static JwtDecoder createJwtDecoder(ResourceServerOauth2Properties properties) throws MalformedURLException {
         List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
         validators.add(new JwtTimestampValidator(Duration.ofSeconds(JWT_CLOCK_SKEW_IN_SECONDS)));
+
         validators.add(new JwtIssuerValidator(properties.getIssuerUrl()));
+
         validators.add(token -> token.getAudience().contains(properties.getAudience())
                 ? OAuth2TokenValidatorResult.success()
                 : OAuth2TokenValidatorResult.failure(new OAuth2Error(MISSING_REQUIRED_AUDIENCE)));
@@ -52,8 +54,7 @@ public class Oauth2Helper {
         jwtProcessor.setJWSKeySelector(new JWSVerificationKeySelector<>(
                 new JWSAlgorithm(properties.getJwsAlgorithm()), jwkSource));
 
-        jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {
-        });
+        jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {});
 
         NimbusJwtDecoder jwtDecoder = new NimbusJwtDecoder(jwtProcessor);
         jwtDecoder.setJwtValidator(jwtValidator);

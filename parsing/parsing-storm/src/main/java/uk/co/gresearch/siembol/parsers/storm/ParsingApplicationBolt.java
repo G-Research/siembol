@@ -16,6 +16,7 @@ import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
@@ -28,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ParsingApplicationBolt extends BaseRichBolt {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String PARSERCONFIG_UPDATE_TRY_MSG_FORMAT = "Trying to update parsing app: %s, " +
             "by parser configs: %s, ";
@@ -59,9 +61,10 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
     public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this(attributes, parsingAttributes, new ZookeeperConnectorFactory() {});
+        this(attributes, parsingAttributes, new ZookeeperConnectorFactoryImpl());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

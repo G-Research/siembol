@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public interface EnrichmentTable extends Serializable {
+public interface EnrichmentTable {
 
     boolean containsKey(String key);
 

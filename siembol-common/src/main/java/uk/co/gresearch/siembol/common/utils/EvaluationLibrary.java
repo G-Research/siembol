@@ -65,6 +65,7 @@ public class EvaluationLibrary {
          return numVariableMatches == numVariableStartMatches && numVariableMatches > 0;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static Object substituteBean(Object obj, Map<String, Object> event) throws Exception {
         //NOTE: currently we have beans with primitive types, Bean or List<Beans>
         if (obj instanceof String) {

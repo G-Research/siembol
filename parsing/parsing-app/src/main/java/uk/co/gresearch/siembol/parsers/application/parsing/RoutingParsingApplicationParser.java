@@ -11,10 +11,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class RoutingParsingApplicationParser extends ParsingApplicationParser {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_ROUTER_FIELDS = "Missing routing fields: %s, %s, in the parsed message: %s";
-    static final String MISSING_ARGUMENTS = "Missing arguments in routing parsing application";
+    private static final String MISSING_ARGUMENTS = "Missing arguments in routing parsing application";
 
     private final String routingConditionField;
     private final String routingMessageField;
@@ -77,6 +78,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
 
     public static Builder<RoutingParsingApplicationParser> builder() {
         return new Builder<RoutingParsingApplicationParser>() {
+            private static final long serialVersionUID = 1L;
             @Override
             public RoutingParsingApplicationParser build() {
                 if (routerParser == null
@@ -95,6 +97,8 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
 
     public static abstract class Builder<T extends RoutingParsingApplicationParser> extends
             ParsingApplicationParser.Builder<T> {
+        private static final long serialVersionUID = 1L;
+
         protected String routingConditionField;
         protected String routingMessageField;
         protected ArrayList<String> mergedFields = new ArrayList<>();

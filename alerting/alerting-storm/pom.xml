@@ -9,23 +9,23 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.79-SNAPSHOT</version>
+        <version>1.80-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
-            <groupId>uk.co.gresearch.siembol</groupId>
-            <artifactId>alerting-core</artifactId>
-            <version>1.79-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson_version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -42,6 +42,21 @@
             <artifactId>storm-core</artifactId>
             <version>${storm_version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.co.gresearch.siembol</groupId>
+            <artifactId>alerting-core</artifactId>
+            <version>1.80-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -137,13 +152,30 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>module-info.class</exclude>
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.MF</exclude>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/*/schema</exclude>
+                                        <exclude>META-INF/LICENSE</exclude>
+                                        <exclude>META-INF/NOTICE</exclude>
+                                        <exclude>META-INF/DEPENDENCIES</exclude>
+                                        <exclude>*/schema</exclude>
+                                        <exclude>LICENSE.txt</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
                             <relocations>
+                                <relocation>
+                                    <pattern>com</pattern>
+                                    <shadedPattern>repackaged.com</shadedPattern>
+                                    <includes>
+                                        <include>com.fasterxml.jackson.*</include>
+                                        <include>com.google.guava.*</include>
+                                    </includes>
+                                </relocation>
                             </relocations>
                             <artifactSet>
                                 <excludes>
@@ -156,18 +188,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <source>${java_version}</source>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
-                    <target>${java_version}</target>
-                    <showWarnings>true</showWarnings>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -16,13 +16,11 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.actuate.health.Status.DOWN;
 import static org.springframework.boot.actuate.health.Status.UP;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
@@ -159,7 +157,7 @@ public class ConfigStoreImplTest {
 
     @Test
     public void checkHealthDown() throws Exception {
-        when(configs.addConfigItem(any(), any())).thenThrow(new IllegalStateException("exception"));
+        when(configs.addConfigItem(any(UserInfo.class), anyString())).thenThrow(new IllegalStateException("exception"));
         ConfigEditorResult ret = configStore.addConfig(user, "dummy");
         Assert.assertEquals(ERROR, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getException());

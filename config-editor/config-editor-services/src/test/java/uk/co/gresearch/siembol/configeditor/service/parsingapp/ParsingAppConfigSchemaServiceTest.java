@@ -15,8 +15,8 @@ import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFac
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,8 +53,8 @@ public class ParsingAppConfigSchemaServiceTest {
         factoryAttributes = new ParsingApplicationFactoryAttributes();
         factoryResult = new ParsingApplicationFactoryResult(OK, factoryAttributes);
         parsingAppResult = new ParserResult();
-        Mockito.when(parsingAppFactory.validateConfiguration(any())).thenReturn(factoryResult);
-        Mockito.when(parsingAppFactory.validateConfigurations(any())).thenReturn(factoryResult);
+        Mockito.when(parsingAppFactory.validateConfiguration(anyString())).thenReturn(factoryResult);
+        Mockito.when(parsingAppFactory.validateConfigurations(anyString())).thenReturn(factoryResult);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ParsingAppConfigSchemaServiceTest {
     public void validateConfigsError() {
         factoryAttributes.setMessage("error");
         factoryResult = new ParsingApplicationFactoryResult(ERROR, factoryAttributes);
-        Mockito.when(parsingAppFactory.validateConfigurations(any())).thenReturn(factoryResult);
+        Mockito.when(parsingAppFactory.validateConfigurations(anyString())).thenReturn(factoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -101,7 +101,7 @@ public class ParsingAppConfigSchemaServiceTest {
     public void validateCongfigError() {
         factoryAttributes.setMessage("error");
         factoryResult = new ParsingApplicationFactoryResult(ERROR, factoryAttributes);
-        Mockito.when(parsingAppFactory.validateConfiguration(any())).thenReturn(factoryResult);
+        Mockito.when(parsingAppFactory.validateConfiguration(anyString())).thenReturn(factoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parsingAppFactory, times(1)).validateConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());

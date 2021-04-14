@@ -91,7 +91,7 @@ public class KafkaBatchWriterBoltTest {
         for (int i = 0; i < 100; i++) {
             Assert.assertEquals("dummy", outputMessages.get(i));
         }
-        verify(collector, times(1)).ack(any());
+        verify(collector, times(1)).ack(ArgumentMatchers.<List<Object>>any());
     }
 
     @Test
@@ -113,6 +113,6 @@ public class KafkaBatchWriterBoltTest {
         for (int i = 0; i < 100; i++) {
             Assert.assertEquals("dummy", outputMessages.get(i));
         }
-        verify(collector, times(100)).ack(any());
+        verify(collector, times(100)).ack(any(Tuple.class));
     }
 }

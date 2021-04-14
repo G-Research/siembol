@@ -13,6 +13,7 @@ import java.util.Map;
 import static uk.co.gresearch.siembol.parsers.factory.ParserFactoryResult.StatusCode.OK;
 
 public class SerializableSiembolParser implements SiembolParser, Serializable {
+    private static final long serialVersionUID = 1L;
     private static final String WRONG_CONFIG_EXCEPTION_MSG = "Unable to create parser from config %s, Message: %s";
     private transient SiembolParser parser;
     private String parserConfig;

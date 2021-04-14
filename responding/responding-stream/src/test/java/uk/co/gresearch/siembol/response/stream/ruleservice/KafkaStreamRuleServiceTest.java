@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 public class KafkaStreamRuleServiceTest {
@@ -75,7 +76,7 @@ public class KafkaStreamRuleServiceTest {
     @Ignore
     @Test
     public void testMatchEngineTest() throws Exception {
-        when(rulesEngine.evaluate(any()))
+        when(rulesEngine.evaluate(any(ResponseAlert.class)))
                 .thenReturn(RespondingResult.fromEvaluationResult(ResponseEvaluationResult.MATCH, responseAlert));
         kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());;
         Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
@@ -85,7 +86,7 @@ public class KafkaStreamRuleServiceTest {
     @Test
     public void testNoMatchEngineTest() throws Exception {
         resultAttributes.setMessage("no rule matched");
-        when(rulesEngine.evaluate(any()))
+        when(rulesEngine.evaluate(any(ResponseAlert.class)))
                 .thenReturn(RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, responseAlert));
         kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());
 
@@ -99,7 +100,7 @@ public class KafkaStreamRuleServiceTest {
     @Ignore
     @Test
     public void testErrorMatchEngineTest() throws Exception {
-        when(rulesEngine.evaluate(any()))
+        when(rulesEngine.evaluate(any(ResponseAlert.class)))
                 .thenReturn(RespondingResult.fromException(new IllegalStateException("tmp")));
         kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());
 
@@ -113,7 +114,7 @@ public class KafkaStreamRuleServiceTest {
     @Ignore
     @Test
     public void testExceptionEngineTest() throws Exception {
-        when(rulesEngine.evaluate(any())).thenThrow(new IllegalStateException());
+        when(rulesEngine.evaluate(any(ResponseAlert.class))).thenThrow(new IllegalStateException());
         kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());
 
         List<String> outputEvent = kafkaRule.helper().consumeStrings(errorTopic, 1)

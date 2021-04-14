@@ -14,6 +14,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class TestingZookeeperConnectorFactory implements ZookeeperConnectorFactory {
+    private static final long serialVersionUID = 1L;
+
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Map<String, String> cache = new HashMap<>();
 

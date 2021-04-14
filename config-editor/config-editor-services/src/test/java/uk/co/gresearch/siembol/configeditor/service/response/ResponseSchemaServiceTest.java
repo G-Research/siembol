@@ -12,8 +12,7 @@ import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
 
 import java.io.IOException;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
@@ -210,9 +209,9 @@ public class ResponseSchemaServiceTest {
                 .thenReturn(rulesSchema);
         Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_TEST_SCHEMA.toString())))
                 .thenReturn(testSchema);
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), anyString()))
                 .thenReturn(okMessage);
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), anyString()))
                 .thenReturn(okMessage);
 
         builder = new ResponseSchemaService.Builder(httpProvider);
@@ -270,7 +269,7 @@ public class ResponseSchemaServiceTest {
 
     @Test
     public void validateRulesError() throws Exception {
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), anyString()))
                 .thenReturn(errorMessage);
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.validateConfigurations(dummyJsonObject);
@@ -279,7 +278,7 @@ public class ResponseSchemaServiceTest {
 
     @Test
     public void validateRulesException() throws Exception {
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), anyString()))
                 .thenThrow(new IOException());
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.validateConfigurations(dummyJsonObject);
@@ -295,7 +294,7 @@ public class ResponseSchemaServiceTest {
 
     @Test
     public void validateRuleError() throws Exception {
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), any()))
+        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.VALIDATE_RULES.toString()), anyString()))
                 .thenReturn(errorMessage);
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.validateConfiguration(dummyJsonObject);
