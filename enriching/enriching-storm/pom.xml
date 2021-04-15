@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>enriching</artifactId>
-        <version>1.80-SNAPSHOT</version>
+        <version>1.81-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>enriching-core</artifactId>
-            <version>1.80-SNAPSHOT</version>
+            <version>1.81-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -168,6 +168,8 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>uk.co.gresearch.siembol.enrichments.storm.StormEnrichingApplication</mainClass>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer">
+                                </transformer>
                             </transformers>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <shadedClassifierName>uber</shadedClassifierName>
@@ -188,8 +190,7 @@
                                         <exclude>META-INF/ASL2.0</exclude>
                                         <exclude>META-INF/services/javax.ws.rs.ext.*</exclude>
                                         <exclude>META-INF/jersey-module-version</exclude>
-                                        <exclude>*/schema</exclude>
-                                        <exclude>LICENSE.txt</exclude>
+                                        <exclude>*.txt</exclude>
                                         <exclude>about.html</exclude>
                                     </excludes>
                                 </filter>
