@@ -19,7 +19,7 @@ If you spot a bug, then please raise an issue in our main GitHub project:
 
 Likewise, if you have developed a cool new feature or improvement, then send us a pull request! Please read the siembol developer guide:
 
-* [https://github.com/G-Research/siembol/blob/master/docs/introduction/how-tos/how_to_develop.md](https://github.com/G-Research/siembol/blob/master/docs/introduction/how-tos/how_to_develop.md)
+* [How to contribute](/docs/introduction/how-tos/how_to_contribute.md)
 
 If you want to brainstorm a potential new feature, hop on over to our Gitter room, listed below.
 
