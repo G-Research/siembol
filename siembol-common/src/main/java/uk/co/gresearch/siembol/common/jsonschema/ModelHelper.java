@@ -58,6 +58,7 @@ public class ModelHelper {
     private static final String ARRAY_TYPE = "array";
     private static final String OBJECT_TYPE = "object";
     private static final String ONE_OF_KEY = "oneOf";
+    private static final String REF_KEY = "$ref";
 
     private final Map<String, Map<String, Object>> defaultValues;
     private final Map<String, List<String>> fieldNames;
@@ -223,14 +224,21 @@ public class ModelHelper {
         }
     }
 
+    private boolean isRefType(ObjectNode node) {
+        return node.get(REF_KEY) != null && node.get(REF_KEY).isTextual();
+    }
+
     public ObjectNode getEnrichedSchema(JsonNode schema) throws IOException {
         ObjectNode root = schema.deepCopy();
         Stack<ObjectNode> stack = new Stack<>();
         stack.push(root);
         while (!stack.empty()) {
             ObjectNode current = stack.pop();
-            String type = current.get(TYPE_KEY).asText();
+            if (isRefType(current)) {
+                continue;
+            }
 
+            String type = current.get(TYPE_KEY).asText();
             if (ARRAY_TYPE.equals(type)) {
                 ObjectNode items = (ObjectNode)current.get(ITEMS_KEY);
                 stack.push(items);
