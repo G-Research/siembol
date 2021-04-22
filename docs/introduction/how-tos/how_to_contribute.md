@@ -1,56 +1,124 @@
-# How to contribute
-## How to contribute to siembol java project
+How to Contribute
+=================
+
+How to contribute to the siembol Java project
+---------------------------------------------
 
 ### Environment
+
 - [Maven](https://maven.apache.org/guides/) - version `3.5+`
 - [Java Development Kit 8](https://jdk.java.net/)
 
 ### How to compile and install
-Run `mvn clean install -Dgpg.skip=true` to install the project locally 
 
-Run `mvn clean package` to build and test the project. This command is recommended to execute before committing changes in the git repository.
+To install the project locally:
 
-Run `mvn clean package -DskipTests=true` to build the project but skip testing.
+```shell
+mvn clean install -Dgpg.skip=true
+```
+
+To build and test the project:
+
+```shell
+mvn clean package
+```
+
+> **_note:_** We recommend that you execute this command before committing changes in the git repository.
+
+To build the project but skip testing:
+
+```shell
+mvn clean package -DskipTests=true
+```
+
 ### How to solve dependencies conflicts
 
-Run `mvn dependency:tree` to obtain the dependency trees that can help to resolve issues with conflict in dependencies.
+To obtain the dependency trees that can help to resolve issues with conflict in dependencies
 
-### How to increase the version of modules
-Increase versions in all submodules by running
+```shell
+mvn dependency:tree
 ```
+
+### How to increase the version of submodules
+
+To increment versions in all submodules:
+
+```shell
 mvn versions:set -DnewVersion=your_new_version
 ```
-Increasing version is recommended for each PR with siembol java code change. Use version name with 'SNAPSHOT' if you are not preparing a release version.
 
-## How to contribute to config editor UI project
+> **_note:_** Incrementing the version is recommended for each PR with siembol java code change. Use version name with `SNAPSHOT` if you are not preparing a release version.
 
-Angular version can be found in [package.json](/config-editor/config-editor-ui/package.json) file.
+
+How to contribute to config editor UI project
+---------------------------------------------
+
+### Angular version
+
+The current Angular version can be found in the [package.json](/config-editor/config-editor-ui/package.json) file.
 
 
 ### Build
 
-Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+To build the project:
+
+```shell
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
 ### Development server
 
-Run `npm run start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+To start a development server, run:
+
+```shell
+npm run start
+``` 
+
+Navigate to [`http://localhost:4200`](http://localhost:4200) to view the UI.
+
+The app will automatically reload if you change any of the source files.
 
 ### Running unit tests
 
-Run `npm run test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+ to execute the unit tests via [Karma](https://karma-runner.github.io), run:
+
+```shell
+npm run test
+```
 
 ### Linting
 
-Run `npm run lint` to lint all files or `npm run lint-fix` to lint all files and fix some linting errors.
+To lint all files:
+
+```shell
+npm run lint
+```
+
+To lint all files and fix linting errors:
+
+```shell
+npm run lint-fix
+``` 
 
 ### Package lock file
-If you are changing dependencies in [package.json](/config-editor/config-editor-ui/package.json)  run `npm install` and  always update and commit dependencies in [package lock file](/config-editor/config-editor-ui/package-lock.json)
 
-Use `nocontribute` author for committing the lock file in order not to include this file to contributor statistics
-```
+To change the dependencies listed in [package.json](/config-editor/config-editor-ui/package.json), run:
+
+```shell
+npm install
+``` 
+
+Always update and commit dependencies in the [package lock file](/config-editor/config-editor-ui/package-lock.json)
+
+> **_note:_** Use the `nocontribute` author to commit the lock file in order not to include this file in the contributor statistics:
+
+```shell
 git add package-lock.json
 git commit -m 'updating package lock file' --author='nocontribute <>'
 ```
 
-### Increase config editor ui version
-Config editor ui version should be increased after each code change in [package.json](/config-editor/config-editor-ui/package.json)
+### Increase the config editor's UI version
+
+The config editor's UI version should be increased after each code change in [package.json](/config-editor/config-editor-ui/package.json).
