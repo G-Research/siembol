@@ -73,3 +73,9 @@ hr {
     border-color: #00AAE1 !important; 
 }
 
+
+@media screen and (max-width: 480px) {
+    .visible-sm img {
+        width: 125px !important;
+    }
+}

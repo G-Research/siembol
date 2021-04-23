@@ -34,18 +34,18 @@ tagline: ""
 # -------------------------
 
 features_thumbs:
-  - title: "Clean Code"
-    icon: "code"
-    description: "Written and reviewed to ensure that simple configuration mistakes don’t bring down the whole pipeline when compiling."
-  - title: "Build with Git"
-    icon: "github"
-    description: "A git-based approval workflow for rules updates. Deploying configurations with high integrity on protected main branches."
-  - title: "Unique Design"
-    icon: "pencil-ruler"
-    description: "An improved, modern-looking UI in Angular. Create a rule-based alert via single/multiple data sources to provide additional enrichments."
+  - title: "Security Analytics"
+    icon: "shield"
+    description: "Siembol uses a highly scalable streaming architecture to enable cost-effective, sophisticated, real-time analytics on security data."
+  - title: "Detection"
+    icon: "search"
+    description: "Siembol threat discovery uses rule-based alerting, and can consolidate multiple rules for more powerful correlation detections."
+  - title: "Rapid Response"
+    icon: "bolt"
+    description: "Flexible incident response workflows can be built and triggered <b>in real-time</b> via the highly modular and pluggable framework."
   - title: "Simple Install"
     icon: "terminal"
-    description: "Supports deployment on an external Hadoop cluster. Easy installation with prepared Docker images and Helm charts."
+    description: "Supports deployment on an external Hadoop cluster and accommodates easy installation with prepared Docker images and Helm charts."
 
 # Blockquote
 # -------------------------
