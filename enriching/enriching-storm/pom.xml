@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>enriching</artifactId>
-        <version>1.82-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <dependencies>
         <dependency>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>enriching-core</artifactId>
-            <version>1.82-SNAPSHOT</version>
+            <version>1.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
