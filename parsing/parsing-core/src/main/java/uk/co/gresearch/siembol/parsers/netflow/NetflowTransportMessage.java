@@ -4,6 +4,8 @@ public interface NetflowTransportMessage<T> {
 
     /**
      * Get an unique global Id that identifies the template in the global store
+     * @param header a netflow header
+     * @param templateId id of the template
      * @return Object of the type T that  will be used as a key in a templates store
      */
 
