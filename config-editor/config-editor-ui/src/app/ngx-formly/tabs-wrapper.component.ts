@@ -4,14 +4,12 @@ import { FieldWrapper } from '@ngx-formly/core';
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'formly-wrapper-tabs',
-  template:
-  `<mat-tab-group>
+  template: `<mat-tab-group>
     <mat-tab *ngFor="let tab of field.fieldGroup" [label]="to.label">
-        <ng-template #fieldComponent></ng-template>
+      <ng-template #fieldComponent></ng-template>
     </mat-tab>
-  </mat-tab-group>
-  `,
+  </mat-tab-group> `,
 })
 export class TabsWrapperComponent extends FieldWrapper {
-    @ViewChild('fieldComponent', { read: ViewContainerRef, static: true }) fieldComponent: ViewContainerRef;
+  @ViewChild('fieldComponent', { read: ViewContainerRef, static: true }) fieldComponent: ViewContainerRef;
 }

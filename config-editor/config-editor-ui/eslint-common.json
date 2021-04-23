@@ -6,16 +6,12 @@
     "eslint:recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": [
-    "sort-keys-fix"
-  ],
   "rules": {
     "@angular-eslint/component-selector": [
       "error",
-      { "type": "element", "prefix": "re", "style": "kebab-case" }
+      { "type": "element", "prefix": ["re", "formly"], "style": "kebab-case" }
     ],
     "no-prototype-builtins": "off",
-    "sort-keys-fix/sort-keys-fix": "warn",
     "arrow-parens": [
       "error",
       "as-needed"
@@ -50,9 +46,7 @@
     "no-return-await": "error",
     "no-shadow": "off",
     "no-underscore-dangle": "off",
-    "no-useless-constructor": "off",
     "prefer-arrow/prefer-arrow-functions": "off",
-    "sort-keys": "error",
     "@angular-eslint/prefer-output-readonly": "error",
     "@angular-eslint/use-component-view-encapsulation": "error",
     "@typescript-eslint/array-type": [

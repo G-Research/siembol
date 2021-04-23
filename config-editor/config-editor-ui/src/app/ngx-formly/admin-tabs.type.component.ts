@@ -5,24 +5,32 @@ import { FieldType } from '@ngx-formly/core';
   // tslint:disable-next-line:component-selector
   selector: 'formly-admintab-type',
   template: `
-  <mat-tab-group class="admin-tabs" animationDuration="0ms">
-    <mat-tab [label]="'General Properties'">
+    <mat-tab-group class="admin-tabs" animationDuration="0ms">
+      <mat-tab [label]="'General Properties'">
         <ng-container *ngFor="let f of field.fieldGroup">
-        <formly-field *ngIf="!tabTypes.includes(f.type) || f.templateOptions.genericSettingTab" [field]="f"></formly-field>
+          <formly-field
+            *ngIf="!tabTypes.includes(f.type) || f.templateOptions.genericSettingTab"
+            [field]="f"
+          ></formly-field>
         </ng-container>
-    </mat-tab>
-    <ng-container *ngFor="let tab of field.fieldGroup">
-    <mat-tab *ngIf="tabTypes.includes(tab.type) && !tab.templateOptions.genericSettingTab" [label]="tab?.templateOptions?.label">
-        <formly-field [field]="tab"></formly-field>
-    </mat-tab>
-    </ng-container>
-  </mat-tab-group>
+      </mat-tab>
+      <ng-container *ngFor="let tab of field.fieldGroup">
+        <mat-tab
+          *ngIf="tabTypes.includes(tab.type) && !tab.templateOptions.genericSettingTab"
+          [label]="tab?.templateOptions?.label"
+        >
+          <formly-field [field]="tab"></formly-field>
+        </mat-tab>
+      </ng-container>
+    </mat-tab-group>
   `,
-  styles: [`
-        ::ng-deep .admin-tabs .mat-tab-body-wrapper {
-            top: 8px !important;
-        }
-    `]
+  styles: [
+    `
+      ::ng-deep .admin-tabs .mat-tab-body-wrapper {
+        top: 8px !important;
+      }
+    `,
+  ],
 })
 export class AdminTabTypeComponent extends FieldType {
   tabTypes = ['array', 'object', 'rawobject'];

@@ -10,14 +10,16 @@ import { FieldType } from '@ngx-formly/core';
     </div>
     <formly-field *ngFor="let f of field.fieldGroup" [field]="f"></formly-field>
   `,
-  styles: [`
-    mat-card:last-child {
+  styles: [
+    `
+      mat-card:last-child {
         display: none;
-    }
-  `],
+      }
+    `,
+  ],
 })
 export class ObjectTypeComponent extends FieldType {
-    defaultOptions = {
-        defaultValue: {},
-    };
+  defaultOptions = {
+    defaultValue: {},
+  };
 }

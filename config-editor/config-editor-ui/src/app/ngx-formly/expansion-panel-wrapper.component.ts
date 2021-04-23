@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { FieldWrapper } from '@ngx-formly/core';
 
@@ -9,15 +8,14 @@ import { FieldWrapper } from '@ngx-formly/core';
     <mat-expansion-panel [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
-            {{ to.label }}
+          {{ to.label }}
         </mat-panel-title>
         <mat-panel-description>
-            {{ to.description }}
+          {{ to.description }}
         </mat-panel-description>
       </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent #fieldComponent></ng-template>
+      <ng-template matExpansionPanelContent #fieldComponent></ng-template>
     </mat-expansion-panel>
   `,
 })
-export class ExpansionPanelWrapperComponent extends FieldWrapper {
-}
+export class ExpansionPanelWrapperComponent extends FieldWrapper {}

@@ -18,18 +18,21 @@ import { FieldType } from '@ngx-formly/material/form-field';
       [formControl]="formControl"
       [formlyAttributes]="field"
       [tabindex]="to.tabindex || 0"
-      [placeholder]="to.placeholder"/>
+      [placeholder]="to.placeholder"
+    />
   `,
-    styles: [`
-        .hide-text {
-            -webkit-text-fill-color: transparent;
-        }
+  styles: [
+    `
+      .hide-text {
+        -webkit-text-fill-color: transparent;
+      }
 
-        .highlighted-overlay {
-            position: absolute;
-            top: 6px;
-        }
-    `]
+      .highlighted-overlay {
+        position: absolute;
+        top: 6px;
+      }
+    `,
+  ],
 })
 export class InputTypeComponent extends FieldType {
   @ViewChild(MatInput, { static: true }) formFieldControl!: MatInput;

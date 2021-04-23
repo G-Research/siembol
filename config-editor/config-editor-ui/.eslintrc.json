@@ -3,6 +3,7 @@
   "env": {
     "jasmine": true
    },
+  "ignorePatterns": ["src/testing/*"],
   "overrides": [
     {
       "files": ["*.ts"],
