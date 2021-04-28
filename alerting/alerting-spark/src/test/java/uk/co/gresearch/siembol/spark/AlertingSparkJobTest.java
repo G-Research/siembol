@@ -132,7 +132,7 @@ public class AlertingSparkJobTest {
             events.add(goodAlert);
             events.add("INVALID");
         }
-        JavaRDD<String> eventsRdd = sc.parallelize(events);
+        sc.parallelize(events);
         job = new AlertingSparkJob.Builder()
                 .sparkContext(sc)
                 .suffix("txt")
@@ -145,6 +145,6 @@ public class AlertingSparkJobTest {
                 .build();
 
         AlertingSparkResult result = job.eval();
-        int i = 1;
+        Assert.assertFalse(result.isEmpty());
     }
 }

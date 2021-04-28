@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.configinfo.JsonRuleConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
@@ -139,22 +138,22 @@ public class JsonRuleConfigInfoProviderTest {
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ruleInfoWrongJson() {
-        ConfigInfo info = infoProvider.getConfigInfo(steve,"WRONG JSON");
+        infoProvider.getConfigInfo(steve,"WRONG JSON");
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void RuleInfoWrongMissingMetadata() {
-        ConfigInfo info = infoProvider.getConfigInfo(john, maliciousRule);
+        infoProvider.getConfigInfo(john, maliciousRule);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ruleInfoWrongUser() {
-        ConfigInfo info = infoProvider.getConfigInfo(null, testRule);
+        infoProvider.getConfigInfo(null, testRule);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void releaseInfoWrongUser() {
-        ConfigInfo info = infoProvider.getReleaseInfo(new UserInfo(), testRule);
+        infoProvider.getReleaseInfo(new UserInfo(), testRule);
     }
 
     @Test

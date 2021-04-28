@@ -1,8 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.testcase;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,9 +8,6 @@ import org.junit.Test;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorTestCaseResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
-
-
-import java.util.Optional;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;

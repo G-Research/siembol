@@ -59,9 +59,6 @@ public class MemoryTableEnrichmentBoltTest {
     @Multiline
     public static String simpleOneField;
 
-    private String errorTopic = "error";
-    private String outputTopic = "output";
-
     private Tuple tuple;
     private OutputCollector collector;
     private EnrichmentExceptions exceptions;

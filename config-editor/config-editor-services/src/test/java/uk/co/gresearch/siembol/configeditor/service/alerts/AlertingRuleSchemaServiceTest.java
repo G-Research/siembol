@@ -64,7 +64,6 @@ public class AlertingRuleSchemaServiceTest {
         context.setConfigSchema(ruleSchema);
         context.setAdminConfigSchema(adminSchema);
         context.setAdminConfigValidator(adminConfigValidator);
-        SiembolJsonSchemaValidator testValidator = new SiembolJsonSchemaValidator(AlertingTestSpecificationDto.class);
         this.alertingRuleSchemaService = new AlertingRuleSchemaService(alertingCompiler, context);
 
         alertingAttributes = new AlertingAttributes();

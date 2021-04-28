@@ -9,7 +9,6 @@ import org.junit.Test;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.ResponseAlert;
 import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
-import uk.co.gresearch.siembol.response.evaluators.markdowntable.TableFormatter;
 import uk.co.gresearch.siembol.response.model.ArrayReducerTypeDto;
 
 import java.io.IOException;

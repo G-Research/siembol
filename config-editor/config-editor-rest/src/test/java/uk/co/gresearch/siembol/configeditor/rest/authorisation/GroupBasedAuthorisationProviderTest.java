@@ -39,18 +39,18 @@ public class GroupBasedAuthorisationProviderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullUserInfo() {
-        AuthorisationProvider.AuthorisationResult result = provider.getUserAuthorisation(null, "alert");
+        provider.getUserAuthorisation(null, "alert");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullUserGroups() {
         when(userInfo.getGroups()).thenReturn(null);
-        AuthorisationProvider.AuthorisationResult result = provider.getUserAuthorisation(userInfo, "alert");
+        provider.getUserAuthorisation(userInfo, "alert");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullService() {
-        AuthorisationProvider.AuthorisationResult result = provider.getUserAuthorisation(userInfo, null);
+        provider.getUserAuthorisation(userInfo, null);
     }
 
     @Test

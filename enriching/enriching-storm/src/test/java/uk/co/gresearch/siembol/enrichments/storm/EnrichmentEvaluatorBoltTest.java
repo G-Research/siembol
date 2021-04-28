@@ -69,8 +69,6 @@ public class EnrichmentEvaluatorBoltTest {
 
     private Tuple tuple;
     private OutputCollector collector;
-    private EnrichmentExceptions exceptions;
-    private EnrichmentCommands commands;
     EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
     ZookeeperAttributesDto zookeperAttributes;
     StormEnrichmentAttributesDto attributes;
@@ -84,8 +82,6 @@ public class EnrichmentEvaluatorBoltTest {
         attributes = new StormEnrichmentAttributesDto();
         attributes.setEnrichingRulesZookeperAttributes(zookeperAttributes);
 
-        exceptions = new EnrichmentExceptions();
-        commands = new EnrichmentCommands();
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);

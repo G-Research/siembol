@@ -3,8 +3,6 @@ package uk.co.gresearch.siembol.configeditor.rest.common;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationProperties;
-import uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationType;
-import uk.co.gresearch.siembol.common.authorisation.ResourceServerOauth2Properties;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 
 import java.util.HashMap;

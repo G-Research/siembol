@@ -1,8 +1,6 @@
 package uk.co.gresearch.siembol.response.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 

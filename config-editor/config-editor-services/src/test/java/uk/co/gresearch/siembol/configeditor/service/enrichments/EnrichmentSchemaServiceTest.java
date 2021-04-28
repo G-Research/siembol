@@ -27,12 +27,10 @@ import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.Status
 public class EnrichmentSchemaServiceTest {
     private EnrichmentSchemaService enrichmentsSchemaService;
     private final String schema = "dummmy schema";
-    private final String testSchema = "dummmy test schema";
     private final String adminSchema = "dummmy admin schema";
     private final String testConfig = "dummmy enrichments config";
     private final String testSpecification = "dummmy test specification";
     private final String testConfigs = "dummmy enrichments configs";
-    private final String testLog = "dummy log";
     private final String testResult = "dummy test result";
     private final String testRawResult = "dummy test raw result";
 

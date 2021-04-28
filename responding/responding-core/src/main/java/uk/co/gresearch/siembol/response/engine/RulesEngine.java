@@ -1,18 +1,14 @@
 package uk.co.gresearch.siembol.response.engine;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.testing.InactiveTestingLogger;
 import uk.co.gresearch.siembol.common.testing.TestingLogger;
 import uk.co.gresearch.siembol.response.common.*;
 
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
 
 public class RulesEngine implements ResponseEngine {
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_ATTRIBUTES = "Missing response rule engine attributes";
     private static final String NO_RULE_MATCHES_THE_ALERT = "No rule matches the alert %s";
 

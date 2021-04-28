@@ -77,7 +77,6 @@ public class ModelHelper {
 
         for (Annotation annotation : annotations) {
             if (annotation.annotationType().equals(Attributes.class)) {
-                Attributes attr = (Attributes) annotation;
                 ret.put(AnnotationType.TITLE, ((Attributes)annotation).title());
             }
             if (annotation.annotationType().equals(SchemaIgnore.class)) {
@@ -168,8 +167,8 @@ public class ModelHelper {
                 if (genericFieldType instanceof ParameterizedType) {
                     //we handle generic parameters  e.g. List<DtoClass>
                     for (Type fieldArgType : ((ParameterizedType)genericFieldType).getActualTypeArguments()) {
-                        if (isInterestingType((Class)fieldArgType)) {
-                            stack.push((Class)fieldArgType);
+                        if (isInterestingType((Class<?>)fieldArgType)) {
+                            stack.push((Class<?>)fieldArgType);
                         }
                     }
                 } else if (isInterestingType(field.getType())) {

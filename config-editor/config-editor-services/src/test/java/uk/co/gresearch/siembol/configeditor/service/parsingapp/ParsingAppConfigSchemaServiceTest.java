@@ -13,7 +13,6 @@ import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceCo
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
-import uk.co.gresearch.siembol.parsers.common.ParserResult;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,7 +32,6 @@ public class ParsingAppConfigSchemaServiceTest {
     private ParsingApplicationFactory parsingAppFactory;
     private ParsingApplicationFactoryResult factoryResult;
     private ParsingApplicationFactoryAttributes factoryAttributes;
-    private ParserResult parsingAppResult;
     private ConfigSchemaServiceContext context;
     private SiembolJsonSchemaValidator adminConfigValidator;
     private SiembolResult validationResult;
@@ -52,7 +50,6 @@ public class ParsingAppConfigSchemaServiceTest {
         this.parserConfigSchemaService = new ParsingAppConfigSchemaService(parsingAppFactory, context);
         factoryAttributes = new ParsingApplicationFactoryAttributes();
         factoryResult = new ParsingApplicationFactoryResult(OK, factoryAttributes);
-        parsingAppResult = new ParserResult();
         Mockito.when(parsingAppFactory.validateConfiguration(anyString())).thenReturn(factoryResult);
         Mockito.when(parsingAppFactory.validateConfigurations(anyString())).thenReturn(factoryResult);
     }

@@ -2,8 +2,6 @@ package uk.co.gresearch.siembol.configeditor.service.common;
 
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 
-import java.util.Optional;
-
 public class ConfigSchemaServiceContext {
     private String configSchema;
     private String testSchema;
