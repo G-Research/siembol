@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.util.*;
 
-@SuppressWarnings("unnassigned")
 public class RegexSelectExtractorTest {
     private String name = "test_name";
     private String field = "test_field";

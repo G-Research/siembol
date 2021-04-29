@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
-import uk.co.gresearch.siembol.response.common.ResponseAlert;
 
 public class JsonPathJsonPathAssignmentEvaluatorFactoryTest {
     /**
@@ -20,7 +19,6 @@ public class JsonPathJsonPathAssignmentEvaluatorFactoryTest {
     public static String attributes;
 
     private JsonPathAssignmentEvaluatorFactory factory;
-    private ResponseAlert alert = new ResponseAlert();
 
     @Before
     public void setUp() throws Exception {

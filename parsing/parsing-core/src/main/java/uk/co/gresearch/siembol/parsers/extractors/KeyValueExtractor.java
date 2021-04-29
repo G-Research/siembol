@@ -20,14 +20,12 @@ public class KeyValueExtractor extends ParserExtractor {
     }
 
     private final KeyValueIndices.IndexOf indexOf;
-    private final char keyValueDelimiter;
     private final EnumSet<KeyValueExtractorFlags> flags;
     private final String errorKeyName;
 
     private KeyValueExtractor(Builder<?> builder) {
         super(builder);
         this.indexOf = builder.indexOfEnd;
-        this.keyValueDelimiter = builder.keyValueDelimiter;
         this.flags = builder.keyValueFlags;
         this.errorKeyName = String.format("%s_%s", EXTRACTOR_ERROR_PREFIX, getName());
     }

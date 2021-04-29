@@ -90,7 +90,7 @@ public class AlertingSparkJob implements Serializable {
             return this;
         }
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings({"unchecked", "rawtypes"})
         public AlertingSparkJob build() throws Exception {
             if (rules == null
                     || logPath == null

@@ -7,9 +7,7 @@ import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
-import uk.co.gresearch.siembol.response.evaluators.matching.MatchingEvaluator;
 import uk.co.gresearch.siembol.response.model.AlertThrottlingEvaluatorAttributesDto;
-import uk.co.gresearch.siembol.response.model.MatchingEvaluatorAttributesDto;
 
 public class AlertThrottlingEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()

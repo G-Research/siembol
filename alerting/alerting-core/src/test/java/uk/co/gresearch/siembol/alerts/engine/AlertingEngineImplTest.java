@@ -14,7 +14,6 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 public class AlertingEngineImplTest {

@@ -21,7 +21,6 @@ public class JwtUserInfoProviderTest {
     private String email = "john@secret";
     private List<String> groups = Arrays.asList("a", "b");
 
-    private List<String> userGroups;
     @Before
     public void setUp() {
         authentication = Mockito.mock(Authentication.class);
@@ -65,7 +64,7 @@ public class JwtUserInfoProviderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testMissingEmailInUserToken() {
         claims.remove("email");
-        UserInfo user = provider.getUserInfo(authentication);
+        provider.getUserInfo(authentication);
     }
 
     @Test

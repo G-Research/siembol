@@ -152,12 +152,12 @@ public class CorrelationRulesCompilerTest {
 
     @Test(expected = java.lang.UnsupportedOperationException.class)
     public void testRules() {
-        AlertingResult ret = compiler.testRules(rulesWithSimpleCorrelationRule, "dummy");
+        compiler.testRules(rulesWithSimpleCorrelationRule, "dummy");
     }
 
     @Test(expected = java.lang.UnsupportedOperationException.class)
     public void testingRule() {
-        AlertingResult ret = compiler.testRule(simpleCorrelationRule, "dummy");
+        compiler.testRule(simpleCorrelationRule, "dummy");
     }
 
 }

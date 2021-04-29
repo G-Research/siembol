@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
-import uk.co.gresearch.siembol.response.evaluators.throttling.AlertThrottlingEvaluatorFactory;
 
 public class SleepEvaluatorFactoryTest {
     /**

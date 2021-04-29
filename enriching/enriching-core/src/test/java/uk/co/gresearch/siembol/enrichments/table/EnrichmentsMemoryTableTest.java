@@ -180,10 +180,10 @@ public class EnrichmentsMemoryTableTest {
 
     @Test(expected = com.fasterxml.jackson.core.io.JsonEOFException.class)
     public void testInvalidJsonTable2() throws IOException {
-        String trimed = simpleOneField.trim();
-        try (InputStream is = new ByteArrayInputStream(trimed
-                .substring(0, trimed.length() - 1).getBytes())) {
-            EnrichmentMemoryTable table = EnrichmentMemoryTable.fromJsonStream(is);
+        String trimString = simpleOneField.trim();
+        try (InputStream is = new ByteArrayInputStream(trimString
+                .substring(0, trimString.length() - 1).getBytes())) {
+            EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 

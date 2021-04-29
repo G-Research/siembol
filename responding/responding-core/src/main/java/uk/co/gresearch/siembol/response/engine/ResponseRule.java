@@ -57,6 +57,8 @@ public class ResponseRule implements Evaluable {
                         return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.FILTERED, currentAlert);
                     case NO_MATCH:
                         return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, alert);
+                    case MATCH:
+                        //NOTE: try the next evaluator
                 }
                 currentAlert = result.getAttributes().getAlert();
             } catch (Exception e) {

@@ -20,7 +20,6 @@ public class TransformationFactory {
     private static final String MISSING_TRANSFORMATION_TYPE = "Missing transformation type";
     private static final String UNKNOWN_TRANSFORMATION_TYPE = "Unknown transformation type";
     private static final String MISSING_TRANSFORMATION_ATTRIBUTES = "Missing transformation attributes";
-    private static final String UNSUPPORTED_FIELD_NAME_CASE_TYPE = "Unsupported field name case transformation";
 
     public Transformation create(TransformationDto specification) {
         if(specification.getType() == null) {

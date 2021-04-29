@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
-import uk.co.gresearch.siembol.response.common.ResponseAlert;
 
 public class ArrayReducerEvaluatorFactoryTest {
     /**
@@ -29,7 +28,6 @@ public class ArrayReducerEvaluatorFactoryTest {
     public static String attributes;
 
     private ArrayReducerEvaluatorFactory factory;
-    private ResponseAlert alert = new ResponseAlert();
 
     @Before
     public void setUp() throws Exception {

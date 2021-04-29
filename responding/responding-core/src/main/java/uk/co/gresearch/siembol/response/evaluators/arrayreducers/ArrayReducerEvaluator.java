@@ -56,7 +56,6 @@ public class ArrayReducerEvaluator implements Evaluable {
 
     public static class Builder {
         private static final String MISSING_ARGUMENT_MSG = "missing Array reducer evaluator attributes";
-        private static final String UNSUPPORTED_ARGUMENT_MSG = "Unsupported combination of arguments in tableformatter";
         private String arrayFieldName;
         private String prefixName;
         private String fieldFormatMessage;

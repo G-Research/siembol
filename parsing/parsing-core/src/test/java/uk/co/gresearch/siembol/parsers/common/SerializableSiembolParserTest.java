@@ -63,6 +63,6 @@ public class SerializableSiembolParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void serializableInvalidTest() throws Exception {
-        SerializableSiembolParser original = new SerializableSiembolParser("INVALID");
+        new SerializableSiembolParser("INVALID");
     }
 }

@@ -120,12 +120,12 @@ public class EnrichmentEvaluatorLibraryTest {
 
     @Test(expected = IOException.class)
     public void testMergeInvalidJsonEvent() throws IOException {
-        String enriched = EnrichmentEvaluatorLibrary.mergeEnrichments("INVALID", enrichments, Optional.empty());
+        EnrichmentEvaluatorLibrary.mergeEnrichments("INVALID", enrichments, Optional.empty());
     }
 
     @Test(expected = ClassCastException.class)
     public void testMergeInvalidJsonEventArray() throws IOException {
-        String enriched = EnrichmentEvaluatorLibrary.mergeEnrichments("[]", enrichments, Optional.empty());
+        EnrichmentEvaluatorLibrary.mergeEnrichments("[]", enrichments, Optional.empty());
     }
 
     @Test

@@ -43,7 +43,6 @@ public class ConfigReleaseTest {
     private List<ConfigEditorFile> files;
     private ConfigEditorResult getFilesResult;
     private ConfigInfo releaseInfo;
-    private ConfigInfo newReleaseInfo;
     private UserInfo user;
     private ConfigEditorResult pullRequestResult;
     private Integer releaseVersion = 10;

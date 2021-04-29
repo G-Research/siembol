@@ -36,7 +36,6 @@ public class EnrichmentMergerBoltTest {
     @Multiline
     public static String enrichedEventPrefix;
 
-    private List<Map<String, Object>> parsed;
     private String errorTopic = "error";
     private String outputTopic = "output";
 

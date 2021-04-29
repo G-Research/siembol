@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.configinfo.TestCaseInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
@@ -184,29 +183,28 @@ public class TestCaseConfigInfoProviderTest {
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongJson() {
-        ConfigInfo info = infoProvider.getConfigInfo(john, "WRONG JSON");
+        infoProvider.getConfigInfo(john, "WRONG JSON");
     }
 
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongMissingMetadata() {
-        ConfigInfo info = infoProvider.getConfigInfo(john, maliciousTestCase);
+        infoProvider.getConfigInfo(john, maliciousTestCase);
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongMissingMetadata2() {
-        ConfigInfo info = infoProvider.getConfigInfo(john,
-                testCase.replace("config_name", "undefined"));
+        infoProvider.getConfigInfo(john, testCase.replace("config_name", "undefined"));
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void testCaseWrongUser() {
-        ConfigInfo info = infoProvider.getConfigInfo(new UserInfo(), testCase);
+        infoProvider.getConfigInfo(new UserInfo(), testCase);
     }
 
     @Test(expected = java.lang.UnsupportedOperationException.class)
     public void testCaseReleaseTest() {
-        ConfigInfo info = infoProvider.getReleaseInfo(steve, "");
+        infoProvider.getReleaseInfo(steve, "");
     }
 
     @Test

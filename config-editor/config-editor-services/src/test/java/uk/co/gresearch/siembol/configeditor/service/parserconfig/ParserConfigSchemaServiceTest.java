@@ -42,11 +42,9 @@ public class ParserConfigSchemaServiceTest {
 
     private ParserConfigSchemaService parserConfigSchemaService;
     private final String schema = "dummmy schema";
-    private final String testSchema = "dummmy schema";
     private final String testConfig = "dummmy parser config";
     private final String testConfigs = "dummmy parser configs";
     private final String testLog = "dummy log";
-    private final String dummyUiLayout = "{}";
 
     private ParserFactory parserFactory;
     private ParserFactoryResult parserFactoryResult;

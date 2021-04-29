@@ -1,7 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.common;
 
-import uk.co.gresearch.siembol.configeditor.configinfo.JsonRuleConfigInfoProvider;
-
 public enum ServiceType {
     RESPONSE("response"),
     ALERT("alert"),

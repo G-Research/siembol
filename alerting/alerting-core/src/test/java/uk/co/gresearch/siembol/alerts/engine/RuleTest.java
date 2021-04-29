@@ -12,16 +12,12 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 public class RuleTest {
     private String name = "test_rule";
     private Integer version = 1;
-    private String field = "test_field";
-    private String sourceType = "test_source";
-    private Map<String, Object> event;
+    private Map<String, Object> event = new HashMap<>();
     private List<Pair<String, String>> constants;
     private List<Pair<String, Object>> protections;
     private RuleMatcher matcher;
@@ -147,7 +143,7 @@ public class RuleTest {
                 .protections(protections)
                 .build();
 
-        AlertingResult ret = rule.match(event);
+        rule.match(event);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -162,7 +158,7 @@ public class RuleTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void missingVersion()  {
-        rule = Rule.builder()
+        Rule.builder()
                 .matchers(Arrays.asList(matcher))
                 .name(name)
                 .tags(constants)
@@ -172,12 +168,11 @@ public class RuleTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void missingMatchers()  {
-        rule = Rule.builder()
+        Rule.builder()
                 .name(name)
                 .version(version)
                 .tags(constants)
                 .protections(protections)
                 .build();
     }
-
 }

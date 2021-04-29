@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.sync.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.adrianwalker.multilinestring.Multiline;

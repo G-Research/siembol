@@ -134,7 +134,7 @@ public class ServiceAggregatorImplTest {
         when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.FORBIDDEN);
         serviceAggregator = builder.build();
-        ConfigStore userStore = serviceAggregator.getConfigStore(user, "a");
+        serviceAggregator.getConfigStore(user, "a");
     }
 
     @Test(expected = uk.co.gresearch.siembol.configeditor.common.AuthorisationException.class)
@@ -142,7 +142,7 @@ public class ServiceAggregatorImplTest {
         when(authProvider.getUserAuthorisation(eq(user), eq("a")))
                 .thenReturn(AuthorisationProvider.AuthorisationResult.FORBIDDEN);
         serviceAggregator = builder.build();
-        ConfigSchemaService userSchemaService = serviceAggregator.getConfigSchema(user, "a");
+        serviceAggregator.getConfigSchema(user, "a");
     }
 
     @Test
