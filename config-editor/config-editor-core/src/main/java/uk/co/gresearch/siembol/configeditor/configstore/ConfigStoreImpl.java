@@ -70,6 +70,11 @@ public class ConfigStoreImpl implements ConfigStore {
     }
 
     @Override
+    public ConfigEditorResult deleteTestCase(UserInfo user, String configName, String testCaseName) {
+        return null;
+    }
+
+    @Override
     public ConfigEditorResult getTestCases() {
         if (testCases == null) {
             return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
@@ -91,6 +96,11 @@ public class ConfigStoreImpl implements ConfigStore {
     public ConfigEditorResult updateConfig(UserInfo user, String configToUpdate) {
         Callable<ConfigEditorResult> command = () -> configs.updateConfigItem(user, configToUpdate);
         return executeStoreCommand(command, storeExecutorService);
+    }
+
+    @Override
+    public ConfigEditorResult deleteConfig(UserInfo user, String configName) {
+        return null;
     }
 
     @Override
