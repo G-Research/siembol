@@ -18,7 +18,7 @@ navbar_links:
 
   - title: "Features"
     url: "#features"
-  - title: "Github"
+  - title: "GitHub"
     url: "https://github.com/G-Research/siembol"
 
 # Navigation Background Color. 
