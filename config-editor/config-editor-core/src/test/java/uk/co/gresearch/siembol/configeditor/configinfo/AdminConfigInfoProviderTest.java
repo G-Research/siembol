@@ -45,7 +45,7 @@ public class AdminConfigInfoProviderTest {
         Assert.assertEquals(info.getFilesContent().size(), 1);
         Assert.assertEquals(info.getFilesContent().containsKey("admin_config.json"), true);
         Assert.assertEquals(info.getFilesContent()
-                .get("admin_config.json").indexOf("\"config_version\": 2,") > 0, true);
+                .get("admin_config.json").get().indexOf("\"config_version\": 2,") > 0, true);
 
     }
 

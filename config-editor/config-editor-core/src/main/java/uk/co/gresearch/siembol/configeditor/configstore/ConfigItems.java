@@ -13,10 +13,9 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
@@ -30,6 +29,8 @@ public class ConfigItems {
     private static final String UPDATE_INIT_LOG_MSG = "User {} requested to add/update {} name: {} to version: {}";
     private static final String UPDATE_COMPLETED_LOG_MSG = "{} name: {} to version: {} update completed";
     private static final int NEW_CONFIG_EXPECTED_VERSION = 0;
+    private static final String DELETE_COMMIT_MSG = "Deleted %s: ";
+    private static final String FILES_COMMIT_MSG_DELIMITER = ",\n";
 
     private final String directory;
     private final GitRepository gitRepository;
@@ -103,6 +104,44 @@ public class ConfigItems {
                     configInfo.getVersion());
         }
         return result;
+    }
+
+    private String getDeleteItemCommitMessage(List<String> fileNames) {
+        fileNames.sort(Comparator.naturalOrder());
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format(DELETE_COMMIT_MSG, fileNames.size() == 1
+                ? configInfoProvider.getConfigInfoType().getSingular()
+                : configInfoProvider.getConfigInfoType().getPlural()));
+
+        for (int i = 0; i < fileNames.size() - 1; i++) {
+            stringBuilder.append(fileNames.get(i));
+            stringBuilder.append(FILES_COMMIT_MSG_DELIMITER);
+        }
+
+        stringBuilder.append(fileNames.get(fileNames.size() - 1));
+
+        return stringBuilder.toString();
+    }
+
+    public ConfigEditorResult deleteItems(UserInfo user, String prefixItemName) throws GitAPIException, IOException {
+        Map<String, Optional<String>> filesToDelete = filesCache.get().stream()
+                .filter(x -> x.getFileName().startsWith(prefixItemName))
+                .collect(Collectors.toMap(ConfigEditorFile::getFileName, x -> Optional.empty()));
+
+        if (!filesToDelete.isEmpty()) {
+            ConfigInfo configInfo = configInfoProvider.configInfoFromUser(user);
+            configInfo.setCommitMessage(getDeleteItemCommitMessage(new ArrayList<>(filesToDelete.keySet())));
+            configInfo.setFilesContent(filesToDelete);
+            ConfigEditorResult deleteResult = gitRepository.transactCopyAndCommit(configInfo,
+                    directory, configInfoProvider::isStoreFile);
+            if (deleteResult.getStatusCode() != OK) {
+                return deleteResult;
+            }
+            filesCache.set(deleteResult.getAttributes().getFiles());
+        }
+
+        return getFiles();
     }
 
     public ConfigEditorResult updateConfigItem(UserInfo user, String configItem) throws GitAPIException, IOException {

@@ -140,9 +140,9 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("syslog-test_case.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("syslog-test_case.json").indexOf("\"version\": 12346,") > 0);
+                .get("syslog-test_case.json").get().indexOf("\"version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("syslog-test_case.json").indexOf("\"author\": \"steve\",") > 0);
+                .get("syslog-test_case.json").get().indexOf("\"author\": \"steve\",") > 0);
         Assert.assertFalse(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
@@ -157,9 +157,9 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("syslog-test_case.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("syslog-test_case.json").indexOf("\"version\": 12346,") > 0);
+                .get("syslog-test_case.json").get().indexOf("\"version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("syslog-test_case.json").indexOf("\"author\": \"john\",") > 0);
+                .get("syslog-test_case.json").get().indexOf("\"author\": \"john\",") > 0);
         Assert.assertFalse(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }
@@ -174,9 +174,9 @@ public class TestCaseConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("syslog-test_case.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("syslog-test_case.json").indexOf("\"version\": 1,") > 0);
+                .get("syslog-test_case.json").get().indexOf("\"version\": 1,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("syslog-test_case.json").indexOf("\"author\": \"steve\",") > 0);
+                .get("syslog-test_case.json").get().indexOf("\"author\": \"steve\",") > 0);
         Assert.assertTrue(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.TEST_CASE, info.getConfigInfoType());
     }

@@ -17,12 +17,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.boot.actuate.health.Status.DOWN;
 import static org.springframework.boot.actuate.health.Status.UP;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
 
 public class ConfigStoreImplTest {
     private ExecutorService executorService;
@@ -346,6 +344,100 @@ public class ConfigStoreImplTest {
         Assert.assertEquals(ERROR, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getMessage());
     }
+
+    @Test
+    public void deleteTestCase() throws GitAPIException, IOException {
+        configStore = new ConfigStoreImpl(builder);
+        when(testCases.deleteItems(eq(user), eq("test_config-test_case.json")))
+                .thenReturn(getFilesResult);
+
+        ConfigEditorResult ret = configStore.deleteTestCase(user, "test_config", "test_case");
+        Assert.assertEquals(OK, ret.getStatusCode());
+        verify(testCases, times(1)).deleteItems(eq(user), eq("test_config-test_case.json"));
+    }
+
+    @Test
+    public void deleteConfigInRelease() throws GitAPIException, IOException {
+        configStore = new ConfigStoreImpl(builder);
+        when(release.checkConfigNotInRelease(eq("test_config")))
+                .thenReturn(ConfigEditorResult.fromMessage(BAD_REQUEST, "msg"));
+
+        ConfigEditorResult ret = configStore.deleteConfig(user, "test_config");
+        Assert.assertEquals(BAD_REQUEST, ret.getStatusCode());
+        verify(release, times(1)).checkConfigNotInRelease(eq("test_config"));
+    }
+
+    @Test
+    public void deleteConfigNotInReleaseNoTestCases() throws GitAPIException, IOException {
+        builder.testCases = null;
+        configStore = new ConfigStoreImpl(builder);
+        when(release.checkConfigNotInRelease(eq("test_config")))
+                .thenReturn(ConfigEditorResult.fromMessage(OK, "msg"));
+
+        when(configs.deleteItems(eq(user), eq("test_config.json")))
+                .thenReturn(getFilesResult);
+
+        ConfigEditorResult ret = configStore.deleteConfig(user, "test_config");
+        Assert.assertEquals(OK, ret.getStatusCode());
+        Assert.assertEquals(getFilesResult.getAttributes().getFiles(), ret.getAttributes().getConfigsFiles());
+        verify(configs, times(1)).deleteItems(eq(user), eq("test_config.json"));
+    }
+
+    @Test
+    public void deleteConfigNotInReleaseTestCases() throws GitAPIException, IOException {
+        configStore = new ConfigStoreImpl(builder);
+        when(release.checkConfigNotInRelease(eq("test_config")))
+                .thenReturn(ConfigEditorResult.fromMessage(OK, "msg"));
+
+        when(configs.deleteItems(eq(user), eq("test_config.json")))
+                .thenReturn(getFilesResult);
+
+        when(testCases.deleteItems(eq(user), eq("test_config-")))
+                .thenReturn(getFilesResult);
+
+
+        ConfigEditorResult ret = configStore.deleteConfig(user, "test_config");
+        Assert.assertEquals(OK, ret.getStatusCode());
+        Assert.assertEquals(getFilesResult.getAttributes().getFiles(), ret.getAttributes().getConfigsFiles());
+        Assert.assertEquals(getFilesResult.getAttributes().getFiles(), ret.getAttributes().getTestCasesFiles());
+        verify(configs, times(1)).deleteItems(eq(user), eq("test_config.json"));
+        verify(testCases, times(1)).deleteItems(eq(user), eq("test_config-"));
+    }
+
+    @Test
+    public void deleteConfigNotInReleaseErrorDelete() throws GitAPIException, IOException {
+        configStore = new ConfigStoreImpl(builder);
+        when(release.checkConfigNotInRelease(eq("test_config")))
+                .thenReturn(ConfigEditorResult.fromMessage(OK, "msg"));
+
+        when(configs.deleteItems(eq(user), eq("test_config.json")))
+                .thenReturn(ConfigEditorResult.fromMessage(ERROR, "error"));
+
+        ConfigEditorResult ret = configStore.deleteConfig(user, "test_config");
+        Assert.assertEquals(ERROR, ret.getStatusCode());
+        verify(configs, times(1)).deleteItems(eq(user), eq("test_config.json"));
+    }
+
+    @Test
+    public void deleteConfigNotInReleaseTestCasesError() throws GitAPIException, IOException {
+        configStore = new ConfigStoreImpl(builder);
+        when(release.checkConfigNotInRelease(eq("test_config")))
+                .thenReturn(ConfigEditorResult.fromMessage(OK, "msg"));
+
+        when(configs.deleteItems(eq(user), eq("test_config.json")))
+                .thenReturn(getFilesResult);
+
+        when(testCases.deleteItems(eq(user), eq("test_config-")))
+                .thenReturn(ConfigEditorResult.fromMessage(ERROR, "error"));
+
+
+        ConfigEditorResult ret = configStore.deleteConfig(user, "test_config");
+        Assert.assertEquals(ERROR, ret.getStatusCode());
+        verify(configs, times(1)).deleteItems(eq(user), eq("test_config.json"));
+        verify(testCases, times(1)).deleteItems(eq(user), eq("test_config-"));
+    }
+
+
 
     private static ExecutorService currentThreadExecutorService() {
         ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();

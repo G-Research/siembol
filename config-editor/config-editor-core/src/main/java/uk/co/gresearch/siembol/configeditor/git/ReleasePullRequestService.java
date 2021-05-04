@@ -35,7 +35,7 @@ public class ReleasePullRequestService {
                 info.getVersion()));
 
         request.setTitle(info.getCommitMessage());
-        request.setHead(new PullRequestMarker().setLabel(info.getBranchName()));
+        request.setHead(new PullRequestMarker().setLabel(info.getBranchName().get()));
         request.setBase(new PullRequestMarker().setLabel(branchTo));
 
         PullRequest response = service.createPullRequest(repoId, request);

@@ -21,9 +21,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,13 +67,16 @@ public class GitRepository implements Closeable {
             ConfigInfo configInfo,
             String directory,
             Function<String, Boolean> fileNameFilter) throws GitAPIException, IOException {
+        final boolean isDefaultBranch = !configInfo.getBranchName().isPresent()
+                || defaultBranch.equals(configInfo.getBranchName().get());
+
         git.pull()
                 .setCredentialsProvider(credentialsProvider)
                 .call();
 
-        if (!defaultBranch.equals(configInfo.getBranchName())) {
-            git.branchCreate().setName(configInfo.getBranchName()).call();
-            git.checkout().setName(configInfo.getBranchName()).call();
+        if (!isDefaultBranch) {
+            git.branchCreate().setName(configInfo.getBranchName().get()).call();
+            git.checkout().setName(configInfo.getBranchName().get()).call();
         }
 
         Path currentPath = Paths.get(repoFolder, directory);
@@ -84,9 +85,13 @@ public class GitRepository implements Closeable {
             FileUtils.cleanDirectory(currentPath.toFile());
         }
 
-        for (Map.Entry<String, String> file : configInfo.getFilesContent().entrySet()) {
+        for (Map.Entry<String, Optional<String>> file : configInfo.getFilesContent().entrySet()) {
             Path filePath = Paths.get(currentPath.toString(), file.getKey());
-            Files.write(filePath, file.getValue().getBytes());
+            if (file.getValue().isPresent()) {
+                Files.write(filePath, file.getValue().get().getBytes());
+            } else {
+                Files.delete(filePath);
+            }
         }
 
         git.add()
@@ -113,7 +118,7 @@ public class GitRepository implements Closeable {
         }
 
         ConfigEditorResult result = getFiles(directory, fileNameFilter);
-        if (!defaultBranch.equals(configInfo.getBranchName())) {
+        if (!isDefaultBranch) {
             git.checkout().setName(defaultBranch).call();
         }
         return result;
@@ -188,7 +193,7 @@ public class GitRepository implements Closeable {
         }
 
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        attr.setFiles(files.values().stream().collect(Collectors.toList()));
+        attr.setFiles(new ArrayList<>(files.values()));
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
     }
 

@@ -25,8 +25,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
 
 public class ConfigItemsTest {
     private GitRepository gitRepo;
@@ -87,7 +86,7 @@ public class ConfigItemsTest {
         configItems = new ConfigItems(gitRepo, configInfoProvider, directory);
         user = new UserInfo();
         user.setUserName("john");
-        user.setUserName("john@secret");
+        user.setEmail("john@secret");
     }
 
     @Test
@@ -229,5 +228,44 @@ public class ConfigItemsTest {
         result = configItems.updateConfigItem(user, "NEW_DUMMY_ITEM_UPDATE_2");
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void deleteOK() throws IOException, GitAPIException {
+        configItems.init();
+        when(configInfoProvider.getConfigInfoType()).thenReturn(ConfigInfoType.CONFIG);
+        verify(gitRepo, times(1))
+                .getFiles(eq(directory), ArgumentMatchers.<Function<String, Boolean>>any());
+        ConfigEditorResult result = configItems.deleteItems(user, "File.json");
+        Assert.assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
+    public void deleteTwoFilesOK() throws IOException, GitAPIException {
+        files.add(new ConfigEditorFile("File2.json",
+                "DUMMY_CONTENT",
+                ConfigEditorFile.ContentType.RAW_JSON_STRING));
+
+        configItems.init();
+        when(configInfoProvider.getConfigInfoType()).thenReturn(ConfigInfoType.CONFIG);
+        verify(gitRepo, times(1))
+                .getFiles(eq(directory), ArgumentMatchers.<Function<String, Boolean>>any());
+        ConfigEditorResult result = configItems.deleteItems(user, "File");
+        Assert.assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
+    public void deleteError() throws IOException, GitAPIException {
+        configItems.init();
+        when(configInfoProvider.getConfigInfoType()).thenReturn(ConfigInfoType.CONFIG);
+
+        verify(gitRepo, times(1))
+                .getFiles(eq(directory), ArgumentMatchers.<Function<String, Boolean>>any());
+        when(gitRepo.transactCopyAndCommit(any(ConfigInfo.class),
+                eq(directory),
+                ArgumentMatchers.<Function<String, Boolean>>any()))
+                .thenReturn(ConfigEditorResult.fromMessage(ERROR, "error"));
+        ConfigEditorResult result = configItems.deleteItems(user, "File.json");
+        Assert.assertEquals(ERROR, result.getStatusCode());
     }
 }
