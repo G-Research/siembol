@@ -15,10 +15,11 @@ logo_small_devices: "media/logo/siembol_Logo-small.png"
 # -------------------------
 
 navbar_links:
-  - title: "Home"
-    url: "#image-hero"
+
   - title: "Features"
     url: "#features"
+  - title: "Github"
+    url: "https://github.com/G-Research/siembol"
 
 # Navigation Background Color. 
 # Options: caribbean-green, summer-sky, golden-poppy, deep-carmine-pink
