@@ -31,7 +31,11 @@
 }
 
 h1.text-brand-main-color {
-    color: #00AAE1 !important;
+    color: #fff !important;
+}
+
+.col-lg-12.white h1 a {
+    color: #fff !important;
 }
 
 /* FEATURES */
