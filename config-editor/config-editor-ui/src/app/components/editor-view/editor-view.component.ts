@@ -21,7 +21,7 @@ import { SchemaService } from '@app/services/schema/schema.service';
   templateUrl: './editor-view.component.html'
 })
 export class EditorViewComponent implements OnInit, OnDestroy {
-  @ViewChild(EditorComponent, { static: false }) editorComponent: EditorComponent;
+  @ViewChild(EditorComponent) editorComponent: EditorComponent;
 
   readonly TEST_CASE_TAB = TEST_CASE_TAB;
   readonly TESTING_TAB = TESTING_TAB;
@@ -34,7 +34,7 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   configData: any;
   serviceName: string;
   schema: JSONSchema7;
-  selectedTab = this.NO_TAB;
+  selectedTab = this.CONFIG_TAB.index;
   previousTab = this.NO_TAB;
   testingType = TestingType.CONFIG_TESTING;
 
@@ -61,14 +61,14 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     this.editorService.configStore.editingTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       if (e) {
         this.selectedTab = TEST_CASE_TAB.index;
-        if (this.previousTab === this.NO_TAB) {
-          this.previousTab = this.selectedTab;
-        }
+      }
+      if (this.previousTab === this.NO_TAB) {
+        this.previousTab = this.selectedTab;
       }
     });
   }
 
-  public ngAfterViewInit() {
+  ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
         this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
