@@ -19,7 +19,7 @@ public class ConfigRelease {
     private static final String PENDING_PR_ERROR_MSG = "Can not release %s because PR %s is pending";
     private static final String WRONG_VERSION_ERROR_MSG = "Can not release %s version %d from version %d";
     private static final String SUBMIT_COMPLETED_LOG_MSG = "Prepared {} PR in the branch name: {} PR: {}";
-    private static final String CONFIG_IN_RELEASE= "Config %s in in the current release";
+    private static final String CONFIG_IN_RELEASE= "Config %s is in the current release";
 
     private final String directory;
     private final GitRepository gitRepository;
