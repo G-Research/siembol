@@ -219,4 +219,22 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     public trackConfigByName(index: number, item: Config) {
         return item.name;
     }
+
+    onClickPaste(){
+        let newConfig = navigator.clipboard.readText();
+        newConfig.then((json)  => {
+            console.log(json);
+            this.editorService.configLoader.validateConfigJson(json)
+                .subscribe(
+                    v => {
+                        // clean config
+                        this.editorService.configStore.updatePastedConfig(JSON.parse(json));
+                        this.router.navigate(
+                            [this.editorService.serviceName, 'edit'],
+                            { queryParams: { pasteConfig: true } });
+                        // let  config = this.editorService.configLoader.getConfigFromFile(json);
+                    }
+                );
+        })
+    }
 }

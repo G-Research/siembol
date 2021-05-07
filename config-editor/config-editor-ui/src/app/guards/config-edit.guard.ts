@@ -22,6 +22,7 @@ export class ConfigEditGuard implements CanActivate {
         const testCaseName = route.queryParams.testCaseName;
         const newConfig = route.queryParams.newConfig;
         const cloneConfig = route.queryParams.cloneConfig;
+        const pasteConfig = route.queryParams.pasteConfig;
         const newTestCase = route.queryParams.newTestCase;
         const cloneTestCase = route.queryParams.cloneTestCase;
 
@@ -29,6 +30,8 @@ export class ConfigEditGuard implements CanActivate {
             this.editorService.configStore.setEditedClonedConfigByName(cloneConfig);
         } else if (newConfig) {
             this.editorService.configStore.setEditedConfigNew();
+        } else if (pasteConfig) {
+            this.editorService.configStore.setNewEditedPastedConfig();
         } else if (configName) {
             if (!this.editorService.configStore.setEditedConfigAndTestCaseByName(configName, testCaseName)) {
                 return false;

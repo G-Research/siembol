@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import 'rxjs/add/operator/finally';
 import { AppConfigService } from '../app-config.service';
-import { Config, Deployment, PullRequestInfo } from '../../model';
+import { Config, ConfigData, Deployment, PullRequestInfo } from '../../model';
 import { ConfigStoreState } from '../../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../../model/test-case';
 import { UiMetadata } from '../../model/ui-metadata-map';
@@ -362,6 +362,44 @@ export class ConfigStoreService {
     };
 
     this.updateEditedConfigAndTestCase(newConfig, null);
+  }
+
+  updatePastedConfig(config: any) {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedConfig(config).build();
+    this.store.next(newState);
+  }
+
+  setNewEditedPastedConfig() {
+    const currentState = this.store.getValue();
+    const configData = currentState.pastedConfig;
+    const pasted = {
+      author: this.user,
+      configData: Object.assign({}, cloneDeep(configData), {
+        [this.metaDataMap.name]: `new_entry_${currentState.configs.length}`,
+        [this.metaDataMap.version]: 0,
+      }),
+      description: 'no description',
+      isNew: true,
+      name: `new_entry_${currentState.configs.length}`,
+      savedInBackend: false,
+      testCases: [],
+      version: 0,
+    };
+    this.updateEditedConfigAndTestCase(pasted, null);
+  }
+
+  setEditedPastedConfig(pastedConfigData: ConfigData): boolean {
+    const editedConfig = this.store.value.editedConfig;
+    if (editedConfig === undefined) {
+      return false;
+    }
+    const pastedConfig = cloneDeep(editedConfig);
+    pastedConfig.configData = Object.assign({}, cloneDeep(pastedConfigData), {
+      [this.metaDataMap.name]: editedConfig.name,
+      [this.metaDataMap.version]: editedConfig.version,
+    });
+    this.updateEditedConfig(pastedConfig);
+    return true;
   }
 
   updateEditedConfig(config: Config) {

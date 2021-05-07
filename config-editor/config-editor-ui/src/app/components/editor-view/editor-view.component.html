@@ -1,7 +1,14 @@
 <div class="container">
     <div class="left-panel" *ngIf="configData">
         <span class="buttons">
-            <button mat-raised-button class="left-button" (click)="changeRoute()">Back</button>
+            <div class="left-button">
+                <button mat-raised-button (click)="changeRoute()">Back</button>
+            </div>
+            <div class="right-button">
+                <a mat-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
+                    <mat-icon>content_paste</mat-icon>
+                </a>
+            </div>
         </span>
         <mat-divider class="vert-divider" [vertical]="false"></mat-divider>
         <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertAll'" [appearance]="'standard'">

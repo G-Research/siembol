@@ -19,4 +19,5 @@ export interface ConfigStoreState {
     editedTestCase: TestCaseWrapper;
     testCaseMap: TestCaseMap;
     adminConfig: AdminConfig;
+    pastedConfig?: any;
 }

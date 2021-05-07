@@ -13,12 +13,13 @@ import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
 import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
+import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-editor-view',
   styleUrls: ['./editor-view.component.scss'],
-  templateUrl: './editor-view.component.html'
+  templateUrl: './editor-view.component.html',
 })
 export class EditorViewComponent implements OnInit, OnDestroy {
   @ViewChild(EditorComponent, { static: false }) editorComponent: EditorComponent;
@@ -47,13 +48,14 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     private editorService: EditorService,
     private router: Router,
     private activeRoute: ActivatedRoute,
+    private clipboardService: ClipboardService,
     private cd: ChangeDetectorRef
   ) {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
     this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
+      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
     ];
   }
 
@@ -68,19 +70,17 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  public ngAfterViewInit() {
+  ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
+        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
       ];
 
-      this.testingEnabled = () => this.editorService.metaDataMap.testing.perConfigTestEnabled
-        && this.editorComponent.form.valid;
+      this.testingEnabled = () =>
+        this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
 
-
-      this.testCaseEnabled = () => this.editorService.metaDataMap.testing.testCaseEnabled
-        && this.editorComponent.form.valid
-        && !config.isNew;
+      this.testCaseEnabled = () =>
+        this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
 
       this.configData = config.configData;
 
@@ -95,15 +95,13 @@ export class EditorViewComponent implements OnInit, OnDestroy {
 
   onTabChange() {
     if (this.previousTab === TEST_CASE_TAB.index) {
-      this.router.navigate(
-      [],
-      {
-          relativeTo: this.activeRoute,
-          queryParams: { testCaseName: null },
-          queryParamsHandling: 'merge',
+      this.router.navigate([], {
+        relativeTo: this.activeRoute,
+        queryParams: { testCaseName: null },
+        queryParamsHandling: 'merge',
       });
     } else if (this.previousTab === CONFIG_TAB.index) {
-      this.editorComponent.updateConfigInStore()
+      this.editorComponent.updateConfigInStore();
     }
     this.previousTab = this.selectedTab;
   }
@@ -112,4 +110,18 @@ export class EditorViewComponent implements OnInit, OnDestroy {
     this.router.navigate([this.serviceName]);
   }
 
+  async onClickPaste() {
+    const valid = await this.clipboardService.validateClipboard();
+    valid.subscribe(() => {
+      this.editorService.configStore.setEditedPastedConfig(this.clipboardService.toPaste);
+    });
+
+    // let newConfig = navigator.clipboard.readText();
+    // newConfig.then(json => {
+    //   console.log(json);
+    //   this.editorService.configLoader.validateConfigJson(json).subscribe(v => {
+    //     this.editorService.configStore.setEditedPastedConfig(JSON.parse(json));
+    //   });
+    // });
+  }
 }
