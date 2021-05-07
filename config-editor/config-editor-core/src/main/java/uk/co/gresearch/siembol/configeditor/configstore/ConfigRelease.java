@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.configeditor.common.*;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.git.ReleasePullRequestService;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 public class ConfigRelease {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -101,8 +103,8 @@ public class ConfigRelease {
             return releaseResult;
         }
 
-        String release = releaseResult.getAttributes().getFiles().stream().findFirst().get().getContent();
-        if (configInfoProvider.isConfigInRelease(release, configName)) {
+       Optional<ConfigEditorFile> release = releaseResult.getAttributes().getFiles().stream().findFirst();
+        if (release.isPresent() && configInfoProvider.isConfigInRelease(release.get().getContent(), configName)) {
             String message = String.format(CONFIG_IN_RELEASE, configName);
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, message);
         } else {

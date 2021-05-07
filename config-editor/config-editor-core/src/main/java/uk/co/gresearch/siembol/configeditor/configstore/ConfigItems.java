@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.configstore;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +28,11 @@ public class ConfigItems {
     private static final String INVALID_CONFIG_VERSION = "Invalid config version %d in config %s";
     private static final String INIT_ERROR_MSG = "Problem during initialisation of config items";
     private static final String UPDATE_INIT_LOG_MSG = "User {} requested to add/update {} name: {} to version: {}";
+    private static final String DELETE_FILES_LOG_MSG = "User {} requested to delete files: {}";
     private static final String UPDATE_COMPLETED_LOG_MSG = "{} name: {} to version: {} update completed";
     private static final int NEW_CONFIG_EXPECTED_VERSION = 0;
-    private static final String DELETE_COMMIT_MSG = "Deleted %s: ";
-    private static final String FILES_COMMIT_MSG_DELIMITER = ",\n";
+    private static final String DELETE_COMMIT_MSG = "Deleted %s: %s";
+    private static final String FILES_SEPARATOR = ",\n";
 
     private final String directory;
     private final GitRepository gitRepository;
@@ -106,32 +108,25 @@ public class ConfigItems {
         return result;
     }
 
-    private String getDeleteItemCommitMessage(List<String> fileNames) {
-        fileNames.sort(Comparator.naturalOrder());
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format(DELETE_COMMIT_MSG, fileNames.size() == 1
-                ? configInfoProvider.getConfigInfoType().getSingular()
-                : configInfoProvider.getConfigInfoType().getPlural()));
-
-        for (int i = 0; i < fileNames.size() - 1; i++) {
-            stringBuilder.append(fileNames.get(i));
-            stringBuilder.append(FILES_COMMIT_MSG_DELIMITER);
-        }
-
-        stringBuilder.append(fileNames.get(fileNames.size() - 1));
-
-        return stringBuilder.toString();
-    }
-
     public ConfigEditorResult deleteItems(UserInfo user, String prefixItemName) throws GitAPIException, IOException {
         Map<String, Optional<String>> filesToDelete = filesCache.get().stream()
                 .filter(x -> x.getFileName().startsWith(prefixItemName))
                 .collect(Collectors.toMap(ConfigEditorFile::getFileName, x -> Optional.empty()));
 
         if (!filesToDelete.isEmpty()) {
+            List<String> files = new ArrayList<>(filesToDelete.keySet());
+            files.sort(Comparator.naturalOrder());
+            String filesString =  StringUtils.join(files, FILES_SEPARATOR);
+            LOG.info(DELETE_FILES_LOG_MSG, user.getUserName(), filesString);
+
             ConfigInfo configInfo = configInfoProvider.configInfoFromUser(user);
-            configInfo.setCommitMessage(getDeleteItemCommitMessage(new ArrayList<>(filesToDelete.keySet())));
+            String commitMessage = String.format(DELETE_COMMIT_MSG,
+                    files.size() == 1
+                            ? configInfoProvider.getConfigInfoType().getSingular()
+                            : configInfoProvider.getConfigInfoType().getPlural(),
+                    filesString);
+            configInfo.setCommitMessage(commitMessage);
+
             configInfo.setFilesContent(filesToDelete);
             ConfigEditorResult deleteResult = gitRepository.transactCopyAndCommit(configInfo,
                     directory, configInfoProvider::isStoreFile);
