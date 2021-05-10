@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { forkJoin, from, Observable } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import {
   ConfigTestDto,
@@ -16,6 +16,7 @@ import {
   AdminConfig,
   AdminConfigGitFiles,
   DeploymentGitFiles,
+  ConfigAndTestCases,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
@@ -360,6 +361,33 @@ export class ConfigLoaderService {
     return this.http
       .post<TestCaseResultAttributes>(`${this.config.serviceRoot}api/v1/testcases/evaluate`, outObj)
       .pipe(map(x => x.test_case_result));
+  }
+
+  public deleteConfig(configName: string): Observable<ConfigAndTestCases> {
+    return this.http
+      .post<GitFiles<any>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs/delete?configName=${configName}`,
+        null
+      )
+      .map(result => {
+        if (result.configs_files && result.test_cases_files) {
+          return {
+            configs: result.configs_files.map(file => this.getConfigFromFile(file)),
+            testCases: this.testCaseFilesToMap(result),
+          };
+        }
+
+        throw new DOMException('bad format response when deleting config');
+      });
+  }
+
+  public deleteTestCase(configName: string, testCaseName: string): Observable<TestCaseMap> {
+    return this.http
+      .post<GitFiles<Content<any>>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases/delete?configName=${configName}&testCaseName=${testCaseName}`,
+        null
+      )
+      .pipe(map(result => this.testCaseFilesToMap(result)));
   }
 
   private testCaseFilesToMap(result: GitFiles<any>): TestCaseMap {
