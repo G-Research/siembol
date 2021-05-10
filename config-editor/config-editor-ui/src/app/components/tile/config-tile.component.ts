@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ConfigData, Config } from '../../model/config-model';
+import { Config } from '../../model/config-model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11,31 +11,29 @@ export class ConfigTileComponent {
   @Input() config: Config;
   @Input() hideAddDeployment: boolean;
 
-  @Output() onEdit = new EventEmitter<number>();
-  @Output() onView = new EventEmitter<number>();
-  @Output() onAddToDeployment = new EventEmitter<number>();
-  @Output() onClone = new EventEmitter<number>();
-  @Output() onDeleteConfigFromStore = new EventEmitter<number>();
-
-  constructor() {}
+  @Output() readonly edit = new EventEmitter<number>();
+  @Output() readonly view = new EventEmitter<number>();
+  @Output() readonly addToDeployment = new EventEmitter<number>();
+  @Output() readonly clone = new EventEmitter<number>();
+  @Output() readonly deleteFromStore = new EventEmitter<number>();
 
   editConfig() {
-    this.onEdit.emit();
+    this.edit.emit();
   }
 
   viewConfig() {
-    this.onView.emit();
+    this.view.emit();
   }
 
-  addToDeployment() {
-    this.onAddToDeployment.emit();
+  addConfigToDeployment() {
+    this.addToDeployment.emit();
   }
 
   cloneConfig() {
-    this.onClone.emit();
+    this.clone.emit();
   }
 
   deleteConfigFromStore() {
-    this.onDeleteConfigFromStore.emit();
+    this.deleteFromStore.emit();
   }
 }

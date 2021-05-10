@@ -15,6 +15,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
   styleUrls: ['./test-centre.component.scss'],
 })
 export class TestCentreComponent implements OnInit, OnDestroy {
+  @BlockUI() blockUI: NgBlockUI;
   public testCases$: Observable<TestCaseWrapper[]>;
   public editingTestCase$: Observable<boolean>;
   public editedTestCase$: Observable<TestCaseWrapper>;
@@ -25,7 +26,6 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   private testStoreService: TestStoreService;
   private ngUnsubscribe = new Subject();
   private readonly BLOCKING_TIMEOUT = 30000;
-  @BlockUI() blockUI: NgBlockUI;
   constructor(
     private editorService: EditorService,
     public snackbar: PopupService,

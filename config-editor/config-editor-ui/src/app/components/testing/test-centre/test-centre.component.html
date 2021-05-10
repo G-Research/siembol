@@ -1,7 +1,7 @@
 
 <block-ui>
     <mat-card>
-        <mat-card-title *ngIf="!(editingTestCase$ | async)">
+        <mat-card-title *ngIf="(editingTestCase$ | async) === false">
             <h2>Test Suite</h2>
             <div class="button-group-end">
                 <button mat-icon-button color="primary" title="Add New Test Case" (click)="onAddTestCase()">
@@ -30,7 +30,7 @@
                 {{testCase.testCaseResult?.evaluationResult?.number_skipped_assertions}}<strong>?</strong>
             </div>
         </mat-card-title>
-        <div *ngIf="!(editingTestCase$ | async); else editTestCaseTemplate">
+        <div *ngIf="(editingTestCase$ | async) === false; else editTestCaseTemplate">
             <div class="box" *ngFor="let testCase of testCases; index as i">
                 <div class="inline">
                     <div class="column-fixed" 

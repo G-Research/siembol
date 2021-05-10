@@ -21,7 +21,7 @@
                 <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
                     (cdkDropListDropped)="drop($event)" class="rule-list">
                         <re-config-tile *ngFor="let config of (filteredConfigs$ | async); index as i; trackBy: trackConfigByName"
-                            cdkDrag [cdkDragData]="config" [config]="config" [hideAddDeployment]="i>=filteredDeployment.configs.length" (onEdit)="onEdit(i)" (onView)="onView(i)" (onClone)="onClone(i)" (onAddToDeployment)="addToDeployment(i)" (onDeleteConfigFromStore)="deleteConfigFromStore(i)">
+                            cdkDrag [cdkDragData]="config" [config]="config" [hideAddDeployment]="i>=filteredDeployment.configs.length" (edit)="onEdit(i)" (view)="onView(i)" (clone)="onClone(i)" (addToDeployment)="addToDeployment(i)" (deleteFromStore)="deleteConfigFromStore(i)">
                         </re-config-tile>
                     </div>
             </div>
@@ -44,7 +44,7 @@
                         </popper-content>
                         <mat-icon>history</mat-icon>
                     </div>
-                    <span *ngIf="!(pullRequestPending$ | async).pull_request_pending && !(releaseSubmitInFlight$ | async); else prMessage">
+                    <span *ngIf="(pullRequestPending$ | async).pull_request_pending === false && (releaseSubmitInFlight$ | async) === false; else prMessage">
                         <button class="button" mat-button color="accent" title="Deploy Configs" (click)="onDeploy()">DEPLOY</button>
                     </span>
                     <ng-template #prMessage>

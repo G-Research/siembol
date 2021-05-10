@@ -113,7 +113,7 @@
       {
         "selector": "enumMember",
         "format": [
-          "PascalCase"
+          "UPPER_CASE"
         ]
       }
     ],

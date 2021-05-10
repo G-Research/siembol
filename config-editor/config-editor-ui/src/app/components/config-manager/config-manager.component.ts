@@ -40,8 +40,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
   ],
 })
 export class ConfigManagerComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject();
-  private configStore: ConfigStoreService;
+  @BlockUI() blockUI: NgBlockUI;
   public allConfigs$: Observable<Config[]>;
   public filteredConfigs$: Observable<Config[]>;
   public deployment$: Observable<Deployment>;
@@ -54,16 +53,17 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   public searchTerm$: Observable<string>;
   public filteredDeployment: Deployment;
   public filteredDeployment$: Observable<Deployment>;
-  private filteredConfigs: Config[];
   public filterMyConfigs$: Observable<boolean>;
   public filterUndeployed$: Observable<boolean>;
   public filterUpgradable$: Observable<boolean>;
   public deploymentHistory$: Observable<FileHistory[]>;
   public deploymentHistory;
 
+  private ngUnsubscribe = new Subject();
+  private filteredConfigs: Config[];
+  private configStore: ConfigStoreService;
   private readonly BLOCKING_TIMEOUT = 30000;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
-  @BlockUI() blockUI: NgBlockUI;
   constructor(
     public dialog: MatDialog,
     private snackbar: PopupService,
