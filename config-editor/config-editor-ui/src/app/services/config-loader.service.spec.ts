@@ -77,7 +77,7 @@ describe('ConfigLoaderService', () => {
   });
 
   it('should convert testcase files to map', () => {
-    expect(service['testCaseFilesToMap'](mockTestCaseFiles)).toEqual(mockTestCaseMap);
+    expect(service['testCaseFilesToMap'](mockTestCaseFiles.files)).toEqual(mockTestCaseMap);
   });
 
   it('should submit config', () => {
