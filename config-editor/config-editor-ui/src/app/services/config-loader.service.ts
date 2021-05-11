@@ -371,7 +371,7 @@ export class ConfigLoaderService {
         null
       )
       .map(result => {
-        if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.perConfigTestEnabled)) {
+        if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.testCaseEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
         let configAndTestCases = {
