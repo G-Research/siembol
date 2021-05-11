@@ -11,7 +11,8 @@ On the home page all services are listed alphabetically by name on the left side
 </p>
 
 ### Recently visited
-Your recently visited pages are saved in your browser and can be accessed with only one click from the home page.
+Your recently visited pages are saved in your browser and can be accessed with only one click from the home page. The default number of pages shown is 5 but can be configured in the `ui-config.json` file using the "historyMaxSize" key.
+ 
 ### Explore Siembol
 The 'Explore Siembol' section of the home page is for quick access to useful resources such as documentation, ticket tracking systems etc... By default there is a link to the documentation and to the issues page on the git repo. This can be customised from the `ui-config.json` config file. 
 
@@ -23,6 +24,8 @@ Below is the default config file provided. The two default links are in "homeLin
         "serviceRoot": "https://config-editor/",
         "uiBootstrapPath": "./ui-bootstrap.json",
         "authType": "disabled",
+        "historyMaxSize": 5,
+        "blockingTimeout": 30000,
         "homeLinks": [
             {
                 "icon": "library_books",
@@ -35,6 +38,9 @@ Below is the default config file provided. The two default links are in "homeLin
                 "link":  "https://github.com/G-Research/siembol/issues"}
             ]
     }
+
+## Blocking timeout
+The blocking timeout is a property that can be configured in `ui-config.json` (as shown in the default config above), it can be omitted in `ui-config.json`, the default value is 30 seconds. This value is used for certain operations that require blocking the entire UI (eg. deleting a config), the UI will be blocked for this maximum amount of time after which an error will occur if the operation hasn't yet finished. 
 
 ## Service configurations 
 After selecting a service to edit you will be redirected to the service configuration page. An example is shown below. 

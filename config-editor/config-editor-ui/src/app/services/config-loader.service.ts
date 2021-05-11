@@ -371,17 +371,17 @@ export class ConfigLoaderService {
         null
       )
       .map(result => {
-        if (result.configs_files && (result.test_cases_files || !this.uiMetadata.testing.deploymentTestEnabled)) {
-          let configAndTestCases = {
-            configs: result.configs_files.map(file => this.getConfigFromFile(file)),
-            testCases: {},
-          };
-          if (result.test_cases_files) {
-            configAndTestCases['testCases'] = this.testCaseFilesToMap(result.test_cases_files);
-          }
-          return configAndTestCases;
+        if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.deploymentTestEnabled)) {
+          throw new DOMException('bad format response when deleting config');
         }
-        throw new DOMException('bad format response when deleting config');
+        let configAndTestCases = {
+          configs: result.configs_files.map(file => this.getConfigFromFile(file)),
+          testCases: {},
+        };
+        if (result.test_cases_files) {
+          configAndTestCases['testCases'] = this.testCaseFilesToMap(result.test_cases_files);
+        }
+        return configAndTestCases;
       });
   }
 
