@@ -35,8 +35,11 @@ export interface SubmitDialogData {
 }
 
 export interface GitFiles<T> {
-  files?: T[];
-  configs_files?: T[];
+  files: T[];
+}
+
+export interface GitFilesDelete<T> {
+  configs_files: T[];
   test_cases_files?: T[];
 }
 
@@ -169,5 +172,5 @@ export interface UrlInfo {
 
 export interface ConfigAndTestCases {
   configs: Config[];
-  testCases: TestCaseMap;
+  testCases?: TestCaseMap;
 }

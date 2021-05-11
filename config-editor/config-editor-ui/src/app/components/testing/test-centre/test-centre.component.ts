@@ -8,6 +8,7 @@ import { TestStoreService } from '../../../services/store/test-store.service';
 import { TestCaseResult } from '../../../model/test-case';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { AppConfigService } from '@app/services/app-config.service';
 
 @Component({
   selector: 're-test-centre',
@@ -16,21 +17,21 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 })
 export class TestCentreComponent implements OnInit, OnDestroy {
   @BlockUI() blockUI: NgBlockUI;
-  public testCases$: Observable<TestCaseWrapper[]>;
-  public editingTestCase$: Observable<boolean>;
-  public editedTestCase$: Observable<TestCaseWrapper>;
+  testCases$: Observable<TestCaseWrapper[]>;
+  editingTestCase$: Observable<boolean>;
+  editedTestCase$: Observable<TestCaseWrapper>;
 
-  public testCases: TestCaseWrapper[];
-  public testCase: TestCaseWrapper;
+  testCases: TestCaseWrapper[];
+  testCase: TestCaseWrapper;
 
   private testStoreService: TestStoreService;
   private ngUnsubscribe = new Subject();
-  private readonly BLOCKING_TIMEOUT = 30000;
   constructor(
     private editorService: EditorService,
     public snackbar: PopupService,
     private router: Router,
-    private activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute,
+    private configService: AppConfigService
   ) {
     this.testCases$ = this.editorService.configStore.editedConfigTestCases$;
     this.editingTestCase$ = this.editorService.configStore.editingTestCase$;
@@ -119,6 +120,6 @@ export class TestCentreComponent implements OnInit, OnDestroy {
       });
     setTimeout(() => {
       this.blockUI.stop();
-    }, this.BLOCKING_TIMEOUT);
+    }, this.configService.blockingTimeout);
   }
 }

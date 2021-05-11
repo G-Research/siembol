@@ -9,7 +9,7 @@ import { Config } from '../../model/config-model';
 })
 export class ConfigTileComponent {
   @Input() config: Config;
-  @Input() hideAddDeployment: boolean;
+  @Input() hideDeployed: boolean;
 
   @Output() readonly edit = new EventEmitter<number>();
   @Output() readonly view = new EventEmitter<number>();

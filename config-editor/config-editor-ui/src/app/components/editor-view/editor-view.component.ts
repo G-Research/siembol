@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Config } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
@@ -14,6 +14,7 @@ import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-editor-view',
   styleUrls: ['./editor-view.component.scss'],
   templateUrl: './editor-view.component.html',

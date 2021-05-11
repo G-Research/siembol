@@ -17,6 +17,7 @@ import {
   AdminConfigGitFiles,
   DeploymentGitFiles,
   ConfigAndTestCases,
+  GitFilesDelete,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
@@ -46,7 +47,7 @@ export class ConfigLoaderService {
     }
   }
 
-  public getConfigFromFile(file: any): Config {
+  getConfigFromFile(file: any): Config {
     return {
       author: file.content[this.uiMetadata.author],
       configData: file.content,
@@ -63,7 +64,7 @@ export class ConfigLoaderService {
     };
   }
 
-  public getConfigs(): Observable<Config[]> {
+  getConfigs(): Observable<Config[]> {
     return this.http
       .get<GitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs`)
       .map(result => {
@@ -75,13 +76,13 @@ export class ConfigLoaderService {
       });
   }
 
-  public getTestSpecificationSchema(): Observable<JSONSchema7> {
+  getTestSpecificationSchema(): Observable<JSONSchema7> {
     return this.http
       .get<TestSchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testschema`)
       .pipe(map(x => x.test_schema));
   }
 
-  public getSchema(): Observable<JSONSchema7> {
+  getSchema(): Observable<JSONSchema7> {
     return this.http.get<SchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`).map(x => {
       try {
         return x.rules_schema;
@@ -91,7 +92,7 @@ export class ConfigLoaderService {
     });
   }
 
-  public getAdminSchema(): Observable<JSONSchema7> {
+  getAdminSchema(): Observable<JSONSchema7> {
     return this.http
       .get<AdminSchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/schema`)
       .map(x => {
@@ -103,19 +104,19 @@ export class ConfigLoaderService {
       });
   }
 
-  public getPullRequestStatus(): Observable<PullRequestInfo> {
+  getPullRequestStatus(): Observable<PullRequestInfo> {
     return this.http.get<PullRequestInfo>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release/status`
     );
   }
 
-  public getAdminPullRequestStatus(): Observable<PullRequestInfo> {
+  getAdminPullRequestStatus(): Observable<PullRequestInfo> {
     return this.http.get<PullRequestInfo>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/adminconfig/status`
     );
   }
 
-  public getRelease(): Observable<DeploymentWrapper> {
+  getRelease(): Observable<DeploymentWrapper> {
     return this.http
       .get<DeploymentGitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`)
       .pipe(
@@ -161,7 +162,7 @@ export class ConfigLoaderService {
       );
   }
 
-  public getAdminConfig(): Observable<AdminConfig> {
+  getAdminConfig(): Observable<AdminConfig> {
     return this.http
       .get<AdminConfigGitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/adminconfig`)
       .pipe(
@@ -186,13 +187,13 @@ export class ConfigLoaderService {
       );
   }
 
-  public getTestCases(): Observable<TestCaseMap> {
+  getTestCases(): Observable<TestCaseMap> {
     return this.http
       .get<GitFiles<Content<any>>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`)
-      .pipe(map(result => this.testCaseFilesToMap(result)));
+      .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
-  public validateConfig(config: Config): Observable<any> {
+  validateConfig(config: Config): Observable<any> {
     const json = JSON.stringify(config.configData, null, 2);
 
     return this.http.post<any>(
@@ -201,27 +202,27 @@ export class ConfigLoaderService {
     );
   }
 
-  public validateRelease(deployment: Deployment): Observable<any> {
+  validateRelease(deployment: Deployment): Observable<any> {
     const validationFormat = this.marshalDeploymentFormat(deployment);
     const json = JSON.stringify(validationFormat, null, 2);
 
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate`, json);
   }
 
-  public validateAdminConfig(config: AdminConfig): Observable<any> {
+  validateAdminConfig(config: AdminConfig): Observable<any> {
     const json = JSON.stringify(config.configData, null, 2);
 
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/validate`, json);
   }
 
-  public submitRelease(deployment: Deployment): Observable<any> {
+  submitRelease(deployment: Deployment): Observable<any> {
     const releaseFormat = this.marshalDeploymentFormat(deployment);
     const json = JSON.stringify(releaseFormat, null, 2);
 
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`, json);
   }
 
-  public submitConfig(config: Config): Observable<Config[]> {
+  submitConfig(config: Config): Observable<Config[]> {
     const fun = config.isNew ? this.submitNewConfig(config) : this.submitConfigEdit(config);
     return fun.map(result => {
       if (result.files && result.files.length > 0) {
@@ -232,7 +233,7 @@ export class ConfigLoaderService {
     });
   }
 
-  public submitConfigEdit(config: Config): Observable<GitFiles<any>> {
+  submitConfigEdit(config: Config): Observable<GitFiles<any>> {
     const json = JSON.stringify(config.configData, null, 2);
 
     return this.http.put<GitFiles<any>>(
@@ -241,7 +242,7 @@ export class ConfigLoaderService {
     );
   }
 
-  public submitNewConfig(config: Config): Observable<GitFiles<any>> {
+  submitNewConfig(config: Config): Observable<GitFiles<any>> {
     const json = JSON.stringify(config.configData, null, 2);
 
     return this.http.post<GitFiles<any>>(
@@ -250,7 +251,7 @@ export class ConfigLoaderService {
     );
   }
 
-  public submitAdminConfig(config: AdminConfig): Observable<GitFiles<any>> {
+  submitAdminConfig(config: AdminConfig): Observable<GitFiles<any>> {
     const json = JSON.stringify(config.configData, null, 2);
 
     return this.http.post<GitFiles<any>>(
@@ -259,7 +260,7 @@ export class ConfigLoaderService {
     );
   }
 
-  public testDeploymentConfig(deployment: Deployment, testSpecification: any): Observable<ConfigTestResult> {
+  testDeploymentConfig(deployment: Deployment, testSpecification: any): Observable<ConfigTestResult> {
     const testDto: ConfigTestDto = {
       files: [
         {
@@ -277,7 +278,7 @@ export class ConfigLoaderService {
     );
   }
 
-  public testSingleConfig(configData: any, testSpecification: any): Observable<ConfigTestResult> {
+  testSingleConfig(configData: any, testSpecification: any): Observable<ConfigTestResult> {
     const testDto: ConfigTestDto = {
       files: [
         {
@@ -293,27 +294,27 @@ export class ConfigLoaderService {
     );
   }
 
-  public submitTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap> {
+  submitTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap> {
     return isNewTestCase(testCase) ? this.submitNewTestCase(testCase) : this.submitTestCaseEdit(testCase);
   }
 
-  public submitTestCaseEdit(testCase: TestCaseWrapper): Observable<TestCaseMap> {
+  submitTestCaseEdit(testCase: TestCaseWrapper): Observable<TestCaseMap> {
     const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
 
     return this.http
       .put<GitFiles<TestCase>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json)
-      .pipe(map(result => this.testCaseFilesToMap(result)));
+      .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
-  public submitNewTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap> {
+  submitNewTestCase(testCase: TestCaseWrapper): Observable<TestCaseMap> {
     const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
 
     return this.http
       .post<GitFiles<TestCase>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json)
-      .pipe(map(result => this.testCaseFilesToMap(result)));
+      .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
-  public validateTestCase(testcase: TestCase): Observable<any> {
+  validateTestCase(testcase: TestCase): Observable<any> {
     const outObj = {
       files: [
         {
@@ -326,7 +327,7 @@ export class ConfigLoaderService {
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/testcases/validate`, json);
   }
 
-  public evaluateTestCase(configData: any, testCaseWrapper: TestCaseWrapper): Observable<TestCaseResult> {
+  evaluateTestCase(configData: any, testCaseWrapper: TestCaseWrapper): Observable<TestCaseResult> {
     const ret = {} as TestCaseResult;
 
     return this.testSingleConfig(configData, testCaseWrapper.testCase.test_specification)
@@ -346,7 +347,7 @@ export class ConfigLoaderService {
       );
   }
 
-  public evaluateTestCaseFromResult(testcase: TestCase, testResult: any): Observable<TestCaseEvaluationResult> {
+  evaluateTestCaseFromResult(testcase: TestCase, testResult: any): Observable<TestCaseEvaluationResult> {
     const outObj: TestCaseEvaluation = {
       files: [
         {
@@ -363,37 +364,40 @@ export class ConfigLoaderService {
       .pipe(map(x => x.test_case_result));
   }
 
-  public deleteConfig(configName: string): Observable<ConfigAndTestCases> {
+  deleteConfig(configName: string): Observable<ConfigAndTestCases> {
     return this.http
-      .post<GitFiles<any>>(
+      .post<GitFilesDelete<any>>(
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs/delete?configName=${configName}`,
         null
       )
       .map(result => {
-        if (result.configs_files && result.test_cases_files) {
-          return {
+        if (result.configs_files && (result.test_cases_files || !this.uiMetadata.testing.deploymentTestEnabled)) {
+          let configAndTestCases = {
             configs: result.configs_files.map(file => this.getConfigFromFile(file)),
-            testCases: this.testCaseFilesToMap(result),
+            testCases: {},
           };
+          if (result.test_cases_files) {
+            configAndTestCases['testCases'] = this.testCaseFilesToMap(result.test_cases_files);
+          }
+          return configAndTestCases;
         }
-
         throw new DOMException('bad format response when deleting config');
       });
   }
 
-  public deleteTestCase(configName: string, testCaseName: string): Observable<TestCaseMap> {
+  deleteTestCase(configName: string, testCaseName: string): Observable<TestCaseMap> {
     return this.http
       .post<GitFiles<Content<any>>>(
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases/delete?configName=${configName}&testCaseName=${testCaseName}`,
         null
       )
-      .pipe(map(result => this.testCaseFilesToMap(result)));
+      .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
-  private testCaseFilesToMap(result: GitFiles<any>): TestCaseMap {
+  private testCaseFilesToMap(files: any[]): TestCaseMap {
     const testCaseMap: TestCaseMap = {};
-    if (result.files && result.files.length > 0) {
-      result.files.forEach(file => {
+    if (files && files.length > 0) {
+      files.forEach(file => {
         if (!testCaseMap.hasOwnProperty(file.content.config_name)) {
           testCaseMap[file.content.config_name] = [];
         }

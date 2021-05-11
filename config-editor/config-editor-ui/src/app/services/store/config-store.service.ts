@@ -64,7 +64,7 @@ export class ConfigStoreService {
   private metaDataMap: UiMetadata;
   private testStoreService: TestStoreService;
 
-  public get testService(): TestStoreService {
+  get testService(): TestStoreService {
     return this.testStoreService;
   }
 

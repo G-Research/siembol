@@ -14,6 +14,7 @@ import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { AppConfigService } from '@app/services/app-config.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,34 +42,34 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 })
 export class ConfigManagerComponent implements OnInit, OnDestroy {
   @BlockUI() blockUI: NgBlockUI;
-  public allConfigs$: Observable<Config[]>;
-  public filteredConfigs$: Observable<Config[]>;
-  public deployment$: Observable<Deployment>;
-  public deployment: Deployment;
-  public configs: Config[];
-  public selectedConfig$: Observable<number>;
-  public selectedConfig: number;
-  public pullRequestPending$: Observable<PullRequestInfo>;
-  public releaseSubmitInFlight$: Observable<boolean>;
-  public searchTerm$: Observable<string>;
-  public filteredDeployment: Deployment;
-  public filteredDeployment$: Observable<Deployment>;
-  public filterMyConfigs$: Observable<boolean>;
-  public filterUndeployed$: Observable<boolean>;
-  public filterUpgradable$: Observable<boolean>;
-  public deploymentHistory$: Observable<FileHistory[]>;
-  public deploymentHistory;
+  allConfigs$: Observable<Config[]>;
+  filteredConfigs$: Observable<Config[]>;
+  deployment$: Observable<Deployment>;
+  deployment: Deployment;
+  configs: Config[];
+  selectedConfig$: Observable<number>;
+  selectedConfig: number;
+  pullRequestPending$: Observable<PullRequestInfo>;
+  releaseSubmitInFlight$: Observable<boolean>;
+  searchTerm$: Observable<string>;
+  filteredDeployment: Deployment;
+  filteredDeployment$: Observable<Deployment>;
+  filterMyConfigs$: Observable<boolean>;
+  filterUndeployed$: Observable<boolean>;
+  filterUpgradable$: Observable<boolean>;
+  deploymentHistory$: Observable<FileHistory[]>;
+  deploymentHistory;
 
   private ngUnsubscribe = new Subject();
   private filteredConfigs: Config[];
   private configStore: ConfigStoreService;
-  private readonly BLOCKING_TIMEOUT = 30000;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
   constructor(
     public dialog: MatDialog,
     private snackbar: PopupService,
     private editorService: EditorService,
-    private router: Router
+    private router: Router,
+    private configService: AppConfigService
   ) {
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.allConfigs$;
@@ -113,15 +114,15 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  public onSearch(searchTerm: string) {
+  onSearch(searchTerm: string) {
     this.configStore.updateSearchTerm(searchTerm);
   }
 
-  public upgrade(index: number) {
+  upgrade(index: number) {
     this.configStore.upgradeConfigInDeployment(index);
   }
 
-  public drop(event: CdkDragDrop<Config[]>) {
+  drop(event: CdkDragDrop<Config[]>) {
     if (event.container.id === 'deployment-list') {
       if (event.previousContainer.id === 'store-list') {
         this.configStore.addConfigToDeploymentInPosition(event.previousIndex, event.currentIndex);
@@ -131,7 +132,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onView(id: number, releaseId: number = undefined) {
+  onView(id: number, releaseId: number = undefined) {
     this.dialog.open(JsonViewerComponent, {
       data: {
         config1: releaseId === undefined ? undefined : this.filteredDeployment.configs[releaseId].configData,
@@ -140,31 +141,31 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onEdit(id: number) {
+  onEdit(id: number) {
     this.router.navigate([this.editorService.serviceName, 'edit'], {
       queryParams: { configName: this.filteredConfigs[id].name },
     });
   }
 
-  public addToDeployment(id: number) {
+  addToDeployment(id: number) {
     this.configStore.addConfigToDeployment(id);
   }
 
-  public onClone(id: number) {
+  onClone(id: number) {
     this.router.navigate([this.editorService.serviceName, 'edit'], {
       queryParams: { newConfig: true, cloneConfig: this.filteredConfigs[id].name },
     });
   }
 
-  public onRemove(id: number) {
+  onRemove(id: number) {
     this.configStore.removeConfigFromDeployment(id);
   }
 
-  public onClickCreate() {
+  onClickCreate() {
     this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { newConfig: true } });
   }
 
-  public onDeploy() {
+  onDeploy() {
     this.configStore.loadPullRequestStatus();
     this.pullRequestPending$.pipe(skip(1), take(1)).subscribe(a => {
       if (!a.pull_request_pending) {
@@ -184,37 +185,37 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onFilterMine($event: boolean) {
+  onFilterMine($event: boolean) {
     this.configStore.updateFilterMyConfigs($event);
   }
 
-  public onSyncWithGit() {
+  onSyncWithGit() {
     this.blockUI.start('loading store and deployments');
     this.configStore.reloadStoreAndDeployment().subscribe(() => {
       this.blockUI.stop();
     });
     setTimeout(() => {
       this.blockUI.stop();
-    }, this.BLOCKING_TIMEOUT);
+    }, this.configService.blockingTimeout);
   }
 
-  public duplicateItemCheck(item: CdkDrag<Config>, deployment: CdkDropList<Config[]>) {
+  duplicateItemCheck(item: CdkDrag<Config>, deployment: CdkDropList<Config[]>) {
     return deployment.data.find(d => d.name === item.data.name) === undefined ? true : false;
   }
 
-  public noReturnPredicate() {
+  noReturnPredicate() {
     return false;
   }
 
-  public onFilterUpgradable($event: boolean) {
+  onFilterUpgradable($event: boolean) {
     this.configStore.updateFilterUpgradable($event);
   }
 
-  public onFilterUndeployed($event: boolean) {
+  onFilterUndeployed($event: boolean) {
     this.configStore.updateFilterUndeployed($event);
   }
 
-  public trackConfigByName(index: number, item: Config) {
+  trackConfigByName(index: number, item: Config) {
     return item.name;
   }
 
@@ -225,6 +226,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
     setTimeout(() => {
       this.blockUI.stop();
-    }, this.BLOCKING_TIMEOUT);
+    }, this.configService.blockingTimeout);
   }
 }
