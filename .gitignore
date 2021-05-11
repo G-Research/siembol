@@ -68,3 +68,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# UI config files
+config-editor/config-editor-ui/src/config/*
+
+# REST config files
+config-editor/config-editor-rest/src/main/resources/application.properties

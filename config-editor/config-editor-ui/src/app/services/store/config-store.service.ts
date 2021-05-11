@@ -64,7 +64,7 @@ export class ConfigStoreService {
   private metaDataMap: UiMetadata;
   private testStoreService: TestStoreService;
 
-  public get testService(): TestStoreService {
+  get testService(): TestStoreService {
     return this.testStoreService;
   }
 
@@ -367,6 +367,34 @@ export class ConfigStoreService {
   updateEditedConfig(config: Config) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).editedConfig(config).build();
     this.store.next(newState);
+  }
+
+  deleteConfig(configName: string): Observable<any> {
+    return this.configLoaderService.deleteConfig(configName).map(data => {
+      const newState = new ConfigStoreStateBuilder(this.store.getValue())
+        .testCaseMap(data.testCases)
+        .configs(data.configs)
+        .updateTestCasesInConfigs()
+        .detectOutdatedConfigs()
+        .reorderConfigsByDeployment()
+        .computeFiltered(this.user)
+        .build();
+
+      this.store.next(newState);
+    });
+  }
+
+  deleteTestCase(configName: string, testCaseName: string): Observable<any> {
+    return this.configLoaderService.deleteTestCase(configName, testCaseName).map(testCaseMap => {
+      const newState = new ConfigStoreStateBuilder(this.store.getValue())
+        .testCaseMap(testCaseMap)
+        .updateTestCasesInConfigs()
+        .editedConfigByName(configName)
+        .computeFiltered(this.user)
+        .build();
+
+      this.store.next(newState);
+    });
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

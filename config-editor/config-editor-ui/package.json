@@ -1,6 +1,6 @@
 {
   "name": "rule-editor.ui",
-  "version": "1.0.0",
+  "version": "1.0.1-dev",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -46,7 +46,6 @@
     "rxjs": "^6.6.6",
     "rxjs-compat": "^6.6.7",
     "tslib": "^2.2.0",
-    "typescript": "^4.1.5",
     "zone.js": "^0.11.4"
   },
   "devDependencies": {
@@ -83,7 +82,7 @@
     "protractor": "^7.0.0",
     "rimraf": "^3.0.2",
     "ts-node": "^9.1.1",
-    "typescript": "4.1.5",
+    "typescript": "^4.1.5",
     "webpack": "^4.41.6"
   },
   "peerDependencies": {

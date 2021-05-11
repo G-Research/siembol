@@ -64,7 +64,7 @@ import { FieldArrayType } from '@ngx-formly/core';
   ],
 })
 export class TabArrayTypeComponent extends FieldArrayType {
-  public selectedIndex = 0;
+  selectedIndex = 0;
 
   getUnionType(model): string {
     const keys = Object.keys(model);
@@ -72,7 +72,8 @@ export class TabArrayTypeComponent extends FieldArrayType {
   }
 
   add(i: number) {
-    super.add(this.model.length);
+    const modelLength = this.model ? this.model.length : 0;
+    super.add(modelLength);
     this.selectedIndex = i;
     for (let j = this.model.length - 1; j >= i; j--) {
       this.moveDown(j);

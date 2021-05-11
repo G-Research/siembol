@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Config } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
@@ -18,73 +17,66 @@ import { SchemaService } from '@app/services/schema/schema.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-editor-view',
   styleUrls: ['./editor-view.component.scss'],
-  templateUrl: './editor-view.component.html'
+  templateUrl: './editor-view.component.html',
 })
-export class EditorViewComponent implements OnInit, OnDestroy {
-  @ViewChild(EditorComponent, { static: false }) editorComponent: EditorComponent;
+export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(EditorComponent) editorComponent: EditorComponent;
 
   readonly TEST_CASE_TAB = TEST_CASE_TAB;
   readonly TESTING_TAB = TESTING_TAB;
   readonly CONFIG_TAB = CONFIG_TAB;
   readonly NO_TAB = -1;
   ngUnsubscribe = new Subject();
-
-  testCaseEnabled: () => boolean = () => false;
-  testingEnabled: () => boolean = () => false;
   configData: any;
   serviceName: string;
   schema: JSONSchema7;
-  selectedTab = this.NO_TAB;
+  selectedTab = this.CONFIG_TAB.index;
   previousTab = this.NO_TAB;
   testingType = TestingType.CONFIG_TESTING;
-
   fields: FormlyFieldConfig[] = [];
-
   editedConfig$: Observable<Config>;
 
   constructor(
     private formlyJsonschema: FormlyJsonschema,
     private editorService: EditorService,
     private router: Router,
-    private activeRoute: ActivatedRoute,
-    private cd: ChangeDetectorRef
+    private activeRoute: ActivatedRoute
   ) {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
     this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
+      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
     ];
   }
+
+  testCaseEnabled: () => boolean = () => false;
+  testingEnabled: () => boolean = () => false;
 
   ngOnInit() {
     this.editorService.configStore.editingTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       if (e) {
         this.selectedTab = TEST_CASE_TAB.index;
-        if (this.previousTab === this.NO_TAB) {
-          this.previousTab = this.selectedTab;
-        }
+      }
+      if (this.previousTab === this.NO_TAB) {
+        this.previousTab = this.selectedTab;
       }
     });
   }
 
-  public ngAfterViewInit() {
+  ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {map: SchemaService.renameDescription}),
+        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
       ];
 
-      this.testingEnabled = () => this.editorService.metaDataMap.testing.perConfigTestEnabled
-        && this.editorComponent.form.valid;
+      this.testingEnabled = () =>
+        this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
 
-
-      this.testCaseEnabled = () => this.editorService.metaDataMap.testing.testCaseEnabled
-        && this.editorComponent.form.valid
-        && !config.isNew;
+      this.testCaseEnabled = () =>
+        this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
 
       this.configData = config.configData;
-
-      this.cd.markForCheck();
     });
   }
 
@@ -95,15 +87,13 @@ export class EditorViewComponent implements OnInit, OnDestroy {
 
   onTabChange() {
     if (this.previousTab === TEST_CASE_TAB.index) {
-      this.router.navigate(
-      [],
-      {
-          relativeTo: this.activeRoute,
-          queryParams: { testCaseName: null },
-          queryParamsHandling: 'merge',
+      this.router.navigate([], {
+        relativeTo: this.activeRoute,
+        queryParams: { testCaseName: null },
+        queryParamsHandling: 'merge',
       });
     } else if (this.previousTab === CONFIG_TAB.index) {
-      this.editorComponent.updateConfigInStore()
+      this.editorComponent.updateConfigInStore();
     }
     this.previousTab = this.selectedTab;
   }
@@ -111,5 +101,4 @@ export class EditorViewComponent implements OnInit, OnDestroy {
   changeRoute() {
     this.router.navigate([this.serviceName]);
   }
-
 }
