@@ -5,6 +5,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;
@@ -70,6 +71,17 @@ public class ConfigStoreImpl implements ConfigStore {
     }
 
     @Override
+    public ConfigEditorResult deleteTestCase(UserInfo user, String configName, String testCaseName) {
+        if (testCases == null) {
+            return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
+        }
+
+        final String testCaseFileName = ConfigEditorUtils.getTestCaseFileName(configName, testCaseName);
+        Callable<ConfigEditorResult> command = () -> testCases.deleteItems(user, testCaseFileName);
+        return executeStoreCommand(command, storeExecutorService);
+    }
+
+    @Override
     public ConfigEditorResult getTestCases() {
         if (testCases == null) {
             return ConfigEditorResult.fromMessage(ERROR, TEST_CASES_UNSUPPORTED_MSG);
@@ -94,6 +106,37 @@ public class ConfigStoreImpl implements ConfigStore {
     }
 
     @Override
+    public ConfigEditorResult deleteConfig(UserInfo user, String configName) {
+        Callable<ConfigEditorResult> releaseCheckCommand = () -> release.checkConfigNotInRelease(configName);
+        ConfigEditorResult releaseCheck = executeStoreCommand(releaseCheckCommand, releaseExecutorService);
+        if (releaseCheck.getStatusCode() != OK) {
+            return releaseCheck;
+        }
+
+        Callable<ConfigEditorResult> deleteCommand = () -> {
+            ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+            final String configFileName = ConfigEditorUtils.getConfigNameFileName(configName);
+            ConfigEditorResult deleteConfigResult = configs.deleteItems(user, configFileName);
+            if (deleteConfigResult.getStatusCode() != OK) {
+                return deleteConfigResult;
+            }
+            attributes.setConfigsFiles(deleteConfigResult.getAttributes().getFiles());
+
+            if (testCases != null) {
+                String testCaseNamePrefix = ConfigEditorUtils.getTestCaseFileNamePrefix(configName);
+                ConfigEditorResult deleteTestCasesResult = testCases.deleteItems(user, testCaseNamePrefix);
+                if (deleteTestCasesResult.getStatusCode() != OK) {
+                    return deleteTestCasesResult;
+                }
+                attributes.setTestCasesFiles(deleteTestCasesResult.getAttributes().getFiles());
+            }
+            return new ConfigEditorResult(OK, attributes);
+        };
+
+        return executeStoreCommand(deleteCommand, storeExecutorService);
+    }
+
+    @Override
     public ConfigEditorResult getConfigs() {
         if (exception.get() != null) {
             return ConfigEditorResult.fromException(exception.get());
@@ -104,13 +147,13 @@ public class ConfigStoreImpl implements ConfigStore {
 
     @Override
     public ConfigEditorResult getConfigsRelease() {
-        Callable<ConfigEditorResult> command = () -> release.getConfigsRelease();
+        Callable<ConfigEditorResult> command = release::getConfigsRelease;
         return executeStoreCommand(command, releaseExecutorService);
     }
 
     @Override
     public ConfigEditorResult getConfigsReleaseStatus() {
-        Callable<ConfigEditorResult> command = () -> release.getConfigsReleaseStatus();
+        Callable<ConfigEditorResult> command = release::getConfigsReleaseStatus;
         return executeStoreCommand(command, releaseExecutorService);
     }
 
@@ -126,7 +169,7 @@ public class ConfigStoreImpl implements ConfigStore {
             return ConfigEditorResult.fromMessage(ERROR, ADMIN_CONFIG_UNSUPPORTED_MSG);
         }
 
-        Callable<ConfigEditorResult> command = () -> adminConfig.getConfigsRelease();
+        Callable<ConfigEditorResult> command = adminConfig::getConfigsRelease;
         return executeStoreCommand(command, adminConfigExecutorService);
     }
 
@@ -136,7 +179,7 @@ public class ConfigStoreImpl implements ConfigStore {
             return ConfigEditorResult.fromMessage(ERROR, ADMIN_CONFIG_UNSUPPORTED_MSG);
         }
 
-        Callable<ConfigEditorResult> command = () -> adminConfig.getConfigsReleaseStatus();
+        Callable<ConfigEditorResult> command = adminConfig::getConfigsReleaseStatus;
         return executeStoreCommand(command, adminConfigExecutorService);
     }
 

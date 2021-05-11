@@ -51,6 +51,20 @@ public class ConfigStoreController {
     }
 
     @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/configstore/configs/delete",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> deleteConfig(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String service,
+            @RequestParam() String configName) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .deleteConfig(user, configName)
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
     @PutMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> updateConfig(
@@ -102,6 +116,21 @@ public class ConfigStoreController {
         return serviceAggregator
                 .getConfigStore(user, service)
                 .updateTestCase(user, testCase)
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/configstore/testcases/delete",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> deleteTestCase(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String service,
+            @RequestParam() String configName,
+            @RequestParam() String testCaseName) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator
+                .getConfigStore(user, service)
+                .deleteTestCase(user, configName, testCaseName)
                 .toResponseEntity();
     }
 

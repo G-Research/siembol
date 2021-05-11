@@ -48,6 +48,11 @@ public class AdminConfigInfoProvider implements ConfigInfoProvider {
     }
 
     @Override
+    public boolean isConfigInRelease(String release, String configName) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
     public boolean isReleaseFile(String filename) {
         return jsonHelperProvider.isReleaseFile(filename);
     }

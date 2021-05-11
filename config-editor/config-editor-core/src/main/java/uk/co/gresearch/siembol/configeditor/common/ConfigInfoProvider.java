@@ -28,6 +28,8 @@ public interface ConfigInfoProvider {
 
     int getReleaseVersion(String content);
 
+    boolean isConfigInRelease(String release, String configName);
+
     ConfigEditorFile.ContentType getFileContentType();
 
     default ConfigInfo configInfoFromUser(UserInfo user) {

@@ -24,6 +24,9 @@ public class ConfigEditorUtils {
             .readerFor(ConfigEditorUiLayout.class);
     private static final String INDEX_REPLACE_REGEX = "\"minItems\"\\s*:\\s*1";
     private static final String INDEX_REPLACEMENT = "\"minItems\":0";
+    private static final String CONFIG_NAME_FORMAT = "%s.json";
+    private static final String TEST_CASE_NAME_FORMAT = "%s-%s.json";
+    private static final String TEST_CASE_NAME_PREFIX = "%s-";
 
     static {
         Configuration.setDefaults(new Configuration.Defaults() {
@@ -81,7 +84,7 @@ public class ConfigEditorUtils {
                     current = current.get(0);
                 }
                 if (!current.isObject()) {
-                    LOG.error("Path: {} in schema is not an Object, the value: {}", key, current.toString());
+                    LOG.error("Path: {} in schema is not an Object, the value: {}", key, current);
                     return Optional.empty();
                 }
 
@@ -102,6 +105,24 @@ public class ConfigEditorUtils {
 
         String uiSchema = context.jsonString();
         uiSchema = uiSchema.replaceAll(INDEX_REPLACE_REGEX, INDEX_REPLACEMENT);
-        return Optional.ofNullable(uiSchema);
+        return Optional.of(uiSchema);
     }
+
+    public static JsonNode evaluateJsonPath(String jsonString, String jsonPath) {
+        final DocumentContext context = JsonPath.parse(jsonString);
+        return context.read(jsonPath);
+    }
+
+    public static String getConfigNameFileName(String configName) {
+        return String.format(CONFIG_NAME_FORMAT, configName);
+    }
+
+    public static String getTestCaseFileName(String configName, String testCaseName) {
+        return String.format(TEST_CASE_NAME_FORMAT, configName, testCaseName);
+    }
+
+    public static String getTestCaseFileNamePrefix(String configName) {
+        return String.format(TEST_CASE_NAME_PREFIX, configName);
+    }
+
 }

@@ -57,6 +57,49 @@ public class JsonRuleConfigInfoProviderTest {
 
     /**
      * {
+     *   "rules_version" : 1,
+     *   "rules": []
+     * }
+     **/
+    @Multiline
+    public static String releaseNoRules;
+
+    /**
+     * {
+     *   "rules_version": 1,
+     *   "rules": [
+     *     {
+     *       "rule_name": "info_provider_test",
+     *       "rule_author": "mark",
+     *       "rule_version": 1,
+     *       "rule_description": "Test rule",
+     *       "enrichments": {},
+     *       "actions": {}
+     *     },
+     *     {
+     *       "rule_name": "info_provider_extra_test",
+     *       "rule_author": "mark",
+     *       "rule_version": 1,
+     *       "rule_description": "Test rule",
+     *       "enrichments": {},
+     *       "actions": {}
+     *     },
+     *     {
+     *       "rule_name": "secret_test",
+     *       "rule_author": "mark",
+     *       "rule_version": 1,
+     *       "rule_description": "Test rule",
+     *       "enrichments": {},
+     *       "actions": {}
+     *     }
+     *   ]
+     * }
+     **/
+    @Multiline
+    public static String releaseThreeRules;
+
+    /**
+     * {
      *     "rule_name": "../../../test",
      *     "rule_author": "steve",
      *     "rule_version": 12345,
@@ -98,9 +141,9 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("info_provider-test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider-test.json").indexOf("\"rule_version\": 12346,") > 0);
+                .get("info_provider-test.json").get().indexOf("\"rule_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider-test.json").indexOf("\"rule_author\": \"steve\",") > 0);
+                .get("info_provider-test.json").get().indexOf("\"rule_author\": \"steve\",") > 0);
         Assert.assertFalse(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.RULE, info.getConfigInfoType());
     }
@@ -115,9 +158,9 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("info_provider-test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider-test.json").indexOf("\"rule_version\": 12346,") > 0);
+                .get("info_provider-test.json").get().indexOf("\"rule_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider-test.json").indexOf("\"rule_author\": \"john\",") > 0);
+                .get("info_provider-test.json").get().indexOf("\"rule_author\": \"john\",") > 0);
         Assert.assertFalse(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.RULE, info.getConfigInfoType());
     }
@@ -132,7 +175,7 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("info_provider_test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("info_provider_test.json").indexOf("\"rule_version\": 1,") > 0);
+                .get("info_provider_test.json").get().indexOf("\"rule_version\": 1,") > 0);
         Assert.assertTrue(info.isNewConfig());
     }
 
@@ -171,7 +214,7 @@ public class JsonRuleConfigInfoProviderTest {
         Assert.assertEquals(info.getFilesContent().size(), 1);
         Assert.assertEquals(info.getFilesContent().containsKey("rules.json"), true);
         Assert.assertEquals(info.getFilesContent()
-                .get("rules.json").indexOf("\"rules_version\": 2,") > 0, true);
+                .get("rules.json").get().indexOf("\"rules_version\": 2,") > 0, true);
 
     }
 
@@ -213,5 +256,35 @@ public class JsonRuleConfigInfoProviderTest {
         files.add(new ConfigEditorFile("rules.json", "INVALID", ConfigEditorFile.ContentType.RAW_JSON_STRING));
         int version = infoProvider.getReleaseVersion(files);
         Assert.assertEquals(0, version);
+    }
+
+    @Test
+    public void configInRelease() {
+        boolean isInRelease = infoProvider.isConfigInRelease(release, "info_provider_test");
+        Assert.assertTrue(isInRelease);
+    }
+
+    @Test
+    public void configNotInRelease() {
+        boolean isInRelease = infoProvider.isConfigInRelease(release, "info_provider");
+        Assert.assertFalse(isInRelease);
+    }
+
+    @Test
+    public void configNotInReleaseNoRules() {
+        boolean isInRelease = infoProvider.isConfigInRelease(releaseNoRules, "info_provider");
+        Assert.assertFalse(isInRelease);
+    }
+
+    @Test
+    public void configInReleaseWithThreeRules() {
+        boolean isInRelease = infoProvider.isConfigInRelease(releaseThreeRules, "secret_test");
+        Assert.assertTrue(isInRelease);
+    }
+
+    @Test
+    public void configNotInReleaseWithThreeRules() {
+        boolean isInRelease = infoProvider.isConfigInRelease(releaseThreeRules, "info_provider");
+        Assert.assertFalse(isInRelease);
     }
 }

@@ -1,24 +1,25 @@
 package uk.co.gresearch.siembol.configeditor.common;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class ConfigInfo {
     private String name;
-    private Map<String, String> filesContent;
+    private Map<String, Optional<String>> filesContent;
     private String commitMessage;
     private int oldVersion;
     private int version;
     private String committer;
     private String committerEmail;
-    private String branchName = "master";
+    private Optional<String> branchName = Optional.empty();
     private boolean shouldCleanDirectory = false;
     private ConfigInfoType configInfoType;
 
-    public Map<String, String> getFilesContent() {
+    public Map<String, Optional<String>> getFilesContent() {
         return filesContent;
     }
 
-    public void setFilesContent(Map<String, String> filesContent) {
+    public void setFilesContent(Map<String, Optional<String>> filesContent) {
         this.filesContent = filesContent;
     }
 
@@ -66,11 +67,11 @@ public class ConfigInfo {
         return oldVersion == 0;
     }
 
-    public String getBranchName() {
+    public Optional<String> getBranchName() {
         return branchName;
     }
 
-    public void setBranchName(String branchName) {
+    public void setBranchName(Optional<String> branchName) {
         this.branchName = branchName;
     }
 

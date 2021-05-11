@@ -1,15 +1,17 @@
 package uk.co.gresearch.siembol.configeditor.common;
 
 public enum ConfigInfoType {
-    RULE("rule", "Rules"),
-    CONFIG("configuration", "Configurations"),
-    TEST_CASE("test case", "Test cases"),
-    ADMIN_CONFIG("admin configuration", "Admin configuration");
-    private String singular;
-    private String releaseName;
+    RULE("rule", "rules", "Rules"),
+    CONFIG("configuration", "configurations", "Configurations"),
+    TEST_CASE("test case", "test cases", "Test cases"),
+    ADMIN_CONFIG("admin configuration", "admin configurations", "Admin configuration");
+    private final String singular;
+    private final String plural;
+    private final String releaseName;
 
-    ConfigInfoType(String singular, String releaseName) {
+    ConfigInfoType(String singular, String plural, String releaseName) {
         this.singular = singular;
+        this.plural = plural;
         this.releaseName = releaseName;
     }
 
@@ -19,5 +21,9 @@ public enum ConfigInfoType {
 
     public String getReleaseName() {
         return releaseName;
+    }
+
+    public String getPlural() {
+        return plural;
     }
 }

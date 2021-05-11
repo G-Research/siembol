@@ -26,6 +26,12 @@ public class ConfigEditorAttributes {
 
     private List<ConfigEditorFile> files;
 
+    @JsonProperty("configs_files")
+    private List<ConfigEditorFile> configsFiles;
+
+    @JsonProperty("test_cases_files")
+    private List<ConfigEditorFile> testCasesFiles;
+
     @JsonProperty("rules_version")
     private Integer rulesVersion;
 
@@ -253,5 +259,21 @@ public class ConfigEditorAttributes {
 
     public void setTopologyName(String topologyName) {
         this.topologyName = topologyName;
+    }
+
+    public List<ConfigEditorFile> getConfigsFiles() {
+        return configsFiles;
+    }
+
+    public void setConfigsFiles(List<ConfigEditorFile> configsFiles) {
+        this.configsFiles = configsFiles;
+    }
+
+    public List<ConfigEditorFile> getTestCasesFiles() {
+        return testCasesFiles;
+    }
+
+    public void setTestCasesFiles(List<ConfigEditorFile> testCasesFiles) {
+        this.testCasesFiles = testCasesFiles;
     }
 }
