@@ -40,10 +40,10 @@
             <a (click)="cloneConfig()" [title]="'Clone Config'">
                 <mat-icon>content_copy</mat-icon>
             </a>
-            <a *ngIf="hideDeployed" (click)="deleteConfigFromStore()" [title]="'Delete Config From Store'">
+            <a *ngIf="notDeployed" (click)="deleteConfigFromStore()" [title]="'Delete Config From Store'">
                 <mat-icon>delete</mat-icon>
             </a>
-            <a *ngIf="hideDeployed" (click)="addConfigToDeployment()" [title]="'Add to Deployment'">
+            <a *ngIf="notDeployed" (click)="addConfigToDeployment()" [title]="'Add to Deployment'">
                 <mat-icon>arrow_forward</mat-icon>
             </a>
         </span>
