@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { forkJoin, from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import {
   ConfigTestDto,
