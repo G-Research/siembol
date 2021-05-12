@@ -103,7 +103,6 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   changeRoute() {
     this.router.navigate([this.serviceName]);
   }
-<<<<<<< HEAD
 
   async onClickPaste() {
     const valid = await this.clipboardService.validateClipboard();
@@ -119,6 +118,4 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     //   });
     // });
   }
-=======
->>>>>>> master
 }
