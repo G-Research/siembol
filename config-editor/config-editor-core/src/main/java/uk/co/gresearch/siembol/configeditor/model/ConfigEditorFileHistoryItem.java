@@ -14,7 +14,6 @@ public class ConfigEditorFileHistoryItem {
     private Integer addedLines;
     @JsonProperty("removed")
     private Integer removedLines;
-
     @JsonIgnore
     private Integer timestamp;
 

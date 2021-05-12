@@ -1,21 +1,16 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.common.*;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +28,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private static final String WRONG_FILENAME_MSG = "Wrong config name: %s";
     private static final String PREFIX_NAME_FORMAT = "%s-%s";
     private static final String PREFIX_NAME_CHECK_FORMAT = "%s_%s";
+    private static final String JSON_PATH_FIELD_SEARCH_FORMAT = "$..%s";
 
     private final String configNameField;
     private String configNamePrefixField;
@@ -51,6 +47,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private final String commitTemplateNew;
     private final String commitTemplateUpdate;
     private final String commitTemplateRelease;
+    private final String jsonPathConfigNameSearch;
     private final Pattern ruleNamePattern;
     private final ConfigInfoType configType;
 
@@ -74,6 +71,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         this.commitTemplateRelease = builder.commitTemplateRelease;
         this.configNamePrefixField = builder.configNamePrefixField;
         this.configType = builder.configType;
+        this.jsonPathConfigNameSearch = String.format(JSON_PATH_FIELD_SEARCH_FORMAT, configNameField);
     }
 
     @Override
@@ -117,18 +115,18 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                 : String.format(commitTemplateUpdate, configName, newConfigVersion);
         configInfo.setCommitMessage(commitMsg);
 
-        Map<String, String> files = new HashMap<>();
-        String updatedRule = config.replaceFirst(ruleVersionRegex,
+        Map<String, Optional<String>> files = new HashMap<>();
+        String updatedConfig = config.replaceFirst(ruleVersionRegex,
                 String.format(ruleVersionFormat, newConfigVersion));
 
         if (!configAuthor.equals(configInfo.getCommitter())) {
             //NOTE: we consider author to be the last committer,
             // auth logic can be added here when needed
-            updatedRule = updatedRule.replaceFirst(ruleAuthorRegex,
+            updatedConfig = updatedConfig.replaceFirst(ruleAuthorRegex,
                     String.format(ruleAuthorFormat, configInfo.getCommitter()));
         }
 
-        files.put(String.format(configFilenameFormat, configName), updatedRule);
+        files.put(String.format(configFilenameFormat, configName), Optional.of(updatedConfig));
         configInfo.setFilesContent(files);
 
         configInfo.setConfigInfoType(configType);
@@ -144,18 +142,18 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         int newRulesVersion = releaseVersion + 1;
         configInfo.setVersion(newRulesVersion);
         configInfo.setOldVersion(releaseVersion);
-        configInfo.setBranchName(String.format(RELEASE_BRANCH_TEMPLATE,
+        configInfo.setBranchName(Optional.of(String.format(RELEASE_BRANCH_TEMPLATE,
                 newRulesVersion,
                 configInfo.getCommitter(),
-                getLocalDateTime()));
+                getLocalDateTime())));
 
         configInfo.setCommitMessage(String.format(commitTemplateRelease, newRulesVersion));
 
         String updatedRelease = release.replaceFirst(releaseVersionRegex,
                 String.format(releaseVersionFormat, newRulesVersion));
 
-        Map<String, String> files = new HashMap<>();
-        files.put(releaseFilename, updatedRelease);
+        Map<String, Optional<String>> files = new HashMap<>();
+        files.put(releaseFilename, Optional.of(updatedRelease));
         configInfo.setFilesContent(files);
         configInfo.setConfigInfoType(configType);
 
@@ -178,6 +176,18 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         }
 
         return ((Number)metadata.get(configsVersionField)).intValue();
+    }
+
+    @Override
+    public boolean isConfigInRelease(String release, String configName) {
+        JsonNode configsNode = ConfigEditorUtils.evaluateJsonPath(release, jsonPathConfigNameSearch);
+        for (Iterator<JsonNode> it = configsNode.elements(); it.hasNext(); ) {
+            JsonNode node = it.next();
+            if (node.asText().equals(configName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

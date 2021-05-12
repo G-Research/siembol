@@ -160,7 +160,7 @@ public class ConfigReleaseTest {
     }
 
     @Test
-    public void sumbitReleaseWrongVersion() throws Exception {
+    public void submitReleaseWrongVersion() throws Exception {
         pullRequestResult.getAttributes().setPendingPullRequest(false);
         releaseInfo.setOldVersion(releaseVersion - 1);
         releaseInfo.setVersion(releaseVersion);
@@ -168,5 +168,30 @@ public class ConfigReleaseTest {
         ConfigEditorResult result = configRelease.submitConfigsRelease(user, "NEW_DUMMY_RELEASE");
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void checkConfigNotInRelease() throws Exception {
+        when(configInfoProvider.isConfigInRelease(eq("DUMMY_CONTENT"), eq("test_config"))).thenReturn(false);
+        ConfigEditorResult result = configRelease.checkConfigNotInRelease("test_config");
+        Assert.assertEquals(OK, result.getStatusCode());
+        verify(configInfoProvider, times(1))
+                .isConfigInRelease(eq("DUMMY_CONTENT"), eq("test_config"));
+    }
+
+    @Test
+    public void checkConfigInRelease() throws Exception {
+        when(configInfoProvider.isConfigInRelease(eq("DUMMY_CONTENT"), eq("test_config"))).thenReturn(true);
+        ConfigEditorResult result = configRelease.checkConfigNotInRelease("test_config");
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+        verify(configInfoProvider, times(1))
+                .isConfigInRelease(eq("DUMMY_CONTENT"), eq("test_config"));
+    }
+
+    @Test
+    public void checkConfigNotInReleaseError() throws Exception {
+        when(gitRepo.getFiles(eq(directory), any())).thenReturn(ConfigEditorResult.fromMessage(ERROR, "error"));
+        ConfigEditorResult result = configRelease.checkConfigNotInRelease("test_config");
+        Assert.assertEquals(ERROR, result.getStatusCode());
     }
 }

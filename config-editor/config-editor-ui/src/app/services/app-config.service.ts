@@ -26,13 +26,13 @@ export class AppConfigService {
     this._authenticationService = new DefaultAuthenticationService();
   }
 
-  public loadConfigAndMetadata(): Promise<any> {
+  loadConfigAndMetadata(): Promise<any> {
     return this.loadConfig()
       .then(() => this.loadUiMetadata())
       .then(() => this.createAuthenticationService());
   }
 
-  public loadBuildInfo(): Promise<any> {
+  loadBuildInfo(): Promise<any> {
     return this.http
       .get('assets/build-info.json')
       .toPromise()
@@ -43,47 +43,51 @@ export class AppConfigService {
       .catch(err => console.info(`could not load build info: ${err}`));
   }
 
-  public isHomePath(path: string): boolean {
+  isHomePath(path: string): boolean {
     if (path === '/home' || path === '/') {
       return true;
     }
     return false;
   }
 
-  public get adminPath(): string {
+  get adminPath(): string {
     return '/admin';
   }
 
-  public get config(): AppConfig {
+  get config(): AppConfig {
     return this._config;
   }
 
-  public get buildInfo(): BuildInfo {
+  get buildInfo(): BuildInfo {
     return this._buildInfo;
   }
 
-  public get environment(): string {
+  get environment(): string {
     return this._config.environment;
   }
 
-  public get serviceRoot(): string {
+  get serviceRoot(): string {
     return this._config.serviceRoot;
   }
 
-  public get uiMetadata(): UiMetadataMap {
+  get uiMetadata(): UiMetadataMap {
     return this._uiMetadata;
   }
 
-  public get authenticationService(): IAuthenticationService {
+  get authenticationService(): IAuthenticationService {
     return this._authenticationService;
   }
 
-  public get homeHelpLinks(): HomeHelpLink[] {
+  get homeHelpLinks(): HomeHelpLink[] {
     return this._config.homeHelpLinks;
   }
 
-  public get historyMaxSize(): number {
+  get historyMaxSize(): number {
     return this._config.historyMaxSize ? this._config.historyMaxSize : 5;
+  }
+
+  get blockingTimeout(): number {
+    return this._config.blockingTimeout ? this._config.blockingTimeout : 30000;
   }
 
   private loadConfig(): Promise<any> {

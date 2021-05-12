@@ -122,9 +122,9 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("test_parser.json").indexOf("\"parser_version\": 12346,") > 0);
+                .get("test_parser.json").get().indexOf("\"parser_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("test_parser.json").indexOf("\"parser_author\": \"steve\",") > 0);
+                .get("test_parser.json").get().indexOf("\"parser_author\": \"steve\",") > 0);
         Assert.assertFalse(info.isNewConfig());
     }
 
@@ -138,9 +138,9 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals( 1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("test_parser.json").indexOf("\"parser_version\": 12346,") > 0);
+                .get("test_parser.json").get().indexOf("\"parser_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("test_parser.json").indexOf("\"parser_author\": \"john\",") > 0);
+                .get("test_parser.json").get().indexOf("\"parser_author\": \"john\",") > 0);
         Assert.assertFalse(info.isNewConfig());
     }
 
@@ -154,7 +154,7 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("test_parser.json").indexOf("\"parser_version\": 1,") > 0);
+                .get("test_parser.json").get().indexOf("\"parser_version\": 1,") > 0);
         Assert.assertTrue(info.isNewConfig());
     }
 
@@ -193,7 +193,7 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("parsers.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("parsers.json").indexOf("\"parsers_version\": 2,") > 0);
+                .get("parsers.json").get().indexOf("\"parsers_version\": 2,") > 0);
 
     }
 

@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.configstore;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +14,9 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
@@ -28,15 +28,15 @@ public class ConfigItems {
     private static final String INVALID_CONFIG_VERSION = "Invalid config version %d in config %s";
     private static final String INIT_ERROR_MSG = "Problem during initialisation of config items";
     private static final String UPDATE_INIT_LOG_MSG = "User {} requested to add/update {} name: {} to version: {}";
+    private static final String DELETE_FILES_LOG_MSG = "User {} requested to delete files: {}";
     private static final String UPDATE_COMPLETED_LOG_MSG = "{} name: {} to version: {} update completed";
-    private static final int NEW_CONFIG_EXPECTED_VERSION = 0;
+    private static final String DELETE_COMMIT_MSG = "Deleted %s: %s";
+    private static final String FILES_SEPARATOR = ",\n";
 
     private final String directory;
     private final GitRepository gitRepository;
     private final ConfigInfoProvider configInfoProvider;
-
-    private final Map<String, Integer> versions = new HashMap<>();
-    private final AtomicReference<List<ConfigEditorFile>> filesCache = new AtomicReference<>();
+    private final AtomicReference<Map<String, ConfigEditorFile>> filesCache = new AtomicReference<>();
 
     public ConfigItems(GitRepository gitRepository,
                        ConfigInfoProvider configInfoProvider,
@@ -47,8 +47,13 @@ public class ConfigItems {
     }
 
     private boolean checkVersion(ConfigInfo itemInfo) {
-        String name = itemInfo.getName();
-        return versions.getOrDefault(name, NEW_CONFIG_EXPECTED_VERSION) == itemInfo.getOldVersion();
+        String fileName = itemInfo.getFilesContent().keySet().stream().findFirst().get();
+        if (filesCache.get().containsKey(fileName)) {
+            ConfigInfo current = configInfoProvider.getConfigInfo(filesCache.get().get(fileName).getContent());
+            return current.getOldVersion() == itemInfo.getOldVersion();
+        } else {
+            return itemInfo.isNewConfig();
+        }
     }
 
     public void init() throws IOException, GitAPIException {
@@ -58,20 +63,19 @@ public class ConfigItems {
             throw new IllegalStateException(INIT_ERROR_MSG);
         }
 
-        filesCache.set(result.getAttributes().getFiles());
-        result.getAttributes().getFiles().forEach(x -> {
-            ConfigInfo info = configInfoProvider.getConfigInfo(x.getContent());
-            versions.put(info.getName(), info.getOldVersion());
-        });
-
+        updateCache(result.getAttributes().getFiles());
         LOG.info(INIT_COMPLETED);
     }
 
     public ConfigEditorResult getFiles() {
-        List<ConfigEditorFile> files = filesCache.get();
+        List<ConfigEditorFile> files = new ArrayList<>(filesCache.get().values());
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
         attributes.setFiles(files);
         return new ConfigEditorResult(OK, attributes);
+    }
+
+    private void updateCache(List<ConfigEditorFile> files) {
+        filesCache.set(files.stream().collect(Collectors.toMap(ConfigEditorFile::getFileName, x -> x)));
     }
 
     private ConfigEditorResult updateConfigItemInternally(UserInfo user,
@@ -95,14 +99,44 @@ public class ConfigItems {
                 directory,
                 configInfoProvider::isStoreFile);
         if (result.getStatusCode() == OK) {
-            filesCache.set(result.getAttributes().getFiles());
-            versions.put(configInfo.getName(), configInfo.getVersion());
+            updateCache(result.getAttributes().getFiles());
             LOG.info(UPDATE_COMPLETED_LOG_MSG,
                     configInfo.getConfigInfoType().getSingular(),
                     configInfo.getName(),
                     configInfo.getVersion());
         }
         return result;
+    }
+
+    public ConfigEditorResult deleteItems(UserInfo user, String prefixItemName) throws GitAPIException, IOException {
+        Map<String, Optional<String>> filesToDelete = filesCache.get().values().stream()
+                .filter(x -> x.getFileName().startsWith(prefixItemName))
+                .collect(Collectors.toMap(ConfigEditorFile::getFileName, x -> Optional.empty()));
+
+        if (!filesToDelete.isEmpty()) {
+            List<String> files = new ArrayList<>(filesToDelete.keySet());
+            files.sort(Comparator.naturalOrder());
+            String filesString =  StringUtils.join(files, FILES_SEPARATOR);
+            LOG.info(DELETE_FILES_LOG_MSG, user.getUserName(), filesString);
+
+            ConfigInfo configInfo = configInfoProvider.configInfoFromUser(user);
+            String commitMessage = String.format(DELETE_COMMIT_MSG,
+                    files.size() == 1
+                            ? configInfoProvider.getConfigInfoType().getSingular()
+                            : configInfoProvider.getConfigInfoType().getPlural(),
+                    filesString);
+            configInfo.setCommitMessage(commitMessage);
+
+            configInfo.setFilesContent(filesToDelete);
+            ConfigEditorResult deleteResult = gitRepository.transactCopyAndCommit(configInfo,
+                    directory, configInfoProvider::isStoreFile);
+            if (deleteResult.getStatusCode() != OK) {
+                return deleteResult;
+            }
+            updateCache(deleteResult.getAttributes().getFiles());
+        }
+
+        return getFiles();
     }
 
     public ConfigEditorResult updateConfigItem(UserInfo user, String configItem) throws GitAPIException, IOException {

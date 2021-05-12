@@ -3,16 +3,15 @@ package uk.co.gresearch.siembol.configeditor.configstore;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
-import uk.co.gresearch.siembol.configeditor.common.UserInfo;
+import uk.co.gresearch.siembol.configeditor.common.*;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.git.ReleasePullRequestService;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 public class ConfigRelease {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -20,6 +19,7 @@ public class ConfigRelease {
     private static final String PENDING_PR_ERROR_MSG = "Can not release %s because PR %s is pending";
     private static final String WRONG_VERSION_ERROR_MSG = "Can not release %s version %d from version %d";
     private static final String SUBMIT_COMPLETED_LOG_MSG = "Prepared {} PR in the branch name: {} PR: {}";
+    private static final String CONFIG_IN_RELEASE= "Config %s is in the current release";
 
     private final String directory;
     private final GitRepository gitRepository;
@@ -95,6 +95,21 @@ public class ConfigRelease {
                 newReleaseInfo.getBranchName(),
                 newPullRequestResult.getAttributes().getPullRequestUrl());
         return newPullRequestResult;
+    }
+
+    public ConfigEditorResult checkConfigNotInRelease(String configName) throws GitAPIException, IOException {
+        ConfigEditorResult releaseResult = getConfigsRelease();
+        if (releaseResult.getStatusCode() != ConfigEditorResult.StatusCode.OK) {
+            return releaseResult;
+        }
+
+       Optional<ConfigEditorFile> release = releaseResult.getAttributes().getFiles().stream().findFirst();
+        if (release.isPresent() && configInfoProvider.isConfigInRelease(release.get().getContent(), configName)) {
+            String message = String.format(CONFIG_IN_RELEASE, configName);
+            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, message);
+        } else {
+            return releaseResult;
+        }
     }
 
     public String getRepoUri() {

@@ -6,16 +6,19 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.common.HealthCheckable;
 
 public interface ConfigStore extends HealthCheckable {
-
     ConfigEditorResult addTestCase(UserInfo user, String testCase);
 
     ConfigEditorResult updateTestCase(UserInfo user, String testCase);
+
+    ConfigEditorResult deleteTestCase(UserInfo user, String configName, String testCaseName);
 
     ConfigEditorResult getTestCases();
 
     ConfigEditorResult addConfig(UserInfo user, String newConfig);
 
     ConfigEditorResult updateConfig(UserInfo user, String configToUpdate);
+
+    ConfigEditorResult deleteConfig(UserInfo user, String configName);
 
     ConfigEditorResult getConfigs();
 

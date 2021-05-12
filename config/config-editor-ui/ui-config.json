@@ -3,6 +3,8 @@
     "serviceRoot": "https://config-editor/",
     "uiBootstrapPath": "./ui-bootstrap.json",
     "authType": "disabled",
+    "historyMaxSize": 5,
+    "blockingTimeout": "30000",
     "homeLinks": [
         {
             "icon": "library_books",

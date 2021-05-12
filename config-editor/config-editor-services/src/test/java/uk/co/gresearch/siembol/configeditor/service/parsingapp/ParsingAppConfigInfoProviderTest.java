@@ -128,9 +128,9 @@ public class ParsingAppConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("test.json").indexOf("\"parsing_app_version\": 12346,") > 0);
+                .get("test.json").get().indexOf("\"parsing_app_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("test.json").indexOf("\"parsing_app_author\": \"unknown\",") > 0);
+                .get("test.json").get().indexOf("\"parsing_app_author\": \"unknown\",") > 0);
         Assert.assertFalse(info.isNewConfig());
     }
 
@@ -144,9 +144,9 @@ public class ParsingAppConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("test.json").indexOf("\"parsing_app_version\": 12346,") > 0);
+                .get("test.json").get().indexOf("\"parsing_app_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("test.json").indexOf("\"parsing_app_author\": \"dummy\",") > 0);
+                .get("test.json").get().indexOf("\"parsing_app_author\": \"dummy\",") > 0);
         Assert.assertFalse(info.isNewConfig());
     }
 
@@ -160,9 +160,9 @@ public class ParsingAppConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("test.json").indexOf("\"parsing_app_version\": 1,") > 0);
+                .get("test.json").get().indexOf("\"parsing_app_version\": 1,") > 0);
         Assert.assertTrue(info.getFilesContent()
-                .get("test.json").indexOf("\"parsing_app_author\": \"unknown\",") > 0);
+                .get("test.json").get().indexOf("\"parsing_app_author\": \"unknown\",") > 0);
         Assert.assertTrue(info.isNewConfig());
     }
 
@@ -196,7 +196,7 @@ public class ParsingAppConfigInfoProviderTest {
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("parsing_applications.json"));
         Assert.assertTrue(info.getFilesContent()
-                .get("parsing_applications.json").indexOf("\"parsing_applications_version\": 2,") > 0);
+                .get("parsing_applications.json").get().indexOf("\"parsing_applications_version\": 2,") > 0);
     }
 
     @Test
