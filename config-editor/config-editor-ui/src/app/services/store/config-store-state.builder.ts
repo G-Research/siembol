@@ -1,8 +1,8 @@
 import { ConfigStoreState } from '@app/model/store-state';
 import { cloneDeep } from 'lodash';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Config, Deployment, FileHistory } from '../../model';
-import { TestCaseMap } from '@app/model/test-case';
+import { Config, ConfigData, Deployment, FileHistory } from '../../model';
+import { TestCase, TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
 import { AdminConfig } from '@app/model/config-model';
 
@@ -236,8 +236,18 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  pastedConfig(config: any) {
+  pastedConfig(config: ConfigData) {
     this.state.pastedConfig = config;
+    return this;
+  }
+
+  pastedTestCase(testCase: TestCase) {
+    this.state.pastedTestCase = testCase;
+    return this;
+  }
+
+  pastedAdminConfig(adminConfig: AdminConfig) {
+    this.state.pastedAdminConfig = adminConfig;
     return this;
   }
 

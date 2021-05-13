@@ -5,6 +5,9 @@
                 <button mat-raised-button (click)="changeRoute()">Back</button>
             </div>
             <div class="right-button">
+                <a mat-button [disabled]="!editorComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">
+                    <mat-icon>content_copy</mat-icon>
+                </a>
                 <a mat-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
                     <mat-icon>content_paste</mat-icon>
                 </a>

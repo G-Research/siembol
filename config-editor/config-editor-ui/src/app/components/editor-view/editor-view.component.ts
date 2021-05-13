@@ -105,9 +105,9 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async onClickPaste() {
-    const valid = await this.clipboardService.validateClipboard();
+    const valid = await this.clipboardService.validateConfig();
     valid.subscribe(() => {
-      this.editorService.configStore.setEditedPastedConfig(this.clipboardService.toPaste);
+      this.editorService.configStore.setEditedPastedConfig();
     });
 
     // let newConfig = navigator.clipboard.readText();
@@ -117,5 +117,9 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     //     this.editorService.configStore.setEditedPastedConfig(JSON.parse(json));
     //   });
     // });
+  }
+
+  onClickCopy() {
+    this.clipboardService.copy(this.configData);
   }
 }

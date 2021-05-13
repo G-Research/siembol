@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ConfigStoreState } from '../../model/store-state';
 import { ConfigLoaderService } from '../config-loader.service';
-import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from '../../model/test-case';
+import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase, TestCase } from '../../model/test-case';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { ConfigTestResult, TestingType } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
@@ -42,6 +42,39 @@ export class TestStoreService {
       testCaseResult: undefined,
     } as TestCaseWrapper;
     this.updateEditedTestCase(testCase);
+  }
+
+  setEditedPastedTestCaseNew() {
+    const currentState = this.store.getValue();
+    const testCase = currentState.pastedTestCase;
+    testCase.version = 0;
+    testCase.author = this.user;
+    testCase.test_case_name = `test_${currentState.editedConfig.testCases.length + 1}`;
+    const testCaseWrapper = {
+      fileHistory: null,
+      testCaseResult: null,
+      testCase: testCase,
+    };
+    this.updateEditedTestCase(testCaseWrapper);
+  }
+
+  setEditedPastedTestCase() {
+    const currentState = this.store.getValue();
+    const testCase = currentState.pastedTestCase;
+    const editedTestCase = currentState.editedTestCase;
+    const pastedTestCase = cloneDeep(editedTestCase);
+    pastedTestCase.testCase = Object.assign({}, cloneDeep(testCase), {
+      version: editedTestCase.testCase.version,
+      author: editedTestCase.testCase.author,
+      config_name: editedTestCase.testCase.config_name,
+      test_case_name: editedTestCase.testCase.test_case_name,
+    });
+    this.updateEditedTestCase(pastedTestCase);
+  }
+
+  updatePastedTestCase(testCase: TestCase) {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedTestCase(testCase).build();
+    this.store.next(newState);
   }
 
   updateEditedTestCase(testCase: TestCaseWrapper) {

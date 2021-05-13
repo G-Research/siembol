@@ -15,6 +15,7 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,7 +70,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private clipboardService: ClipboardService
   ) {
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.allConfigs$;
@@ -229,16 +231,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  onClickPaste() {
-    let newConfig = navigator.clipboard.readText();
-    newConfig.then(json => {
-      console.log(json);
-      this.editorService.configLoader.validateConfigJson(json).subscribe(v => {
-        // clean config
-        this.editorService.configStore.updatePastedConfig(JSON.parse(json));
-        this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
-        // let  config = this.editorService.configLoader.getConfigFromFile(json);
-      });
+  async onClickPaste() {
+    const valid = await this.clipboardService.validateConfig();
+    valid.subscribe(() => {
+      this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
     });
   }
 }

@@ -9,6 +9,7 @@ import { TestCaseResult } from '../../../model/test-case';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   selector: 're-test-centre',
@@ -31,7 +32,8 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     public snackbar: PopupService,
     private router: Router,
     private activeRoute: ActivatedRoute,
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private clipboardService: ClipboardService
   ) {
     this.testCases$ = this.editorService.configStore.editedConfigTestCases$;
     this.editingTestCase$ = this.editorService.configStore.editingTestCase$;
@@ -88,7 +90,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   onCancelEditing() {
     this.router.navigate([], {
       relativeTo: this.activeRoute,
-      queryParams: { testCaseName: null, newTestCase: null, cloneTestCase: null },
+      queryParams: { testCaseName: null, newTestCase: null, cloneTestCase: null, pasteTestCase: null },
       queryParamsHandling: 'merge',
     });
   }
@@ -121,5 +123,27 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.blockUI.stop();
     }, this.configService.blockingTimeout);
+  }
+
+  async onPasteTestCaseNew() {
+    const valid = await this.clipboardService.validateTestCase();
+    valid.subscribe(() => {
+      this.router.navigate([], {
+        relativeTo: this.activeRoute,
+        queryParams: { pasteTestCase: true },
+        queryParamsHandling: 'merge',
+      });
+    });
+  }
+
+  async onPasteTestCase() {
+    const valid = await this.clipboardService.validateTestCase();
+    valid.subscribe(() => {
+      this.editorService.configStore.testService.setEditedPastedTestCase();
+    });
+  }
+
+  onCopyTestCase() {
+    this.clipboardService.copy(this.testCase.testCase);
   }
 }

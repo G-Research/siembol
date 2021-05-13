@@ -199,7 +199,7 @@ export class ConfigLoaderService {
     return this.validateConfigJson(json);
   }
 
-  public validateConfigJson(json: string): Observable<any> {
+  validateConfigJson(json: string): Observable<any> {
     return this.http.post<any>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate?singleConfig=true`,
       json
@@ -216,6 +216,10 @@ export class ConfigLoaderService {
   validateAdminConfig(config: AdminConfig): Observable<any> {
     const json = JSON.stringify(config.configData, null, 2);
 
+    return this.validateAdminConfigJson(json);
+  }
+
+  validateAdminConfigJson(json: string): Observable<any> {
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/validate`, json);
   }
 

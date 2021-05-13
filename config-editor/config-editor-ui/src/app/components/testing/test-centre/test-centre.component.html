@@ -7,6 +7,9 @@
                 <button mat-icon-button color="primary" title="Add New Test Case" (click)="onAddTestCase()">
                     <mat-icon>add</mat-icon>
                 </button>
+                <button mat-icon-button color="primary" title="Paste Test Case" (click)="onPasteTestCaseNew()">
+                    <mat-icon>content_paste</mat-icon>
+                </button>
                 <button mat-raised-button color="accent" title="Run Test Suite" (click)="onRunTestSuite()"
                     [disabled]="testCases?.length === 0">Run Test Suite</button>
             </div>
@@ -14,6 +17,14 @@
         <mat-card-title *ngIf="(editingTestCase$ | async)">
             <button mat-raised-button title="Test Suite" (click)="onCancelEditing()"><</button>
             <h2>{{ testCase.testCase.test_case_name }} v{{ testCase.testCase.version }}</h2>
+            <div>
+                <button mat-icon-button color="primary" title="Copy Test Case to Clipboard" (click)="onCopyTestCase()">
+                    <mat-icon>content_copy</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" title="Paste Test Case from Clipboard" (click)="onPasteTestCase()">
+                    <mat-icon>content_paste</mat-icon>
+                </button>
+            </div>
             <div class="test-status-badge" *ngIf="testCase?.testCaseResult"
                 [ngClass]="getTestBadge(testCase.testCaseResult)"
                 [popper]="testCaseResult"

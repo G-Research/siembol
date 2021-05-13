@@ -30,3 +30,21 @@ mat-card-content {
 .vert-divider {
     margin: 6px;
 }
+
+.buttons {
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.right-button {
+    margin-left: auto;
+    margin-right: 5px;
+    color: #83d3f1;
+}
+
+.left-button {
+    margin-right: auto;
+    margin-left: 5px;
+}

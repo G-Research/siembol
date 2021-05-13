@@ -69,9 +69,9 @@ export class ConfigStoreService {
   }
 
   constructor(
-    private serviceName: string,
+    serviceName: string,
     private user: string,
-    private config: AppConfigService,
+    config: AppConfigService,
     private configLoaderService: ConfigLoaderService
   ) {
     this.metaDataMap = config.uiMetadata[serviceName];
@@ -364,19 +364,28 @@ export class ConfigStoreService {
     this.updateEditedConfigAndTestCase(newConfig, null);
   }
 
-  updatePastedConfig(config: any) {
+  updatePastedConfig(config: ConfigData) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedConfig(config).build();
+    this.store.next(newState);
+  }
+
+  updatePastedAdminConfig(config: AdminConfig) {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedAdminConfig(config).build();
     this.store.next(newState);
   }
 
   setNewEditedPastedConfig() {
     const currentState = this.store.getValue();
     const configData = currentState.pastedConfig;
+    if (!configData) {
+      throw Error('No pasted config available');
+    }
     const pasted = {
       author: this.user,
       configData: Object.assign({}, cloneDeep(configData), {
         [this.metaDataMap.name]: `new_entry_${currentState.configs.length}`,
         [this.metaDataMap.version]: 0,
+        [this.metaDataMap.author]: this.user,
       }),
       description: 'no description',
       isNew: true,
@@ -386,19 +395,40 @@ export class ConfigStoreService {
       version: 0,
     };
     this.updateEditedConfigAndTestCase(pasted, null);
+    this.updatePastedConfig(undefined);
   }
 
-  setEditedPastedConfig(pastedConfigData: ConfigData): boolean {
-    const editedConfig = this.store.value.editedConfig;
-    if (editedConfig === undefined) {
+  setEditedPastedConfig(): boolean {
+    const currentState = this.store.getValue();
+    const configData = currentState.pastedConfig;
+    const editedConfig = currentState.editedConfig;
+    if (editedConfig === undefined || !configData) {
       return false;
     }
     const pastedConfig = cloneDeep(editedConfig);
-    pastedConfig.configData = Object.assign({}, cloneDeep(pastedConfigData), {
+    pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
       [this.metaDataMap.name]: editedConfig.name,
       [this.metaDataMap.version]: editedConfig.version,
+      [this.metaDataMap.author]: this.user,
     });
     this.updateEditedConfig(pastedConfig);
+    this.updatePastedConfig(undefined);
+    return true;
+  }
+
+  setEditedPastedAdminConfig(): boolean {
+    const currentState = this.store.getValue();
+    const configData = currentState.pastedAdminConfig;
+    const adminConfig = currentState.adminConfig;
+    if (adminConfig === undefined || !configData) {
+      return false;
+    }
+    const pastedConfig = cloneDeep(adminConfig);
+    pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
+      config_version: adminConfig.version,
+    });
+    this.updateAdmin(pastedConfig);
+    this.updatePastedAdminConfig(undefined);
     return true;
   }
 
