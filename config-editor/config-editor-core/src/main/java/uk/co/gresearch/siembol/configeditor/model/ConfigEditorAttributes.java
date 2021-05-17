@@ -75,6 +75,9 @@ public class ConfigEditorAttributes {
     @JsonProperty("topology_name")
     private String topologyName;
 
+    @JsonProperty("config_importers")
+    private List<ConfigImporterDto> configImporters;
+
     public String getException() {
         return exception;
     }
@@ -275,5 +278,13 @@ public class ConfigEditorAttributes {
 
     public void setTestCasesFiles(List<ConfigEditorFile> testCasesFiles) {
         this.testCasesFiles = testCasesFiles;
+    }
+
+    public List<ConfigImporterDto> getConfigImporters() {
+        return configImporters;
+    }
+
+    public void setConfigImporters(List<ConfigImporterDto> configImporters) {
+        this.configImporters = configImporters;
     }
 }

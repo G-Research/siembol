@@ -114,4 +114,30 @@ public class ConfigSchemaController {
                 ? service.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
                 : service.testConfigurations(config.get(), attributes.getTestSpecification()).toResponseEntity();
     }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/v1/{service}/configs/importers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getImporters(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String serviceName) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .getImporters()
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/configs/import", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> importConfig(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String serviceName,
+            @RequestBody String specification,
+            @RequestParam() String importerName) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .importConfig(importerName, specification)
+                .toResponseEntity();
+    }
 }

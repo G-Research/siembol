@@ -15,7 +15,8 @@ public class ConfigEditorUiLayout {
     Map<String, JsonNode> adminConfigLayout = new HashMap<>();
     @JsonProperty("test_case_layout")
     Map<String, JsonNode> testCaseLayout = new HashMap<>();
-
+    @JsonProperty("importers_layout")
+    Map<String, JsonNode> importersLayout = new HashMap<>();
 
     public Map<String, JsonNode> getConfigLayout() {
         return configLayout;

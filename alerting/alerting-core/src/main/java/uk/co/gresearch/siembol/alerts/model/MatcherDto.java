@@ -9,7 +9,7 @@ public class MatcherDto {
     @Attributes(required = true,
             description = "Type of matcher, either Regex match or list of strings (newline delimited)",
             enums = {"REGEX_MATCH", "IS_IN_SET"})
-    private String type;
+    private MatcherTypeDto type;
 
     @JsonProperty("is_negated")
     @Attributes(description = "The matcher is negated")
@@ -25,11 +25,11 @@ public class MatcherDto {
     @Attributes(required = true, description = "Matcher expression as defined by matcher type")
     private String data;
 
-    public String getType() {
+    public MatcherTypeDto getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(MatcherTypeDto type) {
         this.type = type;
     }
 

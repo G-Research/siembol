@@ -213,4 +213,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
 
         return new ConfigEditorResult(OK, attr);
     }
+
+    public static class SigmaRuleDto {
+    }
 }
