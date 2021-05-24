@@ -117,7 +117,9 @@ jobs:
             ${{ steps.labels.outputs.labels }}
             org.opencontainers.image.version=${{ steps.info.outputs.version }}
             org.opencontainers.image.title=siembol-${{ matrix.component }}
+      # Only run this step for master and hotfix branches.
       - name: Upload Docker image
+        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
         uses: actions/upload-artifact@v2
         with:
           name: docker-${{ matrix.component }}
@@ -180,7 +182,9 @@ jobs:
             ${{ steps.labels.outputs.labels }}
             org.opencontainers.image.version=${{ steps.info.outputs.version }}
             org.opencontainers.image.title=siembol-${{ matrix.component }}
+      # Only run this step for master and hotfix branches.
       - name: Upload Docker image
+        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
         uses: actions/upload-artifact@v2
         with:
           name: docker-${{ matrix.component }}
@@ -264,7 +268,9 @@ jobs:
             ${{ steps.labels.outputs.labels }}
             org.opencontainers.image.version=${{ steps.info.outputs.version }}
             org.opencontainers.image.title=siembol-config-editor-ui
+      # Only run this step for master and hotfix branches.
       - name: Upload Docker image
+        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
         uses: actions/upload-artifact@v2
         with:
           name: docker-config-editor-ui
