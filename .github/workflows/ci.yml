@@ -33,12 +33,23 @@ jobs:
         if: failure()
         run: mvn --batch-mode surefire-report:report-only
       - name: Publish unit test results
-        uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1
+        if: >
+          always() &&
+          ( github.event_name == 'push' || github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id )
+        uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           check_name: unit-test-results
           comment_title: Unit Test Results
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           files: "**/target/surefire-reports/TEST-*.xml"
+      - name: Upload unit-test-results
+        if: >
+          always() &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit-test-results
+          path: "**/target/surefire-reports/TEST-*.xml"
 
       - name: Upload alerting-storm jar
         uses: actions/upload-artifact@v2
