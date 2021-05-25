@@ -54,7 +54,7 @@ Install Siembol in the cluster:
 
 ```bash
 helm repo add gresearch https://g-research.github.io/charts
-helm upgrade --install siembol -n siembol -f deployment/helm/config-editor/values.yaml gresearch/siembol
+helm upgrade --install siembol -n siembol -f https://raw.githubusercontent.com/G-Research/charts/0ac159d72a4fe842e3034834c3e8a9f7a5b47989/src/siembol/quickstart-values.yaml gresearch/siembol
 ```
 
 ## Cleaning up
