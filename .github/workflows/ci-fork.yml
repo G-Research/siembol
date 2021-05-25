@@ -15,6 +15,9 @@ jobs:
       github.event.workflow_run.head_repository.full_name != github.repository
 
     steps:
+      # we are not using actions/download-artifact here as
+      # it does not support downloading from a different workflow
+      # https://github.com/actions/download-artifact/issues/3
       - name: Download Artifacts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
