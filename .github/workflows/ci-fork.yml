@@ -16,14 +16,14 @@ jobs:
 
     steps:
       # we are not using actions/download-artifact here as
-      # it does not support downloading from a different workflow
+      # it does not yet support downloading from a different workflow
       # https://github.com/actions/download-artifact/issues/3
       - name: Download Artifacts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          artifact_url=${{ github.event.workflow_run.artifacts_url }}
-          artifact_url=$(gh api $artifact_url -q '.artifacts[] | select(.name=="unit-test-results") .archive_download_url')
+          artifacts_url=${{ github.event.workflow_run.artifacts_url }}
+          artifact_url=$(gh api $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results") .archive_download_url')
           if [[ -n "$artifact_url" ]]
           then
             gh api $artifact_url > unit-test-results.zip
