@@ -35,7 +35,7 @@ jobs:
       - name: Publish unit test results
         if: >
           always() &&
-          ( github.event_name == 'push' || github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id )
+          ( github.event_name == 'push' || github.event.pull_request.head.repo.id == github.event.pull_request.base.repo.id )
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           check_name: unit-test-results
