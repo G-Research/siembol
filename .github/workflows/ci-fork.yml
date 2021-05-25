@@ -16,47 +16,25 @@ jobs:
 
     steps:
       - name: Download Artifacts
-        uses: actions/github-script@v3
-        with:
-          script: |
-            var fs = require('fs');
-            var path = require('path');
-            var artifacts_path = path.join('${{github.workspace}}', 'artifacts')
-            fs.mkdirSync(artifacts_path, { recursive: true })
-
-            var artifacts = await github.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: ${{ github.event.workflow_run.id }},
-            });
-
-            for (const artifact of artifacts.data.artifacts) {
-               var download = await github.actions.downloadArtifact({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  artifact_id: artifact.id,
-                  archive_format: 'zip',
-               });
-               var artifact_path = path.join(artifacts_path, `${artifact.name}.zip`)
-               fs.writeFileSync(artifact_path, Buffer.from(download.data));
-               console.log(`Downloaded ${artifact_path}`);
-            }
-      - name: Extract Artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for file in artifacts/*.zip
-          do
-            if [ -f "$file" ]
-            then
-              dir="${file/%.zip/}"
-              mkdir -p "$dir"
-              unzip -d "$dir" "$file"
-            fi
-          done
+          artifact_url=${{ github.event.workflow_run.artifacts_url }}
+          artifact_url=$(gh api $artifact_url -q '.artifacts[] | select(.name=="unit-test-results") .archive_download_url')
+          if [[ -n "$artifact_url" ]]
+          then
+            gh api $artifact_url > unit-test-results.zip
+            unzip unit-test-results.zip
+          else
+            echo "::error::No artifact with name 'unit-test-results' exists"
+            exit 1
+          fi
+        shell: bash
 
       - name: Publish unit test results
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           check_name: unit-test-results
           comment_title: Unit Test Results
-          files: "artifacts/*/**/*.xml"
+          files: "**/target/surefire-reports/TEST-*.xml"
           commit: ${{ github.event.workflow_run.head_sha }}
