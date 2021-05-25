@@ -33,11 +33,18 @@ jobs:
         if: failure()
         run: mvn --batch-mode surefire-report:report-only
       - name: Publish unit test results
+        if: always() && ( github.event_name == 'push' || !github.event.repository.fork )
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           check_name: unit-test-results
           comment_title: Unit Test Results
           files: "**/target/surefire-reports/TEST-*.xml"
+      - name: Upload unit-test-results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit-test-results
+          path: "**/target/surefire-reports/TEST-*.xml"
 
       - name: Upload alerting-storm jar
         uses: actions/upload-artifact@v2
