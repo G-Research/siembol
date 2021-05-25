@@ -40,7 +40,7 @@ jobs:
           comment_title: Unit Test Results
           files: "**/target/surefire-reports/TEST-*.xml"
       - name: Upload unit-test-results
-        if: always()
+        if: always() && github.event_name == 'pull_request' && github.event.repository.fork
         uses: actions/upload-artifact@v2
         with:
           name: unit-test-results
