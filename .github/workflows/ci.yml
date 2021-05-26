@@ -108,11 +108,18 @@ jobs:
         shell: pwsh
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Generate Docker labels
-        id: labels
-        uses: crazy-max/ghaction-docker-meta@v3.3.0
+      - name: Generate Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3.3.0
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
+          flavor: |
+            latest=${{ github.ref == 'refs/heads/master' }}
+          # We use raw because our release process is not done on tag push (yet)
+          tags: |
+            type=raw,value=${{ steps.info.outputs.version }}
+          labels: |
+            org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
         uses: docker/build-push-action@v2
         with:
@@ -123,13 +130,8 @@ jobs:
             CLASS=${{ steps.info.outputs.class }}
           pull: true
           outputs: type=docker,dest=image.tar
-          tags: |
-            gresearchdev/siembol-${{ matrix.component }}:latest
-            gresearchdev/siembol-${{ matrix.component }}:${{ steps.info.outputs.version }}
-          labels: |
-            ${{ steps.labels.outputs.labels }}
-            org.opencontainers.image.version=${{ steps.info.outputs.version }}
-            org.opencontainers.image.title=siembol-${{ matrix.component }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       # Only run this step for master and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
@@ -173,11 +175,18 @@ jobs:
         shell: pwsh
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Generate Docker labels
-        id: labels
-        uses: crazy-max/ghaction-docker-meta@v3.3.0
+      - name: Generate Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3.3.0
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
+          flavor: |
+            latest=${{ github.ref == 'refs/heads/master' }}
+          # We use raw because our release process is not done on tag push (yet)
+          tags: |
+            type=raw,value=${{ steps.info.outputs.version }}
+          labels: |
+            org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
         uses: docker/build-push-action@v2
         with:
@@ -188,13 +197,8 @@ jobs:
             VERSION=${{ steps.info.outputs.version }}
           pull: true
           outputs: type=docker,dest=image.tar
-          tags: |
-            gresearchdev/siembol-${{ matrix.component }}:latest
-            gresearchdev/siembol-${{ matrix.component }}:${{ steps.info.outputs.version }}
-          labels: |
-            ${{ steps.labels.outputs.labels }}
-            org.opencontainers.image.version=${{ steps.info.outputs.version }}
-            org.opencontainers.image.title=siembol-${{ matrix.component }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       # Only run this step for master and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
@@ -262,11 +266,18 @@ jobs:
         run: echo "::set-output name=version::$(jq -r .appVersion deployment/docker/config-editor-ui/assets/build-info.json)"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Generate Docker labels
-        id: labels
-        uses: crazy-max/ghaction-docker-meta@v3.3.0
+      - name: Generate Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3.3.0
         with:
           images: gresearchdev/siembol-config-editor-ui
+          flavor: |
+            latest=${{ github.ref == 'refs/heads/master' }}
+          # We use raw because our release process is not done on tag push (yet)
+          tags: |
+            type=raw,value=${{ steps.info.outputs.version }}
+          labels: |
+            org.opencontainers.image.title=siembol-config-editor-ui
       - name: Build and export Docker image
         uses: docker/build-push-action@v2
         with:
@@ -274,13 +285,8 @@ jobs:
           file: deployment/docker/Dockerfile.config-editor-ui
           pull: true
           outputs: type=docker,dest=image.tar
-          tags: |
-            gresearchdev/siembol-config-editor-ui:latest
-            gresearchdev/siembol-config-editor-ui:${{ steps.info.outputs.version }}
-          labels: |
-            ${{ steps.labels.outputs.labels }}
-            org.opencontainers.image.version=${{ steps.info.outputs.version }}
-            org.opencontainers.image.title=siembol-config-editor-ui
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       # Only run this step for master and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
