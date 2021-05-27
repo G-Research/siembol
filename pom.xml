@@ -43,7 +43,7 @@
         <junit_version>4.12</junit_version>
         <mockito_version>3.10.0</mockito_version>
         <shade_version>3.2.4</shade_version>
-        <curator_version>2.12.0</curator_version>
+        <curator_version>5.1.0</curator_version>
         <storm_version>1.2.1</storm_version>
         <kafka_version>0.10.2.2</kafka_version>
         <kafka_junit_version>3.1.1</kafka_junit_version>
