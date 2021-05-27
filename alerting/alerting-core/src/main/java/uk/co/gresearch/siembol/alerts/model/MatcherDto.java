@@ -3,12 +3,13 @@ package uk.co.gresearch.siembol.alerts.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
+import java.util.List;
+
 @Attributes(title = "matcher", description = "Matcher for matching fields")
 public class MatcherDto {
     @JsonProperty("matcher_type")
-    @Attributes(required = true,
-            description = "Type of matcher, either Regex match or list of strings (newline delimited)",
-            enums = {"REGEX_MATCH", "IS_IN_SET"})
+    @Attributes(required = true, description = "Type of matcher, either Regex match or list of strings " +
+            "(newline delimited) or a composite matcher composing several matchers")
     private MatcherTypeDto type;
 
     @JsonProperty("is_negated")
@@ -22,8 +23,11 @@ public class MatcherDto {
     @Attributes(description = "Use case insensitive string compare")
     private Boolean caseInsensitiveCompare = false;
 
-    @Attributes(required = true, description = "Matcher expression as defined by matcher type")
+    @Attributes(description = "Matcher expression as defined by matcher type")
     private String data;
+
+    @Attributes(description = "Matcher expression as defined by matcher type")
+    private List<MatcherDto> matchers;
 
     public MatcherTypeDto getType() {
         return type;
@@ -63,6 +67,14 @@ public class MatcherDto {
 
     public void setCaseInsensitiveCompare(Boolean caseInsensitiveCompare) {
         this.caseInsensitiveCompare = caseInsensitiveCompare;
+    }
+
+    public List<MatcherDto> getMatchers() {
+        return matchers;
+    }
+
+    public void setMatchers(List<MatcherDto> matchers) {
+        this.matchers = matchers;
     }
 }
 

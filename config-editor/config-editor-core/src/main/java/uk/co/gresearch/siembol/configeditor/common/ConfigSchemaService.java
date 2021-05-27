@@ -1,9 +1,17 @@
 package uk.co.gresearch.siembol.configeditor.common;
 
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ConfigImporterDto;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface ConfigSchemaService extends HealthCheckable {
+    String UNKNOWN_CONFIG_IMPORTER_MSG = "Unknown config importer: %s";
     String NOT_IMPLEMENTED_MSG = "Not implemented";
     String SCHEMA_INIT_ERROR = "Error during computing json schema";
 
@@ -13,14 +21,30 @@ public interface ConfigSchemaService extends HealthCheckable {
 
     ConfigEditorResult validateConfigurations(String configurations);
 
+    Map<String, ConfigImporter> getConfigImporters();
+
     default Health checkHealth() { return Health.up().build(); }
 
     default ConfigEditorResult getImporters() {
-        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
+        List<ConfigImporterDto> importers = getConfigImporters().entrySet().stream().map(x -> {
+            ConfigImporterDto importer = new ConfigImporterDto();
+            importer.setImporterName(x.getKey());
+            importer.setImporterAttributesSchema(
+                    x.getValue().getImporterAttributesSchema().getAttributes().getConfigImporterAttributesSchema());
+            return importer;
+        }).collect(Collectors.toList());
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setConfigImporters(importers);
+        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attributes);
     }
 
-    default ConfigEditorResult importConfig(String importerName, String specification) {
-        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
+    default ConfigEditorResult importConfig(UserInfo user, String importerName, String importerAttributes, String configToImport) {
+        if (!getConfigImporters().containsKey(importerName)) {
+            return  ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
+                    String.format(UNKNOWN_CONFIG_IMPORTER_MSG, importerName));
+        }
+
+        return getConfigImporters().get(importerName).importConfig(user, importerAttributes, configToImport);
     }
 
     default ConfigEditorResult getTestSchema() {

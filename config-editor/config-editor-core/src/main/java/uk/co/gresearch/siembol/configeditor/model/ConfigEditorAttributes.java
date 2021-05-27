@@ -71,12 +71,15 @@ public class ConfigEditorAttributes {
     private ConfigEditorServiceContext serviceContext;
 
     private List<StormTopologyDto> topologies;
-
     @JsonProperty("topology_name")
     private String topologyName;
 
     @JsonProperty("config_importers")
     private List<ConfigImporterDto> configImporters;
+    @JsonProperty("imported_configuration")
+    @JsonRawValue
+    private String importedConfiguration;
+    private String configImporterAttributesSchema;
 
     public String getException() {
         return exception;
@@ -286,5 +289,21 @@ public class ConfigEditorAttributes {
 
     public void setConfigImporters(List<ConfigImporterDto> configImporters) {
         this.configImporters = configImporters;
+    }
+
+    public String getImportedConfiguration() {
+        return importedConfiguration;
+    }
+
+    public void setImportedConfiguration(String importedConfiguration) {
+        this.importedConfiguration = importedConfiguration;
+    }
+
+    public String getConfigImporterAttributesSchema() {
+        return configImporterAttributesSchema;
+    }
+
+    public void setConfigImporterAttributesSchema(String configImporterAttributesSchema) {
+        this.configImporterAttributesSchema = configImporterAttributesSchema;
     }
 }

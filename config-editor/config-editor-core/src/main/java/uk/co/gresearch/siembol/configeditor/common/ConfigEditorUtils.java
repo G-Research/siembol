@@ -125,4 +125,8 @@ public class ConfigEditorUtils {
         return String.format(TEST_CASE_NAME_PREFIX, configName);
     }
 
+    public static String getNormalisedConfigName(String configName) {
+        return configName.trim().replaceAll(" ", "_");
+    }
+
 }

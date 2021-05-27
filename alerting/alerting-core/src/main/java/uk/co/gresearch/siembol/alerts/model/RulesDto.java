@@ -10,7 +10,7 @@ import java.util.List;
 @Attributes(title = "rules", description = "Rules for real-time alert matching")
 public class RulesDto {
     public RulesDto() {
-        TagsDto tag = new TagsDto();
+        TagDto tag = new TagDto();
         tag.setTagName(AlertingTags.DETECTION_SOURCE_TAG_NAME.toString());
         tag.setTagValue(AlertingTags.DETECTION_SOURCE_TAG_VALUE.toString());
         tags = Arrays.asList(tag);
@@ -22,7 +22,7 @@ public class RulesDto {
 
     @JsonProperty("tags")
     @Attributes(required = true, description = "The tags that will be added to the alert")
-    private List<TagsDto> tags;
+    private List<TagDto> tags;
     @JsonProperty("rules_protection")
     @Attributes(description = "Global protection specification for rules")
     RuleProtectionDto rulesProtection = new RuleProtectionDto();
@@ -47,11 +47,11 @@ public class RulesDto {
         this.rulesProtection = rulesProtection;
     }
 
-    public List<TagsDto> getTags() {
+    public List<TagDto> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagsDto> tags) {
+    public void setTags(List<TagDto> tags) {
         this.tags = tags;
     }
 

@@ -13,6 +13,7 @@ import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ImportConfigRequestDto;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 
@@ -132,12 +133,11 @@ public class ConfigSchemaController {
     public ResponseEntity<ConfigEditorAttributes> importConfig(
             @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String serviceName,
-            @RequestBody String specification,
-            @RequestParam() String importerName) {
+            @RequestBody ImportConfigRequestDto req) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
-                .importConfig(importerName, specification)
+                .importConfig(user, req.getImporterName(), req.getImporterAttributes(), req.getConfigToImport())
                 .toResponseEntity();
     }
 }

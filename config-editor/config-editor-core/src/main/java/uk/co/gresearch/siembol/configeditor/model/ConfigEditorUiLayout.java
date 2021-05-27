@@ -49,4 +49,12 @@ public class ConfigEditorUiLayout {
     public void setTestCaseLayout(Map<String, JsonNode> testCaseLayout) {
         this.testCaseLayout = testCaseLayout;
     }
+
+    public Map<String, JsonNode> getImportersLayout() {
+        return importersLayout;
+    }
+
+    public void setImportersLayout(Map<String, JsonNode> importersLayout) {
+        this.importersLayout = importersLayout;
+    }
 }

@@ -1,13 +1,12 @@
-package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
+package uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class SigmaRuleDto {
     private String title;
     @JsonProperty("logsource")
     private SigmaLogSourceDto logSource;
-    private JsonNode detection;
+    private SigmaDetectionDto detection;
 
     public String getTitle() {
         return title;
@@ -25,11 +24,11 @@ public class SigmaRuleDto {
         this.logSource = logSource;
     }
 
-    public JsonNode getDetection() {
+    public SigmaDetectionDto getDetection() {
         return detection;
     }
 
-    public void setDetection(JsonNode detection) {
+    public void setDetection(SigmaDetectionDto detection) {
         this.detection = detection;
     }
 }

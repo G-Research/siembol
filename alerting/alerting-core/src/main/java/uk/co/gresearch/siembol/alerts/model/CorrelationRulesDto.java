@@ -10,7 +10,7 @@ import java.util.List;
 @Attributes(title = "correlation rules", description = "Correlation rules for real-time correlation alert matching")
 public class CorrelationRulesDto {
     public CorrelationRulesDto() {
-        TagsDto tag = new TagsDto();
+        TagDto tag = new TagDto();
         tag.setTagName(AlertingTags.DETECTION_SOURCE_TAG_NAME.toString());
         tag.setTagValue(AlertingTags.CORRELATION_ENGINE_DETECTION_SOURCE_TAG_VALUE.toString());
         tags = Arrays.asList(tag);
@@ -22,7 +22,7 @@ public class CorrelationRulesDto {
 
     @JsonProperty("tags")
     @Attributes(required = true, description = "The tags that will be added to the correlation alert")
-    private List<TagsDto> tags;
+    private List<TagDto> tags;
     @JsonProperty("rules_protection")
     @Attributes(description = "Global protection specification for correlationRules")
     RuleProtectionDto rulesProtection = new RuleProtectionDto();
@@ -39,11 +39,11 @@ public class CorrelationRulesDto {
         this.rulesVersion = rulesVersion;
     }
 
-    public List<TagsDto> getTags() {
+    public List<TagDto> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagsDto> tags) {
+    public void setTags(List<TagDto> tags) {
         this.tags = tags;
     }
 

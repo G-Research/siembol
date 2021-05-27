@@ -1,10 +1,12 @@
-package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
+package uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model;
 
 import com.github.reinert.jjschema.Attributes;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Attributes(title = "sigma field mapping item", description = "Sigma to siembol field mapping item")
 public class SigmaFieldMappingItemDto {
+    public SigmaFieldMappingItemDto() {
+    }
 
     public SigmaFieldMappingItemDto(String sigmaField, String siembolField) {
         this.sigmaField = sigmaField;

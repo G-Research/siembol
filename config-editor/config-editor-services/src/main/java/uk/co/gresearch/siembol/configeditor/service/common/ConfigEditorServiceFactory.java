@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.service.common;
 
+import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.common.ServiceType;

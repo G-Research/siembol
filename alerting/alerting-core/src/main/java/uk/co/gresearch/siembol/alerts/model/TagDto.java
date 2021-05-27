@@ -3,8 +3,8 @@ package uk.co.gresearch.siembol.alerts.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
-@Attributes(title = "tags", description = "The tags added to the event after matching")
-public class TagsDto {
+@Attributes(title = "tag", description = "The tag pair added to the event after matching")
+public class TagDto {
     @JsonProperty("tag_name")
     @Attributes(required = true, description = "The name of the tag")
     private String tagName;
@@ -27,5 +27,13 @@ public class TagsDto {
     public void setTagValue(String tagValue) {
         this.tagValue = tagValue;
     }
+
+    public static TagDto from(String tagName, String tagValue) {
+        TagDto ret = new TagDto();
+        ret.setTagName(tagName);
+        ret.setTagValue(tagValue);
+        return ret;
+    }
+
 }
 

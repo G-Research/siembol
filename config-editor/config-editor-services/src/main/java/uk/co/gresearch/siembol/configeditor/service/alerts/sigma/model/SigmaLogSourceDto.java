@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
+package uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model;
 
 public class SigmaLogSourceDto {
     private String category;
