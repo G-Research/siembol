@@ -5,12 +5,18 @@
                 <button mat-raised-button (click)="changeRoute()">Back</button>
             </div>
             <div class="right-button">
-                <a mat-button [disabled]="!editorComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">
+                <button mat-icon-button [disabled]="editorComponent.history.past.length < 3" color="primary" title="Undo" (click)="onUndo()">
+                    <mat-icon>undo</mat-icon>
+                </button>
+                <button mat-icon-button [disabled]="editorComponent.history.future.length == 0" color="primary" title="Redo" (click)="onRedo()">
+                    <mat-icon>redo</mat-icon>
+                </button>
+                <button mat-icon-button [disabled]="!editorComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">
                     <mat-icon>content_copy</mat-icon>
-                </a>
-                <a mat-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
+                </button>
+                <button mat-icon-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
                     <mat-icon>content_paste</mat-icon>
-                </a>
+                </button>
             </div>
         </span>
         <mat-divider class="vert-divider" [vertical]="false"></mat-divider>

@@ -8,11 +8,12 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
 import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 import { ClipboardService } from '@app/services/clipboard.service';
+import { FormHistory } from '@app/model/store-state';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +69,9 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
+      this.configData = config.configData;
+    });
+    this.editedConfig$.pipe(take(1)).subscribe((config: Config) => {
       this.fields = [
         this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
       ];
@@ -77,8 +81,6 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.testCaseEnabled = () =>
         this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
-
-      this.configData = config.configData;
     });
   }
 
@@ -95,7 +97,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
         queryParamsHandling: 'merge',
       });
     } else if (this.previousTab === CONFIG_TAB.index) {
-      this.editorComponent.updateConfigInStore();
+      this.editorComponent.updateConfigInStoreFromForm();
     }
     this.previousTab = this.selectedTab;
   }
@@ -109,17 +111,17 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     valid.subscribe(() => {
       this.editorService.configStore.setEditedPastedConfig();
     });
-
-    // let newConfig = navigator.clipboard.readText();
-    // newConfig.then(json => {
-    //   console.log(json);
-    //   this.editorService.configLoader.validateConfigJson(json).subscribe(v => {
-    //     this.editorService.configStore.setEditedPastedConfig(JSON.parse(json));
-    //   });
-    // });
   }
 
   onClickCopy() {
     this.clipboardService.copy(this.configData);
+  }
+
+  onUndo() {
+    this.editorComponent.undoConfigInStore();
+  }
+
+  onRedo() {
+    this.editorComponent.redoConfig();
   }
 }

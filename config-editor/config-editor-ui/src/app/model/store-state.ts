@@ -23,3 +23,11 @@ export interface ConfigStoreState {
   pastedTestCase?: TestCase;
   pastedAdminConfig?: AdminConfig;
 }
+
+export interface FormHistory {
+  past: Array<any>;
+  present: any;
+  future: Array<any>;
+  pastIndices: Array<number>;
+  futureIndices: Array<number>;
+}
