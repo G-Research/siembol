@@ -47,7 +47,7 @@
         <storm_version>1.2.1</storm_version>
         <kafka_version>0.10.2.2</kafka_version>
         <kafka_junit_version>3.1.1</kafka_junit_version>
-        <spark_version>2.2.0</spark_version>
+        <spark_version>2.4.8</spark_version>
         <hadoop_version>3.1.1</hadoop_version>
         <json_schema_validator_version>2.2.14</json_schema_validator_version>
         <json_schema_core_version>1.2.14</json_schema_core_version>
