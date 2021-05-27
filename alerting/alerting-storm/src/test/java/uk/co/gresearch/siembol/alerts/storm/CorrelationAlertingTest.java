@@ -65,7 +65,7 @@ public class CorrelationAlertingTest {
      *   "tags": [
      *     {
      *       "tag_name": "detection_source",
-     *       "tag_value": "siembol_correlation_alerts"
+     *       "tag_value": "siembol_correlation_alerts_instance"
      *     }
      *   ],
      *   "rules": [

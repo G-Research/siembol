@@ -53,6 +53,11 @@ public class AlertingEngineImpl implements AlertingEngine {
         return new AlertingResult(AlertingResult.StatusCode.OK, attributes);
     }
 
+    @Override
+    public AlertingEngineType getAlertingEngineType() {
+        return AlertingEngineType.SIEMBOL_ALERTS;
+    }
+
     private Map<String, Object> createEventFromRule(Rule rule, Map<String, Object> event) {
         Map<String, Object> ret = new HashMap<>(event);
         ret.put(AlertingFields.RULE_NAME.getAlertingName(), rule.getRuleName());

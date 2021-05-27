@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.alerts.storm.model.AlertingEngineType;
+import uk.co.gresearch.siembol.alerts.common.AlertingEngineType;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
 

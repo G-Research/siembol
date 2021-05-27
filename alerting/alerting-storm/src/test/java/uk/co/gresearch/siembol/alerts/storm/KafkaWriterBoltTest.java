@@ -14,6 +14,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import uk.co.gresearch.siembol.alerts.common.AlertingEngineType;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
@@ -128,7 +129,7 @@ public class KafkaWriterBoltTest {
 
     @Test
     public void testAlertMessagesOK() throws Exception {
-        AlertMessage alert = new AlertMessage(alertMap, AlertMessageStr);
+        AlertMessage alert = new AlertMessage(AlertingEngineType.SIEMBOL_ALERTS, alertMap, AlertMessageStr);
         AlertMessages.add(alert);
         writerBolt.execute(tuple);
         List<String> outputAlert= kafkaRule.helper().consumeStrings("alerts", 1)
@@ -140,7 +141,7 @@ public class KafkaWriterBoltTest {
 
     @Test
     public void testAlertMessageReachProtectionThreshold() throws Exception {
-        AlertMessage alert = new AlertMessage(alertMap, AlertMessageStr);
+        AlertMessage alert = new AlertMessage(AlertingEngineType.SIEMBOL_ALERTS, alertMap, AlertMessageStr);
         AlertMessages.add(alert);
         AlertMessages.add(alert);
         writerBolt.execute(tuple);
@@ -162,7 +163,7 @@ public class KafkaWriterBoltTest {
     }
 
     @Test
-    public void testALertingExceptionsOK() throws Exception {
+    public void testAlertingExceptionsOK() throws Exception {
         exceptionMessages.add("dummy");
         writerBolt.execute(tuple);
         List<String> outputExceptions = kafkaRule.helper().consumeStrings("errors", 1)
@@ -178,9 +179,11 @@ public class KafkaWriterBoltTest {
     }
 
     @Test
-    public void testALertingCorrelationAlertOK() throws Exception {
+    public void testAlertingCorrelationAlertOK() throws Exception {
         alertMap = JSON_MAP_READER.readValue(AlertMessageCorrelationStr);
-        AlertMessage alert = new AlertMessage(alertMap, AlertMessageCorrelationStr);
+        AlertMessage alert = new AlertMessage(AlertingEngineType.SIEMBOL_ALERTS,
+                alertMap,
+                AlertMessageCorrelationStr);
         AlertMessages.add(alert);
         writerBolt.execute(tuple);
         List<String> outputAlert = kafkaRule.helper().consumeStrings("correlation.alerts", 1)

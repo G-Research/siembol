@@ -68,6 +68,11 @@ public class CorrelationEngineImpl implements AlertingEngine {
     }
 
     @Override
+    public AlertingEngineType getAlertingEngineType() {
+        return AlertingEngineType.SIEMBOL_CORRELATION_ALERTS;
+    }
+
+    @Override
     public void clean() {
         long currentTime = timeProvider.getCurrentTimeInMs();
         for (CorrelationRule rule : correlationRules) {

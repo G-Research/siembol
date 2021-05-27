@@ -232,7 +232,7 @@ public class StormEnrichingApplicationTest {
         cluster.submitTopology("test", config, topology);
     }
 
-    @Test
+    @Test(timeout=100000)
     public void testEnrichMessageOK() throws Exception {
         kafkaRule.helper().produceStrings("enrichments", event.trim());
         List<String> outputEvent = kafkaRule.helper().consumeStrings("output", 1)
