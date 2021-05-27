@@ -159,7 +159,9 @@ public class AlertingEngineBolt extends BaseRichBolt {
             ret.getAttributes().getOutputEvents()
                     .forEach( x -> {
                         try {
-                            matches.add(new AlertMessage(x, JSON_WRITER.writeValueAsString(x)));
+                            matches.add(new AlertMessage(currentEngine.getAlertingEngineType(),
+                                    x,
+                                    JSON_WRITER.writeValueAsString(x)));
                         } catch (Exception e) {
                             exceptions.add(ExceptionUtils.getStackTrace(e));
                         }
@@ -175,4 +177,5 @@ public class AlertingEngineBolt extends BaseRichBolt {
         declarer.declare(new Fields(TupleFieldNames.ALERTING_MATCHES.toString(),
                 TupleFieldNames.ALERTING_EXCEPTIONS.toString()));
     }
+
 }

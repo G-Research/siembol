@@ -158,7 +158,7 @@ public class StormParsingApplicationTest {
         cluster.submitTopology("test", config, topology);
     }
 
-    @Test
+    @Test(timeout=100000)
     public void testParseOK() throws Exception {
         kafkaRule.helper().produceStrings("input", log.trim());
 

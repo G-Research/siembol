@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.alerts.storm.model;
 
+import uk.co.gresearch.siembol.alerts.common.AlertingEngineType;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.common.AlertingTags;
 
@@ -27,10 +28,10 @@ public class AlertMessage implements Serializable {
     private final EnumSet<Flags> flags;
     private final String correlationKey;
 
-    public AlertMessage(Map<String, Object> alert, String alertJson) {
+    public AlertMessage(AlertingEngineType engineType, Map<String, Object> alert, String alertJson) {
         String correlationKey = null;
         flags = EnumSet.noneOf(Flags.class);
-        if (isGeneratedByCorrelationAlerting(alert)) {
+        if (engineType.equals(AlertingEngineType.SIEMBOL_CORRELATION_ALERTS)) {
             fullRuleName = alert.get(AlertingFields.FULL_RULE_NAME.getCorrelationAlertingName()).toString();
             maxHourMatches = (Number)alert.get(AlertingFields.MAX_PER_HOUR_FIELD.getCorrelationAlertingName());
             maxDayMatches = (Number)alert.get(AlertingFields.MAX_PER_DAY_FIELD.getCorrelationAlertingName());
@@ -98,8 +99,4 @@ public class AlertMessage implements Serializable {
         return Optional.ofNullable(correlationKey);
     }
 
-    private boolean isGeneratedByCorrelationAlerting(Map<String, Object> alert) {
-        return AlertingTags.CORRELATION_ENGINE_DETECTION_SOURCE_TAG_VALUE.toString().equals(
-                alert.get(AlertingTags.DETECTION_SOURCE_TAG_NAME.toString()));
-    }
 }
