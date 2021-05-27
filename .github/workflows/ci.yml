@@ -372,4 +372,4 @@ jobs:
       - name: Load Docker image
         run: docker load --input image.tar
       - name: Publish Docker image
-        run: docker push gresearchdev/siembol-${{ matrix.component }}
+        run: docker push --all-tags gresearchdev/siembol-${{ matrix.component }}
