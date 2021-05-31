@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.eclipse.mylyn.github</groupId>
             <artifactId>org.eclipse.egit.github.core</artifactId>
-            <version>2.1.5</version>
+            <version>3.4.0.201406110918-r</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
