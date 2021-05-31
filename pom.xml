@@ -58,7 +58,7 @@
         <multiline_string_version>0.1.2</multiline_string_version>
         <http_client_version>4.5.12</http_client_version>
         <slf4j_version>1.7.25</slf4j_version>
-        <commons_lang3_version>3.8.1</commons_lang3_version>
+        <commons_lang3_version>3.12.0</commons_lang3_version>
         <commons_io_version>2.7</commons_io_version>
     </properties>
     <modules>
