@@ -7,7 +7,7 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { AdminComponent } from '../admin/admin.component';
 import { AdminConfig } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
@@ -21,7 +21,7 @@ import { ClipboardService } from '@app/services/clipboard.service';
   templateUrl: './admin-view.component.html',
 })
 export class AdminViewComponent implements OnDestroy {
-  @ViewChild(AdminComponent) editorComponent: AdminComponent;
+  @ViewChild(AdminComponent) adminComponent: AdminComponent;
 
   ngUnsubscribe = new Subject();
   configData: any;
@@ -48,11 +48,12 @@ export class AdminViewComponent implements OnDestroy {
 
   public ngAfterViewInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
+      this.configData = config.configData;
+    });
+    this.adminConfig$.pipe(take(1)).subscribe((config: Config) => {
       this.fields = [
         this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
       ];
-
-      this.configData = config.configData;
     });
   }
 
@@ -68,11 +69,20 @@ export class AdminViewComponent implements OnDestroy {
   async onClickPaste() {
     const valid = await this.clipboardService.validateAdminConfig();
     valid.subscribe(() => {
-      this.editorService.configStore.setEditedPastedAdminConfig();
+      let configData = this.editorService.configStore.setEditedPastedAdminConfig();
+      this.adminComponent.updateAndWrapConfigData(configData);
     });
   }
 
   onClickCopy() {
     this.clipboardService.copy(this.configData);
+  }
+
+  onUndo() {
+    this.adminComponent.undoConfigInStore();
+  }
+
+  onRedo() {
+    this.adminComponent.redoConfig();
   }
 }

@@ -2,9 +2,10 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { ChangeDetectorRef, Component, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FieldType } from '@ngx-formly/material/form-field';
 import { Subject } from 'rxjs';
-import { debounceTime, take, takeUntil } from 'rxjs/operators';
+import { debounceTime, startWith, take, takeUntil, tap } from 'rxjs/operators';
 import { MatInput } from '@angular/material/input';
 import { FormControl } from '@angular/forms';
+import { cloneDeep } from 'lodash';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -21,9 +22,9 @@ import { FormControl } from '@angular/forms';
           cdkTextareaAutosize
           #autosize="cdkTextareaAutosize"
           spellcheck="false"
-          [ngModel]="val"
-          (ngModelChange)="jsonChange$.next($event)"
           [errorStateMatcher]="errorStateMatcher"
+          [formControl]="formControl"
+          rawJsonAccessor
         >
         </textarea>
         <ng-container *ngIf="valid; else invalidJson">
@@ -63,15 +64,13 @@ import { FormControl } from '@angular/forms';
 })
 export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDestroy {
   @ViewChild('autosize', { static: false }) autosize: CdkTextareaAutosize;
-  @ViewChild(MatInput, { static: false }) formFieldControl!: MatInput;
-  @ViewChild('formfield', { static: true }) formfield: FormControl;
+  // @ViewChild(MatInput, { static: false }) formFieldControl!: MatInput;
+  // @ViewChild('formfield', { static: true }) formfield: FormControl;
   defaultOptions = {
     defaultValue: {},
   };
   valid = true;
-  val: string;
   _val: string;
-  jsonChange$: Subject<string> = new Subject<string>();
   tree = {};
 
   private ngUnsubscribe: Subject<any> = new Subject();
@@ -81,24 +80,33 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDest
   }
 
   ngOnInit() {
+    // this.formControl.valueChanges
+    //   .pipe(
+    //     takeUntil(this.ngUnsubscribe),
+    //     startWith(this.formControl.value),
+    //     tap(v => {
+    //       if (v) {
+    //         this.formControl.patchValue(JSON.stringify(v), { emitEvent: false });
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
     const key = Array.isArray(this.field.key) ? this.field.key[0] : this.field.key;
-    const conf = this.field.parent.model[key];
-    this.val = JSON.stringify(conf, null, 2);
-    this.tree = conf;
-    this.formControl.setValidators = () => {
-      try {
-        JSON.parse(this._val);
+    this.tree = cloneDeep(this.field.parent.model[key]);
+    // this.formControl.setValidators = () => {
+    //   try {
+    //     JSON.parse(this._val);
 
-        return null;
-      } catch (e) {
-        return { invalidJson: true };
-      }
-    };
+    //     return null;
+    //   } catch (e) {
+    //     return { invalidJson: true };
+    //   }
+    // };
     this.changeDetector.markForCheck();
-    this.jsonChange$.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(s => {
+    this.formControl.valueChanges.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(s => {
       this._val = s;
       try {
-        const parsed = JSON.parse(s);
+        const parsed = s;
         if (parsed) {
           this.formControl.setErrors(null);
           this.valid = true;

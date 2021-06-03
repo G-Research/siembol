@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
+import { copyHiddenTestCaseFields, TestCaseResult, TestCaseWrapper } from '@app/model/test-case';
 import { Type } from '@app/model/config-model';
 import { FormlyForm, FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
@@ -14,6 +14,8 @@ import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.compone
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '@app/services/app.service';
 import { SchemaService } from '@app/services/schema/schema.service';
+import { ConfigHistory } from '@app/model/store-state';
+import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   selector: 're-test-case-editor',
@@ -34,14 +36,15 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
 
   @ViewChild('formly', { static: true }) formly: FormlyForm;
   public form: FormGroup = new FormGroup({});
-
+  public history: ConfigHistory = { past: [], future: [] };
   constructor(
     private appService: AppService,
     private editorService: EditorService,
     private dialog: MatDialog,
     private cd: ChangeDetectorRef,
     private router: Router,
-    private activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute,
+    private clipboardService: ClipboardService
   ) {
     this.editedTestCase$ = editorService.configStore.editedTestCase$;
     this.testStoreService = editorService.configStore.testService;
@@ -65,13 +68,28 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
         this.testCase = testCaseWrapper !== null ? cloneDeep(this.testCaseWrapper.testCase) : {};
 
         this.options.formState = {
-          mainModel: this.testCase,
+          mainModel: cloneDeep(this.testCase),
           rawObjects: {},
         };
 
         this.cd.detectChanges();
       });
     }
+
+    this.history.past.splice(0, 0, {
+      formState: cloneDeep(this.form.value),
+    });
+    this.form.valueChanges.subscribe(values => {
+      if (
+        this.form.valid &&
+        (this.history.past.length == 0 || JSON.stringify(this.history.past[0].formState) !== JSON.stringify(values))
+      ) {
+        this.history.past.splice(0, 0, {
+          formState: cloneDeep(values),
+        });
+        this.history.future = [];
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -80,7 +98,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onSubmitTestCase() {
-    const currentTestCase = this.getTestCaseWrapper();
+    const currentTestCase = this.getFormTestCaseWrapper();
     this.testStoreService.updateEditedTestCase(currentTestCase);
     const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: {
@@ -108,17 +126,60 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onRunTestCase() {
-    this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper());
+    this.testStoreService.updateEditedTestCase(this.getFormTestCaseWrapper());
     this.testStoreService.runEditedTestCase();
   }
 
-  private getTestCaseWrapper(): TestCaseWrapper {
+  undoTestCase() {
+    // this.inUndoRedo = true;
+    this.history.future.splice(0, 0, {
+      formState: cloneDeep(this.history.past[0].formState),
+    });
+    this.history.past.shift();
+    this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(this.history.past[0].formState));
+    // this.updateAndWrapConfigData(this.config.configData);
+  }
+
+  redoTestCase() {
+    // this.inUndoRedo = true;
+    this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(this.history.future[0].formState));
+    // this.updateAndWrapConfigData(this.config.configData);
+    this.history.past.splice(0, 0, {
+      formState: cloneDeep(this.history.future[0].formState),
+    });
+    this.history.future.shift();
+  }
+
+  onCancelEditing() {
+    this.router.navigate([], {
+      relativeTo: this.activeRoute,
+      queryParams: { testCaseName: null, newTestCase: null, cloneTestCase: null, pasteTestCase: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  async onPasteTestCase() {
+    const valid = await this.clipboardService.validateTestCase();
+    valid.subscribe(() => {
+      this.editorService.configStore.testService.setEditedPastedTestCase();
+    });
+  }
+
+  onCopyTestCase() {
+    this.clipboardService.copy(this.testCase.testCase);
+  }
+
+  private getFormTestCaseWrapper(): TestCaseWrapper {
+    return this.getTestCaseWrapper(this.form.value);
+  }
+  private getTestCaseWrapper(testCase: any): TestCaseWrapper {
     const ret = cloneDeep(this.testCaseWrapper) as TestCaseWrapper;
-    ret.testCase = copyHiddenTestCaseFields(cloneDeep(this.form.value), this.testCase);
-    ret.testCase = this.editorService.configSchema.cleanRawObjects(
-      ret.testCase,
-      this.formly.options.formState.rawObjects
-    );
+    ret.testCase = copyHiddenTestCaseFields(cloneDeep(testCase), this.testCase);
+    // clean removes the undefined as well
+    // ret.testCase = this.editorService.configSchema.cleanRawObjects(
+    //   ret.testCase,
+    //   this.formly.options.formState.rawObjects
+    // );
     return ret;
   }
 }

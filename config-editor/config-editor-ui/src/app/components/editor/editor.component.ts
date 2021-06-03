@@ -19,7 +19,7 @@ import { Observable, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
-import { FormHistory } from '@app/model/store-state';
+import { ConfigHistory } from '@app/model/store-state';
 import { TabsetTypeComponent } from '@app/ngx-formly/tabset.type.component';
 
 @Component({
@@ -39,7 +39,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   public form: FormGroup = new FormGroup({});
   public editedConfig$: Observable<Config>;
   public config: Config;
-  private history: FormHistory = { past: [], present: this.form, future: [], pastIndices: [], futureIndices: [] };
+  private history: ConfigHistory = { past: [], future: [] };
   private inUndoRedo = false;
 
   @Input() fields: FormlyFieldConfig[];
@@ -70,14 +70,18 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.form.valueChanges.subscribe(values => {
-      if (this.form.valid && !this.inUndoRedo) {
-        this.history.past.splice(0, 0, cloneDeep(values));
-        this.history.pastIndices.splice(0, 0, this.fields[0].templateOptions.index);
+      if (
+        this.form.valid &&
+        !this.inUndoRedo &&
+        (this.history.past.length == 0 || JSON.stringify(this.history.past[0].formState) !== JSON.stringify(values))
+      ) {
+        this.history.past.splice(0, 0, {
+          formState: cloneDeep(values),
+          tabIndex: this.fields[0].templateOptions.tabIndex,
+        });
         this.history.future = [];
-        this.history.futureIndices = [];
-        this.updateConfigInStoreFromForm();
+        this.updateConfigInStore(values);
       }
-      this.inUndoRedo = false;
     });
   }
 
@@ -97,24 +101,35 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.editorService.configStore.updateEditedConfig(this.config);
   }
 
+  updateConfigData(configData: ConfigData) {
+    this.configData = configData;
+    this.cd.markForCheck();
+  }
+
   undoConfigInStore() {
     this.inUndoRedo = true;
-    this.history.future.splice(0, 0, cloneDeep(this.configData));
-    this.history.futureIndices.splice(0, 0, this.history.pastIndices[0]);
+    this.history.future.splice(0, 0, {
+      formState: cloneDeep(this.configData),
+      tabIndex: this.fields[0].templateOptions.tabIndex,
+    });
     this.history.past.shift();
-    this.history.pastIndices.shift();
-    this.fields[0].templateOptions.index = this.history.pastIndices[0];
-    this.updateConfigInStore(this.history.past[0]);
-    this.configData = this.editorService.configSchema.wrapConfig(this.config.configData);
+    this.fields[0].templateOptions.tabIndex = this.history.past[0].tabIndex;
+    this.updateConfigInStore(this.history.past[0].formState);
+    // this.configData = this.editorService.configSchema.wrapConfig(this.config.configData);
+    this.form.patchValue(this.editorService.configSchema.wrapConfig(this.config.configData), { emitEvent: false });
 
     this.cd.markForCheck();
   }
 
   redoConfig() {
     this.inUndoRedo = true;
-    this.updateConfigInStore(this.history.future[0]);
+    this.fields[0].templateOptions.tabIndex = this.history.future[0].tabIndex;
+    this.updateConfigInStore(this.history.future[0].formState);
     this.configData = this.editorService.configSchema.wrapConfig(this.config.configData);
-    this.history.past.splice(0, 0, cloneDeep(this.history.future[0]));
+    this.history.past.splice(0, 0, {
+      formState: cloneDeep(this.history.future[0].formState),
+      tabIndex: this.history.future[0].tabIndex,
+    });
     this.history.future.shift();
 
     this.cd.markForCheck();

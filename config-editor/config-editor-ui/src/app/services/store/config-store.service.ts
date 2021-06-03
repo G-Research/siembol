@@ -398,13 +398,10 @@ export class ConfigStoreService {
     this.updatePastedConfig(undefined);
   }
 
-  setEditedPastedConfig(): boolean {
+  setEditedPastedConfig(): Config {
     const currentState = this.store.getValue();
     const configData = currentState.pastedConfig;
     const editedConfig = currentState.editedConfig;
-    if (editedConfig === undefined || !configData) {
-      return false;
-    }
     const pastedConfig = cloneDeep(editedConfig);
     pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
       [this.metaDataMap.name]: editedConfig.name,
@@ -413,23 +410,20 @@ export class ConfigStoreService {
     });
     this.updateEditedConfig(pastedConfig);
     this.updatePastedConfig(undefined);
-    return true;
+    return pastedConfig.configData;
   }
 
-  setEditedPastedAdminConfig(): boolean {
+  setEditedPastedAdminConfig(): Config {
     const currentState = this.store.getValue();
     const configData = currentState.pastedAdminConfig;
     const adminConfig = currentState.adminConfig;
-    if (adminConfig === undefined || !configData) {
-      return false;
-    }
     const pastedConfig = cloneDeep(adminConfig);
     pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
       config_version: adminConfig.version,
     });
     this.updateAdmin(pastedConfig);
     this.updatePastedAdminConfig(undefined);
-    return true;
+    return pastedConfig.configData;
   }
 
   updateEditedConfig(config: Config) {

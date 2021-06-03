@@ -1,0 +1,80 @@
+.test-status-badge {
+  position: relative;
+  color: white;
+  border-radius: 9999px;
+  padding: 5px 20px 5px 0;
+  font-size: 12pt;
+  margin: 0 10px;
+  &::before {
+    display: inline-block;
+    border-radius: 9999px;
+    padding: 3px 8px;
+    margin: 0 6px;
+    background: white;
+    content: 'O';
+    vertical-align: middle;
+  }
+}
+
+.test-success {
+  background: #85d685;
+  &::before {
+    color: #85d685;
+    content: '✓';
+    vertical-align: middle;
+  }
+}
+.test-fail {
+  background: #d68585;
+  &::before {
+    color: #d68585;
+    content: '✗';
+    vertical-align: middle;
+  }
+}
+.test-skipped {
+  background: #e2c521;
+  &::before {
+    color: #e4ac29;
+    content: '?';
+    font-size: 14pt;
+    vertical-align: middle;
+  }
+}
+.test-error {
+  background: #c01919;
+  &::before {
+    color: #574410;
+    content: '!';
+    font-size: 13pt;
+    font-weight: 700;
+    width: 13px;
+    text-align: center;
+  }
+}
+.test-default {
+  background: #636363;
+  &::before {
+    color: #333;
+    content: '—';
+    font-size: 13pt;
+    vertical-align: middle;
+  }
+}
+.test-running {
+  background: #636363;
+  &::before {
+    color: #636363;
+    background-color: #333;
+    content: 'O';
+    font-size: 13pt;
+    border-radius: 100%;
+    -webkit-animation: sk-scaleout 0.5s infinite ease-in-out;
+    animation: sk-scaleout 0.5s infinite ease-in-out;
+  }
+}
+
+.test-icon {
+  font-size: 13pt;
+  vertical-align: sub;
+}

@@ -5,7 +5,12 @@ import { FieldType } from '@ngx-formly/core';
   // tslint:disable-next-line:component-selector
   selector: 'formly-admintab-type',
   template: `
-    <mat-tab-group class="admin-tabs" animationDuration="0ms">
+    <mat-tab-group
+      class="admin-tabs"
+      animationDuration="0ms"
+      (selectedTabChange)="onTabChange()"
+      [(selectedIndex)]="selectedTab"
+    >
       <mat-tab [label]="'General Properties'">
         <ng-container *ngFor="let f of field.fieldGroup">
           <formly-field
@@ -33,5 +38,14 @@ import { FieldType } from '@ngx-formly/core';
   ],
 })
 export class AdminTabTypeComponent extends FieldType {
+  selectedTab = 0;
   tabTypes = ['array', 'object', 'rawobject'];
+
+  ngOnInit() {
+    this.selectedTab = this.field.templateOptions.tabIndex;
+  }
+
+  onTabChange() {
+    this.field.templateOptions.tabIndex = this.selectedTab;
+  }
 }

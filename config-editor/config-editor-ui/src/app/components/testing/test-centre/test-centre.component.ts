@@ -4,8 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorService } from '@services/editor.service';
 import { TestCaseWrapper } from '@model/test-case';
-import { TestStoreService } from '../../../services/store/test-store.service';
-import { TestCaseResult } from '../../../model/test-case';
+import { TestStoreService } from '@app/services/store/test-store.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
@@ -87,32 +86,6 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     this.testStoreService.runEditedConfigTestSuite();
   }
 
-  onCancelEditing() {
-    this.router.navigate([], {
-      relativeTo: this.activeRoute,
-      queryParams: { testCaseName: null, newTestCase: null, cloneTestCase: null, pasteTestCase: null },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  getTestBadge(testCaseResult: TestCaseResult): string {
-    if (!testCaseResult) {
-      return 'test-default';
-    }
-
-    if (testCaseResult.isRunning) {
-      return 'test-running';
-    }
-
-    return !testCaseResult.evaluationResult
-      ? 'test-skipped'
-      : testCaseResult.evaluationResult.number_failed_assertions > 0
-      ? 'test-fail'
-      : testCaseResult.evaluationResult.number_skipped_assertions > 0
-      ? 'test-skipped'
-      : 'test-success';
-  }
-
   onDeleteTestCase(index: number) {
     this.blockUI.start('deleting test case');
     this.editorService.configStore
@@ -134,16 +107,5 @@ export class TestCentreComponent implements OnInit, OnDestroy {
         queryParamsHandling: 'merge',
       });
     });
-  }
-
-  async onPasteTestCase() {
-    const valid = await this.clipboardService.validateTestCase();
-    valid.subscribe(() => {
-      this.editorService.configStore.testService.setEditedPastedTestCase();
-    });
-  }
-
-  onCopyTestCase() {
-    this.clipboardService.copy(this.testCase.testCase);
   }
 }

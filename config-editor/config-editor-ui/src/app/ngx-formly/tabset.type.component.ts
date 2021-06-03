@@ -31,10 +31,10 @@ export class TabsetTypeComponent extends FieldType {
   selectedTab = 0;
 
   ngOnInit() {
-    this.selectedTab = this.field.templateOptions.index;
+    this.selectedTab = this.field.templateOptions.tabIndex;
   }
 
   onTabChange() {
-    this.field.templateOptions.index = this.selectedTab;
+    this.field.templateOptions.tabIndex = this.selectedTab;
   }
 }

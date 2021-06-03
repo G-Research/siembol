@@ -5,7 +5,7 @@
                 <button mat-raised-button (click)="changeRoute()">Back</button>
             </div>
             <div class="right-button">
-                <button mat-icon-button [disabled]="editorComponent.history.past.length < 3" color="primary" title="Undo" (click)="onUndo()">
+                <button mat-icon-button [disabled]="editorComponent.history.past.length < 2" color="primary" title="Undo" (click)="onUndo()">
                     <mat-icon>undo</mat-icon>
                 </button>
                 <button mat-icon-button [disabled]="editorComponent.history.future.length == 0" color="primary" title="Redo" (click)="onRedo()">

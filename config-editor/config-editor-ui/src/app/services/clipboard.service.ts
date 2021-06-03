@@ -50,7 +50,7 @@ export class ClipboardService {
   private async getClipboard(): Promise<any> {
     const str = await navigator.clipboard.readText();
     if (!this.iIsJsonString(str)) {
-      throw new Error('Clipboard is not JSON');
+      return Promise.reject('Clipboard is not JSON');
     }
     return str;
   }

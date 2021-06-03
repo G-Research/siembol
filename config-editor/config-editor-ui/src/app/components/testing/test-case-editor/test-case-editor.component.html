@@ -1,3 +1,22 @@
+<mat-card-title>
+    <button mat-raised-button title="Test Suite" (click)="onCancelEditing()"><</button>
+    <h2>{{ testCase.test_case_name }} v{{ testCase.version }}</h2>
+    <div>
+        <button mat-icon-button [disabled]="history.past.length < 2" color="primary" title="Undo" (click)="undoTestCase()">
+            <mat-icon>undo</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="history.future.length == 0" color="primary" title="Redo" (click)="redoTestCase()">
+            <mat-icon>redo</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" title="Copy Test Case to Clipboard" (click)="onCopyTestCase()">
+            <mat-icon>content_copy</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" title="Paste Test Case from Clipboard" (click)="onPasteTestCase()">
+            <mat-icon>content_paste</mat-icon>
+        </button>
+    </div>
+    <re-test-status-badge [testCaseWrapper]="testCaseWrapper"></re-test-status-badge>
+</mat-card-title>
 <div class="console">
     <span class="title">
         <h4>

@@ -24,10 +24,12 @@ export interface ConfigStoreState {
   pastedAdminConfig?: AdminConfig;
 }
 
-export interface FormHistory {
-  past: Array<any>;
-  present: any;
-  future: Array<any>;
-  pastIndices: Array<number>;
-  futureIndices: Array<number>;
+export interface ConfigHistory {
+  past: Array<ValidConfigState>;
+  future: Array<ValidConfigState>;
+}
+
+export interface ValidConfigState {
+  tabIndex?: number;
+  formState: any;
 }

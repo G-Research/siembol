@@ -1,0 +1,18 @@
+<div class="test-status-badge" *ngIf="testCaseWrapper?.testCaseResult"
+    [ngClass]="getTestBadge(testCaseWrapper.testCaseResult)"
+    [popper]="testCaseResult"
+    [popperTrigger]="'hover'"
+    [popperPlacement]="'left-start'"
+    [popperHideOnScroll]="true"
+    [popperDisableStyle]="true"
+    [popperAppendTo]="'body'"
+    [popperModifiers]="{preventOverflow: {boundariesElement: 'viewport'}}"
+    >
+    <popper-content #testCaseResult>
+        <re-test-results [testResult]="testCaseWrapper.testCaseResult"></re-test-results>
+    </popper-content> 
+    {{testCaseWrapper.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon 
+        class="test-icon">done</mat-icon>{{testCaseWrapper.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
+        class="test-icon">clear</mat-icon>
+    {{testCaseWrapper.testCaseResult?.evaluationResult?.number_skipped_assertions}}<strong>?</strong>
+</div>

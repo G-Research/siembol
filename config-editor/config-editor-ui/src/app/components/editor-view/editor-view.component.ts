@@ -13,7 +13,6 @@ import { EditorComponent } from '../editor/editor.component';
 import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 import { ClipboardService } from '@app/services/clipboard.service';
-import { FormHistory } from '@app/model/store-state';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -109,7 +108,8 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   async onClickPaste() {
     const valid = await this.clipboardService.validateConfig();
     valid.subscribe(() => {
-      this.editorService.configStore.setEditedPastedConfig();
+      let configData = this.editorService.configStore.setEditedPastedConfig();
+      this.editorComponent.updateConfigData(configData);
     });
   }
 
