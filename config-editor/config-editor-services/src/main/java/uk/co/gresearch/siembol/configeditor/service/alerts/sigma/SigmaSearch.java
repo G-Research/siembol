@@ -38,6 +38,7 @@ public class SigmaSearch {
     public static class Builder {
         private static final String INVALID_SEARCH_ATTRIBUTES = "Wrong search attributes in search with identifier: %s";
         private static final String VALUE_MODIFIER_SEPARATOR = "\\|";
+        private static final Character PATTERN_OR = '|';
 
         private final SearchType searchType;
         private final String identifier;
@@ -68,6 +69,7 @@ public class SigmaSearch {
                     || values.isEmpty()) {
                 throw new IllegalArgumentException(wrongAttributesMessage);
             }
+
             fieldValues.add(ImmutablePair.of(SiembolMessageFields.ORIGINAL.toString(), values));
             return this;
         }
@@ -85,6 +87,7 @@ public class SigmaSearch {
                     || values.isEmpty()) {
                 throw new IllegalArgumentException(wrongAttributesMessage);
             }
+
             fieldValues.add(ImmutablePair.of(field, values));
             return this;
         }
@@ -92,7 +95,6 @@ public class SigmaSearch {
         public Builder addMapEntry(String field, String value) {
             return addMapEntry(field, Arrays.asList(value));
         }
-
 
         private String getTextValue(JsonNode node) {
             if (!node.isNumber() && !node.isTextual()) {
@@ -106,6 +108,7 @@ public class SigmaSearch {
             if (!node.isArray()) {
                 throw new IllegalArgumentException();
             }
+
             List<String> values = new ArrayList<>();
             node.iterator().forEachRemaining(x -> values.add(getTextValue(x)));
             return values;
@@ -116,7 +119,7 @@ public class SigmaSearch {
             String[] tokens = field.split(VALUE_MODIFIER_SEPARATOR);
             String fieldName = tokens[0];
 
-            for (int i =1; i < tokens.length; i++) {
+            for (int i = 1; i < tokens.length; i++) {
                 SigmaValueModifier current = SigmaValueModifier.fromName(tokens[i]);
                 valueModifiers.add(current);
             }
@@ -130,8 +133,8 @@ public class SigmaSearch {
             ret.setType(MatcherTypeDto.REGEX_MATCH);
 
             Pair<String, List<SigmaValueModifier>> parsed = parseField(field);
-            ret.setField(parsed.getKey());
 
+            ret.setField(fieldMapping.getOrDefault(parsed.getKey(), parsed.getKey()));
             List<String> modifiedValues = values.stream()
                     .map(x -> SigmaValueModifier.transform(x, parsed.getValue()))
                     .collect(Collectors.toList());
@@ -139,15 +142,10 @@ public class SigmaSearch {
             if (modifiedValues.isEmpty()) {
                 throw new IllegalArgumentException(wrongAttributesMessage);
             }
-
-            if (modifiedValues.size() ==  1) {
-                ret.setData(modifiedValues.get(0));
-            } else {
-                String data = parsed.getValue().contains(ALL)
-                        ? StringUtils.join(modifiedValues, null)
-                        : StringUtils.join(modifiedValues, '|');
-                ret.setData(data);
-            }
+            String data = parsed.getValue().contains(ALL)
+                    ? StringUtils.join(modifiedValues, null)
+                    : StringUtils.join(modifiedValues, PATTERN_OR);
+            ret.setData(data);
 
             return ret;
         }
@@ -158,8 +156,7 @@ public class SigmaSearch {
             }
 
             for (Pair<String, List<String>> fieldValue : fieldValues) {
-                String currentField = fieldMapping.getOrDefault(fieldValue.getKey(), fieldValue.getKey());
-                MatcherDto current = getSiembolMatcher(currentField, fieldValue.getValue());
+                MatcherDto current = getSiembolMatcher(fieldValue.getKey(), fieldValue.getValue());
                 siembolMatchers.add(current);
             }
 

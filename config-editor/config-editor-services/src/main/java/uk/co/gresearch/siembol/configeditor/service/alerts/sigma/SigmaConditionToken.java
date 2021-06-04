@@ -72,6 +72,8 @@ public enum SigmaConditionToken {
 
     private static final String SEARCH_THEM_KEYWORD = "them";
     private static final String SEARCH_WILDCARD = "*";
+    private static final String UNSUPPORTED_TOKEN_MSG = "Unsupported token: %s";
+    private static final String UNKNOWN_TOKEN_MSG = "Unknown token: %s";
 
     private final Pattern pattern;
     private final SigmaConditionTokenType type;
@@ -130,14 +132,14 @@ public enum SigmaConditionToken {
                     break;
                 }
                 if (!token.isSupported()) {
-                    throw new IllegalArgumentException("unsupported token");
+                    throw new IllegalArgumentException(String.format(UNSUPPORTED_TOKEN_MSG, tokenString));
                 }
                 ret.add(Pair.of(token, tokenString));
                 break;
             }
 
             if (!matched) {
-                throw new IllegalArgumentException("Unknown token");
+                throw new IllegalArgumentException(String.format(UNKNOWN_TOKEN_MSG, current));
             }
         }
 

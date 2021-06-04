@@ -23,6 +23,13 @@ public enum SigmaValueModifier {
 
     private static final Map<String, SigmaValueModifier> modifiersMapping = new HashMap<>();
     private static final String UNKNOWN_MODIFIER_MSG = "Unknown modifier: %s";
+    private static final String NOT_SUPPORTED_MSG = "Not supported transformation %s:";
+    private static final String ANY_CHAR_MATCH = ".*";
+    private static final String ALL_TRANSFORMATION_REG_EXP = "(?=%s)";
+    private static final String CONCAT_FORMAT_MSG = "%s%s";
+    private static final String START_MATCH = "^";
+    private static final String END_MATCH = "$";
+
     static {
         for (SigmaValueModifier modifier : SigmaValueModifier.values()) {
             modifiersMapping.put(modifier.toString(), modifier);
@@ -54,7 +61,8 @@ public enum SigmaValueModifier {
     }
 
     public static String transform(String value, List<SigmaValueModifier> modifiers) {
-        String current = value;
+        boolean needsToEscape = !modifiers.contains(RE);
+        String current = needsToEscape ? Pattern.quote(value) : value;
         for (SigmaValueModifier modifier: modifiers) {
             current = modifier.transform(current);
         }
@@ -62,26 +70,27 @@ public enum SigmaValueModifier {
     }
 
     private static String notSupportedTransformation(String name) {
-        throw new IllegalStateException(String.format("Not supported transformation %s:", name));
+        throw new IllegalStateException(String.format(NOT_SUPPORTED_MSG, name));
     }
 
-    private static String escapeString(String str) {
-        return Pattern.quote(str);
-    }
     private static String containsTransformation(String str) {
-        return String.format("(.*%s)", escapeString(str));
+        String ret = str.startsWith(ANY_CHAR_MATCH) ? str : String.format(CONCAT_FORMAT_MSG, ANY_CHAR_MATCH, str);
+        ret = ret.endsWith(ANY_CHAR_MATCH) ? ret : String.format(CONCAT_FORMAT_MSG, ret, ANY_CHAR_MATCH);
+        return ret;
     }
 
     private static String endsWithTransformation(String str) {
-        return String.format("(.*%s$)", escapeString(str));
+        String ret = str.startsWith(ANY_CHAR_MATCH) ? str : String.format(CONCAT_FORMAT_MSG, ANY_CHAR_MATCH, str);
+        return ret.endsWith(END_MATCH) ? ret : String.format(CONCAT_FORMAT_MSG, ret, END_MATCH);
     }
 
     private static String startWithTransformation(String str) {
-        return String.format("(^%s.*)", escapeString(str));
+        String ret = str.endsWith(ANY_CHAR_MATCH) ? str : String.format(CONCAT_FORMAT_MSG, str, ANY_CHAR_MATCH);
+        return ret.startsWith(START_MATCH) ? ret : String.format(CONCAT_FORMAT_MSG, START_MATCH, ret);
     }
 
     private static String allTransformation(String str) {
-        return String.format("(?=.*%s)", escapeString(str));
+        return String.format(ALL_TRANSFORMATION_REG_EXP, str);
     }
 
     private static String base64Transformation(String str) {
