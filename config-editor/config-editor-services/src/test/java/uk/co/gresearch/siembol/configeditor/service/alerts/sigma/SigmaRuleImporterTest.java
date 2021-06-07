@@ -1,9 +1,13 @@
 package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.alerts.model.RuleDto;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
@@ -11,6 +15,8 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class SigmaRuleImporterTest {
+    private static final ObjectReader ALERTING_RULE_READER = new ObjectMapper().readerFor(RuleDto.class);
+
     /**
      * {
      *   "field_mapping": [
@@ -62,7 +68,7 @@ public class SigmaRuleImporterTest {
      *             - ' user '
      *             - ' use '
      *             - ' group '
-     *     condition: image_path and cmd_c and cmd_s and net_utility
+     *     condition: image_path and cmd_c and (cmd_s or not net_utility)
      * fields:
      *     - CommandLine
      * falsepositives:
@@ -116,8 +122,22 @@ public class SigmaRuleImporterTest {
     }
 
     @Test
-    public void importConfig() {
+    public void importConfig() throws JsonProcessingException {
         ConfigEditorResult result = importer.importConfig(userInfo, importerAttributes, sigmaRuleExample);
-        //Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getImportedConfiguration());
+
+        RuleDto rule = ALERTING_RULE_READER.readValue(result.getAttributes().getImportedConfiguration());
+        Assert.assertEquals("siembol", rule.getRuleAuthor());
+        Assert.assertEquals("based_on_Sigma_Title", rule.getRuleName());
+        Assert.assertEquals("generated from Detects secret and id: d06be400-8045-4200-0067-740a2009db25",
+                rule.getRuleDescription());
+        Assert.assertEquals(0, rule.getRuleVersion());
+        Assert.assertEquals(3, rule.getMatchers().size());
+        Assert.assertEquals("secret_data", rule.getSourceType());
+        Assert.assertEquals("secret_data", rule.getSourceType());
+        Assert.assertEquals(1, rule.getTags().size());
+        Assert.assertEquals("sigma_tags", rule.getTags().get(0).getTagName());
+        Assert.assertEquals("[attack.defense_evasion, attack.example]", rule.getTags().get(0).getTagValue());
     }
 }

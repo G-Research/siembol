@@ -24,8 +24,7 @@ import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model.SigmaRule
 import java.util.*;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-import static uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaConditionToken.TOKEN_ID;
-import static uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaConditionToken.TOKEN_LEFT_BRACKET;
+import static uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaConditionToken.*;
 
 public class SigmaRuleImporter implements ConfigImporter {
     private static final ObjectReader IMPORTER_ATTRIBUTES_READER = new ObjectMapper()
@@ -97,7 +96,6 @@ public class SigmaRuleImporter implements ConfigImporter {
     }
 
     private List<MatcherDto> createMatchers(SigmaImporterAttributesDto attributes, SigmaRuleDto sigmaRule) {
-        List<MatcherDto> ret = new ArrayList<>();
         Map<String, String> fieldMap = new HashMap<>();
         if (attributes.getFieldMapping() != null) {
             attributes.getFieldMapping().forEach(x -> fieldMap.put(x.getSigmaField(), x.getSiembolField()));
@@ -117,7 +115,8 @@ public class SigmaRuleImporter implements ConfigImporter {
             SigmaSearch.SearchType searchType = search.getValue().isArray()
                     ? SigmaSearch.SearchType.LIST
                     : SigmaSearch.SearchType.MAP;
-            SigmaSearch.Builder builder = new SigmaSearch.Builder(searchType, search.getKey());
+            SigmaSearch.Builder builder = new SigmaSearch.Builder(searchType, search.getKey())
+                    .fieldMapping(fieldMapping);
 
             if (search.getValue().isArray()) {
                 builder.addList(search.getValue());
@@ -135,24 +134,6 @@ public class SigmaRuleImporter implements ConfigImporter {
 
         SigmaConditionTokenNode root = generateConditionSyntaxTree(sigmaSearchMap, conditionTokens);
         return root.getToken().getMatchers(root);
-    }
-
-    private Optional<Integer> getBracketIndex(List<Pair<SigmaConditionToken, String>> conditionTokens) {
-        int numOpenedBrackets = 0;
-        Optional<Integer> ret = Optional.empty();
-        for (int i = 0; i < conditionTokens.size(); i++) {
-            switch (conditionTokens.get(i).getLeft()) {
-                case TOKEN_LEFT_BRACKET:
-                    numOpenedBrackets++;
-                    break;
-                case TOKEN_RIGHT_BRACKET:
-                    if (--numOpenedBrackets == 0) {
-                        return Optional.of(i);
-                    };
-                    break;
-            }
-        }
-        return Optional.empty();
     }
 
     private Optional<Integer> getBinaryOperatorIndex(List<Pair<SigmaConditionToken, String>> conditionTokens) {
@@ -193,7 +174,7 @@ public class SigmaRuleImporter implements ConfigImporter {
         node.setFirstOperand(left);
 
         SigmaConditionTokenNode right = generateConditionSyntaxTree(sigmaSearchMap,
-                conditionTokens.subList(operatorIndex, conditionTokens.size()));
+                conditionTokens.subList(operatorIndex + 1, conditionTokens.size()));
         node.setSecondOperand(right);
 
         return node;
@@ -216,6 +197,11 @@ public class SigmaRuleImporter implements ConfigImporter {
     private SigmaConditionTokenNode generateConditionSyntaxTree(
             Map<String, SigmaSearch> sigmaSearchMap,
             List<Pair<SigmaConditionToken, String>> conditionTokens) {
+        if (TOKEN_LEFT_BRACKET.equals(conditionTokens.get(0).getLeft())
+                && TOKEN_RIGHT_BRACKET.equals(conditionTokens.get(conditionTokens.size() - 1).getLeft())) {
+            return generateConditionSyntaxTree(sigmaSearchMap, conditionTokens.subList(1, conditionTokens.size() - 1));
+        }
+
         Optional<Integer> binaryOperatorIndex = getBinaryOperatorIndex(conditionTokens);
         if (conditionTokens.isEmpty()) {
             throw new IllegalArgumentException();
@@ -223,11 +209,6 @@ public class SigmaRuleImporter implements ConfigImporter {
 
         if (binaryOperatorIndex.isPresent()) {
             return  generateConditionBinaryOperatorTree(sigmaSearchMap, conditionTokens, binaryOperatorIndex.get());
-        }
-
-        if (TOKEN_LEFT_BRACKET.equals(conditionTokens.get(0).getLeft())
-                && TOKEN_LEFT_BRACKET.equals(conditionTokens.get(conditionTokens.size() - 1).getLeft())) {
-            return generateConditionSyntaxTree(sigmaSearchMap, conditionTokens.subList(1, conditionTokens.size() - 1));
         }
 
         if (SigmaConditionTokenType.UNARY_OPERATOR.equals(conditionTokens.get(0).getLeft().getType())) {
