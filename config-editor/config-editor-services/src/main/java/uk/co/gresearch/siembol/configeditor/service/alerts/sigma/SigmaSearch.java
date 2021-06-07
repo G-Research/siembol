@@ -43,8 +43,8 @@ public class SigmaSearch {
         private final SearchType searchType;
         private final String identifier;
         private final String wrongAttributesMessage;
-        private List<MatcherDto> siembolMatchers = new ArrayList<>();
-        private List<Pair<String, List<String>>> fieldValues = new ArrayList<>();
+        private final List<MatcherDto> siembolMatchers = new ArrayList<>();
+        private final List<Pair<String, List<String>>> fieldValues = new ArrayList<>();
         private Map<String, String> fieldMapping = new HashMap<>();
 
         public Builder(SearchType searchType, String identifier) {
@@ -93,7 +93,7 @@ public class SigmaSearch {
         }
 
         public Builder addMapEntry(String field, String value) {
-            return addMapEntry(field, Arrays.asList(value));
+            return addMapEntry(field, Collections.singletonList(value));
         }
 
         private String getTextValue(JsonNode node) {

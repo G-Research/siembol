@@ -9,10 +9,7 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.alerts.model.MatcherDto;
 import uk.co.gresearch.siembol.alerts.model.MatcherTypeDto;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 
@@ -44,9 +41,9 @@ public class SigmaConditionTokenTest {
     private SigmaConditionTokenNode node;
     Map<String, SigmaSearch> searches;
     SigmaSearch searchSecret;
-    List<MatcherDto> secretMatchers = Arrays.asList(new MatcherDto());
+    List<MatcherDto> secretMatchers = Collections.singletonList(new MatcherDto());
     SigmaSearch searchPublic;
-    List<MatcherDto> publicMatchers = Arrays.asList(new MatcherDto());
+    List<MatcherDto> publicMatchers = Collections.singletonList(new MatcherDto());
 
     @Before
     public void Setup() {

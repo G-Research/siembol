@@ -105,7 +105,7 @@ public enum SigmaConditionToken {
 
     public List<MatcherDto> getMatchers(SigmaConditionTokenNode node) {
         List<List<MatcherDto>> matchersList = getMatchersList(node);
-        return matchersList.stream().map(x -> getSingleAndMatcher(x)).collect(Collectors.toList());
+        return matchersList.stream().map(SigmaConditionToken::getSingleAndMatcher).collect(Collectors.toList());
     }
 
     private Matcher getPatternMatcher(CharSequence charSequence) {
@@ -170,7 +170,7 @@ public enum SigmaConditionToken {
         MatcherDto matcherToNegate = getSingleAndMatcherFromList(
                 node.getFirstOperand().getToken().getMatchersList(node.getFirstOperand()));
         matcherToNegate.setNegated(!matcherToNegate.getNegated());
-        return Arrays.asList(Arrays.asList(matcherToNegate));
+        return Collections.singletonList(Collections.singletonList(matcherToNegate));
     }
 
     private static List<List<MatcherDto>> getMatchersOneOf(SigmaConditionTokenNode node) {
@@ -182,12 +182,12 @@ public enum SigmaConditionToken {
 
         List<List<MatcherDto>> matchersList = node.getFirstOperand().getToken().getMatchersList(node.getFirstOperand());
         List<MatcherDto> matchers = matchersList.stream()
-                .map(x -> getSingleAndMatcher(x))
+                .map(SigmaConditionToken::getSingleAndMatcher)
                 .collect(Collectors.toList());
 
         if (matchers.size() == 1) {
             //NOTE: if the size of matchers is one no need to add COMPOSITE_OR matcher type
-            return Arrays.asList(matchers);
+            return Collections.singletonList(matchers);
         }
 
         MatcherDto retMatcher = new MatcherDto();
@@ -195,7 +195,7 @@ public enum SigmaConditionToken {
         retMatcher.setType(MatcherTypeDto.COMPOSITE_OR);
         retMatcher.setMatchers(matchers);
 
-        return Arrays.asList(Arrays.asList(retMatcher));
+        return Collections.singletonList(Collections.singletonList(retMatcher));
     }
 
     private static List<List<MatcherDto>> getMatchersAnd(SigmaConditionTokenNode node) {
@@ -230,7 +230,7 @@ public enum SigmaConditionToken {
         retMatcher.setType(MatcherTypeDto.COMPOSITE_OR);
         retMatcher.setMatchers(matchers);
 
-        return Arrays.asList(Arrays.asList(retMatcher));
+        return Collections.singletonList(Collections.singletonList(retMatcher));
     }
 
     private static List<List<MatcherDto>> getMatchersSearch(SigmaConditionTokenNode node) {
@@ -264,8 +264,8 @@ public enum SigmaConditionToken {
 
     private static MatcherDto getSingleAndMatcherFromList(List<List<MatcherDto>> matchersList) {
         List<MatcherDto> singleAndMatchers = matchersList.stream()
-                .map(x -> getSingleAndMatcher(x))
-                .collect(Collectors.toList());;
+                .map(SigmaConditionToken::getSingleAndMatcher)
+                .collect(Collectors.toList());
 
         return getSingleAndMatcher(singleAndMatchers);
     }
