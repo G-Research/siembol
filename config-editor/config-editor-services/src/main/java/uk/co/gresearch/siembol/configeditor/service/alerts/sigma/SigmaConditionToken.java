@@ -4,10 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import uk.co.gresearch.siembol.alerts.model.MatcherDto;
 import uk.co.gresearch.siembol.alerts.model.MatcherTypeDto;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -74,6 +71,9 @@ public enum SigmaConditionToken {
     private static final String SEARCH_WILDCARD = "*";
     private static final String UNSUPPORTED_TOKEN_MSG = "Unsupported token: %s";
     private static final String UNKNOWN_TOKEN_MSG = "Unknown token: %s";
+    private static final String WRONG_TOKEN_ARGUMENTS = "Wrong arguments for the token: %s";
+    private static final String UNSUPPORTED_OPERATION_MSG = "Unsupported operation: %s, %s";
+    private static final String EMPTY_LIST_OF_MATCHERS = "Empty list of matchers in the search";
 
     private final Pattern pattern;
     private final SigmaConditionTokenType type;
@@ -134,6 +134,7 @@ public enum SigmaConditionToken {
                 if (!token.isSupported()) {
                     throw new IllegalArgumentException(String.format(UNSUPPORTED_TOKEN_MSG, tokenString));
                 }
+
                 ret.add(Pair.of(token, tokenString));
                 break;
             }
@@ -148,13 +149,14 @@ public enum SigmaConditionToken {
 
     private static List<List<MatcherDto>> getMatchersUnsupported(SigmaConditionTokenNode node) {
         throw new IllegalStateException(
-                String.format("Unsupported operation: %s, %s", node.getToken().name(), node.getName()));
+                String.format(UNSUPPORTED_OPERATION_MSG, node.getToken().name(), node.getName()));
     }
 
     private static List<List<MatcherDto>> getMatchersAllOf(SigmaConditionTokenNode node) {
-        if (!SigmaConditionToken.TOKEN_ID.equals(node.getFirstOperand().getToken())
+        if (node.getFirstOperand() == null ||
+                !Objects.equals(SigmaConditionToken.TOKEN_ID, node.getFirstOperand().getToken())
                 || node.getSecondOperand() != null) {
-            throw new IllegalArgumentException("wrong all of arguments");
+            throw new IllegalArgumentException(String.format(WRONG_TOKEN_ARGUMENTS, TOKEN_ALL.name()));
         }
 
         return node.getFirstOperand().getToken().getMatchersList(node.getFirstOperand());
@@ -162,7 +164,7 @@ public enum SigmaConditionToken {
 
     private static List<List<MatcherDto>> getMatchersNot(SigmaConditionTokenNode node) {
         if (node.getFirstOperand() == null || node.getSecondOperand() != null) {
-            throw new IllegalArgumentException("wrong not arguments");
+            throw new IllegalArgumentException(String.format(WRONG_TOKEN_ARGUMENTS, TOKEN_NOT.name()));
         }
 
         MatcherDto matcherToNegate = getSingleAndMatcherFromList(
@@ -172,15 +174,21 @@ public enum SigmaConditionToken {
     }
 
     private static List<List<MatcherDto>> getMatchersOneOf(SigmaConditionTokenNode node) {
-        if (!SigmaConditionToken.TOKEN_ID.equals(node.getFirstOperand().getToken())
+        if (node.getFirstOperand() == null ||
+                !Objects.equals(SigmaConditionToken.TOKEN_ID, node.getFirstOperand().getToken())
                 || node.getSecondOperand() != null) {
-            throw new IllegalArgumentException("wrong one of arguments");
+            throw new IllegalArgumentException(String.format(WRONG_TOKEN_ARGUMENTS, TOKEN_ONE.name()));
         }
 
         List<List<MatcherDto>> matchersList = node.getFirstOperand().getToken().getMatchersList(node.getFirstOperand());
         List<MatcherDto> matchers = matchersList.stream()
                 .map(x -> getSingleAndMatcher(x))
                 .collect(Collectors.toList());
+
+        if (matchers.size() == 1) {
+            //NOTE: if the size of matchers is one no need to add COMPOSITE_OR matcher type
+            return Arrays.asList(matchers);
+        }
 
         MatcherDto retMatcher = new MatcherDto();
         retMatcher.setNegated(false);
@@ -192,7 +200,7 @@ public enum SigmaConditionToken {
 
     private static List<List<MatcherDto>> getMatchersAnd(SigmaConditionTokenNode node) {
         if (node.getFirstOperand() == null || node.getSecondOperand() == null) {
-            throw new IllegalArgumentException("wrong and arguments");
+            throw new IllegalArgumentException(String.format(WRONG_TOKEN_ARGUMENTS, TOKEN_AND.name()));
         }
 
         List<List<MatcherDto>> firstOperandMatchers =  node.getFirstOperand().getToken()
@@ -208,7 +216,7 @@ public enum SigmaConditionToken {
 
     private static List<List<MatcherDto>> getMatchersOr(SigmaConditionTokenNode node) {
         if (node.getFirstOperand() == null || node.getSecondOperand() == null) {
-            throw new IllegalArgumentException("wrong or arguments");
+            throw new IllegalArgumentException(String.format(WRONG_TOKEN_ARGUMENTS, TOKEN_OR.name()));
         }
 
         MatcherDto firstOperandMatcher = getSingleAndMatcherFromList(node.getFirstOperand().getToken()
@@ -231,10 +239,15 @@ public enum SigmaConditionToken {
                 ? x -> true : name.endsWith(SEARCH_WILDCARD)
                 ? x -> x.getKey().startsWith(name.substring(0, name.length() - 1)) : x -> x.getKey().equals(name);
 
-        return node.getSearches().entrySet().stream()
+        List<List<MatcherDto>> ret = node.getSearches().entrySet().stream()
                 .filter(filter)
                 .map(x -> x.getValue().getSiembolMatchers())
                 .collect(Collectors.toList());
+        if (ret.isEmpty()) {
+            throw new IllegalArgumentException(EMPTY_LIST_OF_MATCHERS);
+        }
+
+       return ret;
     }
 
     private static MatcherDto getSingleAndMatcher(List<MatcherDto> matchers) {
