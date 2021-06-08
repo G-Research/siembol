@@ -4,6 +4,7 @@ import com.sun.jersey.core.util.Base64;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -119,6 +120,12 @@ public class SigmaValueModifierTest {
     }
 
     @Test
+    public void testEmptyString() {
+        String value = SigmaValueModifier.transform("", new ArrayList<>());
+        Assert.assertEquals("^$", value);
+    }
+
+    @Test
     public void testTransformWithRe() {
         modifiers = Arrays.asList(SigmaValueModifier.RE);
         String value = SigmaValueModifier.transform(".*\\*", modifiers);
@@ -131,7 +138,6 @@ public class SigmaValueModifierTest {
         String value = SigmaValueModifier.transform(".*\\*", modifiers);
         Assert.assertEquals(".*\\Q.*\\*\\E.*", value);
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromUnknownName() {

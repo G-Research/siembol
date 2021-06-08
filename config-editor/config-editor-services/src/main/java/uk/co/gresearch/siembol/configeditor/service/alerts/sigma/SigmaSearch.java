@@ -39,6 +39,7 @@ public class SigmaSearch {
         private static final String INVALID_SEARCH_ATTRIBUTES = "Wrong search attributes in search with identifier: %s";
         private static final String VALUE_MODIFIER_SEPARATOR = "\\|";
         private static final Character PATTERN_OR = '|';
+        private static final String NULL_MATCHER_NEGATED_PATTERN = ".*";
 
         private final SearchType searchType;
         private final String identifier;
@@ -58,13 +59,16 @@ public class SigmaSearch {
             return this;
         }
 
-        public Builder addList(JsonNode values) {
-            return addList(getStringList(values));
+        public Builder addList(JsonNode node) {
+            if (!node.isArray()) {
+                throw new IllegalArgumentException(wrongAttributesMessage);
+            }
+
+            return addList(getStringList(node));
         }
 
         public Builder addList(List<String> values) {
             if (searchType != SearchType.LIST
-                    || !fieldValues.isEmpty()
                     || values == null
                     || values.isEmpty()) {
                 throw new IllegalArgumentException(wrongAttributesMessage);
@@ -75,42 +79,47 @@ public class SigmaSearch {
         }
 
         public Builder addMapEntry(String field, JsonNode node) {
+            if (searchType != SearchType.MAP
+                    || field == null) {
+                throw new IllegalArgumentException(wrongAttributesMessage);
+            }
+
             return node.isArray()
                     ? addMapEntry(field, getStringList(node))
                     : addMapEntry(field, getTextValue(node));
         }
 
-        public Builder addMapEntry(String field, List<String> values) {
-            if (searchType != SearchType.MAP
-                    || field == null
-                    || values == null
-                    || values.isEmpty()) {
+        private Builder addMapEntry(String field, List<String> values) {
+            if (values.isEmpty()) {
                 throw new IllegalArgumentException(wrongAttributesMessage);
             }
-
             fieldValues.add(ImmutablePair.of(field, values));
             return this;
         }
 
-        public Builder addMapEntry(String field, String value) {
-            return addMapEntry(field, Collections.singletonList(value));
-        }
+       private Builder addMapEntry(String field, Optional<String> value) {
+           List<String> values = new ArrayList<>();
+           value.ifPresent(values::add);
+           fieldValues.add(ImmutablePair.of(field, values));
+           return this;
+       }
 
-        private String getTextValue(JsonNode node) {
-            if (!node.isNumber() && !node.isTextual()) {
-                throw new IllegalArgumentException();
+        private Optional<String> getTextValue(JsonNode node) {
+            if (node.isNull()) {
+                return Optional.empty();
             }
 
-            return node.isTextual() ? node.asText() : node.toString();
+            if (!node.isNumber() && !node.isTextual()) {
+                //NOTE: we are supporting only null, string or numbers
+                throw new IllegalArgumentException(wrongAttributesMessage);
+            }
+
+            return node.isTextual() ? Optional.of(node.asText()) : Optional.of(node.toString());
         }
 
         private List<String> getStringList(JsonNode node) {
-            if (!node.isArray()) {
-                throw new IllegalArgumentException();
-            }
-
             List<String> values = new ArrayList<>();
-            node.iterator().forEachRemaining(x -> values.add(getTextValue(x)));
+            node.iterator().forEachRemaining(x -> getTextValue(x).ifPresent(values::add));
             return values;
         }
 
@@ -125,6 +134,15 @@ public class SigmaSearch {
             }
 
             return Pair.of(fieldName, valueModifiers);
+        }
+
+        private MatcherDto getNullMatcher(String field) {
+            MatcherDto ret = new MatcherDto();
+            ret.setField(field);
+            ret.setNegated(true);
+            ret.setType(MatcherTypeDto.REGEX_MATCH);
+            ret.setData(NULL_MATCHER_NEGATED_PATTERN);
+            return ret;
         }
 
         private MatcherDto getSiembolMatcher(String field, List<String> values) {
@@ -156,7 +174,9 @@ public class SigmaSearch {
             }
 
             for (Pair<String, List<String>> fieldValue : fieldValues) {
-                MatcherDto current = getSiembolMatcher(fieldValue.getKey(), fieldValue.getValue());
+                MatcherDto current = fieldValue.getValue().isEmpty()
+                        ? getNullMatcher(fieldValue.getKey())
+                        : getSiembolMatcher(fieldValue.getKey(), fieldValue.getValue());
                 siembolMatchers.add(current);
             }
 

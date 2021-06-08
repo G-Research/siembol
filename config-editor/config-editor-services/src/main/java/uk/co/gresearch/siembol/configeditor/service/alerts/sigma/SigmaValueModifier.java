@@ -29,6 +29,7 @@ public enum SigmaValueModifier {
     private static final String CONCAT_FORMAT_MSG = "%s%s";
     private static final String START_MATCH = "^";
     private static final String END_MATCH = "$";
+    private static final String EMPTY_STRING_MATCH = "^$";
 
     static {
         for (SigmaValueModifier modifier : SigmaValueModifier.values()) {
@@ -61,8 +62,13 @@ public enum SigmaValueModifier {
     }
 
     public static String transform(String value, List<SigmaValueModifier> modifiers) {
-        boolean needsToEscape = !modifiers.contains(RE);
+        if (value.isEmpty()) {
+            return EMPTY_STRING_MATCH;
+        }
+
+        boolean needsToEscape = !modifiers.contains(RE) && !value.isEmpty();
         String current = needsToEscape ? Pattern.quote(value) : value;
+
         for (SigmaValueModifier modifier: modifiers) {
             current = modifier.transform(current);
         }

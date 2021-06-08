@@ -14,9 +14,8 @@ public class SigmaImporterAttributesDto {
     private List<SigmaFieldMappingItemDto> fieldMapping;
 
     @JsonProperty("rule_metadata_mapping")
-    @Attributes(required = true, description = "Sigma metadata fields that will be renamed in the rule to import", minItems = 1)
+    @Attributes(required = true, description = "Sigma metadata fields that will be renamed in the rule to import")
     private SigmaRuleMetadataMappingDto ruleMetadataMapping = new SigmaRuleMetadataMappingDto();
-
 
     public SigmaImporterAttributesDto() {
         new TagDto();

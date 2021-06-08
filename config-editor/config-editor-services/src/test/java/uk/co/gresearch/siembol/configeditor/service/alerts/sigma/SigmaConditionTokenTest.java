@@ -489,7 +489,4 @@ public class SigmaConditionTokenTest {
 
         node.getToken().getMatchersList(node);
     }
-
-
-
 }

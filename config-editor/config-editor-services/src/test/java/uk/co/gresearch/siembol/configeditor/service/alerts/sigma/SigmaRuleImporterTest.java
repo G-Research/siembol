@@ -7,6 +7,7 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.alerts.model.MatcherTypeDto;
 import uk.co.gresearch.siembol.alerts.model.RuleDto;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
@@ -139,5 +140,67 @@ public class SigmaRuleImporterTest {
         Assert.assertEquals(1, rule.getTags().size());
         Assert.assertEquals("sigma_tags", rule.getTags().get(0).getTagName());
         Assert.assertEquals("[attack.defense_evasion, attack.example]", rule.getTags().get(0).getTagValue());
+
+        Assert.assertEquals("Image", rule.getMatchers().get(0).getField());
+        Assert.assertEquals(MatcherTypeDto.REGEX_MATCH, rule.getMatchers().get(0).getType());
+        Assert.assertFalse(rule.getMatchers().get(0).getNegated());
+        Assert.assertEquals(".*\\Qsecret.exe\\E$", rule.getMatchers().get(0).getData());
+
+        Assert.assertEquals("CommandLine", rule.getMatchers().get(1).getField());
+        Assert.assertEquals(MatcherTypeDto.REGEX_MATCH, rule.getMatchers().get(1).getType());
+        Assert.assertFalse(rule.getMatchers().get(1).getNegated());
+        Assert.assertEquals(".*\\Q/C\\E.*", rule.getMatchers().get(1).getData());
+
+        Assert.assertNull(rule.getMatchers().get(2).getField());
+        Assert.assertEquals(MatcherTypeDto.COMPOSITE_OR, rule.getMatchers().get(2).getType());
+        Assert.assertFalse(rule.getMatchers().get(2).getNegated());
+        Assert.assertNull(rule.getMatchers().get(2).getData());
+        Assert.assertEquals(2, rule.getMatchers().get(2).getMatchers().size());
+
+        Assert.assertEquals("CommandLine",  rule.getMatchers().get(2).getMatchers().get(0).getField());
+        Assert.assertEquals(MatcherTypeDto.REGEX_MATCH, rule.getMatchers().get(2).getMatchers().get(0).getType());
+        Assert.assertFalse(rule.getMatchers().get(2).getMatchers().get(0).getNegated());
+        Assert.assertEquals(".*\\Q/S\\E.*", rule.getMatchers().get(2).getMatchers().get(0).getData());
+
+        Assert.assertNull(rule.getMatchers().get(2).getMatchers().get(1).getField());
+        Assert.assertEquals(MatcherTypeDto.COMPOSITE_AND, rule.getMatchers().get(2).getMatchers().get(1).getType());
+        Assert.assertTrue(rule.getMatchers().get(2).getMatchers().get(1).getNegated());
+        Assert.assertNull(rule.getMatchers().get(2).getMatchers().get(1).getData());
+        Assert.assertEquals(2, rule.getMatchers().get(2).getMatchers().get(1).getMatchers().size());
+
+        Assert.assertEquals("Image",
+                rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(0).getField());
+        Assert.assertEquals(MatcherTypeDto.REGEX_MATCH,
+                rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(0).getType());
+        Assert.assertFalse(rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(0).getNegated());
+        Assert.assertEquals(".*\\Q\\net.exe\\E$|.*\\Q\\net1.exe\\E$",
+                rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(0).getData());
+
+        Assert.assertEquals("CommandLine",
+                rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(1).getField());
+        Assert.assertEquals(MatcherTypeDto.REGEX_MATCH,
+                rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(1).getType());
+        Assert.assertFalse(rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(1).getNegated());
+        Assert.assertEquals(".*\\Q user \\E.*|.*\\Q use \\E.*|.*\\Q group \\E.*",
+                rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(1).getData());
+
+    }
+
+    @Test
+    public void importConfigInvalidAttributes() {
+        ConfigEditorResult result = importer.importConfig(userInfo,
+                importerAttributes.replace("rule_metadata_mapping", "unknown"),
+                sigmaRuleExample);
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void importConfigInvalidConfig() {
+        ConfigEditorResult result = importer.importConfig(userInfo,
+                importerAttributes,
+                "INVALID");
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getException());
     }
 }

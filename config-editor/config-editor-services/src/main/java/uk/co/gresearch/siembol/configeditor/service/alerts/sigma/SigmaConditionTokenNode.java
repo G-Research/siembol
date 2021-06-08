@@ -11,7 +11,8 @@ public class SigmaConditionTokenNode {
     private SigmaConditionTokenNode firstOperand;
     private SigmaConditionTokenNode secondOperand;
 
-    public SigmaConditionTokenNode(Pair<SigmaConditionToken, String> conditionToken, Map<String, SigmaSearch> searches) {
+    public SigmaConditionTokenNode(Pair<SigmaConditionToken, String> conditionToken,
+                                   Map<String, SigmaSearch> searches) {
         this.token = conditionToken.getLeft();
         this.name = conditionToken.getRight();
         this.searches = searches;

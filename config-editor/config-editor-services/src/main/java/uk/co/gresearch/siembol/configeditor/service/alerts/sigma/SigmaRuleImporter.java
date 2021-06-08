@@ -5,7 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.alerts.model.MatcherDto;
 import uk.co.gresearch.siembol.alerts.model.RuleDto;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
@@ -21,12 +24,16 @@ import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model.SigmaDete
 import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model.SigmaImporterAttributesDto;
 import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model.SigmaRuleDto;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 import static uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaConditionToken.*;
 
 public class SigmaRuleImporter implements ConfigImporter {
+    private static final Logger LOG = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader IMPORTER_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(SigmaImporterAttributesDto.class);
     private static final ObjectReader SIGMA_RULE_READER = new ObjectMapper(new YAMLFactory())
@@ -39,6 +46,10 @@ public class SigmaRuleImporter implements ConfigImporter {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(RuleDto.class)
             .with(SerializationFeature.INDENT_OUTPUT);
+    private static final String ERROR_ATTRIBUTES_INIT_LOG = "Error in initialising sigma importer attributes schema";
+    private static final String ERROR_IMPORT_CONFIG_LOG = "Error during importing sigma rule: {}, " +
+            "attributes: {}, user:{}, exception: {}";
+    private static final String ERROR_TOKENS_PARSING = "Problem during parsing of condition tokens";
 
     private final String importerAttributesSchema;
     private final SiembolJsonSchemaValidator importerAttributesValidator;
@@ -81,9 +92,13 @@ public class SigmaRuleImporter implements ConfigImporter {
             ConfigEditorAttributes resultAttributes = new ConfigEditorAttributes();
             resultAttributes.setImportedConfiguration(imported);
             return new ConfigEditorResult(OK, resultAttributes);
-
         } catch (Exception e) {
-            return ConfigEditorResult.fromException(e);
+            LOG.error(ERROR_IMPORT_CONFIG_LOG,
+                    configuration,
+                    importerAttributes,
+                    user.getUserName(),
+                    ExceptionUtils.getStackTrace(e));
+            return ConfigEditorResult.fromException(BAD_REQUEST, e);
         }
     }
 
@@ -220,9 +235,8 @@ public class SigmaRuleImporter implements ConfigImporter {
             return new SigmaConditionTokenNode(conditionTokens.get(0), sigmaSearchMap);
         }
 
-        throw new IllegalStateException("Problem during parsing of condition tokens");
+        throw new IllegalStateException(ERROR_TOKENS_PARSING);
     }
-
 
     public static class Builder {
         ConfigEditorUiLayout configEditorUiLayout =  new ConfigEditorUiLayout();
@@ -236,10 +250,15 @@ public class SigmaRuleImporter implements ConfigImporter {
 
         public SigmaRuleImporter build() throws Exception {
             importerAttributesValidator  = new SiembolJsonSchemaValidator(SigmaImporterAttributesDto.class);
-            importerAttributesSchema = ConfigEditorUtils.patchJsonSchema(
+            Optional<String> patchedSchema = ConfigEditorUtils.patchJsonSchema(
                     importerAttributesValidator.getJsonSchema().getAttributes().getJsonSchema(),
-                    configEditorUiLayout.getImportersLayout())
-                    .get();
+                    configEditorUiLayout.getImportersLayout());
+            if (!patchedSchema.isPresent()) {
+                LOG.error(ERROR_ATTRIBUTES_INIT_LOG);
+                throw new IllegalStateException(ERROR_ATTRIBUTES_INIT_LOG);
+            }
+            importerAttributesSchema = patchedSchema.get();
+
             return new SigmaRuleImporter(this);
         }
     }
