@@ -61,20 +61,13 @@ export class ConfigStoreService {
   public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
   /*eslint-enable */
 
-  private metaDataMap: UiMetadata;
   private testStoreService: TestStoreService;
 
   get testService(): TestStoreService {
     return this.testStoreService;
   }
 
-  constructor(
-    private serviceName: string,
-    private user: string,
-    private config: AppConfigService,
-    private configLoaderService: ConfigLoaderService
-  ) {
-    this.metaDataMap = config.uiMetadata[serviceName];
+  constructor(private user: string, private metaDataMap: UiMetadata, private configLoaderService: ConfigLoaderService) {
     this.testStoreService = new TestStoreService(this.user, this.store, this.configLoaderService);
   }
 

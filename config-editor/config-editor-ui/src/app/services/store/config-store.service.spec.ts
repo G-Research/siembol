@@ -1,16 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigStoreService } from './config-store.service';
-import { AppConfigService } from '@app/services/app-config.service';
 import { ConfigLoaderService } from '../config-loader.service';
 import { of } from 'rxjs';
 import { mockTestCaseMap } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
-import { mockUiMetadataMap } from 'testing/uiMetadataMap';
+import { mockUiMetadataParser } from 'testing/uiMetadataMap';
 import { mockParserConfig, mockParserConfigCloned } from 'testing/configs';
 
 describe('ConfigStoreService', () => {
   let configLoader: ConfigLoaderService;
-  let configService: AppConfigService;
   let service: ConfigStoreService;
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,17 +20,10 @@ describe('ConfigStoreService', () => {
             submitTestCase: () => of(mockTestCaseMap),
           },
         },
-        {
-          provide: AppConfigService,
-          useValue: {
-            uiMetadata: mockUiMetadataMap,
-          },
-        },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
-    configService = TestBed.inject(AppConfigService);
-    service = new ConfigStoreService('parserconfig', 'siembol', configService, configLoader);
+    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader);
   });
 
   it('should be created', () => {
