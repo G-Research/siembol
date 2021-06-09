@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.alerts.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import com.github.reinert.jjschema.SchemaIgnore;
 
 import java.util.List;
 
@@ -9,7 +10,8 @@ import java.util.List;
 public class MatcherDto {
     @JsonProperty("matcher_type")
     @Attributes(required = true, description = "Type of matcher, either Regex match or list of strings " +
-            "(newline delimited) or a composite matcher composing several matchers")
+            "(newline delimited) or a composite matcher composing several matchers",
+            enums = {"REGEX_MATCH", "IS_IN_SET"})
     private MatcherTypeDto type;
 
     @JsonProperty("is_negated")
@@ -26,6 +28,7 @@ public class MatcherDto {
     @Attributes(description = "Matcher expression as defined by matcher type")
     private String data;
 
+    @SchemaIgnore
     @Attributes(description = "Matcher expression as defined by matcher type")
     private List<MatcherDto> matchers;
 
