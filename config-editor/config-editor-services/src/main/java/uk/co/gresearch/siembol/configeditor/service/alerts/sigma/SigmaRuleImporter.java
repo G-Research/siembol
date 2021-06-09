@@ -212,18 +212,18 @@ public class SigmaRuleImporter implements ConfigImporter {
     private SigmaConditionTokenNode generateConditionSyntaxTree(
             Map<String, SigmaSearch> sigmaSearchMap,
             List<Pair<SigmaConditionToken, String>> conditionTokens) {
+        if (conditionTokens.isEmpty()) {
+            throw new IllegalArgumentException(ERROR_TOKENS_PARSING);
+        }
+
         if (TOKEN_LEFT_BRACKET.equals(conditionTokens.get(0).getLeft())
                 && TOKEN_RIGHT_BRACKET.equals(conditionTokens.get(conditionTokens.size() - 1).getLeft())) {
             return generateConditionSyntaxTree(sigmaSearchMap, conditionTokens.subList(1, conditionTokens.size() - 1));
         }
 
         Optional<Integer> binaryOperatorIndex = getBinaryOperatorIndex(conditionTokens);
-        if (conditionTokens.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
         if (binaryOperatorIndex.isPresent()) {
-            return  generateConditionBinaryOperatorTree(sigmaSearchMap, conditionTokens, binaryOperatorIndex.get());
+            return generateConditionBinaryOperatorTree(sigmaSearchMap, conditionTokens, binaryOperatorIndex.get());
         }
 
         if (SigmaConditionTokenType.UNARY_OPERATOR.equals(conditionTokens.get(0).getLeft().getType())) {

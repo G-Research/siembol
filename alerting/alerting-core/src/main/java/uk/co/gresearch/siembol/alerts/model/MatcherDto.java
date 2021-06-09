@@ -29,7 +29,7 @@ public class MatcherDto {
     private String data;
 
     @SchemaIgnore
-    @Attributes(description = "Matcher expression as defined by matcher type")
+    @Attributes(description = "List of matchers of the composite matcher")
     private List<MatcherDto> matchers;
 
     public MatcherTypeDto getType() {

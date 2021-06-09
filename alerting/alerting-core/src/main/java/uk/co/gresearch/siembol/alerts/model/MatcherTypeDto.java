@@ -19,6 +19,4 @@ public enum MatcherTypeDto {
     public String toString() {
         return name;
     }
-
-
 }

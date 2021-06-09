@@ -109,7 +109,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         context.setTestSchema(testSchema);
 
         Map<String, ConfigImporter> importerMap = new HashMap<>();
-        importerMap.put(SIGMA_IMPORTER_NAME, new SigmaRuleImporter.Builder().build());
+        importerMap.put(SIGMA_IMPORTER_NAME, new SigmaRuleImporter.Builder().configEditorUiLayout(uiLayout).build());
         context.setConfigImporters(importerMap);
 
         LOG.info("Initialising alerts rule schema service completed");

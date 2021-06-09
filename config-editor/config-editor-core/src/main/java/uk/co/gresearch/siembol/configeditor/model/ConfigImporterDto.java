@@ -1,10 +1,12 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 public class ConfigImporterDto {
     @JsonProperty("importer_name")
     private String importerName;
+    @JsonRawValue
     @JsonProperty("importer_attributes_schema")
     private String importerAttributesSchema;
 
