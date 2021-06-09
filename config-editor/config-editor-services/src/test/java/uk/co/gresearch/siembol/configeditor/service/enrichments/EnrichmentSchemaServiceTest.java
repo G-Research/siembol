@@ -196,4 +196,11 @@ public class EnrichmentSchemaServiceTest {
         verify(adminConfigValidator, VerificationModeFactory.times(1)).validate(testConfig);
     }
 
+    @Test
+    public void getImportersEmpty() {
+        ConfigEditorResult ret = enrichmentsSchemaService.getImporters();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getConfigImporters());
+        Assert.assertTrue(ret.getAttributes().getConfigImporters().isEmpty());
+    }
 }
