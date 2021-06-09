@@ -17,15 +17,9 @@ import { SchemaService } from '@app/services/schema/schema.service';
 export class ConfigTestingComponent implements OnInit {
   testInput: any = {};
 
-  fields: FormlyFieldConfig[] = [];
-  options: FormlyFormOptions = {
-    formState: {
-      mainModel: {},
-      rawObjects: {},
-    },
-  };
+  field: FormlyFieldConfig;
+  options: FormlyFormOptions = {};
   @Input() testingType: TestingType;
-  @ViewChild('formly', { static: true }) formly: FormlyForm;
   public form: FormGroup = new FormGroup({});
   public isInvalid = false;
   public output: any;
@@ -36,14 +30,11 @@ export class ConfigTestingComponent implements OnInit {
     if (this.editorService.metaDataMap.testing.perConfigTestEnabled) {
       let schema = this.editorService.testSpecificationSchema;
       this.editorService.configSchema.formatTitlesInSchema(schema, '');
-      this.fields = [new FormlyJsonschema().toFieldConfig(schema, { map: SchemaService.renameDescription })];
+      this.field = new FormlyJsonschema().toFieldConfig(schema, { map: SchemaService.renameDescription });
     }
   }
 
   runTest() {
-    // const cleanedTestSpecification = this.editorService.configSchema
-    //   .cleanRawObjects(this.form.value, this.formly.options.formState.rawObjects);
-
     this.editorService.configStore.testService
       .test(this.form.value, this.testingType)
       .pipe(take(1))

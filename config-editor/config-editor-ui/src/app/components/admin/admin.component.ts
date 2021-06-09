@@ -8,21 +8,22 @@ import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, take, skip } from 'rxjs/operators';
+import { takeUntil, take, skip, debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ConfigHistory } from '@app/model/store-state';
+import { UndoRedoService } from '@app/services/undo-redo.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-admin-editor',
   styleUrls: ['./admin.component.scss'],
   templateUrl: './admin.component.html',
+  providers: [UndoRedoService],
 })
 export class AdminComponent implements OnInit, OnDestroy {
-  @Input() fields: FormlyFieldConfig[];
+  @Input() field: FormlyFieldConfig;
   @BlockUI() blockUI: NgBlockUI;
   ngUnsubscribe = new Subject();
   configData: ConfigData = {};
@@ -30,7 +31,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   form: FormGroup = new FormGroup({});
   adminConfig$: Observable<AdminConfig>;
   config: AdminConfig;
-  private history: ConfigHistory = { past: [], future: [] };
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
   private inUndoRedo = false;
@@ -41,7 +41,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     private editorService: EditorService,
     private router: Router,
     private configService: AppConfigService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private undoRedoService: UndoRedoService
   ) {
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
@@ -54,26 +55,16 @@ export class AdminComponent implements OnInit, OnDestroy {
       //NOTE: in the form we are using wrapping config to handle optionals, unions
       if (config !== null) {
         this.updateAndWrapConfigData(config.configData);
-        this.options.formState = {
-          mainModel: cloneDeep(this.configData),
-          rawObjects: {},
-        };
       }
     });
-  }
-
-  ngAfterViewInit() {
-    this.form.valueChanges.subscribe(values => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (
         this.form.valid &&
         !this.inUndoRedo &&
-        (this.history.past.length == 0 || JSON.stringify(this.history.past[0].formState) !== JSON.stringify(values))
+        (!this.undoRedoService.getCurrent() ||
+          JSON.stringify(this.undoRedoService.getCurrent().formState) !== JSON.stringify(values))
       ) {
-        this.history.past.splice(0, 0, {
-          formState: cloneDeep(values),
-          tabIndex: this.fields[0].templateOptions.tabIndex,
-        });
-        this.history.future = [];
+        this.addToUndoRedo(cloneDeep(values), this.field.templateOptions.tabIndex);
         this.updateConfigInStore(values);
       }
       this.inUndoRedo = false;
@@ -87,17 +78,6 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   updateConfigInStoreFromForm() {
     this.updateConfigInStore(this.form.value);
-  }
-
-  private updateConfigInStore(configData: ConfigData) {
-    const configToClean = cloneDeep(this.config) as AdminConfig;
-    configToClean.configData = cloneDeep(configData);
-    // configToClean.configData = this.editorService.adminSchema.cleanRawObjects(
-    //   configToClean.configData,
-    //   this.options.formState.rawObjects
-    // );
-    this.config = this.editorService.adminSchema.unwrapAdminConfig(configToClean);
-    this.editorService.configStore.updateAdmin(this.config);
   }
 
   updateAndWrapConfigData(configData: ConfigData) {
@@ -142,25 +122,28 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   undoConfigInStore() {
     this.inUndoRedo = true;
-    this.history.future.splice(0, 0, {
-      formState: cloneDeep(this.configData),
-      tabIndex: this.fields[0].templateOptions.tabIndex,
-    });
-    this.history.past.shift();
-    this.fields[0].templateOptions.tabIndex = this.history.past[0].tabIndex;
-    this.updateConfigInStore(this.history.past[0].formState);
+    let nextState = this.undoRedoService.undo();
+    this.field.templateOptions.tabIndex = nextState.tabIndex;
+    this.updateConfigInStore(nextState.formState);
     this.updateAndWrapConfigData(this.config.configData);
   }
 
   redoConfig() {
     this.inUndoRedo = true;
-    this.fields[0].templateOptions.tabIndex = this.history.future[0].tabIndex;
-    this.updateConfigInStore(this.history.future[0].formState);
+    let nextState = this.undoRedoService.redo();
+    this.field.templateOptions.tabIndex = nextState.tabIndex;
+    this.updateConfigInStore(nextState.formState);
     this.updateAndWrapConfigData(this.config.configData);
-    this.history.past.splice(0, 0, {
-      formState: cloneDeep(this.history.future[0].formState),
-      tabIndex: this.history.future[0].tabIndex,
-    });
-    this.history.future.shift();
+  }
+
+  addToUndoRedo(config: any, tabIndex: number = 0) {
+    this.undoRedoService.addState(config, tabIndex);
+  }
+
+  private updateConfigInStore(configData: ConfigData) {
+    const configToClean = cloneDeep(this.config) as AdminConfig;
+    configToClean.configData = cloneDeep(configData);
+    this.config = this.editorService.adminSchema.unwrapAdminConfig(configToClean);
+    this.editorService.configStore.updateAdmin(this.config);
   }
 }

@@ -231,9 +231,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  async onClickPaste() {
-    const valid = await this.clipboardService.validateConfig();
-    valid.subscribe(() => {
+  onClickPaste() {
+    this.clipboardService.validateConfig().subscribe(() => {
       this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
     });
   }

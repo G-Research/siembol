@@ -98,9 +98,8 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  async onPasteTestCaseNew() {
-    const valid = await this.clipboardService.validateTestCase();
-    valid.subscribe(() => {
+  onPasteTestCaseNew() {
+    this.clipboardService.validateTestCase().subscribe(() => {
       this.router.navigate([], {
         relativeTo: this.activeRoute,
         queryParams: { pasteTestCase: true },

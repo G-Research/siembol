@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -16,20 +8,19 @@ import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { debounceTime, take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
-import { ConfigHistory } from '@app/model/store-state';
-import { TabsetTypeComponent } from '@app/ngx-formly/tabset.type.component';
+import { UndoRedoService } from '@app/services/undo-redo.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-generic-editor',
   styleUrls: ['./editor.component.scss'],
   templateUrl: './editor.component.html',
+  providers: [UndoRedoService],
 })
 export class EditorComponent implements OnInit, OnDestroy {
-  @ViewChild(TabsetTypeComponent) tabsetComponent: TabsetTypeComponent;
   titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX)]);
 
   public ngUnsubscribe = new Subject();
@@ -39,49 +30,39 @@ export class EditorComponent implements OnInit, OnDestroy {
   public form: FormGroup = new FormGroup({});
   public editedConfig$: Observable<Config>;
   public config: Config;
-  private history: ConfigHistory = { past: [], future: [] };
   private inUndoRedo = false;
 
-  @Input() fields: FormlyFieldConfig[];
+  @Input() field: FormlyFieldConfig;
 
   constructor(
     public dialog: MatDialog,
     public snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private undoRedoService: UndoRedoService
   ) {
     this.editedConfig$ = editorService.configStore.editedConfig$;
   }
 
   ngOnInit() {
     this.editedConfig$.pipe(take(1)).subscribe(config => {
-      this.config = config;
       //NOTE: in the form we are using wrapping config to handle optionals, unions
-      if (config !== null) {
+      if (config) {
         this.configData = this.editorService.configSchema.wrapConfig(config.configData);
         this.configName = config.name;
-        this.options.formState = {
-          mainModel: cloneDeep(this.configData),
-        };
       }
     });
-  }
-
-  ngAfterViewInit() {
-    this.form.valueChanges.subscribe(values => {
-      if (
-        this.form.valid &&
-        !this.inUndoRedo &&
-        (this.history.past.length == 0 || JSON.stringify(this.history.past[0].formState) !== JSON.stringify(values))
-      ) {
-        this.history.past.splice(0, 0, {
-          formState: cloneDeep(values),
-          tabIndex: this.fields[0].templateOptions.tabIndex,
-        });
-        this.history.future = [];
+    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
+      this.config = config;
+      this.cd.markForCheck();
+    });
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+      if (this.form.valid && !this.inUndoRedo) {
+        this.addToUndoRedo(cloneDeep(values), this.field.templateOptions.tabIndex);
         this.updateConfigInStore(values);
       }
+      this.inUndoRedo = false;
     });
   }
 
@@ -94,45 +75,28 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.updateConfigInStore(this.form.value);
   }
 
-  private updateConfigInStore(configData: ConfigData) {
-    const configToClean = cloneDeep(this.config) as Config;
-    configToClean.configData = cloneDeep(configData);
-    this.config = this.editorService.configSchema.cleanConfig(configToClean);
-    this.editorService.configStore.updateEditedConfig(this.config);
-  }
-
   updateConfigData(configData: ConfigData) {
     this.configData = configData;
     this.cd.markForCheck();
   }
 
+  addToUndoRedo(config: any, tabIndex: number = 0) {
+    this.undoRedoService.addState(config, tabIndex);
+  }
+
   undoConfigInStore() {
     this.inUndoRedo = true;
-    this.history.future.splice(0, 0, {
-      formState: cloneDeep(this.configData),
-      tabIndex: this.fields[0].templateOptions.tabIndex,
-    });
-    this.history.past.shift();
-    this.fields[0].templateOptions.tabIndex = this.history.past[0].tabIndex;
-    this.updateConfigInStore(this.history.past[0].formState);
-    // this.configData = this.editorService.configSchema.wrapConfig(this.config.configData);
-    this.form.patchValue(this.editorService.configSchema.wrapConfig(this.config.configData), { emitEvent: false });
-
-    this.cd.markForCheck();
+    let nextState = this.undoRedoService.undo();
+    this.field.templateOptions.tabIndex = nextState.tabIndex;
+    this.updateConfigInStore(nextState.formState);
+    this.updateConfigData(this.editorService.configSchema.wrapConfig(this.config.configData));
   }
 
   redoConfig() {
-    this.inUndoRedo = true;
-    this.fields[0].templateOptions.tabIndex = this.history.future[0].tabIndex;
-    this.updateConfigInStore(this.history.future[0].formState);
-    this.configData = this.editorService.configSchema.wrapConfig(this.config.configData);
-    this.history.past.splice(0, 0, {
-      formState: cloneDeep(this.history.future[0].formState),
-      tabIndex: this.history.future[0].tabIndex,
-    });
-    this.history.future.shift();
-
-    this.cd.markForCheck();
+    let nextState = this.undoRedoService.redo();
+    this.field.templateOptions.tabIndex = nextState.tabIndex;
+    this.updateConfigInStore(nextState.formState);
+    this.updateConfigData(this.editorService.configSchema.wrapConfig(this.config.configData));
   }
 
   onSubmit() {
@@ -152,7 +116,16 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.router.navigate([this.editorService.serviceName, 'edit'], {
           queryParams: { configName: this.configName },
         });
+        this.undoRedoService.clear();
+        this.addToUndoRedo(cloneDeep(this.configData), this.field.templateOptions.tabIndex);
       }
     });
+  }
+
+  private updateConfigInStore(configData: ConfigData) {
+    const configToClean = cloneDeep(this.config) as Config;
+    configToClean.configData = cloneDeep(configData);
+    configToClean.name = this.configName;
+    this.editorService.configStore.updateEditedConfig(this.editorService.configSchema.cleanConfig(configToClean));
   }
 }

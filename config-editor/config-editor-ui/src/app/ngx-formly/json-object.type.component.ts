@@ -2,9 +2,7 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { ChangeDetectorRef, Component, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FieldType } from '@ngx-formly/material/form-field';
 import { Subject } from 'rxjs';
-import { debounceTime, startWith, take, takeUntil, tap } from 'rxjs/operators';
-import { MatInput } from '@angular/material/input';
-import { FormControl } from '@angular/forms';
+import { debounceTime, take, takeUntil } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
 
 @Component({
@@ -64,13 +62,10 @@ import { cloneDeep } from 'lodash';
 })
 export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDestroy {
   @ViewChild('autosize', { static: false }) autosize: CdkTextareaAutosize;
-  // @ViewChild(MatInput, { static: false }) formFieldControl!: MatInput;
-  // @ViewChild('formfield', { static: true }) formfield: FormControl;
   defaultOptions = {
     defaultValue: {},
   };
   valid = true;
-  _val: string;
   tree = {};
 
   private ngUnsubscribe: Subject<any> = new Subject();
@@ -80,44 +75,17 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDest
   }
 
   ngOnInit() {
-    // this.formControl.valueChanges
-    //   .pipe(
-    //     takeUntil(this.ngUnsubscribe),
-    //     startWith(this.formControl.value),
-    //     tap(v => {
-    //       if (v) {
-    //         this.formControl.patchValue(JSON.stringify(v), { emitEvent: false });
-    //       }
-    //     })
-    //   )
-    //   .subscribe();
     const key = Array.isArray(this.field.key) ? this.field.key[0] : this.field.key;
     this.tree = cloneDeep(this.field.parent.model[key]);
-    // this.formControl.setValidators = () => {
-    //   try {
-    //     JSON.parse(this._val);
-
-    //     return null;
-    //   } catch (e) {
-    //     return { invalidJson: true };
-    //   }
-    // };
     this.changeDetector.markForCheck();
     this.formControl.valueChanges.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(s => {
-      this._val = s;
-      try {
-        const parsed = s;
-        if (parsed) {
-          this.formControl.setErrors(null);
-          this.valid = true;
-          this.tree = parsed;
-          const path = this.getFieldPath(key);
-          this.options.formState['rawObjects'][path] = parsed;
-          this.changeDetector.markForCheck();
-        }
-      } catch (ex) {
+      if (s) {
+        this.formControl.setErrors(null);
+        this.valid = true;
+        this.tree = s;
+        this.changeDetector.markForCheck();
+      } else {
         this.valid = false;
-        this.tree = {};
         this.formControl.setErrors({ invalid: true });
         this.changeDetector.markForCheck();
       }
@@ -131,16 +99,5 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDest
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
-
-  private getFieldPath(key: string | number): string {
-    let field = this.field;
-    const keys = [];
-    keys.push(key);
-    while (field.parent.key) {
-      keys.push(field.parent.key);
-      field = field.parent;
-    }
-    return keys.reverse().join('.');
   }
 }

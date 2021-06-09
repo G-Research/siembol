@@ -28,7 +28,7 @@ export class AdminViewComponent implements OnDestroy {
   serviceName: string;
   schema: JSONSchema7;
 
-  fields: FormlyFieldConfig[] = [];
+  field: FormlyFieldConfig;
 
   adminConfig$: Observable<AdminConfig>;
 
@@ -41,9 +41,7 @@ export class AdminViewComponent implements OnDestroy {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.adminSchema.schema;
     this.adminConfig$ = editorService.configStore.adminConfig$;
-    this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
-    ];
+    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription });
   }
 
   public ngAfterViewInit() {
@@ -51,9 +49,9 @@ export class AdminViewComponent implements OnDestroy {
       this.configData = config.configData;
     });
     this.adminConfig$.pipe(take(1)).subscribe((config: Config) => {
-      this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
-      ];
+      this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
+        map: SchemaService.renameDescription,
+      });
     });
   }
 
@@ -66,11 +64,11 @@ export class AdminViewComponent implements OnDestroy {
     this.router.navigate([this.serviceName]);
   }
 
-  async onClickPaste() {
-    const valid = await this.clipboardService.validateAdminConfig();
-    valid.subscribe(() => {
+  onClickPaste() {
+    this.clipboardService.validateAdminConfig().subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedAdminConfig();
       this.adminComponent.updateAndWrapConfigData(configData);
+      this.adminComponent.addToUndoRedo(configData);
     });
   }
 

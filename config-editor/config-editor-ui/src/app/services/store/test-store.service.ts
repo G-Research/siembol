@@ -58,7 +58,7 @@ export class TestStoreService {
     this.updateEditedTestCase(testCaseWrapper);
   }
 
-  setEditedPastedTestCase() {
+  setEditedPastedTestCase(): any {
     const currentState = this.store.getValue();
     const testCase = currentState.pastedTestCase;
     const editedTestCase = currentState.editedTestCase;
@@ -70,6 +70,7 @@ export class TestStoreService {
       test_case_name: editedTestCase.testCase.test_case_name,
     });
     this.updateEditedTestCase(pastedTestCase);
+    return pastedTestCase.testCase;
   }
 
   updatePastedTestCase(testCase: TestCase) {

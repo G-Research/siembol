@@ -8,7 +8,7 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
 import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
@@ -34,7 +34,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedTab = this.CONFIG_TAB.index;
   previousTab = this.NO_TAB;
   testingType = TestingType.CONFIG_TESTING;
-  fields: FormlyFieldConfig[] = [];
+  field: FormlyFieldConfig;
   editedConfig$: Observable<Config>;
 
   constructor(
@@ -47,9 +47,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
-    this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
-    ];
+    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription });
   }
 
   testCaseEnabled: () => boolean = () => false;
@@ -69,12 +67,6 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.configData = config.configData;
-    });
-    this.editedConfig$.pipe(take(1)).subscribe((config: Config) => {
-      this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
-      ];
-
       this.testingEnabled = () =>
         this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
 
@@ -105,11 +97,11 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([this.serviceName]);
   }
 
-  async onClickPaste() {
-    const valid = await this.clipboardService.validateConfig();
-    valid.subscribe(() => {
+  onClickPaste() {
+    this.clipboardService.validateConfig().subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedConfig();
       this.editorComponent.updateConfigData(configData);
+      this.editorComponent.addToUndoRedo(configData);
     });
   }
 

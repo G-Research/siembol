@@ -44,16 +44,6 @@ export class SchemaService {
     return this.unwrapOptionalsFromArrays(returnObject);
   }
 
-  public cleanRawObjects(config: any, rawObjects: any): any {
-    for (const element in rawObjects) {
-      if (Object.prototype.hasOwnProperty.call(rawObjects, element)) {
-        const paths = element.split('.');
-        set(config, paths, rawObjects[element]);
-      }
-    }
-    return JSON.parse(JSON.stringify(config, replacer));
-  }
-
   public formatTitlesInSchema(obj: any, propKey?: string): any {
     if (obj === undefined || obj === null || typeof obj !== typeof {}) {
       return;
