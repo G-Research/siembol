@@ -133,7 +133,7 @@ public class AlertingStormApplicationTest {
         cluster.submitTopology("test", config, topology);
     }
 
-    @Test(timeout=100000)
+    @Test(timeout=200000)
     public void integrationTest() throws Exception {
         kafkaRule.helper().produceStrings("input", goodAlert.trim());
         List<String> outputEvent = kafkaRule.helper().consumeStrings("alerts", 1)
