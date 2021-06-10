@@ -171,6 +171,7 @@ public class SigmaRuleImporter implements ConfigImporter {
                     if (numOpenedBrackets == 0 && !ret.isPresent()) {
                         ret = Optional.of(i);
                     }
+                default:
             }
         }
         return ret;

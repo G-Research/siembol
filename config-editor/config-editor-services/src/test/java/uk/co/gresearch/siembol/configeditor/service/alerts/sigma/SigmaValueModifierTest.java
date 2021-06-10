@@ -141,6 +141,6 @@ public class SigmaValueModifierTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testFromUnknownName() {
-        String value = SigmaValueModifier.fromName("unknown").transform("A");
+        SigmaValueModifier.fromName("unknown").transform("A");
     }
 }

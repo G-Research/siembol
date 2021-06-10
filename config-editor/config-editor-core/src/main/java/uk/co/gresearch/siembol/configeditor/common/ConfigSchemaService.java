@@ -5,7 +5,6 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigImporterDto;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

@@ -2,8 +2,6 @@ package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
@@ -15,7 +13,6 @@ import uk.co.gresearch.siembol.alerts.model.MatcherTypeDto;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model.SigmaDetectionDto;
 
-import java.io.IOException;
 import java.util.*;
 
 public class SigmaSearchTest {

@@ -34,7 +34,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_ENGINE_DETECTION_SOURCE_TAG_VALUE;
 
 public class CorrelationEngineBoltTest {
     private static ObjectReader JSON_READER = new ObjectMapper()
