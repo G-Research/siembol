@@ -157,7 +157,7 @@
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-server-mock</artifactId>
             <scope>test</scope>
-            <version>5.0.1</version>
+            <version>5.4.1</version>
         </dependency>
     </dependencies>
     <build>
