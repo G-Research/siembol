@@ -39,19 +39,19 @@ public class AlertingRulesCompiler implements AlertingCompiler {
     private static final String EXCEPTION_EVENTS_MSG = "Exception events:";
 
     private final JsonSchemaValidator jsonSchemaValidator;
-    private final List<TagsDto> testOutputContants;
+    private final List<TagDto> testOutputContants;
 
     AlertingRulesCompiler(JsonSchemaValidator jsonSchemaValidator) {
         this.jsonSchemaValidator = jsonSchemaValidator;
 
-        final TagsDto testConstant = new TagsDto();
+        final TagDto testConstant = new TagDto();
         testConstant.setTagName(TEST_FIELD_NAME);
         testConstant.setTagValue(TEST_FIELD_VALUE);
         this.testOutputContants = Arrays.asList(testConstant);
     }
 
     private RuleMatcher createMatcher(MatcherDto matcherDto) {
-        switch (MatcherType.valueOf(matcherDto.getType())){
+        switch (MatcherType.valueOf(matcherDto.getType().toString())){
             case REGEX_MATCH:
                 return RegexMatcher.builder()
                         .pattern(matcherDto.getData())

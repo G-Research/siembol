@@ -1,9 +1,11 @@
 package uk.co.gresearch.siembol.configeditor.service.common;
 
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
+import java.util.Map;
 import java.util.Optional;
 
 public abstract class ConfigSchemaServiceAbstract implements ConfigSchemaService {
@@ -11,12 +13,14 @@ public abstract class ConfigSchemaServiceAbstract implements ConfigSchemaService
     private final Optional<String> testSchema;
     private final Optional<String> adminConfigSchema;
     private final Optional<SiembolJsonSchemaValidator> adminConfigValidator;
+    private final Map<String, ConfigImporter> configImporters;
 
     public ConfigSchemaServiceAbstract(ConfigSchemaServiceContext context) {
         this.configSchema = context.getConfigSchema();
         this.testSchema = Optional.ofNullable(context.getTestSchema());
         this.adminConfigSchema = Optional.ofNullable(context.getAdminConfigSchema());
         this.adminConfigValidator = Optional.ofNullable(context.getAdminConfigValidator());
+        this.configImporters = context.getConfigImporters();
     }
 
     @Override
@@ -48,4 +52,8 @@ public abstract class ConfigSchemaServiceAbstract implements ConfigSchemaService
         return ConfigEditorResult.fromValidationResult(adminConfigValidator.get().validate(configuration));
     }
 
+    @Override
+    public Map<String, ConfigImporter> getConfigImporters() {
+        return configImporters;
+    }
 }

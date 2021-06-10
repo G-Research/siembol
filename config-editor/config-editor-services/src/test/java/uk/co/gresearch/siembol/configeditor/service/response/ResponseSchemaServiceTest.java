@@ -357,4 +357,13 @@ public class ResponseSchemaServiceTest {
         ConfigEditorResult ret = responseSchemaService.getAdminConfigurationSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }
+
+    @Test
+    public void getImportersEmpty() throws Exception {
+        responseSchemaService = builder.build();
+        ConfigEditorResult ret = responseSchemaService.getImporters();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getConfigImporters());
+        Assert.assertTrue(ret.getAttributes().getConfigImporters().isEmpty());
+    }
 }

@@ -230,4 +230,12 @@ public class ParserConfigSchemaServiceTest {
         ConfigEditorResult ret = service.getAdminConfigurationSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }
+
+    @Test
+    public void getImportersEmpty() {
+        ConfigEditorResult ret = parserConfigSchemaService.getImporters();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getConfigImporters());
+        Assert.assertTrue(ret.getAttributes().getConfigImporters().isEmpty());
+    }
 }

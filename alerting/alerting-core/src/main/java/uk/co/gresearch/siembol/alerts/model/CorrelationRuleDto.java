@@ -29,7 +29,7 @@ public class CorrelationRuleDto {
 
     @JsonProperty("tags")
     @Attributes(description = "The tags of the rule that will be appended to the event after matching")
-    private List<TagsDto> tags;
+    private List<TagDto> tags;
 
     @JsonProperty("rule_protection")
     @Attributes(description = "Protection specification for the rule that override the global protection settings")
@@ -75,11 +75,11 @@ public class CorrelationRuleDto {
         this.correlationAttributes = correlationAttributes;
     }
 
-    public List<TagsDto> getTags() {
+    public List<TagDto> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagsDto> tags) {
+    public void setTags(List<TagDto> tags) {
         this.tags = tags;
     }
 

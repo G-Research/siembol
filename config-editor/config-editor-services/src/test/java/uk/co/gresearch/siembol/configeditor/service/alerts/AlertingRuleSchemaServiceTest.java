@@ -8,14 +8,19 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.result.SiembolAttributes;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
+import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
+import uk.co.gresearch.siembol.configeditor.common.UserInfo;
+import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -51,11 +56,15 @@ public class AlertingRuleSchemaServiceTest {
     private ConfigSchemaServiceContext context;
     private SiembolJsonSchemaValidator adminConfigValidator;
     private SiembolResult validationResult;
+    private ConfigImporter configImporter;
+    private UserInfo userInfo;
 
     @Before
-    public void Setup() throws Exception {
+    public void Setup() {
+        userInfo = Mockito.mock(UserInfo.class);
         alertingCompiler = Mockito.mock(AlertingCompiler.class);
         adminConfigValidator = Mockito.mock(SiembolJsonSchemaValidator.class);
+        configImporter = Mockito.mock(ConfigImporter.class);
         validationResult = new SiembolResult(OK, new SiembolAttributes());
         when(adminConfigValidator.validate(eq(testConfig))).thenReturn(validationResult);
 
@@ -64,6 +73,11 @@ public class AlertingRuleSchemaServiceTest {
         context.setConfigSchema(ruleSchema);
         context.setAdminConfigSchema(adminSchema);
         context.setAdminConfigValidator(adminConfigValidator);
+
+        Map<String, ConfigImporter> importerMap = new HashMap<>();
+        importerMap.put("sigma", configImporter);
+        context.setConfigImporters(importerMap);
+
         this.alertingRuleSchemaService = new AlertingRuleSchemaService(alertingCompiler, context);
 
         alertingAttributes = new AlertingAttributes();
@@ -201,5 +215,57 @@ public class AlertingRuleSchemaServiceTest {
         ConfigEditorResult ret = alertingRuleSchemaService.testConfiguration(testRule, testSpecification);
         verify(alertingCompiler, times(1)).testRule(testRule, testEvent.trim());
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+    }
+
+    @Test
+    public void getImportersSigmaMock() {
+        ConfigEditorAttributes attr = new ConfigEditorAttributes();
+        attr.setConfigImporterAttributesSchema("importer_schema");
+        ConfigEditorResult schemaResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
+        Mockito.when(configImporter.getImporterAttributesSchema()).thenReturn(schemaResult);
+
+        ConfigEditorResult ret = alertingRuleSchemaService.getImporters();
+        verify(configImporter, times(1)).getImporterAttributesSchema();
+
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getConfigImporters());
+        Assert.assertEquals(1, ret.getAttributes().getConfigImporters().size());
+        Assert.assertEquals("sigma", ret.getAttributes().getConfigImporters().get(0).getImporterName());
+        Assert.assertEquals("importer_schema", ret.getAttributes()
+                .getConfigImporters().get(0).getImporterAttributesSchema());
+
+    }
+
+    @Test
+    public void testImportSigmaMock() {
+        ConfigEditorAttributes attr = new ConfigEditorAttributes();
+        attr.setImportedConfiguration("imported_configuration");
+        ConfigEditorResult importResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
+        Mockito.when(configImporter.importConfig(eq(userInfo), any(), any())).thenReturn(importResult);
+
+        ConfigEditorResult ret = alertingRuleSchemaService.importConfig(userInfo,
+                "sigma", "importer_attributes", "config_to_import");
+        verify(configImporter, times(1))
+                .importConfig(eq(userInfo), eq("importer_attributes"), eq("config_to_import"));
+
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getImportedConfiguration());
+        Assert.assertEquals("imported_configuration", ret.getAttributes().getImportedConfiguration());
+    }
+
+    @Test
+    public void testImportUnknownImporterMock() {
+        ConfigEditorAttributes attr = new ConfigEditorAttributes();
+        attr.setImportedConfiguration("imported_configuration");
+        ConfigEditorResult importResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
+        Mockito.when(configImporter.importConfig(eq(userInfo), any(), any())).thenReturn(importResult);
+
+        ConfigEditorResult ret = alertingRuleSchemaService.importConfig(userInfo,
+                "unknown", "importer_attributes", "config_to_import");
+        verify(configImporter, times(0))
+                .importConfig(eq(userInfo), eq("importer_attributes"), eq("config_to_import"));
+
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getMessage());
     }
 }

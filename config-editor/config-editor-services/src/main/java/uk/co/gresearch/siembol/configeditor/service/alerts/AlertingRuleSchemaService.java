@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
@@ -20,11 +21,14 @@ import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingRulesCompiler;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaRuleImporter;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
@@ -46,6 +50,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
 
     private static final String SCHEMA_INIT_ERROR = "Error during computing rules schema";
     private static final String TESTING_ERROR = "Unexpected rule testing service result";
+    private static final String SIGMA_IMPORTER_NAME = "sigma";
     private final AlertingCompiler alertingCompiler;
 
     AlertingRuleSchemaService(AlertingCompiler alertingCompiler,
@@ -102,6 +107,11 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         context.setAdminConfigSchema(adminConfigSchemaUi.get());
         context.setAdminConfigValidator(adminConfigValidator);
         context.setTestSchema(testSchema);
+
+        Map<String, ConfigImporter> importerMap = new HashMap<>();
+        importerMap.put(SIGMA_IMPORTER_NAME, new SigmaRuleImporter.Builder().configEditorUiLayout(uiLayout).build());
+        context.setConfigImporters(importerMap);
+
         LOG.info("Initialising alerts rule schema service completed");
         return new AlertingRuleSchemaService(compiler, context);
     }
