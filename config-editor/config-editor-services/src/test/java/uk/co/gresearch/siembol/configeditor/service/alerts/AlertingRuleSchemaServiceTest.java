@@ -217,7 +217,7 @@ public class AlertingRuleSchemaServiceTest {
     }
 
     @Test
-    public void getImportersSigma() throws Exception {
+    public void getImportersSigmaMock() {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         attr.setConfigImporterAttributesSchema("importer_schema");
         ConfigEditorResult schemaResult = new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
