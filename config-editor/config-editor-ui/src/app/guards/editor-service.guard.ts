@@ -13,7 +13,6 @@ export class EditorServiceGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     const serviceName = route.parent.url[0].path;
     if (this.editorService.serviceName === serviceName && !this.editorService.adminMode) {
-      //   this.editorService.configStore.updateEditedConfig(null);
       return true;
     }
 
