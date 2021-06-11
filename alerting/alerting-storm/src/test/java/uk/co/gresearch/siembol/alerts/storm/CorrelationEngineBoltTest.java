@@ -34,7 +34,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_ENGINE_DETECTION_SOURCE_TAG_VALUE;
 
 public class CorrelationEngineBoltTest {
     private static ObjectReader JSON_READER = new ObjectMapper()
@@ -76,7 +75,7 @@ public class CorrelationEngineBoltTest {
      *   "tags": [
      *     {
      *       "tag_name": "detection_source",
-     *       "tag_value": "siembol_correlation_alerts"
+     *       "tag_value": "siembol_correlation_alerts_instance"
      *     }
      *   ],
      *   "rules": [
@@ -174,7 +173,7 @@ public class CorrelationEngineBoltTest {
         Assert.assertEquals(500, alerts.get(0).getMaxHourMatches());
 
         Map<String, Object> parsed = JSON_READER.readValue(alerts.get(0).getAlertJson());
-        Assert.assertEquals(CORRELATION_ENGINE_DETECTION_SOURCE_TAG_VALUE.toString(),
+        Assert.assertEquals("siembol_correlation_alerts_instance",
                 parsed.get(AlertingTags.DETECTION_SOURCE_TAG_NAME.toString()));
         Assert.assertEquals("test_rule_v1", parsed.get(AlertingFields.FULL_RULE_NAME.getCorrelationAlertingName()));
         Assert.assertEquals(1000, parsed.get(AlertingFields.MAX_PER_DAY_FIELD.getCorrelationAlertingName()));

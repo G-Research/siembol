@@ -23,7 +23,7 @@ import static uk.co.gresearch.siembol.parsers.application.factory.ParsingApplica
 import static uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult.StatusCode.OK;
 
 public class ParsingAppConfigSchemaServiceTest {
-    private ParsingAppConfigSchemaService parserConfigSchemaService;
+    private ParsingAppConfigSchemaService parsingAppConfigSchemaService;
     private final String schema = "dummmy schema";
     private final String adminSchema = "admin schema";
     private final String testConfig = "dummmy config";
@@ -47,7 +47,7 @@ public class ParsingAppConfigSchemaServiceTest {
 
         context.setAdminConfigSchema(adminSchema);
         context.setAdminConfigValidator(adminConfigValidator);
-        this.parserConfigSchemaService = new ParsingAppConfigSchemaService(parsingAppFactory, context);
+        this.parsingAppConfigSchemaService = new ParsingAppConfigSchemaService(parsingAppFactory, context);
         factoryAttributes = new ParsingApplicationFactoryAttributes();
         factoryResult = new ParsingApplicationFactoryResult(OK, factoryAttributes);
         Mockito.when(parsingAppFactory.validateConfiguration(anyString())).thenReturn(factoryResult);
@@ -57,28 +57,28 @@ public class ParsingAppConfigSchemaServiceTest {
     @Test
     public void getSchemaOK() {
         factoryAttributes.setJsonSchema(schema);
-        ConfigEditorResult ret = parserConfigSchemaService.getSchema();
+        ConfigEditorResult ret = parsingAppConfigSchemaService.getSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(schema, ret.getAttributes().getRulesSchema());
     }
 
     @Test
     public void validateConfigurationsOK() {
-        ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
     }
 
     @Test
     public void validateConfigurationsError() {
-        ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
     }
 
     @Test
     public void validateConfigurationOK() {
-        ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parsingAppFactory, times(1)).validateConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
     }
@@ -88,7 +88,7 @@ public class ParsingAppConfigSchemaServiceTest {
         factoryAttributes.setMessage("error");
         factoryResult = new ParsingApplicationFactoryResult(ERROR, factoryAttributes);
         Mockito.when(parsingAppFactory.validateConfigurations(anyString())).thenReturn(factoryResult);
-        ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
@@ -99,7 +99,7 @@ public class ParsingAppConfigSchemaServiceTest {
         factoryAttributes.setMessage("error");
         factoryResult = new ParsingApplicationFactoryResult(ERROR, factoryAttributes);
         Mockito.when(parsingAppFactory.validateConfiguration(anyString())).thenReturn(factoryResult);
-        ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parsingAppFactory, times(1)).validateConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
@@ -107,14 +107,14 @@ public class ParsingAppConfigSchemaServiceTest {
 
     @Test
     public void getAdminConfigSchemaOK() {
-        ConfigEditorResult ret = parserConfigSchemaService.getAdminConfigurationSchema();
+        ConfigEditorResult ret = parsingAppConfigSchemaService.getAdminConfigurationSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(adminSchema, ret.getAttributes().getAdminConfigSchema());
     }
 
     @Test
     public void validateAdminConfigOK() {
-        ConfigEditorResult ret = parserConfigSchemaService.validateAdminConfiguration(testConfig);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateAdminConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         verify(adminConfigValidator, VerificationModeFactory.times(1)).validate(testConfig);
     }
@@ -123,8 +123,16 @@ public class ParsingAppConfigSchemaServiceTest {
     public void validateAdminConfigInvalid() {
         when(adminConfigValidator.validate(eq(testConfig)))
                 .thenReturn(new SiembolResult(SiembolResult.StatusCode.ERROR, new SiembolAttributes()));
-        ConfigEditorResult ret = parserConfigSchemaService.validateAdminConfiguration(testConfig);
+        ConfigEditorResult ret = parsingAppConfigSchemaService.validateAdminConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         verify(adminConfigValidator, VerificationModeFactory.times(1)).validate(testConfig);
+    }
+
+    @Test
+    public void getImportersEmpty() throws Exception {
+        ConfigEditorResult ret = parsingAppConfigSchemaService.getImporters();
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getConfigImporters());
+        Assert.assertTrue(ret.getAttributes().getConfigImporters().isEmpty());
     }
 }

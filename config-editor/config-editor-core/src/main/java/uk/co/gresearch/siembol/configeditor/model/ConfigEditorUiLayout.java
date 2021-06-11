@@ -15,7 +15,8 @@ public class ConfigEditorUiLayout {
     Map<String, JsonNode> adminConfigLayout = new HashMap<>();
     @JsonProperty("test_case_layout")
     Map<String, JsonNode> testCaseLayout = new HashMap<>();
-
+    @JsonProperty("importers_layout")
+    Map<String, JsonNode> importersLayout = new HashMap<>();
 
     public Map<String, JsonNode> getConfigLayout() {
         return configLayout;
@@ -47,5 +48,13 @@ public class ConfigEditorUiLayout {
 
     public void setTestCaseLayout(Map<String, JsonNode> testCaseLayout) {
         this.testCaseLayout = testCaseLayout;
+    }
+
+    public Map<String, JsonNode> getImportersLayout() {
+        return importersLayout;
+    }
+
+    public void setImportersLayout(Map<String, JsonNode> importersLayout) {
+        this.importersLayout = importersLayout;
     }
 }

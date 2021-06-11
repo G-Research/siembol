@@ -21,5 +21,7 @@ public interface AlertingEngine {
 
     AlertingResult evaluate(Map<String, Object> event);
 
+    AlertingEngineType getAlertingEngineType();
+
     default void clean() {}
 }

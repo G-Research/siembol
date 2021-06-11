@@ -2,14 +2,17 @@ package uk.co.gresearch.siembol.alerts.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import com.github.reinert.jjschema.SchemaIgnore;
+
+import java.util.List;
 
 @Attributes(title = "matcher", description = "Matcher for matching fields")
 public class MatcherDto {
     @JsonProperty("matcher_type")
-    @Attributes(required = true,
-            description = "Type of matcher, either Regex match or list of strings (newline delimited)",
+    @Attributes(required = true, description = "Type of matcher, either Regex match or list of strings " +
+            "(newline delimited) or a composite matcher composing several matchers",
             enums = {"REGEX_MATCH", "IS_IN_SET"})
-    private String type;
+    private MatcherTypeDto type;
 
     @JsonProperty("is_negated")
     @Attributes(description = "The matcher is negated")
@@ -22,14 +25,18 @@ public class MatcherDto {
     @Attributes(description = "Use case insensitive string compare")
     private Boolean caseInsensitiveCompare = false;
 
-    @Attributes(required = true, description = "Matcher expression as defined by matcher type")
+    @Attributes(description = "Matcher expression as defined by matcher type")
     private String data;
 
-    public String getType() {
+    @SchemaIgnore
+    @Attributes(description = "List of matchers of the composite matcher")
+    private List<MatcherDto> matchers;
+
+    public MatcherTypeDto getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(MatcherTypeDto type) {
         this.type = type;
     }
 
@@ -63,6 +70,14 @@ public class MatcherDto {
 
     public void setCaseInsensitiveCompare(Boolean caseInsensitiveCompare) {
         this.caseInsensitiveCompare = caseInsensitiveCompare;
+    }
+
+    public List<MatcherDto> getMatchers() {
+        return matchers;
+    }
+
+    public void setMatchers(List<MatcherDto> matchers) {
+        this.matchers = matchers;
     }
 }
 

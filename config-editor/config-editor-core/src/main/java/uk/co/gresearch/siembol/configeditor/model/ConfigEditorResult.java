@@ -55,9 +55,13 @@ public class ConfigEditorResult {
     }
 
     public static ConfigEditorResult fromException(Exception e) {
+        return fromException(StatusCode.ERROR, e);
+    }
+
+    public static ConfigEditorResult fromException(StatusCode code, Exception e) {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         attr.setException(ExceptionUtils.getStackTrace(e));
-        return new ConfigEditorResult(StatusCode.ERROR, attr);
+        return new ConfigEditorResult(code, attr);
     }
 
     public static ConfigEditorResult fromSchema(String schema) {

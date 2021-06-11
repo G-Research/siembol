@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.alerts.storm.model;
+package uk.co.gresearch.siembol.alerts.common;
 
 import java.io.Serializable;
 

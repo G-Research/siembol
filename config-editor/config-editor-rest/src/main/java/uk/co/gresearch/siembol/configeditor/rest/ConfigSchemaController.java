@@ -13,6 +13,7 @@ import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ImportConfigRequestDto;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 
@@ -113,5 +114,30 @@ public class ConfigSchemaController {
         return singleConfig
                 ? service.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
                 : service.testConfigurations(config.get(), attributes.getTestSpecification()).toResponseEntity();
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/v1/{service}/configs/importers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getImporters(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String serviceName) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .getImporters()
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/configs/import", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> importConfig(
+            @AuthenticationPrincipal Authentication authentication,
+            @PathVariable("service") String serviceName,
+            @RequestBody ImportConfigRequestDto req) {
+        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .importConfig(user, req.getImporterName(), req.getImporterAttributes(), req.getConfigToImport())
+                .toResponseEntity();
     }
 }

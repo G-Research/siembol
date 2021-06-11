@@ -1,0 +1,45 @@
+name: CI (Fork)
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  unit-test-results:
+    name: Unit Test Results
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion != 'skipped' && (
+        github.event.sender.login == 'dependabot[bot]' ||
+        github.event.workflow_run.head_repository.full_name != github.repository
+      )
+
+    steps:
+      # we are not using actions/download-artifact here as
+      # it does not yet support downloading from a different workflow
+      # https://github.com/actions/download-artifact/issues/3
+      - name: Download Artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          artifacts_url=${{ github.event.workflow_run.artifacts_url }}
+          artifact_url=$(gh api $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results") .archive_download_url')
+          if [[ -n "$artifact_url" ]]
+          then
+            gh api $artifact_url > unit-test-results.zip
+            unzip unit-test-results.zip
+          else
+            echo "::error::No artifact with name 'unit-test-results' exists"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Publish unit test results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          check_name: unit-test-results
+          comment_title: Unit Test Results
+          files: "**/target/surefire-reports/TEST-*.xml"
+          commit: ${{ github.event.workflow_run.head_sha }}
