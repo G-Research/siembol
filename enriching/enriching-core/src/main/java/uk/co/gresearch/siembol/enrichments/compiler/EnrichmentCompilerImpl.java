@@ -58,7 +58,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         this.testSchemaValidator = testSchemaValidator;
     }
 
-    private RuleMatcher createMatcher(MatcherDto matcherDto) {
+    private BasicMatcher createMatcher(MatcherDto matcherDto) {
         switch (matcherDto.getType()) {
             case REGEX_MATCH:
                 return RegexMatcher
@@ -86,7 +86,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
             throw new IllegalArgumentException(RULE_TAGS_ENRICHMENTS_EMPTY_MSG);
         }
 
-        List<RuleMatcher> matchers = ruleDto.getMatchers().stream()
+        List<Matcher> matchers = ruleDto.getMatchers().stream()
                 .map(x -> createMatcher(x))
                 .collect(Collectors.toList());
 
