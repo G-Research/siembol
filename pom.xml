@@ -41,7 +41,7 @@
         <java_version>1.8</java_version>
         <jackson_version>2.12.3</jackson_version>
         <junit_version>4.13.2</junit_version>
-        <mockito_version>3.11.0</mockito_version>
+        <mockito_version>3.11.1</mockito_version>
         <shade_version>3.2.4</shade_version>
         <curator_version>2.12.0</curator_version>
         <storm_version>1.2.1</storm_version>
