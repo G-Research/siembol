@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
@@ -34,7 +33,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/schema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getSchema(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -46,7 +45,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/testschema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTestSchema(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -58,7 +57,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/adminconfig/schema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getAdminConfigSchema(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
@@ -71,7 +70,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> validate(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
             @RequestBody String body) {
@@ -85,7 +84,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/adminconfig/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> validateAdminConfiguration(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName,
             @RequestBody String body) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -99,7 +98,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/test", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> test(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
             @RequestBody ConfigEditorAttributes attributes) {
@@ -119,7 +118,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/importers", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getImporters(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -131,7 +130,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/import", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> importConfig(
-            @AuthenticationPrincipal Authentication authentication,
+            Authentication authentication,
             @PathVariable("service") String serviceName,
             @RequestBody ImportConfigRequestDto req) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
