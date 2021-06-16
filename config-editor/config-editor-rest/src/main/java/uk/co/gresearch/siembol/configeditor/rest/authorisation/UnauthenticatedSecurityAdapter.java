@@ -24,7 +24,7 @@ public class UnauthenticatedSecurityAdapter extends SiembolUnauthenticatedSecuri
     @Bean
     UserInfoProvider userInfoProvider() {
         final UserInfo singleUser = properties.getSingleUser();
-        return (x) -> singleUser;
+        return (principal) -> singleUser;
     }
 
     @Bean
