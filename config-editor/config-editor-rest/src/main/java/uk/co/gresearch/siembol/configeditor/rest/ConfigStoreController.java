@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
@@ -26,7 +27,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getConfigs(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -39,7 +40,7 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> addConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -53,7 +54,7 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/configs/delete",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> deleteConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestParam() String configName) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -67,7 +68,7 @@ public class ConfigStoreController {
     @PutMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> updateConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -81,7 +82,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTestCases(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -94,7 +95,7 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> addTestCase(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -108,7 +109,7 @@ public class ConfigStoreController {
     @PutMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> updateTestCase(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -122,7 +123,7 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/testcases/delete",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> deleteTestCase(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestParam() String configName,
             @RequestParam() String testCaseName) {
@@ -137,7 +138,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/release",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getRelease(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -150,7 +151,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/release/status",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getReleaseStatus(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -163,7 +164,7 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/release",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> submitRelease(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String rule) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
@@ -177,7 +178,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/repositories",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getRepositories(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         return serviceAggregator
@@ -190,7 +191,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/adminconfig",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getAdminConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
@@ -204,7 +205,7 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/adminconfig/status",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getAdminConfigStatus(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
@@ -218,7 +219,7 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/adminconfig",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> submitAdminConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Authentication authentication,
             @PathVariable("service") String service,
             @RequestBody String config) {
         UserInfo user = userInfoProvider.getUserInfo(authentication);
