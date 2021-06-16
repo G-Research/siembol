@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
@@ -33,9 +33,9 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/schema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getSchema(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
                 .getSchema()
@@ -45,9 +45,9 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/testschema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTestSchema(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
                 .getTestSchema()
@@ -57,9 +57,9 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/adminconfig/schema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getAdminConfigSchema(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
@@ -70,11 +70,11 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> validate(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
             @RequestBody String body) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         ConfigSchemaService service = serviceAggregator.getConfigSchema(user, serviceName);
         return singleConfig
                 ? service.validateConfiguration(body).toResponseEntity()
@@ -84,10 +84,10 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/adminconfig/validate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> validateAdminConfiguration(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName,
             @RequestBody String body) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
@@ -98,7 +98,7 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/test", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> test(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
             @RequestBody ConfigEditorAttributes attributes) {
@@ -108,7 +108,7 @@ public class ConfigSchemaController {
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, MISSING_ATTRIBUTES)
                     .toResponseEntity();
         }
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         ConfigSchemaService service = serviceAggregator.getConfigSchema(user, serviceName);
         return singleConfig
                 ? service.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
@@ -118,9 +118,9 @@ public class ConfigSchemaController {
     @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/configs/importers", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getImporters(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
                 .getImporters()
@@ -130,10 +130,10 @@ public class ConfigSchemaController {
     @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/configs/import", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> importConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName,
             @RequestBody ImportConfigRequestDto req) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
                 .importConfig(user, req.getImporterName(), req.getImporterAttributes(), req.getConfigToImport())

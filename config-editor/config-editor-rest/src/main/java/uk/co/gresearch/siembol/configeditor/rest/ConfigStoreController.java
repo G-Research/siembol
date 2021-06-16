@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
@@ -26,9 +26,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getConfigs(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .getConfigs()
@@ -39,10 +39,10 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> addConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestBody String rule) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .addConfig(user, rule)
@@ -53,10 +53,10 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/configs/delete",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> deleteConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestParam() String configName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .deleteConfig(user, configName)
@@ -67,10 +67,10 @@ public class ConfigStoreController {
     @PutMapping(value = "/api/v1/{service}/configstore/configs",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> updateConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestBody String rule) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .updateConfig(user, rule)
@@ -81,9 +81,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTestCases(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .getTestCases()
@@ -94,10 +94,10 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> addTestCase(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .addTestCase(user, testCase)
@@ -108,10 +108,10 @@ public class ConfigStoreController {
     @PutMapping(value = "/api/v1/{service}/configstore/testcases",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> updateTestCase(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestBody String testCase) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .updateTestCase(user, testCase)
@@ -122,11 +122,11 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/testcases/delete",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> deleteTestCase(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestParam() String configName,
             @RequestParam() String testCaseName) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .deleteTestCase(user, configName, testCaseName)
@@ -137,9 +137,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/release",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getRelease(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .getConfigsRelease()
@@ -150,9 +150,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/release/status",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getReleaseStatus(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .getConfigsReleaseStatus()
@@ -163,10 +163,10 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/release",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> submitRelease(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestBody String rule) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .submitConfigsRelease(user, rule)
@@ -177,9 +177,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/repositories",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getRepositories(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
                 .getRepositories()
@@ -190,9 +190,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/adminconfig",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getAdminConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         return serviceAggregator
                 .getConfigStore(user, service)
@@ -204,9 +204,9 @@ public class ConfigStoreController {
     @GetMapping(value = "/api/v1/{service}/configstore/adminconfig/status",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getAdminConfigStatus(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         return serviceAggregator
                 .getConfigStore(user, service)
@@ -218,10 +218,10 @@ public class ConfigStoreController {
     @PostMapping(value = "/api/v1/{service}/configstore/adminconfig",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> submitAdminConfig(
-            Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @RequestBody String config) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         return serviceAggregator
                 .getConfigStore(user, service)
