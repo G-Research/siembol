@@ -31,7 +31,7 @@ public class AuthorisationConfiguration {
                 this.authorisationProvider = oauth2AuthorisationProvider();
                 break;
             default:
-                throw new IllegalArgumentException(UNSUPPORTED_AUTH_TYPE);
+                throw new IllegalArgumentException(String.format(UNSUPPORTED_AUTH_TYPE, properties.getType()));
         }
     }
 
