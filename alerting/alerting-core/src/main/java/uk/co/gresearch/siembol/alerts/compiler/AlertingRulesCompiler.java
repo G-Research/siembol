@@ -34,6 +34,7 @@ public class AlertingRulesCompiler implements AlertingCompiler {
     private static final String OUTPUT_EVENTS_MSG = "Output events:";
     private static final String EXCEPTION_EVENTS_MSG = "Exception events:";
     private static final String UNSUPPORTED_MATCHER_TYPE = "Unsupported matcher type: %s";
+    private static final String MISSING_MATCHERS_IN_COMPOSITE_MATCHER = "Missing matchers in a composite matcher";
 
     private final JsonSchemaValidator jsonSchemaValidator;
     private final List<TagDto> testOutputConstants;
@@ -65,13 +66,14 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                         .build();
             case COMPOSITE_AND:
             case COMPOSITE_OR:
-                if (matcherDto.getMatchers() == null || matcherDto.getMatchers().isEmpty()) {
-                    throw new IllegalArgumentException();
+                if (matcherDto.getMatchers() == null) {
+                    throw new IllegalArgumentException(MISSING_MATCHERS_IN_COMPOSITE_MATCHER);
                 }
                 List<Matcher> matchers = matcherDto.getMatchers().stream()
                         .map(this::createMatcher)
                         .collect(Collectors.toList());
-                return new CompositeMatcher.Builder(matcherType)
+                return CompositeMatcher.builder()
+                        .matcherType(matcherType)
                         .matchers(matchers)
                         .negated(matcherDto.getNegated())
                         .build();

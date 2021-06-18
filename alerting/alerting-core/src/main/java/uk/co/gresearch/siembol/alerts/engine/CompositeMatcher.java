@@ -10,10 +10,12 @@ import java.util.function.Function;
 public class CompositeMatcher implements Matcher {
     private final Function<Map<String, Object>, EvaluationResult> evaluationFunction;
     private final boolean negated;
+    private final boolean canModifyEvent;
 
     public CompositeMatcher(Builder builder) {
         this.evaluationFunction = builder.evaluationFunction;
         this.negated = builder.negated;
+        this.canModifyEvent = builder.canModifyEvent;
     }
 
     @Override
@@ -24,10 +26,14 @@ public class CompositeMatcher implements Matcher {
 
     @Override
     public boolean canModifyEvent() {
-        return false;
+        return canModifyEvent;
     }
 
-   private static EvaluationResult evaluateOr(List<Matcher> matchers, Map<String, Object> log) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    private static EvaluationResult evaluateOr(List<Matcher> matchers, Map<String, Object> log) {
         for (Matcher matcher : matchers) {
             if (EvaluationResult.MATCH == matcher.match(log)) {
                 return EvaluationResult.MATCH;
@@ -49,13 +55,20 @@ public class CompositeMatcher implements Matcher {
 
     public static class Builder {
         private static final String WRONG_ARGUMENTS = "wrong arguments in the composite matcher";
+        private static final String COMPOSITE_OR_MODIFY_EVENT_MSG = "COMPOSITE_OR matcher includes a matcher " +
+                "that can modify an event";
+        private static final String COMPOSITE_AND_MODIFY_EVENT_MSG = "COMPOSITE_AND matcher is negated and includes " +
+                "a matcher that can modify an event and";
+
         private MatcherType matcherType;
         private Boolean negated;
         private List<Matcher> matchers;
         private Function<Map<String, Object>, EvaluationResult> evaluationFunction;
+        private boolean canModifyEvent;
 
-        public Builder(MatcherType matcherType) {
+        public Builder matcherType(MatcherType matcherType) {
             this.matcherType = matcherType;
+            return this;
         }
 
         public Builder negated(boolean negated) {
@@ -68,24 +81,31 @@ public class CompositeMatcher implements Matcher {
             return this;
         }
 
-        public Matcher build() {
+        public CompositeMatcher build() {
             if (negated == null
-                    || matchers == null || matchers.isEmpty()) {
+                    || matchers == null || matchers.isEmpty()
+                    || matcherType == null) {
                 throw new IllegalArgumentException(WRONG_ARGUMENTS);
             }
-            matchers.forEach(x -> {
-                if (x.canModifyEvent()) {
-                    throw new IllegalArgumentException();
-                }
-            });
+
+            canModifyEvent = false;
+            matchers.forEach(x -> canModifyEvent |= x.canModifyEvent());
+
             switch (matcherType) {
                 case COMPOSITE_OR:
+                    if (canModifyEvent) {
+                        throw new IllegalArgumentException(COMPOSITE_OR_MODIFY_EVENT_MSG);
+                    }
                     evaluationFunction = x -> evaluateOr(matchers, x);
                     break;
                 case COMPOSITE_AND:
+                    if (negated && canModifyEvent) {
+                        throw new IllegalArgumentException(COMPOSITE_AND_MODIFY_EVENT_MSG);
+                    }
                     evaluationFunction = x -> evaluateAnd(matchers, x);
+                    break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException(WRONG_ARGUMENTS);
             }
             return new CompositeMatcher(this);
         }
