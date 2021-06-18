@@ -75,7 +75,7 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                 return CompositeMatcher.builder()
                         .matcherType(matcherType)
                         .matchers(matchers)
-                        .negated(matcherDto.getNegated())
+                        .isNegated(matcherDto.getNegated())
                         .build();
             default:
                 throw new IllegalArgumentException(String.format(UNSUPPORTED_MATCHER_TYPE,

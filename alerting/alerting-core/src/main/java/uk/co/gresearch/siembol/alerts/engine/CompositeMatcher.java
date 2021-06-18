@@ -71,7 +71,7 @@ public class CompositeMatcher implements Matcher {
             return this;
         }
 
-        public Builder negated(boolean negated) {
+        public Builder isNegated(boolean negated) {
             this.negated = negated;
             return this;
         }

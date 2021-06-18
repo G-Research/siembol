@@ -37,7 +37,7 @@ public class CompositeMatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void missingMatchers() {
         CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .build();
     }
@@ -45,7 +45,7 @@ public class CompositeMatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void emptyMatchers() {
         CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .matchers(new ArrayList<>())
                 .build();
@@ -62,7 +62,7 @@ public class CompositeMatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void missingType() {
         CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .build();
     }
@@ -70,7 +70,7 @@ public class CompositeMatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void wrongType() {
         CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .matcherType(MatcherType.REGEX_MATCH)
                 .build();
@@ -80,7 +80,7 @@ public class CompositeMatcherTest {
     public void canModifyEventCompositeOrException() {
         when(matcher2.canModifyEvent()).thenReturn(true);
         CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .build();
@@ -91,7 +91,7 @@ public class CompositeMatcherTest {
     @Test
     public void canModifyEventCompositeOrOk() {
         compositeMatcher = CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .build();
@@ -105,7 +105,7 @@ public class CompositeMatcherTest {
         when(matcher1.canModifyEvent()).thenReturn(false);
         when(matcher2.canModifyEvent()).thenReturn(true);
         compositeMatcher = CompositeMatcher.builder()
-                .negated(false)
+                .isNegated(false)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_AND)
                 .build();
@@ -119,7 +119,7 @@ public class CompositeMatcherTest {
         when(matcher1.canModifyEvent()).thenReturn(false);
         when(matcher2.canModifyEvent()).thenReturn(true);
         CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_AND)
                 .build();
@@ -128,7 +128,7 @@ public class CompositeMatcherTest {
     @Test
     public void compositeOrMatch() {
         compositeMatcher = CompositeMatcher.builder()
-                .negated(false)
+                .isNegated(false)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .build();
@@ -141,7 +141,7 @@ public class CompositeMatcherTest {
     @Test
     public void compositeOrMatchNegated() {
         compositeMatcher = CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .build();
@@ -156,7 +156,7 @@ public class CompositeMatcherTest {
         when(matcher1.match(event)).thenReturn(EvaluationResult.NO_MATCH);
         when(matcher2.match(event)).thenReturn(EvaluationResult.NO_MATCH);
         compositeMatcher = CompositeMatcher.builder()
-                .negated(false)
+                .isNegated(false)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_OR)
                 .build();
@@ -169,7 +169,7 @@ public class CompositeMatcherTest {
     @Test
     public void compositeAndMatch() {
         compositeMatcher = CompositeMatcher.builder()
-                .negated(false)
+                .isNegated(false)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_AND)
                 .build();
@@ -182,7 +182,7 @@ public class CompositeMatcherTest {
     @Test
     public void compositeAndMatchNegated() {
         compositeMatcher = CompositeMatcher.builder()
-                .negated(true)
+                .isNegated(true)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_AND)
                 .build();
@@ -196,7 +196,7 @@ public class CompositeMatcherTest {
     public void compositeAndNoMatch() {
         when(matcher1.match(event)).thenReturn(EvaluationResult.NO_MATCH);
         compositeMatcher = CompositeMatcher.builder()
-                .negated(false)
+                .isNegated(false)
                 .matchers(matchers)
                 .matcherType(MatcherType.COMPOSITE_AND)
                 .build();
