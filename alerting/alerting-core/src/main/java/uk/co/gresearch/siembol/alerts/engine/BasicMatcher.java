@@ -4,7 +4,7 @@ import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import java.util.Map;
 
 public abstract class BasicMatcher implements Matcher {
-    private final static String MISSING_FIELD_NAME = "Missing field name";
+    private final static String MISSING_FIELD_NAME = "Missing field name in a basic matcher";
     private final String fieldName;
     private final boolean isNegated;
 
