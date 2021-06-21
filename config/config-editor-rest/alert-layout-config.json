@@ -14,132 +14,316 @@
                 }
             }
         },
-        "$..matchers.items": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "expansion-panel"
-                    ]
-                }
-            }
-        },
-        "$..rules..tags.items": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "panel"
-                    ]
-                }
-            }
-        },
-        "$..case_insensitive": {
-            "widget": {
-                "formlyConfig": {
-                    "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
-                }
-            }
-        },
-        "$..data": {
-            "widget": {
-                "formlyConfig": {
-                    "type": "textarea",
-                    "wrappers": ["form-field", "help-link"],
-                    "templateOptions": {
-                        "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+        "$..rules.items.properties.matchers": {
+            "type": "array",
+            "items": {
+                "widget": {
+                    "formlyConfig": {
+                        "wrappers": [
+                            "expansion-panel"
+                        ]
+                    }
+                },
+                "type": "object",
+                "description": "Matcher for matching fields",
+                "title": "matcher",
+                "properties": {
+                    "matcher_type": {
+                        "enum": [
+                            "REGEX_MATCH",
+                            "IS_IN_SET",
+                            "COMPOSITE_AND",
+                            "COMPOSITE_OR"
+                        ],
+                        "type": "string",
+                        "description": "Type of matcher, either Regex match or list of strings (newline delimited) or a composite matcher composing several matchers"
                     },
-                    "expressionProperties": {
-                        "templateOptions.showHelpLink": "model.matcher_type !== 'IS_IN_SET'"
+                    "is_negated": {
+                        "type": "boolean",
+                        "description": "The matcher is negated",
+                        "default": false
+                    },
+                    "field": {
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                            }
+                        },
+                        "type": "string",
+                        "description": "Field on which the matcher will be evaluated"
+                    },
+                    "case_insensitive": {
+                        "type": "boolean",
+                        "description": "Use case insensitive string compare",
+                        "default": false,
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "string",
+                        "description": "Matcher expression as defined by matcher type",
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                            }
+                        }
+                    },
+                    "matchers": {
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                            }
+                        },
+                        "type": "array",
+                        "items": {
+                            "widget": {
+                                "formlyConfig": {
+                                    "wrappers": [
+                                        "expansion-panel"
+                                    ]
+                                }
+                            },
+                            "type": "object",
+                            "description": "Matcher for matching fields",
+                            "title": "matcher",
+                            "properties": {
+                                "matcher_type": {
+                                    "enum": [
+                                        "REGEX_MATCH",
+                                        "IS_IN_SET",
+                                        "COMPOSITE_AND",
+                                        "COMPOSITE_OR"
+                                    ],
+                                    "type": "string",
+                                    "description": "Type of matcher, either Regex match or list of strings (newline delimited) or a composite matcher composing several matchers"
+                                },
+                                "is_negated": {
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                                        }
+                                    },
+                                    "type": "boolean",
+                                    "description": "The matcher is negated",
+                                    "default": false
+                                },
+                                "field": {
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                        }
+                                    },
+                                    "type": "string",
+                                    "description": "Field on which the matcher will be evaluated"
+                                },
+                                "case_insensitive": {
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                                        }
+                                    },
+                                    "type": "boolean",
+                                    "description": "Use case insensitive string compare",
+                                    "default": false
+                                },
+                                "data": {
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                        }
+                                    },
+                                    "type": "string",
+                                    "description": "Matcher expression as defined by matcher type"
+                                },
+                                "matchers": {
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "wrappers": [
+                                                "expansion-panel"
+                                            ],
+                                            "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                        }
+                                    },
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "description": "Matcher for matching fields",
+                                        "title": "matcher",
+                                        "properties": {
+                                            "matcher_type": {
+                                                "enum": [
+                                                    "REGEX_MATCH",
+                                                    "IS_IN_SET"
+                                                ],
+                                                "type": "string",
+                                                "description": "Type of matcher, either Regex match or list of strings (newline delimited)"
+                                            },
+                                            "is_negated": {
+                                                "type": "boolean",
+                                                "description": "The matcher is negated",
+                                                "default": false
+                                            },
+                                            "case_insensitive": {
+                                                "type": "boolean",
+                                                "description": "Use case insensitive string compare",
+                                                "default": false,
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "type": "string",
+                                                "description": "Matcher expression as defined by matcher type"
+                                            }
+                                        },
+                                        "required": [
+                                            "matcher_type"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "matcher_type"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "matcher_type"
+                        ]
+                    },
+                    "description": "Matchers of the rule",
+                    "minItems": 1
+                },
+                "$..rules..tags.items": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "panel"
+                            ]
+                        }
+                    }
+                },
+                "$..case_insensitive": {
+                    "widget": {
+                        "formlyConfig": {
+                            "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                        }
+                    }
+                },
+                "$..data": {
+                    "widget": {
+                        "formlyConfig": {
+                            "type": "textarea",
+                            "wrappers": [
+                                "form-field",
+                                "help-link"
+                            ],
+                            "templateOptions": {
+                                "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+                            },
+                            "expressionProperties": {
+                                "templateOptions.showHelpLink": "model.matcher_type !== 'IS_IN_SET'"
+                            }
+                        }
                     }
                 }
-            }
-        }
-    },
-    "admin_config_layout": {
-        "$": {
-            "widget": {
-                "formlyConfig": {
-                    "type": "admin-tabs"
-                }
-            }
-        },
-        "$..['alerts.input.topics']": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                    "expansion-panel"
-                    ],
-                    "templateOptions": {
-                        "genericSettingTab": "true"
+            },
+            "admin_config_layout": {
+                "$": {
+                    "widget": {
+                        "formlyConfig": {
+                            "type": "admin-tabs"
+                        }
                     }
-                }
-            }
-        },
-        "$..['alerts.engine.clean.interval.sec']": {
-          "widget": {
-            "formlyConfig": {
-              "hideExpression": "true"
-            }
-          }
-        },
-        "$..['alerts.engine']": {
-            "enum": ["siembol_alerts"]
-        },
-        "$..['kafka.spout.properties']": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "help-link"
-                    ],
-                    "templateOptions": {
-                        "link": "https://kafka.apache.org/0102/documentation.html#consumerconfigs"
+                },
+                "$..['alerts.input.topics']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "expansion-panel"
+                            ],
+                            "templateOptions": {
+                                "genericSettingTab": "true"
+                            }
+                        }
                     }
-                }
-            }
-        },
-        "$..['offset.commit.period.ms']": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "form-field", "help-link"
-                    ],
-                    "templateOptions": {
-                        "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
+                },
+                "$..['alerts.engine.clean.interval.sec']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "hideExpression": "true"
+                        }
                     }
-                }
-            }
-        },
-        "$..['max.uncommitted.offsets']": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "form-field", "help-link"
-                    ],
-                    "templateOptions": {
-                        "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
+                },
+                "$..['alerts.engine']": {
+                    "enum": [
+                        "siembol_alerts"
+                    ]
+                },
+                "$..['kafka.spout.properties']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "help-link"
+                            ],
+                            "templateOptions": {
+                                "link": "https://kafka.apache.org/0102/documentation.html#consumerconfigs"
+                            }
+                        }
                     }
-                }
-            }
-        },
-        "$..['storm.config']": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "help-link"
-                    ],
-                    "templateOptions": {
-                        "link": "https://storm.apache.org/releases/current/Configuration.html"
+                },
+                "$..['offset.commit.period.ms']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "form-field",
+                                "help-link"
+                            ],
+                            "templateOptions": {
+                                "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
+                            }
+                        }
                     }
-                }
-            }
-        },
-        "$..['kafka.producer.properties']": {
-            "widget": {
-                "formlyConfig": {
-                    "wrappers": [
-                        "help-link"
-                    ],
-                    "templateOptions": {
-                        "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"
+                },
+                "$..['max.uncommitted.offsets']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "form-field",
+                                "help-link"
+                            ],
+                            "templateOptions": {
+                                "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
+                            }
+                        }
+                    }
+                },
+                "$..['storm.config']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "help-link"
+                            ],
+                            "templateOptions": {
+                                "link": "https://storm.apache.org/releases/current/Configuration.html"
+                            }
+                        }
+                    }
+                },
+                "$..['kafka.producer.properties']": {
+                    "widget": {
+                        "formlyConfig": {
+                            "wrappers": [
+                                "help-link"
+                            ],
+                            "templateOptions": {
+                                "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"
+                            }
+                        }
                     }
                 }
             }
