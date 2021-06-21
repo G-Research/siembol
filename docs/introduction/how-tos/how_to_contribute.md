@@ -114,7 +114,7 @@ Always update and commit dependencies in the [package lock file](/config-editor/
 
 > **_note:_** Please compress the package-lock.json file into one line so it does not affect the contributor statistics. Powershell example:
 ```shell
-(Get-Content package-lock.json -Raw) -replace '\s','' | out-file package-lock.json
+Get-Content package-lock.json  | ConvertFrom-Json | ConvertTo-Json -Compress -Depth 10 | Out-File package-lock.json -Encoding ascii
 ```
 
 ### Increase the config editor's UI version
