@@ -147,8 +147,7 @@
                                             "formlyConfig": {
                                                 "wrappers": [
                                                     "expansion-panel"
-                                                ],
-                                                "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                                ]
                                             }
                                         },
                                         "type": "object",
@@ -184,10 +183,7 @@
                                             },
                                             "data": {
                                                 "widget": {
-                                                    "type": "textarea",
-                                                    "formlyConfig": {
-                                                        "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
-                                                    }
+                                                    "type": "textarea"
                                                 },
                                                 "type": "string",
                                                 "description": "Matcher expression as defined by matcher type"
