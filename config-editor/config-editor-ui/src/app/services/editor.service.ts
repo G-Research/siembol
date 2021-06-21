@@ -11,6 +11,7 @@ import { mergeMap } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { RepositoryLinks } from '@app/model/config-model';
 import { AdminSchemaService } from './schema/admin-schema.service';
+import { ClipboardService } from './clipboard.service';
 
 export class ServiceContext {
   metaDataMap: UiMetadata;
@@ -22,6 +23,7 @@ export class ServiceContext {
   testSpecificationSchema?: JSONSchema7;
   adminMode: boolean;
   repositoryLinks$: Observable<RepositoryLinks>;
+  clipboardService: ClipboardService;
 }
 
 @Injectable({
@@ -57,9 +59,11 @@ export class EditorService {
   public get repositoryLinks$() {
     return this.serviceContext.repositoryLinks$;
   }
-
   public get testSpecificationSchema() {
     return this.serviceContext.testSpecificationSchema;
+  }
+  public get clipboardService() {
+    return this.serviceContext.clipboardService;
   }
 
   constructor(private http: HttpClient, private config: AppConfigService, private appService: AppService) {}
@@ -102,6 +106,7 @@ export class EditorService {
             repositoryLinks$,
             serviceName,
             testSpecificationSchema: testSpecSchema,
+            clipboardService: new ClipboardService(configLoader),
           };
         }
         throwError('Can not load service');
@@ -125,6 +130,7 @@ export class EditorService {
             metaDataMap,
             repositoryLinks$,
             serviceName,
+            clipboardService: new ClipboardService(configLoader),
           };
         }
         throwError('Can not load admin service');

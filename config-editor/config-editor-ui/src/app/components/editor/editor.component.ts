@@ -30,7 +30,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   public form: FormGroup = new FormGroup({});
   public editedConfig$: Observable<Config>;
   public config: Config;
-  private inUndoRedo = false;
+  private markHistoryChange = false;
 
   @Input() field: FormlyFieldConfig;
 
@@ -58,11 +58,11 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
-      if (this.form.valid && !this.inUndoRedo) {
+      if (this.form.valid && !this.markHistoryChange) {
         this.addToUndoRedo(cloneDeep(values), this.field.templateOptions.tabIndex);
         this.updateConfigInStore(values);
       }
-      this.inUndoRedo = false;
+      this.markHistoryChange = false;
     });
   }
 
@@ -84,8 +84,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.undoRedoService.addState(config, tabIndex);
   }
 
-  undoConfigInStore() {
-    this.inUndoRedo = true;
+  undoConfig() {
+    this.markHistoryChange = true;
     let nextState = this.undoRedoService.undo();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);

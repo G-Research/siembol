@@ -2,10 +2,10 @@
     <button mat-raised-button title="Test Suite" (click)="onCancelEditing()"><</button>
     <h2>{{ testCase.test_case_name }} v{{ testCase.version }}</h2>
     <div>
-        <button mat-icon-button [disabled]="undoRedoService.noUndo()" color="primary" title="Undo" (click)="undoTestCase()">
+        <button mat-icon-button [disabled]="undoRedoService.isHistoryEmpty()" color="primary" title="Undo" (click)="undoTestCase()">
             <mat-icon>undo</mat-icon>
         </button>
-        <button mat-icon-button [disabled]="undoRedoService.noRedo()" color="primary" title="Redo" (click)="redoTestCase()">
+        <button mat-icon-button [disabled]="undoRedoService.isFutureEmpty()" color="primary" title="Redo" (click)="redoTestCase()">
             <mat-icon>redo</mat-icon>
         </button>
         <button mat-icon-button color="primary" title="Copy Test Case to Clipboard" (click)="onCopyTestCase()">

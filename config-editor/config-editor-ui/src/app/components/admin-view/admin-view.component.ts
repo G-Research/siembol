@@ -11,8 +11,6 @@ import { take, takeUntil } from 'rxjs/operators';
 import { AdminComponent } from '../admin/admin.component';
 import { AdminConfig } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
-import { Router } from '@angular/router';
-import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,12 +30,7 @@ export class AdminViewComponent implements OnDestroy {
 
   adminConfig$: Observable<AdminConfig>;
 
-  constructor(
-    private formlyJsonschema: FormlyJsonschema,
-    private editorService: EditorService,
-    private router: Router,
-    private clipboardService: ClipboardService
-  ) {
+  constructor(private formlyJsonschema: FormlyJsonschema, private editorService: EditorService) {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.adminSchema.schema;
     this.adminConfig$ = editorService.configStore.adminConfig$;
@@ -60,12 +53,8 @@ export class AdminViewComponent implements OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  changeRoute() {
-    this.router.navigate([this.serviceName]);
-  }
-
   onClickPaste() {
-    this.clipboardService.validateAdminConfig().subscribe(() => {
+    this.editorService.clipboardService.validateAdminConfig().subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedAdminConfig();
       this.adminComponent.updateAndWrapConfigData(configData);
       this.adminComponent.addToUndoRedo(configData);
@@ -73,11 +62,11 @@ export class AdminViewComponent implements OnDestroy {
   }
 
   onClickCopy() {
-    this.clipboardService.copy(this.configData);
+    this.editorService.clipboardService.copy(this.configData);
   }
 
-  onUndo() {
-    this.adminComponent.undoConfigInStore();
+  onClickUndo() {
+    this.adminComponent.undoConfig();
   }
 
   onRedo() {

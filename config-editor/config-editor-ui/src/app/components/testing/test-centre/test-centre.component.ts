@@ -8,7 +8,6 @@ import { TestStoreService } from '@app/services/store/test-store.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   selector: 're-test-centre',
@@ -31,8 +30,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     public snackbar: PopupService,
     private router: Router,
     private activeRoute: ActivatedRoute,
-    private configService: AppConfigService,
-    private clipboardService: ClipboardService
+    private configService: AppConfigService
   ) {
     this.testCases$ = this.editorService.configStore.editedConfigTestCases$;
     this.editingTestCase$ = this.editorService.configStore.editingTestCase$;
@@ -99,7 +97,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   }
 
   onPasteTestCaseNew() {
-    this.clipboardService.validateTestCase().subscribe(() => {
+    this.editorService.clipboardService.validateTestCase().subscribe(() => {
       this.router.navigate([], {
         relativeTo: this.activeRoute,
         queryParams: { pasteTestCase: true },

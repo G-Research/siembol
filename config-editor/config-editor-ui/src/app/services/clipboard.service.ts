@@ -1,23 +1,41 @@
 import { Injectable } from '@angular/core';
-import { ConfigData } from '@app/model';
+import { Config } from '@app/model';
+import { AdminConfig } from '@app/model/config-model';
+import { TestCase } from '@app/model/test-case';
 import { from, Observable, throwError } from 'rxjs';
-import { EditorService } from './editor.service';
+import { ConfigLoaderService } from './config-loader.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClipboardService {
-  constructor(private editorService: EditorService) {}
+  private config: Config;
+  private adminConfig: AdminConfig;
+  private testCase: TestCase;
+
+  get configToBePasted() {
+    return this.config;
+  }
+
+  get adminConfigToBePasted() {
+    return this.adminConfig;
+  }
+
+  get testCaseToBePasted() {
+    return this.testCase;
+  }
+
+  constructor(private configLoader: ConfigLoaderService) {}
 
   validateConfig(): Observable<boolean> {
     return this.getClipboard()
       .flatMap(json => {
-        return this.editorService.configLoader.validateConfigJson(json).map(() => {
+        return this.configLoader.validateConfigJson(json).map(() => {
           return json;
         });
       })
       .map((json: string) => {
-        this.editorService.configStore.updatePastedConfig(JSON.parse(json));
+        this.config = JSON.parse(json);
         return true;
       });
   }
@@ -26,12 +44,12 @@ export class ClipboardService {
     return this.getClipboard()
       .flatMap(json => {
         const jsonObj = JSON.parse(json);
-        return this.editorService.configLoader.validateTestCase(jsonObj).map(() => {
+        return this.configLoader.validateTestCase(jsonObj).map(() => {
           return jsonObj;
         });
       })
       .map(json => {
-        this.editorService.configStore.testService.updatePastedTestCase(json);
+        this.testCase = json;
         return true;
       });
   }
@@ -39,12 +57,12 @@ export class ClipboardService {
   validateAdminConfig(): Observable<boolean> {
     return this.getClipboard()
       .flatMap(json => {
-        return this.editorService.configLoader.validateAdminConfig(json).map(() => {
+        return this.configLoader.validateAdminConfigJson(json).map(() => {
           return json;
         });
       })
       .map((json: string) => {
-        this.editorService.configStore.updatePastedAdminConfig(JSON.parse(json));
+        this.adminConfig = JSON.parse(json);
         return true;
       });
   }
@@ -53,7 +71,7 @@ export class ClipboardService {
     navigator.clipboard.writeText(JSON.stringify(str));
   }
 
-  private iIsJsonString(str: string): boolean {
+  private isJsonString(str: string): boolean {
     try {
       JSON.parse(str);
     } catch (e) {
@@ -64,7 +82,7 @@ export class ClipboardService {
 
   private getClipboard(): Observable<any> {
     return from(navigator.clipboard.readText()).map(c => {
-      if (!this.iIsJsonString(c)) {
+      if (!this.isJsonString(c)) {
         return throwError('Clipboard is not JSON');
       }
       return c;

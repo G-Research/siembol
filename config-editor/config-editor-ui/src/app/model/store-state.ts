@@ -19,9 +19,6 @@ export interface ConfigStoreState {
   editedTestCase: TestCaseWrapper;
   testCaseMap: TestCaseMap;
   adminConfig: AdminConfig;
-  pastedConfig?: ConfigData;
-  pastedTestCase?: TestCase;
-  pastedAdminConfig?: AdminConfig;
 }
 
 export interface ConfigHistory {

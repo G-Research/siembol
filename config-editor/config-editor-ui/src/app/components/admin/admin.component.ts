@@ -33,7 +33,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   config: AdminConfig;
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
-  private inUndoRedo = false;
+  private markHistoryChange = false;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
   constructor(
     public dialog: MatDialog,
@@ -60,14 +60,14 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (
         this.form.valid &&
-        !this.inUndoRedo &&
+        !this.markHistoryChange &&
         (!this.undoRedoService.getCurrent() ||
           JSON.stringify(this.undoRedoService.getCurrent().formState) !== JSON.stringify(values))
       ) {
         this.addToUndoRedo(cloneDeep(values), this.field.templateOptions.tabIndex);
         this.updateConfigInStore(values);
       }
-      this.inUndoRedo = false;
+      this.markHistoryChange = false;
     });
   }
 
@@ -120,8 +120,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  undoConfigInStore() {
-    this.inUndoRedo = true;
+  undoConfig() {
+    this.markHistoryChange = true;
     let nextState = this.undoRedoService.undo();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);
@@ -129,7 +129,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   redoConfig() {
-    this.inUndoRedo = true;
+    this.markHistoryChange = true;
     let nextState = this.undoRedoService.redo();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);

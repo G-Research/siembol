@@ -15,7 +15,6 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,8 +69,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private configService: AppConfigService,
-    private clipboardService: ClipboardService
+    private configService: AppConfigService
   ) {
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.allConfigs$;
@@ -232,7 +230,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClickPaste() {
-    this.clipboardService.validateConfig().subscribe(() => {
+    this.editorService.clipboardService.validateConfig().subscribe(() => {
       this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
     });
   }

@@ -5,10 +5,10 @@
                 <button mat-raised-button (click)="changeRoute()">Back</button>
             </div>
             <div class="right-button" *ngIf="!this.editorService.metaDataMap.disableCopyPasteUndoRedo">
-                <button mat-icon-button [disabled]="editorComponent.undoRedoService.noUndo()" color="primary" title="Undo" (click)="onUndo()">
+                <button mat-icon-button [disabled]="editorComponent.undoRedoService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndo()">
                     <mat-icon>undo</mat-icon>
                 </button>
-                <button mat-icon-button [disabled]="editorComponent.undoRedoService.noRedo()" color="primary" title="Redo" (click)="onRedo()">
+                <button mat-icon-button [disabled]="editorComponent.undoRedoService.isFutureEmpty()" color="primary" title="Redo" (click)="onRedo()">
                     <mat-icon>redo</mat-icon>
                 </button>
                 <button mat-icon-button [disabled]="!editorComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">

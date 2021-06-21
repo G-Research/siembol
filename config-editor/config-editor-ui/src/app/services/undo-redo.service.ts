@@ -31,13 +31,16 @@ export class UndoRedoService {
   }
 
   undo(): ValidConfigState {
+    if (this.isHistoryEmpty()) {
+      return undefined;
+    }
     this.history.future.splice(0, 0, this.getCurrent());
     this.history.past.shift();
     return this.getCurrent();
   }
 
   redo(): ValidConfigState {
-    if (this.noRedo()) {
+    if (this.isFutureEmpty()) {
       return undefined;
     }
     let nextState = this.history.future[0];
@@ -46,11 +49,11 @@ export class UndoRedoService {
     return nextState;
   }
 
-  noRedo(): boolean {
+  isFutureEmpty(): boolean {
     return this.history.future.length == 0;
   }
 
-  noUndo(): boolean {
+  isHistoryEmpty(): boolean {
     return this.history.past.length < 2;
   }
 }

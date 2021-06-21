@@ -14,7 +14,6 @@ import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.compone
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '@app/services/app.service';
 import { SchemaService } from '@app/services/schema/schema.service';
-import { ClipboardService } from '@app/services/clipboard.service';
 import { UndoRedoService } from '@app/services/undo-redo.service';
 
 @Component({
@@ -34,7 +33,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   public testCase: any;
 
   private testStoreService: TestStoreService;
-  private inUndoRedo = false;
+  private markHistoryChange = false;
 
   public form: FormGroup = new FormGroup({});
   constructor(
@@ -44,7 +43,6 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private router: Router,
     private activeRoute: ActivatedRoute,
-    private clipboardService: ClipboardService,
     public undoRedoService: UndoRedoService
   ) {
     this.editedTestCase$ = editorService.configStore.editedTestCase$;
@@ -75,13 +73,13 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (
         this.form.valid &&
-        !this.inUndoRedo &&
+        !this.markHistoryChange &&
         (!this.undoRedoService.getCurrent() ||
           JSON.stringify(this.undoRedoService.getCurrent().formState) !== JSON.stringify(values))
       ) {
         this.undoRedoService.addState(cloneDeep(values));
       }
-      this.inUndoRedo = false;
+      this.markHistoryChange = false;
     });
   }
 
@@ -124,13 +122,13 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   undoTestCase() {
-    this.inUndoRedo = true;
+    this.markHistoryChange = true;
     let nextState = this.undoRedoService.undo();
     this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(nextState.formState));
   }
 
   redoTestCase() {
-    this.inUndoRedo = true;
+    this.markHistoryChange = true;
     let nextState = this.undoRedoService.redo();
     this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(nextState.formState));
   }
@@ -144,14 +142,14 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onPasteTestCase() {
-    this.clipboardService.validateTestCase().subscribe(() => {
+    this.editorService.clipboardService.validateTestCase().subscribe(() => {
       const pastedTest = this.editorService.configStore.testService.setEditedPastedTestCase();
       this.undoRedoService.addState(pastedTest);
     });
   }
 
   onCopyTestCase() {
-    this.clipboardService.copy(this.testCase);
+    this.editorService.clipboardService.copy(this.testCase);
   }
 
   private getFormTestCaseWrapper(): TestCaseWrapper {

@@ -12,7 +12,6 @@ import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
 import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
-import { ClipboardService } from '@app/services/clipboard.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,8 +40,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private formlyJsonschema: FormlyJsonschema,
     private editorService: EditorService,
     private router: Router,
-    private activeRoute: ActivatedRoute,
-    private clipboardService: ClipboardService
+    private activeRoute: ActivatedRoute
   ) {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
@@ -98,7 +96,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickPaste() {
-    this.clipboardService.validateConfig().subscribe(() => {
+    this.editorService.clipboardService.validateConfig().subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedConfig();
       this.editorComponent.updateConfigData(configData);
       this.editorComponent.addToUndoRedo(configData);
@@ -106,11 +104,11 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickCopy() {
-    this.clipboardService.copy(this.configData);
+    this.editorService.clipboardService.copy(this.configData);
   }
 
-  onUndo() {
-    this.editorComponent.undoConfigInStore();
+  onClickUndo() {
+    this.editorComponent.undoConfig();
   }
 
   onRedo() {
