@@ -46,7 +46,7 @@
                     "field": {
                         "widget": {
                             "formlyConfig": {
-                                "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                             }
                         },
                         "type": "string",
@@ -66,6 +66,7 @@
                         "type": "string",
                         "description": "Matcher expression as defined by matcher type",
                         "widget": {
+                            "type": "textarea",
                             "formlyConfig": {
                                 "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                             }
@@ -101,11 +102,6 @@
                                     "description": "Type of matcher, either Regex match or list of strings (newline delimited) or a composite matcher composing several matchers"
                                 },
                                 "is_negated": {
-                                    "widget": {
-                                        "formlyConfig": {
-                                            "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
-                                        }
-                                    },
                                     "type": "boolean",
                                     "description": "The matcher is negated",
                                     "default": false
@@ -113,7 +109,7 @@
                                 "field": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                            "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "string",
@@ -131,6 +127,7 @@
                                 },
                                 "data": {
                                     "widget": {
+                                        "type": "textarea",
                                         "formlyConfig": {
                                             "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
@@ -141,14 +138,19 @@
                                 "matchers": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "wrappers": [
-                                                "expansion-panel"
-                                            ],
                                             "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "array",
                                     "items": {
+                                        "widget": {
+                                            "formlyConfig": {
+                                                "wrappers": [
+                                                    "expansion-panel"
+                                                ],
+                                                "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                            }
+                                        },
                                         "type": "object",
                                         "description": "Matcher for matching fields",
                                         "title": "matcher",
@@ -166,6 +168,10 @@
                                                 "description": "The matcher is negated",
                                                 "default": false
                                             },
+                                            "field": {
+                                                "type": "string",
+                                                "description": "Field on which the matcher will be evaluated"
+                                            },
                                             "case_insensitive": {
                                                 "type": "boolean",
                                                 "description": "Use case insensitive string compare",
@@ -177,6 +183,12 @@
                                                 }
                                             },
                                             "data": {
+                                                "widget": {
+                                                    "type": "textarea",
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                                    }
+                                                },
                                                 "type": "string",
                                                 "description": "Matcher expression as defined by matcher type"
                                             }
@@ -204,30 +216,6 @@
                             "wrappers": [
                                 "panel"
                             ]
-                        }
-                    }
-                },
-                "$..case_insensitive": {
-                    "widget": {
-                        "formlyConfig": {
-                            "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
-                        }
-                    }
-                },
-                "$..data": {
-                    "widget": {
-                        "formlyConfig": {
-                            "type": "textarea",
-                            "wrappers": [
-                                "form-field",
-                                "help-link"
-                            ],
-                            "templateOptions": {
-                                "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
-                            },
-                            "expressionProperties": {
-                                "templateOptions.showHelpLink": "model.matcher_type !== 'IS_IN_SET'"
-                            }
                         }
                     }
                 }
