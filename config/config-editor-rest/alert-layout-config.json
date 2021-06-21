@@ -75,7 +75,7 @@
                     "matchers": {
                         "widget": {
                             "formlyConfig": {
-                                "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                "hideExpression": "field.parent.model && !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
                             }
                         },
                         "type": "array",
@@ -109,7 +109,7 @@
                                 "field": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                            "hideExpression": "model && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "string",
@@ -118,7 +118,7 @@
                                 "case_insensitive": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                                            "hideExpression": "model && model.matcher_type !== 'IS_IN_SET'"
                                         }
                                     },
                                     "type": "boolean",
@@ -129,7 +129,7 @@
                                     "widget": {
                                         "type": "textarea",
                                         "formlyConfig": {
-                                            "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                            "hideExpression": "model && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "string",
@@ -138,7 +138,7 @@
                                 "matchers": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "!['COMPOSITE_AND', 'COMPOSITE_OR'].includes(model.matcher_type)"
+                                            "hideExpression": "field.parent.model && !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
                                         }
                                     },
                                     "type": "array",
@@ -177,7 +177,7 @@
                                                 "default": false,
                                                 "widget": {
                                                     "formlyConfig": {
-                                                        "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                                                        "hideExpression": "model && model.matcher_type !== 'IS_IN_SET'"
                                                     }
                                                 }
                                             },
