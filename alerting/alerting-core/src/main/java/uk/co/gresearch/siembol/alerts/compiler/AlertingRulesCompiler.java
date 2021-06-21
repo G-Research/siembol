@@ -14,10 +14,7 @@ import uk.co.gresearch.siembol.alerts.engine.*;
 import uk.co.gresearch.siembol.alerts.model.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import static uk.co.gresearch.siembol.alerts.common.AlertingResult.StatusCode.OK;
 
@@ -28,7 +25,6 @@ public class AlertingRulesCompiler implements AlertingCompiler {
             new ObjectMapper()
                     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                     .writerFor(RulesDto.class);
-
     private static final ObjectReader JSON_RULE_READER =
             new ObjectMapper().readerFor(RuleDto.class);
     private static final String TEST_FIELD_NAME = "alerts:test";
@@ -37,9 +33,11 @@ public class AlertingRulesCompiler implements AlertingCompiler {
     private static final String TESTING_FINISHED_MSG = "The testing finished with the result: %s";
     private static final String OUTPUT_EVENTS_MSG = "Output events:";
     private static final String EXCEPTION_EVENTS_MSG = "Exception events:";
+    private static final String UNSUPPORTED_MATCHER_TYPE = "Unsupported matcher type: %s";
+    private static final String MISSING_MATCHERS_IN_COMPOSITE_MATCHER = "Missing matchers in a composite matcher";
 
     private final JsonSchemaValidator jsonSchemaValidator;
-    private final List<TagDto> testOutputContants;
+    private final List<TagDto> testOutputConstants;
 
     AlertingRulesCompiler(JsonSchemaValidator jsonSchemaValidator) {
         this.jsonSchemaValidator = jsonSchemaValidator;
@@ -47,11 +45,12 @@ public class AlertingRulesCompiler implements AlertingCompiler {
         final TagDto testConstant = new TagDto();
         testConstant.setTagName(TEST_FIELD_NAME);
         testConstant.setTagValue(TEST_FIELD_VALUE);
-        this.testOutputContants = Arrays.asList(testConstant);
+        this.testOutputConstants = Collections.singletonList(testConstant);
     }
 
-    private RuleMatcher createMatcher(MatcherDto matcherDto) {
-        switch (MatcherType.valueOf(matcherDto.getType().toString())){
+    private Matcher createMatcher(MatcherDto matcherDto) {
+        MatcherType matcherType = MatcherType.valueOf(matcherDto.getType().toString());
+        switch (matcherType) {
             case REGEX_MATCH:
                 return RegexMatcher.builder()
                         .pattern(matcherDto.getData())
@@ -65,8 +64,24 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                         .fieldName(matcherDto.getField())
                         .isNegated(matcherDto.getNegated())
                         .build();
+            case COMPOSITE_AND:
+            case COMPOSITE_OR:
+                if (matcherDto.getMatchers() == null) {
+                    throw new IllegalArgumentException(MISSING_MATCHERS_IN_COMPOSITE_MATCHER);
+                }
+                List<Matcher> matchers = matcherDto.getMatchers().stream()
+                        .map(this::createMatcher)
+                        .collect(Collectors.toList());
+                return CompositeMatcher.builder()
+                        .matcherType(matcherType)
+                        .matchers(matchers)
+                        .isNegated(matcherDto.getNegated())
+                        .build();
+            default:
+                throw new IllegalArgumentException(String.format(UNSUPPORTED_MATCHER_TYPE,
+                        matcherDto.getType().toString()));
         }
-        throw new IllegalArgumentException("Unknown matcher type");
+
     }
 
     @Override
@@ -94,9 +109,9 @@ public class AlertingRulesCompiler implements AlertingCompiler {
 
             List<Pair<String, Rule>> rulesList = new ArrayList<>();
             for (RuleDto ruleDto : rulesDto.getRules()) {
-                List<RuleMatcher> matchers = ruleDto.getMatchers()
+                List<Matcher> matchers = ruleDto.getMatchers()
                         .stream()
-                        .map(x -> createMatcher(x))
+                        .map(this::createMatcher)
                         .collect(Collectors.toList());
 
                 List<Pair<String, String>> constants = ruleDto.getTags() != null
@@ -184,9 +199,9 @@ public class AlertingRulesCompiler implements AlertingCompiler {
     public String wrapRuleToRules(String ruleStr) throws IOException {
         RuleDto rule = JSON_RULE_READER.readValue(ruleStr);
         RulesDto rules = new RulesDto();
-        rules.setTags(testOutputContants);
+        rules.setTags(testOutputConstants);
         rules.setRulesVersion(rule.getRuleVersion());
-        rules.setRules(Arrays.asList(rule));
+        rules.setRules(Collections.singletonList(rule));
         return JSON_RULES_WRITER.writeValueAsString(rules);
     }
 

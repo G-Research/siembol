@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
-import uk.co.gresearch.siembol.alerts.engine.RuleMatcher;
+import uk.co.gresearch.siembol.alerts.engine.BasicMatcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class EnrichingRuleTest {
     private String key = "test_key";
 
     private Map<String, Object> event;
-    private RuleMatcher matcher;
+    private BasicMatcher matcher;
     List<Pair<String, String>> enrichmentFields;
     List<Pair<String, String>> enrichmentTags;
     private EnrichingRule rule;
@@ -38,7 +38,7 @@ public class EnrichingRuleTest {
         enrichmentFields.add(Pair.of("table_field", "event_field"));
         enrichmentTags = new ArrayList<>();
         enrichmentTags.add(Pair.of("is_test", "true"));
-        matcher = Mockito.mock(RuleMatcher.class);
+        matcher = Mockito.mock(BasicMatcher.class);
         event = new HashMap<>();
         when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.MATCH);
     }

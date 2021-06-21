@@ -43,7 +43,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertTrue(matcher.CanModifyEvent());
+        Assert.assertTrue(matcher.canModifyEvent());
         Assert.assertEquals(4, event.size());
         Assert.assertEquals("1", event.get("vof_threat_level"));
         Assert.assertEquals("UNKNOWN", event.get("vof_threat_cat"));
@@ -61,7 +61,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertTrue(matcher.CanModifyEvent());
+        Assert.assertTrue(matcher.canModifyEvent());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class RegexMatcherTest {
 
         EvaluationResult rest = matcher.match(event);
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertEquals(matcher.CanModifyEvent(), true);
+        Assert.assertEquals(matcher.canModifyEvent(), true);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertTrue(matcher.CanModifyEvent());
+        Assert.assertTrue(matcher.canModifyEvent());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class RegexMatcherTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test

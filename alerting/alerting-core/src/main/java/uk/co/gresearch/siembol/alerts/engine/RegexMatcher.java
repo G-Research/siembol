@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexMatcher extends RuleMatcher {
+public class RegexMatcher extends BasicMatcher {
     private static final String EMPTY_PATTERN = "Empty pattern";
     private static final Pattern VARIABLE_PATTERN =
             Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z0-9:_]*)>");
@@ -22,7 +22,7 @@ public class RegexMatcher extends RuleMatcher {
     }
 
     @Override
-    protected boolean CanModifyEvent() {
+    public boolean canModifyEvent() {
         return !variableNames.isEmpty();
     }
 
@@ -55,7 +55,7 @@ public class RegexMatcher extends RuleMatcher {
     }
 
     public static abstract class Builder<T extends RegexMatcher>
-            extends RuleMatcher.Builder<T> {
+            extends BasicMatcher.Builder<T> {
         protected Pattern pattern;
         protected List<String> variableNames;
 

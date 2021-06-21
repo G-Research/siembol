@@ -3,12 +3,12 @@ package uk.co.gresearch.siembol.alerts.engine;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import java.util.Map;
 
-public abstract class RuleMatcher {
-    private final static String MISSING_FIELD_NAME = "Missing field name";
+public abstract class BasicMatcher implements Matcher {
+    private final static String MISSING_FIELD_NAME = "Missing field name in a basic matcher";
     private final String fieldName;
     private final boolean isNegated;
 
-    protected RuleMatcher(Builder<?> builder) {
+    protected BasicMatcher(Builder<?> builder) {
         if (builder.fieldName == null) {
             throw new IllegalArgumentException(MISSING_FIELD_NAME);
         }
@@ -32,13 +32,13 @@ public abstract class RuleMatcher {
         return result;
     }
 
-    protected boolean CanModifyEvent() {
+    public boolean canModifyEvent() {
         return false;
     }
 
     protected abstract EvaluationResult matchInternally(Map<String, Object> map, String fieldValue);
 
-    public static abstract class Builder<T extends RuleMatcher> {
+    public static abstract class Builder<T extends BasicMatcher> {
         private String fieldName;
         private boolean isNegated = false;
 
