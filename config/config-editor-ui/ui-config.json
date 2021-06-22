@@ -16,10 +16,10 @@
             "title": "Issues",
             "link": "https://github.com/G-Research/siembol/issues"
         },
-        {   
+        {
             "icon": "question_answer",
             "title": "Discussions",
-            "link":  "https://github.com/G-Research/siembol/discussions"
-      }
+            "link": "https://github.com/G-Research/siembol/discussions"
+        }
     ]
 }
