@@ -217,99 +217,99 @@
                         }
                     }
                 }
-            },
-            "admin_config_layout": {
-                "$": {
-                    "widget": {
-                        "formlyConfig": {
-                            "type": "admin-tabs"
-                        }
+            }
+        }
+    },
+    "admin_config_layout": {
+        "$": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "admin-tabs"
+                }
+            }
+        },
+        "$..['alerts.input.topics']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "expansion-panel"
+                    ],
+                    "templateOptions": {
+                        "genericSettingTab": "true"
                     }
-                },
-                "$..['alerts.input.topics']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "expansion-panel"
-                            ],
-                            "templateOptions": {
-                                "genericSettingTab": "true"
-                            }
-                        }
+                }
+            }
+        },
+        "$..['alerts.engine.clean.interval.sec']": {
+            "widget": {
+                "formlyConfig": {
+                    "hideExpression": "true"
+                }
+            }
+        },
+        "$..['alerts.engine']": {
+            "enum": [
+                "siembol_alerts"
+            ]
+        },
+        "$..['kafka.spout.properties']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "help-link"
+                    ],
+                    "templateOptions": {
+                        "link": "https://kafka.apache.org/0102/documentation.html#consumerconfigs"
                     }
-                },
-                "$..['alerts.engine.clean.interval.sec']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "hideExpression": "true"
-                        }
+                }
+            }
+        },
+        "$..['offset.commit.period.ms']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "form-field",
+                        "help-link"
+                    ],
+                    "templateOptions": {
+                        "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
                     }
-                },
-                "$..['alerts.engine']": {
-                    "enum": [
-                        "siembol_alerts"
-                    ]
-                },
-                "$..['kafka.spout.properties']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "help-link"
-                            ],
-                            "templateOptions": {
-                                "link": "https://kafka.apache.org/0102/documentation.html#consumerconfigs"
-                            }
-                        }
+                }
+            }
+        },
+        "$..['max.uncommitted.offsets']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "form-field",
+                        "help-link"
+                    ],
+                    "templateOptions": {
+                        "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
                     }
-                },
-                "$..['offset.commit.period.ms']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "form-field",
-                                "help-link"
-                            ],
-                            "templateOptions": {
-                                "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
-                            }
-                        }
+                }
+            }
+        },
+        "$..['storm.config']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "help-link"
+                    ],
+                    "templateOptions": {
+                        "link": "https://storm.apache.org/releases/current/Configuration.html"
                     }
-                },
-                "$..['max.uncommitted.offsets']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "form-field",
-                                "help-link"
-                            ],
-                            "templateOptions": {
-                                "link": "https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.5/storm-moving-data/content/tuning_kafkaspout_performance.html"
-                            }
-                        }
-                    }
-                },
-                "$..['storm.config']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "help-link"
-                            ],
-                            "templateOptions": {
-                                "link": "https://storm.apache.org/releases/current/Configuration.html"
-                            }
-                        }
-                    }
-                },
-                "$..['kafka.producer.properties']": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "help-link"
-                            ],
-                            "templateOptions": {
-                                "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"
-                            }
-                        }
+                }
+            }
+        },
+        "$..['kafka.producer.properties']": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "help-link"
+                    ],
+                    "templateOptions": {
+                        "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"
                     }
                 }
             }
