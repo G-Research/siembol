@@ -66,8 +66,8 @@
                         "type": "string",
                         "description": "Matcher expression as defined by matcher type",
                         "widget": {
-                            "type": "textarea",
                             "formlyConfig": {
+                                "type": "textarea",
                                 "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                             }
                         }
@@ -127,8 +127,8 @@
                                 },
                                 "data": {
                                     "widget": {
-                                        "type": "textarea",
                                         "formlyConfig": {
+                                            "type": "textarea",
                                             "hideExpression": "model && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
@@ -183,7 +183,9 @@
                                             },
                                             "data": {
                                                 "widget": {
-                                                    "type": "textarea"
+                                                    "formlyConfig": {
+                                                        "type": "textarea"
+                                                    }
                                                 },
                                                 "type": "string",
                                                 "description": "Matcher expression as defined by matcher type"
