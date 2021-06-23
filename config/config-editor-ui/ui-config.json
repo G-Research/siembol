@@ -1,6 +1,6 @@
 {
     "environment": "demo",
-    "serviceRoot": "https://config-editor/",
+    "serviceRoot": "https://rest.siembol.local/",
     "uiBootstrapPath": "./ui-bootstrap.json",
     "authType": "disabled",
     "historyMaxSize": 5,
@@ -11,9 +11,15 @@
             "title": "Documentation",
             "link": "https://github.com/G-Research/siembol/tree/master/docs"
         },
-        {   
+        {
             "icon": "live_help",
             "title": "Issues",
-            "link":  "https://github.com/G-Research/siembol/issues"}
-        ]
+            "link": "https://github.com/G-Research/siembol/issues"
+        },
+        {
+            "icon": "question_answer",
+            "title": "Discussions",
+            "link": "https://github.com/G-Research/siembol/discussions"
+        }
+    ]
 }
