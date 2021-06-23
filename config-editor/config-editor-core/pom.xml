@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.1.7-SNAPSHOT</version>
+        <version>1.1.8-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.1.7-SNAPSHOT</version>
+            <version>1.1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

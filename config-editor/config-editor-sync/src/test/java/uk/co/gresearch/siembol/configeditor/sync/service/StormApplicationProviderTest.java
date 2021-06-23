@@ -12,7 +12,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
 
@@ -111,7 +111,7 @@ public class StormApplicationProviderTest {
     public static String updatedTopologies;
 
 
-    private ZookeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zookeeperConnector;
     private StormApplicationProviderImpl stormApplicationProvider;
     private Set<String> services;
     private List<StormTopologyDto> topologiesToUpdate;
@@ -119,7 +119,7 @@ public class StormApplicationProviderTest {
     @Before
     public void setUp() throws IOException {
         services = new HashSet<>();
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
         when(zookeeperConnector.getData()).thenReturn(initTopologies);
         doNothing().when(zookeeperConnector).addCacheListener(any());
         stormApplicationProvider = new StormApplicationProviderImpl(zookeeperConnector);

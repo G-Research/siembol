@@ -13,8 +13,8 @@ import org.junit.Test;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.testing.TestingZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.deployment.storm.model.StormResponseDto;
 import uk.co.gresearch.siembol.deployment.storm.model.TopologyManagerInfoDto;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProvider;
@@ -131,9 +131,9 @@ public class TopologyManagerServiceImplTests {
     TopologyManagerService service;
     KubernetesProvider kubernetesProvider = mock(KubernetesProvider.class);
     StormProvider stormProvider = mock(StormProvider.class);
-    ZookeeperConnector desiredZookeeper;
-    ZookeeperConnector savedZookeeper;
-    TestingZookeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector desiredZookeeper;
+    ZooKeeperConnector savedZookeeper;
+    TestingZooKeeperConnectorFactory zookeeperConnectorFactory;
     ZookeeperAttributesDto desiredSpec;
     ZookeeperAttributesDto savedSpec;
 
@@ -147,7 +147,7 @@ public class TopologyManagerServiceImplTests {
         desiredSpec.setZkPath("/siembol/desired");
         savedSpec.setZkPath("/siembol/saved");
 
-        zookeeperConnectorFactory = new TestingZookeeperConnectorFactory();
+        zookeeperConnectorFactory = new TestingZooKeeperConnectorFactory();
         desiredZookeeper = zookeeperConnectorFactory.createZookeeperConnector(desiredSpec);
         savedZookeeper = zookeeperConnectorFactory.createZookeeperConnector(savedSpec);
         service = new TopologyManagerServiceImpl(stormProvider, kubernetesProvider, desiredZookeeper, savedZookeeper, 0);

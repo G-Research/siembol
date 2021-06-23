@@ -14,9 +14,9 @@ import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryImpl;
@@ -48,12 +48,12 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private final String parsingAppSpecification;
 
     private OutputCollector collector;
-    private ZookeeperConnector zookeeperConnector;
-    private final ZookeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnector zookeeperConnector;
+    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
 
     ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                            ParsingApplicationFactoryAttributes parsingAttributes,
-                           ZookeeperConnectorFactory zookeeperConnectorFactory) throws Exception {
+                           ZooKeeperConnectorFactory zookeeperConnectorFactory) throws Exception {
         this.zookeperAttributes = attributes.getZookeeperAttributes();
         this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
         this.zookeeperConnectorFactory = zookeeperConnectorFactory;
@@ -61,7 +61,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
     public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                                   ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this(attributes, parsingAttributes, new ZookeeperConnectorFactoryImpl());
+        this(attributes, parsingAttributes, new ZooKeeperConnectorFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")

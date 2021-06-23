@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.common.zookeper;
+package uk.co.gresearch.siembol.common.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -11,12 +11,12 @@ import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class ZookeeperConnectorImpl implements ZookeeperConnector {
+public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     private final CuratorFramework client;
     private final NodeCache cache;
     private final String path;
 
-    ZookeeperConnectorImpl(Builder builder) {
+    ZooKeeperConnectorImpl(Builder builder) {
         this.client = builder.client;
         this.cache = builder.cache;
         this.path = builder.path;
@@ -70,7 +70,7 @@ public class ZookeeperConnectorImpl implements ZookeeperConnector {
             return this;
         }
 
-        public ZookeeperConnectorImpl build() throws Exception {
+        public ZooKeeperConnectorImpl build() throws Exception {
             if (zkServer == null
                     || path == null
                     || baseSleepTimeMs == null
@@ -84,7 +84,7 @@ public class ZookeeperConnectorImpl implements ZookeeperConnector {
             cache = new NodeCache(client, path);
             cache.start(true);
 
-            return new ZookeeperConnectorImpl(this);
+            return new ZooKeeperConnectorImpl(this);
         }
     }
 }

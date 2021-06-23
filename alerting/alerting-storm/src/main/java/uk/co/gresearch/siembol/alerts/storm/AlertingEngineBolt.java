@@ -15,8 +15,8 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
@@ -25,7 +25,7 @@ import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -51,17 +51,17 @@ public class AlertingEngineBolt extends BaseRichBolt {
     protected final AtomicReference<AlertingEngine> AlertingEngine = new AtomicReference<>();
 
     private OutputCollector collector;
-    private ZookeeperConnector zookeeperConnector;
-    private final ZookeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnector zookeeperConnector;
+    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
     private final ZookeeperAttributesDto zookeperAttributes;
 
-    AlertingEngineBolt(AlertingStormAttributesDto attributes, ZookeeperConnectorFactory zookeeperConnectorFactory) {
+    AlertingEngineBolt(AlertingStormAttributesDto attributes, ZooKeeperConnectorFactory zookeeperConnectorFactory) {
         this.zookeperAttributes = attributes.getZookeperAttributes();
         this.zookeeperConnectorFactory = zookeeperConnectorFactory;
     }
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes) {
-        this(attributes, new ZookeeperConnectorFactoryImpl());
+        this(attributes, new ZooKeeperConnectorFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")

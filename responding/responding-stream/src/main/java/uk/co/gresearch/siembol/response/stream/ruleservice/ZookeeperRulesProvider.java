@@ -4,9 +4,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.engine.ResponseEngine;
@@ -28,16 +28,16 @@ public class ZookeeperRulesProvider implements RulesProvider {
     private static final String PARSERS_UPDATE_COMPLETED = "Response rules update completed";
 
     private final AtomicReference<ResponseEngine> currentEngine = new AtomicReference<>();
-    private final ZookeeperConnector zookeeperConnector;
+    private final ZooKeeperConnector zookeeperConnector;
     private final RespondingCompiler respondingCompiler;
 
 
     public ZookeeperRulesProvider(ZookeeperAttributesDto zookeperAttributes,
                                   RespondingCompiler respondingCompiler) throws Exception {
-        this(new ZookeeperConnectorFactoryImpl(), zookeperAttributes, respondingCompiler);
+        this(new ZooKeeperConnectorFactoryImpl(), zookeperAttributes, respondingCompiler);
     }
 
-    ZookeeperRulesProvider(ZookeeperConnectorFactory factory,
+    ZookeeperRulesProvider(ZooKeeperConnectorFactory factory,
                            ZookeeperAttributesDto zookeperAttributes,
                            RespondingCompiler respondingCompiler) throws Exception {
         LOG.info(INIT_START);

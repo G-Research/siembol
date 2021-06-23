@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.sync.common;
 
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.common.ServiceType;
 
 import java.util.Optional;
@@ -19,7 +19,7 @@ public interface ConfigServiceHelper {
     boolean isAdminConfigSupported();
     boolean isInitAdminConfig(String adminConfig);
     boolean isInitRelease(String release);
-    Optional<ZookeeperConnector> getZookeeperReleaseConnector();
+    Optional<ZooKeeperConnector> getZookeeperReleaseConnector();
     Optional<String> getStormTopologyImage();
     Optional<String> getStormTopologyName(String adminConfig);
 }

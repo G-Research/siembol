@@ -20,9 +20,9 @@ import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
 import uk.co.gresearch.siembol.enrichments.table.EnrichmentMemoryTable;
@@ -57,14 +57,14 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
     private final AtomicReference<Map<String, EnrichmentTable>> enrichmentTables = new AtomicReference<>();
     private final ZookeeperAttributesDto zookeperAttributes;
-    private final ZookeeperConnectorFactory zookeeperConnectorFactory;
+    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
 
     private OutputCollector collector;
-    private ZookeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zookeeperConnector;
 
     MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
-                              ZookeeperConnectorFactory zookeeperConnectorFactory,
+                              ZooKeeperConnectorFactory zookeeperConnectorFactory,
                               SiembolFileSystemFactory fileSystemFactory) {
         this.zookeperAttributes = attributes.getEnrichingTablesAttributes();
         this.zookeeperConnectorFactory = zookeeperConnectorFactory;
@@ -73,7 +73,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
     public MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes,
-                new ZookeeperConnectorFactoryImpl(),
+                new ZooKeeperConnectorFactoryImpl(),
                 new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));
     }
 

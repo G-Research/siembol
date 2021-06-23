@@ -11,8 +11,8 @@ import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
@@ -41,11 +41,11 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
     private static final String DUPLICATE_NAME_MSG = "Duplicate topology name %s in updated topologies";
     private static final String UPDATING_TOPOLOGIES_IN_ZOOKEEPER = "Updating topologies in zookeeper {}";
 
-    private final ZookeeperConnector zookeeperConnector;
+    private final ZooKeeperConnector zookeeperConnector;
     private final AtomicReference<String> topologies = new AtomicReference<>();
     private final AtomicReference<Exception> exception = new AtomicReference<>();
 
-    public StormApplicationProviderImpl(ZookeeperConnector zookeeperConnector) {
+    public StormApplicationProviderImpl(ZooKeeperConnector zookeeperConnector) {
         this.zookeeperConnector = zookeeperConnector;
         this.updateTopologiesCallback();
         this.zookeeperConnector.addCacheListener(this::updateTopologiesCallback);
@@ -180,10 +180,10 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
                 : Health.down().withException(exception.get()).build();
     }
 
-    public static StormApplicationProviderImpl create(ZookeeperConnectorFactory zookeeperConnectorFactory,
+    public static StormApplicationProviderImpl create(ZooKeeperConnectorFactory zookeeperConnectorFactory,
                                                       ZookeeperAttributesDto zookeeperAttributes) throws Exception {
         LOGGER.info(INIT_START_MSG);
-        ZookeeperConnector zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeeperAttributes);
+        ZooKeeperConnector zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeeperAttributes);
         LOGGER.info(INIT_COMPLETED_MSG);
         return new StormApplicationProviderImpl(zookeeperConnector);
     }

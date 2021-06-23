@@ -5,9 +5,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProvider;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProviderImpl;
 import uk.co.gresearch.siembol.deployment.storm.providers.StormProvider;
@@ -40,14 +40,14 @@ class TopologyManagerConfiguration {
     }
 
     @Bean
-    ZookeeperConnector desiredStateZkConnector() throws Exception {
-        ZookeeperConnectorFactory factory = new ZookeeperConnectorFactoryImpl();
+    ZooKeeperConnector desiredStateZkConnector() throws Exception {
+        ZooKeeperConnectorFactory factory = new ZooKeeperConnectorFactoryImpl();
         return factory.createZookeeperConnector(properties.getDesiredState());
     }
 
     @Bean
-    ZookeeperConnector savedStateZkConnector() throws Exception {
-        ZookeeperConnectorFactory factory = new ZookeeperConnectorFactoryImpl();
+    ZooKeeperConnector savedStateZkConnector() throws Exception {
+        ZooKeeperConnectorFactory factory = new ZooKeeperConnectorFactoryImpl();
         return factory.createZookeeperConnector(properties.getSavedState());
     }
 

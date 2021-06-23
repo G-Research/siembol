@@ -15,8 +15,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
@@ -127,8 +127,8 @@ public class AlertingEngineBoltTest {
     AlertingStormAttributesDto stormAttributes;
     ZookeeperAttributesDto zookeperAttributes;
 
-    ZookeeperConnector zookeeperConnector;
-    ZookeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector zookeeperConnector;
+    ZooKeeperConnectorFactory zookeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
@@ -140,9 +140,9 @@ public class AlertingEngineBoltTest {
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class);
+        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
 
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
         when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
         when(zookeeperConnector.getData()).thenReturn(simpleTestRules);
 

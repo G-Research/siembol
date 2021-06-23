@@ -14,8 +14,8 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.filesystem.ByteArrayFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 
 
@@ -183,9 +183,9 @@ public class StormEnrichingApplicationTest {
     @ClassRule
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
-    ZookeeperConnector rulesZookeeperConnector;
-    ZookeeperConnectorFactory zookeeperConnectorFactory;
-    ZookeeperConnector enrichingTablesZookeeperConnector;
+    ZooKeeperConnector rulesZooKeeperConnector;
+    ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector enrichingTablesZooKeeperConnector;
     SiembolFileSystemFactory fileSystemFactory;
     SiembolFileSystem fileSystem;
     StormEnrichmentAttributesDto enrichmentAttributes;
@@ -195,21 +195,21 @@ public class StormEnrichingApplicationTest {
     public void setUp() throws Exception {
         enrichmentAttributes = JSON_PARSERS_CONFIG_READER
                 .readValue(testEnrichmentStormConfig);
-        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class, withSettings().serializable());
+        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
 
 
-        rulesZookeeperConnector = Mockito.mock(ZookeeperConnector.class, withSettings().serializable());
+        rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
         when(zookeeperConnectorFactory.createZookeeperConnector(
                 enrichmentAttributes.getEnrichingRulesZookeperAttributes()))
-                .thenReturn(rulesZookeeperConnector);
+                .thenReturn(rulesZooKeeperConnector);
 
-        when(rulesZookeeperConnector.getData()).thenReturn(testRules);
+        when(rulesZooKeeperConnector.getData()).thenReturn(testRules);
 
-        enrichingTablesZookeeperConnector = Mockito.mock(ZookeeperConnector.class, withSettings().serializable());
+        enrichingTablesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
         when(zookeeperConnectorFactory.createZookeeperConnector(
                 enrichmentAttributes.getEnrichingTablesAttributes()))
-                .thenReturn(enrichingTablesZookeeperConnector);
-        when(enrichingTablesZookeeperConnector.getData()).thenReturn(tablesUpdate);
+                .thenReturn(enrichingTablesZooKeeperConnector);
+        when(enrichingTablesZooKeeperConnector.getData()).thenReturn(tablesUpdate);
 
         fileSystemFactory = Mockito.mock(SiembolFileSystemFactory.class, withSettings().serializable());
         fileSystem = new ByteArrayFileSystem(simpleOneField);

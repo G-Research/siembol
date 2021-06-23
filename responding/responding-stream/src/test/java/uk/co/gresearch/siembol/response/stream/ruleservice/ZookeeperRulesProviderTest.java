@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.response.common.*;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
@@ -47,8 +47,8 @@ public class ZookeeperRulesProviderTest {
     public static String testingRules;
     private RespondingCompiler compiler;
     private MetricFactory testMetricFactory;
-    private ZookeeperConnectorFactory zookeeperConnectorFactory;
-    private ZookeeperConnector rulesZookeeperConnector;
+    private ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnector rulesZooKeeperConnector;
     private ZookeeperRulesProvider rulesProvider;
     private ZookeeperAttributesDto zookeperAttributes;
 
@@ -67,12 +67,12 @@ public class ZookeeperRulesProviderTest {
 
 
         zookeperAttributes = new ZookeeperAttributesDto();
-        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class, withSettings().serializable());
+        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
 
-        rulesZookeeperConnector = Mockito.mock(ZookeeperConnector.class, withSettings().serializable());
+        rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
         when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes))
-                .thenReturn(rulesZookeeperConnector);
-        when(rulesZookeeperConnector.getData()).thenReturn(testingRules);
+                .thenReturn(rulesZooKeeperConnector);
+        when(rulesZooKeeperConnector.getData()).thenReturn(testingRules);
         rulesProvider = new ZookeeperRulesProvider(zookeeperConnectorFactory, zookeperAttributes, compiler);
 
     }
@@ -89,7 +89,7 @@ public class ZookeeperRulesProviderTest {
 
     @Test(expected = java.lang.IllegalStateException.class)
     public void testInvalidRulesInit() throws Exception {
-        when(rulesZookeeperConnector.getData()).thenReturn("INVALID");
+        when(rulesZooKeeperConnector.getData()).thenReturn("INVALID");
         rulesProvider = new ZookeeperRulesProvider(zookeeperConnectorFactory, zookeperAttributes, compiler);
     }
 

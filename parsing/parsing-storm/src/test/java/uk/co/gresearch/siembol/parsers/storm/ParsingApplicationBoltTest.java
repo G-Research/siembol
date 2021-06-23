@@ -16,8 +16,8 @@ import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
 
 import java.io.IOException;
@@ -96,8 +96,8 @@ public class ParsingApplicationBoltTest {
     ParsingApplicationFactoryAttributes parsingAttributes;
     ZookeeperAttributesDto zookeperAttributes;
     StormParsingApplicationAttributesDto attributes;
-    ZookeeperConnector zookeeperConnector;
-    ZookeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector zookeeperConnector;
+    ZooKeeperConnectorFactory zookeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
@@ -113,9 +113,9 @@ public class ParsingApplicationBoltTest {
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class);
+        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
 
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
         when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
         when(zookeeperConnector.getData()).thenReturn(testParsersConfigs);
 

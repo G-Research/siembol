@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.configeditor.sync.actions;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorServiceContext;
 import uk.co.gresearch.siembol.configeditor.sync.common.ConfigServiceHelper;
@@ -23,12 +23,12 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
             "Skipping updating release in zookeeper for the service {} since it has init release";
 
     private final ConfigServiceHelper serviceHelper;
-    private final ZookeeperConnector zookeeperConnector;
+    private final ZooKeeperConnector zookeeperConnector;
 
     public UpdateReleaseInZookeeperAction(ConfigServiceHelper serviceHelper) {
         this.serviceHelper = serviceHelper;
 
-        Optional<ZookeeperConnector> connectorOptional = serviceHelper.getZookeeperReleaseConnector();
+        Optional<ZooKeeperConnector> connectorOptional = serviceHelper.getZookeeperReleaseConnector();
         if (!connectorOptional.isPresent()) {
             throw new IllegalArgumentException(String.format(MISSING_ZOOKEEPER_CONNECTOR, serviceHelper.getName()));
         }

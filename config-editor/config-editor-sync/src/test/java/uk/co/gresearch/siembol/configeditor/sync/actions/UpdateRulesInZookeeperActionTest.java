@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorServiceContext;
 import uk.co.gresearch.siembol.configeditor.sync.common.ConfigServiceHelper;
@@ -21,7 +21,7 @@ public class UpdateRulesInZookeeperActionTest {
     private ConfigServiceHelper serviceHelper;
     private String release = "RELEASE";
     private UpdateReleaseInZookeeperAction updateReleaseInZookeeperAction;
-    private ZookeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zookeeperConnector;
     private ConfigEditorServiceContext context;
     private String currentRelease = "ZK_RELEASE";
 
@@ -30,7 +30,7 @@ public class UpdateRulesInZookeeperActionTest {
         context = new ConfigEditorServiceContext();
         context.setConfigRelease(release);
 
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
         when(zookeeperConnector.getData()).thenReturn(currentRelease);
         doNothing().when(zookeeperConnector).setData(eq(release));
 

@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.alerts.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import com.github.reinert.jjschema.SchemaIgnore;
 
 import java.util.List;
 

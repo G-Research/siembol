@@ -13,7 +13,6 @@ import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorAuthorisatio
 @EnableWebSecurity
 @EnableConfigurationProperties(ConfigEditorAuthorisationProperties.class)
 public class Oauth2SecurityAdapter extends SiembolOauth2SecurityAdapter {
-    private ConfigEditorAuthorisationProperties properties;
 
     public Oauth2SecurityAdapter(@Autowired ConfigEditorAuthorisationProperties properties) {
         super(properties.getOauth2());

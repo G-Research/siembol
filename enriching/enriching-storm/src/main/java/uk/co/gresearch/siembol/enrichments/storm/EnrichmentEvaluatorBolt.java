@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentResult;
 import uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompilerImpl;
 import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluator;
@@ -48,17 +48,17 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
     protected final AtomicReference<EnrichmentEvaluator> enrichmentEvaluator = new AtomicReference<>();
 
     private OutputCollector collector;
-    private ZookeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zookeeperConnector;
     private final ZookeeperAttributesDto zookeperAttributes;
-    private final ZookeeperConnectorFactory zookeeperConnectorFactory;
+    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
 
-    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZookeeperConnectorFactory zookeeperConnectorFactory) {
+    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZooKeeperConnectorFactory zookeeperConnectorFactory) {
         this.zookeperAttributes = attributes.getEnrichingRulesZookeperAttributes();
         this.zookeeperConnectorFactory = zookeeperConnectorFactory;
     }
 
     public EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes) {
-        this(attributes, new ZookeeperConnectorFactoryImpl());
+        this(attributes, new ZooKeeperConnectorFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")

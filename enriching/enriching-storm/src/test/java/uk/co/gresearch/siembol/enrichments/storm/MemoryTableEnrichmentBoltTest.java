@@ -14,8 +14,8 @@ import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
 
@@ -66,8 +66,8 @@ public class MemoryTableEnrichmentBoltTest {
     MemoryTableEnrichmentBolt memoryTableBolt;
     ZookeeperAttributesDto zookeperAttributes;
     StormEnrichmentAttributesDto attributes;
-    ZookeeperConnector zookeeperConnector;
-    ZookeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector zookeeperConnector;
+    ZooKeeperConnectorFactory zookeeperConnectorFactory;
     SiembolFileSystemFactory fileSystemFactory;
     SiembolFileSystem fileSystem;
     ArgumentCaptor<Values> argumentEmitCaptor;
@@ -83,11 +83,11 @@ public class MemoryTableEnrichmentBoltTest {
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class);
+        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
         fileSystemFactory = Mockito.mock(SiembolFileSystemFactory.class);
         fileSystem = Mockito.mock(SiembolFileSystem.class);
 
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
+        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
         when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
         when(fileSystemFactory.create()).thenReturn(fileSystem);
 

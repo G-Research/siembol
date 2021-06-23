@@ -1,10 +1,10 @@
-package uk.co.gresearch.siembol.common.zookeper;
+package uk.co.gresearch.siembol.common.zookeeper;
 
 import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
 
-public interface ZookeeperConnectorFactory {
-    default ZookeeperConnector createZookeeperConnector(ZookeeperAttributesDto attributes) throws Exception {
-        return new ZookeeperConnectorImpl.Builder()
+public interface ZooKeeperConnectorFactory {
+    default ZooKeeperConnector createZookeeperConnector(ZookeeperAttributesDto attributes) throws Exception {
+        return new ZooKeeperConnectorImpl.Builder()
                 .zkServer(attributes.getZkUrl())
                 .path(attributes.getZkPath())
                 .baseSleepTimeMs(attributes.getZkBaseSleepMs())
