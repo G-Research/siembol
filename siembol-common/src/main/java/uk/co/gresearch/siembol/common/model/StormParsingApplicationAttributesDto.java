@@ -29,7 +29,7 @@ public class StormParsingApplicationAttributesDto extends AdminConfigDto impleme
     @JsonProperty("zookeeper.attributes")
     @Attributes(description = "Zookeeper attributes for updating parser configurations",
             required = true)
-    private ZookeeperAttributesDto zookeeperAttributes;
+    private ZooKeeperAttributesDto zookeeperAttributes;
     @Attributes(description = "Global settings for kafka batch writer used if are not overridden", required = true)
     @JsonProperty("kafka.batch.writer.attributes")
     private KafkaBatchWriterAttributesDto kafkaBatchWriterAttributes;
@@ -59,11 +59,11 @@ public class StormParsingApplicationAttributesDto extends AdminConfigDto impleme
         this.groupIdPrefix = groupIdPrefix;
     }
 
-    public ZookeeperAttributesDto getZookeeperAttributes() {
+    public ZooKeeperAttributesDto getZookeeperAttributes() {
         return zookeeperAttributes;
     }
 
-    public void setZookeeperAttributes(ZookeeperAttributesDto zookeeperAttributes) {
+    public void setZookeeperAttributes(ZooKeeperAttributesDto zookeeperAttributes) {
         this.zookeeperAttributes = zookeeperAttributes;
     }
 

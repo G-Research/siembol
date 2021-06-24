@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.configeditor.rest.common;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
 
 import java.util.Map;
@@ -15,7 +15,7 @@ public class ConfigEditorConfigurationProperties {
     private String testCasesUiConfigFileName;
     private SynchronisationType synchronisation;
     @NestedConfigurationProperty
-    private ZookeeperAttributesDto stormTopologiesZookeeper;
+    private ZooKeeperAttributesDto stormTopologiesZookeeper;
     private Map<String, String> testingZookeeperFiles;
     private String gitWebhookPassword;
 
@@ -43,11 +43,11 @@ public class ConfigEditorConfigurationProperties {
         this.synchronisation = synchronisation;
     }
 
-    public ZookeeperAttributesDto getStormTopologiesZookeeper() {
+    public ZooKeeperAttributesDto getStormTopologiesZookeeper() {
         return stormTopologiesZookeeper;
     }
 
-    public void setStormTopologiesZookeeper(ZookeeperAttributesDto stormTopologiesZookeeper) {
+    public void setStormTopologiesZookeeper(ZooKeeperAttributesDto stormTopologiesZookeeper) {
         this.stormTopologiesZookeeper = stormTopologiesZookeeper;
     }
 

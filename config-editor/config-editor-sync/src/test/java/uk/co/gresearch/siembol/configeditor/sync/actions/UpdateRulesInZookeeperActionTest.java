@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorServiceContext;
 import uk.co.gresearch.siembol.configeditor.sync.common.ConfigServiceHelper;
@@ -21,7 +21,7 @@ public class UpdateRulesInZookeeperActionTest {
     private ConfigServiceHelper serviceHelper;
     private String release = "RELEASE";
     private UpdateReleaseInZookeeperAction updateReleaseInZookeeperAction;
-    private ZookeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zooKeeperConnector;
     private ConfigEditorServiceContext context;
     private String currentRelease = "ZK_RELEASE";
 
@@ -30,15 +30,15 @@ public class UpdateRulesInZookeeperActionTest {
         context = new ConfigEditorServiceContext();
         context.setConfigRelease(release);
 
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
-        when(zookeeperConnector.getData()).thenReturn(currentRelease);
-        doNothing().when(zookeeperConnector).setData(eq(release));
+        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
+        when(zooKeeperConnector.getData()).thenReturn(currentRelease);
+        doNothing().when(zooKeeperConnector).setData(eq(release));
 
         serviceHelper = Mockito.mock(ConfigServiceHelper.class);
         when(serviceHelper.getReleaseVersion(eq(currentRelease))).thenReturn(5);
         when(serviceHelper.isInitRelease(eq(currentRelease))).thenReturn(false);
         when(serviceHelper.getReleaseVersion(eq(release))).thenReturn(6);
-        when(serviceHelper.getZookeeperReleaseConnector()).thenReturn(Optional.of(zookeeperConnector));
+        when(serviceHelper.getZookeeperReleaseConnector()).thenReturn(Optional.of(zooKeeperConnector));
         when(serviceHelper.getName()).thenReturn("dummy_service");
 
         updateReleaseInZookeeperAction = new UpdateReleaseInZookeeperAction(serviceHelper);
@@ -53,7 +53,7 @@ public class UpdateRulesInZookeeperActionTest {
         verify(serviceHelper, times(1)).getReleaseVersion(eq(currentRelease));
         verify(serviceHelper, times(1)).isInitRelease(eq(release));
         verify(serviceHelper, times(1)).getReleaseVersion(eq(release));
-        verify(zookeeperConnector, times(1)).setData(eq(release));
+        verify(zooKeeperConnector, times(1)).setData(eq(release));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class UpdateRulesInZookeeperActionTest {
         verify(serviceHelper, times(0)).getReleaseVersion(eq(release));
         verify(serviceHelper, times(1)).isInitRelease(eq(release));
         verify(serviceHelper, times(0)).getReleaseVersion(eq(release));
-        verify(zookeeperConnector, times(0)).setData(eq(release));
+        verify(zooKeeperConnector, times(0)).setData(eq(release));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class UpdateRulesInZookeeperActionTest {
         Assert.assertNotNull(result.getAttributes().getMessage());
         verify(serviceHelper, times(1)).getReleaseVersion(eq(currentRelease));
         verify(serviceHelper, times(1)).getReleaseVersion(eq(release));
-        verify(zookeeperConnector, times(0)).setData(eq(release));
+        verify(zooKeeperConnector, times(0)).setData(eq(release));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -95,12 +95,12 @@ public class UpdateRulesInZookeeperActionTest {
 
     @Test
     public void getUpdateReleaseSendDataException() throws Exception {
-        doThrow(new RuntimeException()).when(zookeeperConnector).setData(eq(release));
+        doThrow(new RuntimeException()).when(zooKeeperConnector).setData(eq(release));
         ConfigEditorResult result = updateReleaseInZookeeperAction.execute(context);
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getException());
         verify(serviceHelper, times(1)).getReleaseVersion(eq(currentRelease));
         verify(serviceHelper, times(1)).getReleaseVersion(eq(release));
-        verify(zookeeperConnector, times(1)).setData(eq(release));
+        verify(zooKeeperConnector, times(1)).setData(eq(release));
     }
 }

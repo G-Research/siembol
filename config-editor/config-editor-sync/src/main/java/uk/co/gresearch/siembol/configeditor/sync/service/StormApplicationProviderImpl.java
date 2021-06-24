@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
@@ -41,18 +41,18 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
     private static final String DUPLICATE_NAME_MSG = "Duplicate topology name %s in updated topologies";
     private static final String UPDATING_TOPOLOGIES_IN_ZOOKEEPER = "Updating topologies in zookeeper {}";
 
-    private final ZookeeperConnector zookeeperConnector;
+    private final ZooKeeperConnector zooKeeperConnector;
     private final AtomicReference<String> topologies = new AtomicReference<>();
     private final AtomicReference<Exception> exception = new AtomicReference<>();
 
-    public StormApplicationProviderImpl(ZookeeperConnector zookeeperConnector) {
-        this.zookeeperConnector = zookeeperConnector;
+    public StormApplicationProviderImpl(ZooKeeperConnector zooKeeperConnector) {
+        this.zooKeeperConnector = zooKeeperConnector;
         this.updateTopologiesCallback();
-        this.zookeeperConnector.addCacheListener(this::updateTopologiesCallback);
+        this.zooKeeperConnector.addCacheListener(this::updateTopologiesCallback);
     }
 
     private void updateTopologiesCallback() {
-        String newTopologiesString = zookeeperConnector.getData();
+        String newTopologiesString = zooKeeperConnector.getData();
         topologies.set(newTopologiesString);
         getCurrentTopologies();
     }
@@ -89,7 +89,7 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
         try {
             final String updatedString = TOPOLOGIES_WRITER.writeValueAsString(topologiesToSend);
             LOGGER.info(UPDATING_TOPOLOGIES_IN_ZOOKEEPER, updatedString);
-            zookeeperConnector.setData(updatedString);
+            zooKeeperConnector.setData(updatedString);
 
             ConfigEditorAttributes attributes = new ConfigEditorAttributes();
             attributes.setTopologies(updatedTopologies);
@@ -180,11 +180,11 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
                 : Health.down().withException(exception.get()).build();
     }
 
-    public static StormApplicationProviderImpl create(ZookeeperConnectorFactory zookeeperConnectorFactory,
-                                                      ZookeeperAttributesDto zookeeperAttributes) throws Exception {
+    public static StormApplicationProviderImpl create(ZooKeeperConnectorFactory zooKeeperConnectorFactory,
+                                                      ZooKeeperAttributesDto zookeeperAttributes) throws Exception {
         LOGGER.info(INIT_START_MSG);
-        ZookeeperConnector zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeeperAttributes);
+        ZooKeeperConnector zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeeperAttributes);
         LOGGER.info(INIT_COMPLETED_MSG);
-        return new StormApplicationProviderImpl(zookeeperConnector);
+        return new StormApplicationProviderImpl(zooKeeperConnector);
     }
 }

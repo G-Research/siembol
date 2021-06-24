@@ -4,7 +4,7 @@ import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
@@ -21,8 +21,8 @@ public class CorrelationAlertingEngineBolt extends AlertingEngineBolt {
     private final int cleanIntervalSec;
 
     public CorrelationAlertingEngineBolt(AlertingStormAttributesDto attributes,
-                                         ZookeeperConnectorFactory zookeeperConnectorFactory) {
-        super(attributes, zookeeperConnectorFactory);
+                                         ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
+        super(attributes, zooKeeperConnectorFactory);
         cleanIntervalSec = attributes.getAlertingEngineCleanIntervalSec();
     }
 

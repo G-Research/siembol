@@ -32,11 +32,11 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
     @JsonProperty("enriching.rules.zookeeper.attributes")
     @Attributes(title = "rules zookeeper attributes", required = true,
             description = "The zookeeper attributes for configuration enriching rules")
-    private ZookeeperAttributesDto enrichingRulesZookeperAttributes;
+    private ZooKeeperAttributesDto enrichingRulesZookeperAttributes;
     @JsonProperty("enriching.tables.zookeeper.attributes")
     @Attributes(title = "tables zookeeper attributes", required = true,
             description = "The zookeeper attributes for enriching tables")
-    private ZookeeperAttributesDto enrichingTablesAttributes;
+    private ZooKeeperAttributesDto enrichingTablesAttributes;
 
     @JsonProperty("kafka.batch.writer.attributes")
     @Attributes(required = true, description = "Kafka batch writer attributes for producing output messages")
@@ -97,19 +97,19 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
         this.kafkaWriterBoltNumExecutors = kafkaWriterBoltNumExecutors;
     }
 
-    public ZookeeperAttributesDto getEnrichingRulesZookeperAttributes() {
+    public ZooKeeperAttributesDto getEnrichingRulesZookeperAttributes() {
         return enrichingRulesZookeperAttributes;
     }
 
-    public void setEnrichingRulesZookeperAttributes(ZookeeperAttributesDto enrichingRulesZookeperAttributes) {
+    public void setEnrichingRulesZookeperAttributes(ZooKeeperAttributesDto enrichingRulesZookeperAttributes) {
         this.enrichingRulesZookeperAttributes = enrichingRulesZookeperAttributes;
     }
 
-    public ZookeeperAttributesDto getEnrichingTablesAttributes() {
+    public ZooKeeperAttributesDto getEnrichingTablesAttributes() {
         return enrichingTablesAttributes;
     }
 
-    public void setEnrichingTablesAttributes(ZookeeperAttributesDto enrichingTablesAttributes) {
+    public void setEnrichingTablesAttributes(ZooKeeperAttributesDto enrichingTablesAttributes) {
         this.enrichingTablesAttributes = enrichingTablesAttributes;
     }
 
