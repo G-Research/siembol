@@ -145,7 +145,7 @@ public class CorrelationAlertingTest {
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     private ZooKeeperConnector rulesZooKeeperConnector;
-    private ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private AlertingStormAttributesDto alertingStormAttributes;
     private StormTopology topology;
 
@@ -153,10 +153,10 @@ public class CorrelationAlertingTest {
     public void setUp() throws Exception {
         alertingStormAttributes = JSON_PARSERS_CONFIG_READER
                 .readValue(testConfig);
-        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
 
         rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
-        when(zookeeperConnectorFactory.createZookeeperConnector(alertingStormAttributes.getZookeperAttributes()))
+        when(zooKeeperConnectorFactory.createZookeeperConnector(alertingStormAttributes.getZookeperAttributes()))
                 .thenReturn(rulesZooKeeperConnector);
         when(rulesZooKeeperConnector.getData()).thenReturn(simpleCorrelationRules);
 
@@ -166,7 +166,7 @@ public class CorrelationAlertingTest {
                 .put("bootstrap.servers", bootstrapServer);
 
         kafkaRule.waitForStartup();
-        topology = AlertingStorm.createCorrelationAlertingTopology(alertingStormAttributes, zookeeperConnectorFactory);
+        topology = AlertingStorm.createCorrelationAlertingTopology(alertingStormAttributes, zooKeeperConnectorFactory);
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();
         config.put(Config.TOPOLOGY_DEBUG, true);

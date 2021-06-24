@@ -34,13 +34,13 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
     private final ServiceConfigurationProperties serviceConfigurationProperties;
     private final AdminConfigInfoProvider adminConfigInfoProvider = new AdminConfigInfoProvider();
     private final ConfigInfoProvider configInfoProvider;
-    private final Optional<ZooKeeperConnector> zookeeperConnector;
+    private final Optional<ZooKeeperConnector> zooKeeperConnector;
     private final boolean shouldSyncRelease;
     private final boolean shouldSyncAdminConfig;
 
     public ConfigServiceHelperImpl(ServiceAggregatorService aggregatorService,
                                    ConfigEditorConfigurationProperties properties,
-                                   ZooKeeperConnectorFactory zookeeperConnectorFactory) {
+                                   ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
         this.aggregatorService = aggregatorService;
         this.serviceConfigurationProperties = properties.getServices().get(aggregatorService.getName());
         this.shouldSyncRelease = properties.getSynchronisation().isReleaseEnabled()
@@ -67,8 +67,8 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
         }
 
         try {
-            zookeeperConnector = shouldZookeeperRelease
-                    ? Optional.of(zookeeperConnectorFactory
+            zooKeeperConnector = shouldZookeeperRelease
+                    ? Optional.of(zooKeeperConnectorFactory
                     .createZookeeperConnector(serviceConfigurationProperties.getReleaseZookeeper()))
                     : Optional.empty();
         } catch (Exception e) {
@@ -145,7 +145,7 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
 
     @Override
     public Optional<ZooKeeperConnector> getZookeeperReleaseConnector() {
-        return zookeeperConnector;
+        return zooKeeperConnector;
     }
 
     @Override

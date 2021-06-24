@@ -21,8 +21,8 @@ public class CorrelationAlertingEngineBolt extends AlertingEngineBolt {
     private final int cleanIntervalSec;
 
     public CorrelationAlertingEngineBolt(AlertingStormAttributesDto attributes,
-                                         ZooKeeperConnectorFactory zookeeperConnectorFactory) {
-        super(attributes, zookeeperConnectorFactory);
+                                         ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
+        super(attributes, zooKeeperConnectorFactory);
         cleanIntervalSec = attributes.getAlertingEngineCleanIntervalSec();
     }
 

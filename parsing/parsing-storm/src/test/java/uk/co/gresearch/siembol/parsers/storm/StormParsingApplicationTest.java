@@ -114,8 +114,8 @@ public class StormParsingApplicationTest {
 
     private ParsingApplicationFactoryAttributes parsingAttributes;
     private StormParsingApplicationAttributesDto stormAttributes;
-    private ZooKeeperConnector zookeeperConnector;
-    private ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnector zooKeeperConnector;
+    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private StormTopology topology;
 
     @Before
@@ -132,13 +132,13 @@ public class StormParsingApplicationTest {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser);
 
 
-        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
-        when(zookeeperConnector.getData()).thenReturn(testParsersConfigs);
+        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
+        when(zooKeeperConnector.getData()).thenReturn(testParsersConfigs);
 
-        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
-        when(zookeeperConnectorFactory.createZookeeperConnector(
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
+        when(zooKeeperConnectorFactory.createZookeeperConnector(
                 stormAttributes.getZookeeperAttributes()))
-                .thenReturn(zookeeperConnector);
+                .thenReturn(zooKeeperConnector);
 
 
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
@@ -149,7 +149,7 @@ public class StormParsingApplicationTest {
         kafkaRule.waitForStartup();
         topology = StormParsingApplication.createTopology(stormAttributes,
                 parsingAttributes,
-                zookeeperConnectorFactory);
+                zooKeeperConnectorFactory);
 
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();

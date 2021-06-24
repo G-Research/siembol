@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
@@ -70,32 +70,32 @@ public class EnrichmentEvaluatorBoltTest {
     private Tuple tuple;
     private OutputCollector collector;
     EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
-    ZookeeperAttributesDto zookeperAttributes;
+    ZooKeeperAttributesDto zookeperAttributes;
     StormEnrichmentAttributesDto attributes;
-    ZooKeeperConnector zookeeperConnector;
-    ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector zooKeeperConnector;
+    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
     public void setUp() throws Exception {
-        zookeperAttributes = new ZookeeperAttributesDto();
+        zookeperAttributes = new ZooKeeperAttributesDto();
         attributes = new StormEnrichmentAttributesDto();
         attributes.setEnrichingRulesZookeperAttributes(zookeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
 
 
-        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
-        when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
-        when(zookeeperConnector.getData()).thenReturn(testRules);
+        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
+        when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
+        when(zooKeeperConnector.getData()).thenReturn(testRules);
 
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        enrichmentEvaluatorBolt = new EnrichmentEvaluatorBolt(attributes, zookeeperConnectorFactory);
+        enrichmentEvaluatorBolt = new EnrichmentEvaluatorBolt(attributes, zooKeeperConnectorFactory);
         enrichmentEvaluatorBolt.prepare(null, null, collector);
     }
 

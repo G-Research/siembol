@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
@@ -48,13 +48,13 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
     protected final AtomicReference<EnrichmentEvaluator> enrichmentEvaluator = new AtomicReference<>();
 
     private OutputCollector collector;
-    private ZooKeeperConnector zookeeperConnector;
-    private final ZookeeperAttributesDto zookeperAttributes;
-    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnector zooKeeperConnector;
+    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
 
-    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZooKeeperConnectorFactory zookeeperConnectorFactory) {
+    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
         this.zookeperAttributes = attributes.getEnrichingRulesZookeperAttributes();
-        this.zookeeperConnectorFactory = zookeeperConnectorFactory;
+        this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
     }
 
     public EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes) {
@@ -67,14 +67,14 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(ENGINE_INIT_START);
-            zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
 
             updateRules();
             if (enrichmentEvaluator.get() == null) {
                 throw new IllegalStateException(ENGINE_INIT_MESSAGE);
             }
 
-            zookeeperConnector.addCacheListener(this::updateRules);
+            zooKeeperConnector.addCacheListener(this::updateRules);
             LOG.info(ENGINE_INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -87,7 +87,7 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_UPDATE_START);
 
-            String rules = zookeeperConnector.getData();
+            String rules = zooKeeperConnector.getData();
             LOG.info(ENGINE_UPDATE_TRY_MSG_FORMAT, rules);
 
             EnrichmentEvaluator engine = getEnrichmentEvaluator(rules);

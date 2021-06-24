@@ -32,6 +32,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         client.setData().forPath(this.path, data.getBytes(UTF_8));
     }
 
+    @SuppressWarnings( "deprecation" )
     public void addCacheListener(NodeCacheListener listener) {
         cache.getListenable().addListener(listener);
     }

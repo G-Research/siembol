@@ -55,7 +55,7 @@ public class StormEnrichingApplication {
     }
 
     public static StormTopology createTopology(StormEnrichmentAttributesDto attributes,
-                                               ZooKeeperConnectorFactory zookeeperConnectorFactory,
+                                               ZooKeeperConnectorFactory zooKeeperConnectorFactory,
                                                SiembolFileSystemFactory siembolFileSystemFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
@@ -64,12 +64,12 @@ public class StormEnrichingApplication {
                 attributes.getKafkaSpoutNumExecutors());
 
         builder.setBolt(ENRICHING_ENGINE_BOLT_NAME,
-                new EnrichmentEvaluatorBolt(attributes, zookeeperConnectorFactory),
+                new EnrichmentEvaluatorBolt(attributes, zooKeeperConnectorFactory),
                 attributes.getEnrichingEngineBoltNumExecutors())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(MEMORY_ENRICHING_BOLT_NAME,
-                new MemoryTableEnrichmentBolt(attributes, zookeeperConnectorFactory, siembolFileSystemFactory),
+                new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, siembolFileSystemFactory),
                 attributes.getMemoryEnrichingBoltNumExecutors())
                 .localOrShuffleGrouping(ENRICHING_ENGINE_BOLT_NAME);
 

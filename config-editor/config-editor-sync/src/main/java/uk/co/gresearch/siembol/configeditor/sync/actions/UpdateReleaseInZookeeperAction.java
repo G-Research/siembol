@@ -23,7 +23,7 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
             "Skipping updating release in zookeeper for the service {} since it has init release";
 
     private final ConfigServiceHelper serviceHelper;
-    private final ZooKeeperConnector zookeeperConnector;
+    private final ZooKeeperConnector zooKeeperConnector;
 
     public UpdateReleaseInZookeeperAction(ConfigServiceHelper serviceHelper) {
         this.serviceHelper = serviceHelper;
@@ -32,7 +32,7 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
         if (!connectorOptional.isPresent()) {
             throw new IllegalArgumentException(String.format(MISSING_ZOOKEEPER_CONNECTOR, serviceHelper.getName()));
         }
-        this.zookeeperConnector = connectorOptional.get();
+        this.zooKeeperConnector = connectorOptional.get();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
             return ConfigEditorResult.fromServiceContext(context);
         }
 
-        String currentRelease = zookeeperConnector.getData();
+        String currentRelease = zooKeeperConnector.getData();
         int currentReleaseVersion = serviceHelper.getReleaseVersion(currentRelease);
         int updatedReleaseVersion = serviceHelper.getReleaseVersion(context.getConfigRelease());
 
@@ -63,7 +63,7 @@ public class UpdateReleaseInZookeeperAction implements SynchronisationAction {
 
         LOGGER.info(UPDATE_START_MSG, serviceHelper.getName(), updatedReleaseVersion);
         try {
-            zookeeperConnector.setData(context.getConfigRelease());
+            zooKeeperConnector.setData(context.getConfigRelease());
         } catch (Exception e) {
             LOGGER.error(UPDATE_ERROR_MSG, serviceHelper.getName(), ExceptionUtils.getStackTrace(e));
             return ConfigEditorResult.fromException(e);

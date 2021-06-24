@@ -14,7 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
@@ -125,31 +125,31 @@ public class AlertingEngineBoltTest {
     private OutputCollector collector;
     AlertingEngineBolt AlertingEngineBolt;
     AlertingStormAttributesDto stormAttributes;
-    ZookeeperAttributesDto zookeperAttributes;
+    ZooKeeperAttributesDto zookeperAttributes;
 
-    ZooKeeperConnector zookeeperConnector;
-    ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnector zooKeeperConnector;
+    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
     public void setUp() throws Exception {
         stormAttributes = new AlertingStormAttributesDto();
-        zookeperAttributes = new ZookeeperAttributesDto();
+        zookeperAttributes = new ZooKeeperAttributesDto();
         stormAttributes.setZookeperAttributes(zookeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
 
-        zookeeperConnector = Mockito.mock(ZooKeeperConnector.class);
-        when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zookeeperConnector);
-        when(zookeeperConnector.getData()).thenReturn(simpleTestRules);
+        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
+        when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
+        when(zooKeeperConnector.getData()).thenReturn(simpleTestRules);
 
         when(tuple.getStringByField(eq(TupleFieldNames.EVENT.toString()))).thenReturn(event.trim());
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        AlertingEngineBolt = new AlertingEngineBolt(stormAttributes, zookeeperConnectorFactory);
+        AlertingEngineBolt = new AlertingEngineBolt(stormAttributes, zooKeeperConnectorFactory);
         AlertingEngineBolt.prepare(null, null, collector);
     }
 
@@ -194,7 +194,7 @@ public class AlertingEngineBoltTest {
 
     @Test
     public void testMatchRuleCorrelation() throws IOException {
-        when(zookeeperConnector.getData()).thenReturn(rulesForCorrelation);
+        when(zooKeeperConnector.getData()).thenReturn(rulesForCorrelation);
         AlertingEngineBolt.prepare(null, null, collector);
 
         AlertingEngineBolt.execute(tuple);

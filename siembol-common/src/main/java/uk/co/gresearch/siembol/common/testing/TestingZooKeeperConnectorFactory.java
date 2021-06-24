@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.common.testing;
 
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 
@@ -17,7 +17,7 @@ public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFacto
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Map<String, String> cache = new HashMap<>();
 
-    public ZooKeeperConnector createZookeeperConnector(ZookeeperAttributesDto attributes) {
+    public ZooKeeperConnector createZookeeperConnector(ZooKeeperAttributesDto attributes) {
         return new TestingZooKeeperConnector(attributes.getZkPath());
     }
 

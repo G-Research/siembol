@@ -84,19 +84,19 @@ public class ConfigEditorConfiguration implements DisposableBean {
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
     StormApplicationProvider stormApplicationProvider() throws Exception {
-        return StormApplicationProviderImpl.create(zookeeperConnectorFactory(), properties.getStormTopologiesZookeeper());
+        return StormApplicationProviderImpl.create(zooKeeperConnectorFactory(), properties.getStormTopologiesZookeeper());
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
     SynchronisationService synchronisationService() throws Exception {
         serviceAggregator = serviceAggregator();
-        ZooKeeperConnectorFactory zookeeperConnectorFactory = zookeeperConnectorFactory();
+        ZooKeeperConnectorFactory zooKeeperConnectorFactory = zooKeeperConnectorFactory();
         StormApplicationProvider stormApplicationProvider = stormApplicationProvider();
         List<ConfigServiceHelper> aggregatorServices = serviceAggregator
                 .getAggregatorServices()
                 .stream()
-                .map(x -> new ConfigServiceHelperImpl(x, properties, zookeeperConnectorFactory))
+                .map(x -> new ConfigServiceHelperImpl(x, properties, zooKeeperConnectorFactory))
                 .collect(Collectors.toList());
 
         SynchronisationService ret = new SynchronisationServiceImpl.Builder(stormApplicationProvider)
@@ -109,7 +109,7 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
-    ZooKeeperConnectorFactory zookeeperConnectorFactory() throws Exception {
+    ZooKeeperConnectorFactory zooKeeperConnectorFactory() throws Exception {
         if (properties.getTestingZookeeperFiles() == null) {
             return new ZooKeeperConnectorFactoryImpl();
         }

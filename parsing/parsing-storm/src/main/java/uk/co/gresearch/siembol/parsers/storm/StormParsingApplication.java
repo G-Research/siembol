@@ -59,7 +59,7 @@ public class StormParsingApplication {
 
     public static StormTopology createTopology(StormParsingApplicationAttributesDto stormAppAttributes,
                                                ParsingApplicationFactoryAttributes parsingAttributes,
-                                               ZooKeeperConnectorFactory zookeeperConnectorFactory) throws Exception {
+                                               ZooKeeperConnectorFactory zooKeeperConnectorFactory) throws Exception {
         stormAppAttributes.getStormAttributes().getKafkaSpoutProperties().getRawMap()
                 .put(GROUP_ID_CONFIG, stormAppAttributes.getGroupId(parsingAttributes.getName()));
         stormAppAttributes.getKafkaBatchWriterAttributes().getProducerProperties().getRawMap()
@@ -72,7 +72,7 @@ public class StormParsingApplication {
                 parsingAttributes.getInputParallelism());
 
         builder.setBolt(parsingAttributes.getName(),
-                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zookeeperConnectorFactory),
+                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zooKeeperConnectorFactory),
                 parsingAttributes.getParsingParallelism())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 

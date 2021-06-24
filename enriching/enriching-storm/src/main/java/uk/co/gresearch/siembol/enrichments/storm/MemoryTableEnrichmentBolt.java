@@ -19,7 +19,7 @@ import uk.co.gresearch.siembol.common.filesystem.HdfsFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
@@ -56,18 +56,18 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLES = "Invalid type in tuple provided";
 
     private final AtomicReference<Map<String, EnrichmentTable>> enrichmentTables = new AtomicReference<>();
-    private final ZookeeperAttributesDto zookeperAttributes;
-    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
 
     private OutputCollector collector;
-    private ZooKeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zooKeeperConnector;
 
     MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
-                              ZooKeeperConnectorFactory zookeeperConnectorFactory,
+                              ZooKeeperConnectorFactory zooKeeperConnectorFactory,
                               SiembolFileSystemFactory fileSystemFactory) {
         this.zookeperAttributes = attributes.getEnrichingTablesAttributes();
-        this.zookeeperConnectorFactory = zookeeperConnectorFactory;
+        this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
         this.fileSystemFactory = fileSystemFactory;
     }
 
@@ -84,7 +84,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
         try {
             LOG.info(TABLES_INIT_START);
-            zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
 
             updateTables();
             if (enrichmentTables.get() == null) {
@@ -92,7 +92,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
                 throw new IllegalStateException(TABLES_UPDATE_EMPTY_TABLES);
             }
 
-            zookeeperConnector.addCacheListener(this::updateTables);
+            zooKeeperConnector.addCacheListener(this::updateTables);
             LOG.info(TABLES_INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -105,7 +105,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
         try {
             LOG.info(TABLES_UPDATES_START);
 
-            String tablesUpdateStr = zookeeperConnector.getData();
+            String tablesUpdateStr = zooKeeperConnector.getData();
             LOG.info(String.format(TABLES_UPDATE_MESSAGE_FORMAT, tablesUpdateStr));
             Map<String, EnrichmentTable> tables = new HashMap<>();
             TablesUpdate tablesUpdate = TABLES_UPDATE_READER.readValue(tablesUpdateStr);

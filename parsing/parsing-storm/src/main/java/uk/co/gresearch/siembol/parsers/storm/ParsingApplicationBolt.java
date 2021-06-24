@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
@@ -44,19 +44,19 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLE = "Invalid type in tuple";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
-    private final ZookeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zookeperAttributes;
     private final String parsingAppSpecification;
 
     private OutputCollector collector;
-    private ZooKeeperConnector zookeeperConnector;
-    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    private ZooKeeperConnector zooKeeperConnector;
+    private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
 
     ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                            ParsingApplicationFactoryAttributes parsingAttributes,
-                           ZooKeeperConnectorFactory zookeeperConnectorFactory) throws Exception {
+                           ZooKeeperConnectorFactory zooKeeperConnectorFactory) throws Exception {
         this.zookeperAttributes = attributes.getZookeeperAttributes();
         this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
-        this.zookeeperConnectorFactory = zookeeperConnectorFactory;
+        this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
     }
 
     public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
@@ -70,13 +70,13 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(INIT_START);
-            zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
 
             updateParsers();
             if (parsingApplicationParser.get() == null) {
                 throw new IllegalStateException(ERROR_INIT_MESSAGE);
             }
-            zookeeperConnector.addCacheListener(this::updateParsers);
+            zooKeeperConnector.addCacheListener(this::updateParsers);
             LOG.info(INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -90,7 +90,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             ParsingApplicationFactory factory =  new ParsingApplicationFactoryImpl();
 
             LOG.info(PARSERS_UPDATE_START);
-            String parserConfigs = zookeeperConnector.getData();
+            String parserConfigs = zooKeeperConnector.getData();
             LOG.info(String.format(PARSERCONFIG_UPDATE_TRY_MSG_FORMAT, parsingAppSpecification, parserConfigs));
             ParsingApplicationFactoryResult result = factory.create(parsingAppSpecification, parserConfigs);
             if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK) {

@@ -184,7 +184,7 @@ public class StormEnrichingApplicationTest {
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     ZooKeeperConnector rulesZooKeeperConnector;
-    ZooKeeperConnectorFactory zookeeperConnectorFactory;
+    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     ZooKeeperConnector enrichingTablesZooKeeperConnector;
     SiembolFileSystemFactory fileSystemFactory;
     SiembolFileSystem fileSystem;
@@ -195,18 +195,18 @@ public class StormEnrichingApplicationTest {
     public void setUp() throws Exception {
         enrichmentAttributes = JSON_PARSERS_CONFIG_READER
                 .readValue(testEnrichmentStormConfig);
-        zookeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
 
 
         rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
-        when(zookeeperConnectorFactory.createZookeeperConnector(
+        when(zooKeeperConnectorFactory.createZookeeperConnector(
                 enrichmentAttributes.getEnrichingRulesZookeperAttributes()))
                 .thenReturn(rulesZooKeeperConnector);
 
         when(rulesZooKeeperConnector.getData()).thenReturn(testRules);
 
         enrichingTablesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
-        when(zookeeperConnectorFactory.createZookeeperConnector(
+        when(zooKeeperConnectorFactory.createZookeeperConnector(
                 enrichmentAttributes.getEnrichingTablesAttributes()))
                 .thenReturn(enrichingTablesZooKeeperConnector);
         when(enrichingTablesZooKeeperConnector.getData()).thenReturn(tablesUpdate);
@@ -222,7 +222,7 @@ public class StormEnrichingApplicationTest {
 
         kafkaRule.waitForStartup();
         topology = StormEnrichingApplication.createTopology(enrichmentAttributes,
-                zookeeperConnectorFactory,
+                zooKeeperConnectorFactory,
                 fileSystemFactory);
 
         LocalCluster cluster = new LocalCluster();

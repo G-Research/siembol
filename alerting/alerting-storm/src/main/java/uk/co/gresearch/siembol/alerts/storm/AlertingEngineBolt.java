@@ -14,7 +14,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
@@ -51,13 +51,13 @@ public class AlertingEngineBolt extends BaseRichBolt {
     protected final AtomicReference<AlertingEngine> AlertingEngine = new AtomicReference<>();
 
     private OutputCollector collector;
-    private ZooKeeperConnector zookeeperConnector;
-    private final ZooKeeperConnectorFactory zookeeperConnectorFactory;
-    private final ZookeeperAttributesDto zookeperAttributes;
+    private ZooKeeperConnector zooKeeperConnector;
+    private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private final ZooKeeperAttributesDto zookeperAttributes;
 
-    AlertingEngineBolt(AlertingStormAttributesDto attributes, ZooKeeperConnectorFactory zookeeperConnectorFactory) {
+    AlertingEngineBolt(AlertingStormAttributesDto attributes, ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
         this.zookeperAttributes = attributes.getZookeperAttributes();
-        this.zookeeperConnectorFactory = zookeeperConnectorFactory;
+        this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
     }
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes) {
@@ -70,14 +70,14 @@ public class AlertingEngineBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(ENGINE_INIT_START);
-            zookeeperConnector = zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
 
             updateRules();
             if (AlertingEngine.get() == null) {
                 throw new IllegalStateException(ENGINE_INIT_MESSAGE);
             }
 
-            zookeeperConnector.addCacheListener(this::updateRules);
+            zooKeeperConnector.addCacheListener(this::updateRules);
             LOG.info(ENGINE_INIT_COMPLETED);
         } catch (Exception e) {
             String msg = String.format(INIT_EXCEPTION_MSG_FORMAT, ExceptionUtils.getStackTrace(e));
@@ -90,7 +90,7 @@ public class AlertingEngineBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_UPDATE_START);
 
-            String rules = zookeeperConnector.getData();
+            String rules = zooKeeperConnector.getData();
             LOG.info(String.format(ENGINE_UPDATE_TRY_MSG_FORMAT, rules));
 
             AlertingEngine engine = getAlertingEngine(rules);
