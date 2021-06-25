@@ -14,7 +14,7 @@ export interface UiMetadata {
   perConfigSchemaPath: string;
   deployment: DeploymentConfig;
   unionType?: UnionType;
-  disableCopyPasteUndoRedo?: boolean;
+  disableEditingFeatures?: boolean;
 }
 
 export interface TestConfig {

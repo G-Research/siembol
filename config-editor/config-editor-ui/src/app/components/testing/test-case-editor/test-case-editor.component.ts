@@ -14,14 +14,14 @@ import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.compone
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '@app/services/app.service';
 import { SchemaService } from '@app/services/schema/schema.service';
-import { UndoRedoService } from '@app/services/undo-redo.service';
+import { ConfigHistoryService } from '@app/services/config-history.service';
 
 @Component({
   selector: 're-test-case-editor',
   templateUrl: './test-case-editor.component.html',
   styleUrls: ['./test-case-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [UndoRedoService],
+  providers: [ConfigHistoryService],
 })
 export class TestCaseEditorComponent implements OnInit, OnDestroy {
   public ngUnsubscribe = new Subject();
@@ -43,7 +43,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private router: Router,
     private activeRoute: ActivatedRoute,
-    public undoRedoService: UndoRedoService
+    public configHistoryService: ConfigHistoryService
   ) {
     this.editedTestCase$ = editorService.configStore.editedTestCase$;
     this.testStoreService = editorService.configStore.testService;
@@ -69,15 +69,10 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.undoRedoService.addState(cloneDeep(this.form.value));
-    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
-      if (
-        this.form.valid &&
-        !this.markHistoryChange &&
-        (!this.undoRedoService.getCurrent() ||
-          JSON.stringify(this.undoRedoService.getCurrent().formState) !== JSON.stringify(values))
-      ) {
-        this.undoRedoService.addState(cloneDeep(values));
+    this.configHistoryService.addConfig(cloneDeep(this.form.value));
+    this.form.valueChanges.pipe(debounceTime(200), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+      if (this.form.valid && !this.markHistoryChange) {
+        this.configHistoryService.addConfig(cloneDeep(values));
       }
       this.markHistoryChange = false;
     });
@@ -123,14 +118,16 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
 
   undoTestCase() {
     this.markHistoryChange = true;
-    let nextState = this.undoRedoService.undo();
+    let nextState = this.configHistoryService.undoConfig();
     this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(nextState.formState));
+    this.form.updateValueAndValidity();
   }
 
   redoTestCase() {
     this.markHistoryChange = true;
-    let nextState = this.undoRedoService.redo();
+    let nextState = this.configHistoryService.redoConfig();
     this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(nextState.formState));
+    this.form.updateValueAndValidity();
   }
 
   onCancelEditing() {
@@ -144,7 +141,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   onPasteTestCase() {
     this.editorService.clipboardService.validateTestCase().subscribe(() => {
       const pastedTest = this.editorService.configStore.testService.setEditedPastedTestCase();
-      this.undoRedoService.addState(pastedTest);
+      this.configHistoryService.addConfig(pastedTest);
     });
   }
 

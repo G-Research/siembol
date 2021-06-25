@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Config } from '@app/model';
-import { AdminConfig } from '@app/model/config-model';
+import { ConfigData } from '@app/model';
 import { TestCase } from '@app/model/test-case';
 import { from, Observable, throwError } from 'rxjs';
 import { ConfigLoaderService } from './config-loader.service';
@@ -9,8 +8,8 @@ import { ConfigLoaderService } from './config-loader.service';
   providedIn: 'root',
 })
 export class ClipboardService {
-  private config: Config;
-  private adminConfig: AdminConfig;
+  private config: ConfigData;
+  private adminConfig: ConfigData;
   private testCase: TestCase;
 
   get configToBePasted() {
@@ -29,10 +28,15 @@ export class ClipboardService {
 
   validateConfig(): Observable<boolean> {
     return this.getClipboard()
-      .flatMap(json => {
-        return this.configLoader.validateConfigJson(json).map(() => {
-          return json;
-        });
+      .mergeMap(json => {
+        return this.configLoader
+          .validateConfigJson(json)
+          .map(() => {
+            return json;
+          })
+          .catch(e => {
+            return throwError(e.error.message);
+          });
       })
       .map((json: string) => {
         this.config = JSON.parse(json);
@@ -42,7 +46,7 @@ export class ClipboardService {
 
   validateTestCase(): Observable<boolean> {
     return this.getClipboard()
-      .flatMap(json => {
+      .mergeMap(json => {
         const jsonObj = JSON.parse(json);
         return this.configLoader.validateTestCase(jsonObj).map(() => {
           return jsonObj;
@@ -56,7 +60,7 @@ export class ClipboardService {
 
   validateAdminConfig(): Observable<boolean> {
     return this.getClipboard()
-      .flatMap(json => {
+      .mergeMap(json => {
         return this.configLoader.validateAdminConfigJson(json).map(() => {
           return json;
         });
@@ -83,7 +87,7 @@ export class ClipboardService {
   private getClipboard(): Observable<any> {
     return from(navigator.clipboard.readText()).map(c => {
       if (!this.isJsonString(c)) {
-        return throwError('Clipboard is not JSON');
+        throw Error('Clipboard is not JSON');
       }
       return c;
     });

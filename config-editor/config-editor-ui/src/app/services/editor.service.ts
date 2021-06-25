@@ -75,7 +75,8 @@ export class EditorService {
   }
 
   public createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
+    const [metaDataMap, user, configLoader, configStore, repositoryLinks$, clipboardService] =
+      this.initialiseContext(serviceName);
     const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
       ? configLoader.getTestSpecificationSchema()
       : of({});
@@ -106,7 +107,7 @@ export class EditorService {
             repositoryLinks$,
             serviceName,
             testSpecificationSchema: testSpecSchema,
-            clipboardService: new ClipboardService(configLoader),
+            clipboardService,
           };
         }
         throwError('Can not load service');
@@ -114,7 +115,8 @@ export class EditorService {
   }
 
   public createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
+    const [metaDataMap, user, configLoader, configStore, repositoryLinks$, clipboardService] =
+      this.initialiseContext(serviceName);
 
     return configLoader
       .getAdminSchema()
@@ -130,7 +132,7 @@ export class EditorService {
             metaDataMap,
             repositoryLinks$,
             serviceName,
-            clipboardService: new ClipboardService(configLoader),
+            clipboardService,
           };
         }
         throwError('Can not load admin service');
@@ -139,12 +141,13 @@ export class EditorService {
 
   private initialiseContext(
     serviceName: string
-  ): [UiMetadata, string, ConfigLoaderService, ConfigStoreService, Observable<RepositoryLinks>] {
+  ): [UiMetadata, string, ConfigLoaderService, ConfigStoreService, Observable<RepositoryLinks>, ClipboardService] {
     const metaDataMap = this.appService.getUiMetadataMap(serviceName);
     const user = this.appService.user;
     const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, metaDataMap);
-    const configStore = new ConfigStoreService(user, metaDataMap, configLoader);
+    const clipboardService = new ClipboardService(configLoader);
+    const configStore = new ConfigStoreService(user, metaDataMap, configLoader, clipboardService);
     const repositoryLinks$ = this.appService.getRepositoryLinks(serviceName);
-    return [metaDataMap, user, configLoader, configStore, repositoryLinks$];
+    return [metaDataMap, user, configLoader, configStore, repositoryLinks$, clipboardService];
   }
 }

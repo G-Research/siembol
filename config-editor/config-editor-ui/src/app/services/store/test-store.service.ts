@@ -5,12 +5,14 @@ import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase, TestCase }
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { ConfigTestResult, TestingType } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
+import { ClipboardService } from '../clipboard.service';
 
 export class TestStoreService {
   constructor(
     private user: string,
     private store: BehaviorSubject<ConfigStoreState>,
-    private configLoaderService: ConfigLoaderService
+    private configLoaderService: ConfigLoaderService,
+    private clipboardService: ClipboardService
   ) {}
 
   setEditedTestCaseByName(testCaseName: string) {
@@ -46,7 +48,7 @@ export class TestStoreService {
 
   setEditedPastedTestCaseNew() {
     const currentState = this.store.getValue();
-    const testCase = currentState.pastedTestCase;
+    const testCase = this.clipboardService.testCaseToBePasted;
     testCase.version = 0;
     testCase.author = this.user;
     testCase.test_case_name = `test_${currentState.editedConfig.testCases.length + 1}`;
@@ -60,7 +62,7 @@ export class TestStoreService {
 
   setEditedPastedTestCase(): any {
     const currentState = this.store.getValue();
-    const testCase = currentState.pastedTestCase;
+    const testCase = this.clipboardService.testCaseToBePasted;
     const editedTestCase = currentState.editedTestCase;
     const pastedTestCase = cloneDeep(editedTestCase);
     pastedTestCase.testCase = Object.assign({}, cloneDeep(testCase), {
@@ -71,11 +73,6 @@ export class TestStoreService {
     });
     this.updateEditedTestCase(pastedTestCase);
     return pastedTestCase.testCase;
-  }
-
-  updatePastedTestCase(testCase: TestCase) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedTestCase(testCase).build();
-    this.store.next(newState);
   }
 
   updateEditedTestCase(testCase: TestCaseWrapper) {

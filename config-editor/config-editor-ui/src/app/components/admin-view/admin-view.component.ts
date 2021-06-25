@@ -57,7 +57,9 @@ export class AdminViewComponent implements OnDestroy {
     this.editorService.clipboardService.validateAdminConfig().subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedAdminConfig();
       this.adminComponent.updateAndWrapConfigData(configData);
-      this.adminComponent.addToUndoRedo(configData);
+      this.adminComponent.addToConfigHistory(configData);
+      this.adminComponent.markHistoryChange = true;
+      this.adminComponent.form.updateValueAndValidity();
     });
   }
 
@@ -65,11 +67,11 @@ export class AdminViewComponent implements OnDestroy {
     this.editorService.clipboardService.copy(this.configData);
   }
 
-  onClickUndo() {
+  onClickUndoConfig() {
     this.adminComponent.undoConfig();
   }
 
-  onRedo() {
+  onRedoConfig() {
     this.adminComponent.redoConfig();
   }
 }

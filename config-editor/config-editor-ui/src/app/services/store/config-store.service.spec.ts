@@ -6,10 +6,12 @@ import { mockTestCaseMap } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { mockUiMetadataParser } from 'testing/uiMetadataMap';
 import { mockParserConfig, mockParserConfigCloned } from 'testing/configs';
+import { ClipboardService } from '../clipboard.service';
 
 describe('ConfigStoreService', () => {
   let configLoader: ConfigLoaderService;
   let service: ConfigStoreService;
+  let clipboardService: ClipboardService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -20,10 +22,15 @@ describe('ConfigStoreService', () => {
             submitTestCase: () => of(mockTestCaseMap),
           },
         },
+        {
+          provide: ClipboardService,
+          useValue: jasmine.createSpy(),
+        },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
-    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader);
+    clipboardService = TestBed.inject(ClipboardService);
+    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader, clipboardService);
   });
 
   it('should be created', () => {

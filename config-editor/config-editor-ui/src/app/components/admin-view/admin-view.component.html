@@ -2,10 +2,10 @@
     <div class="left-panel" *ngIf="configData">
         <span class="buttons">
             <div class="right-button">
-                <button mat-icon-button [disabled]="adminComponent.undoRedoService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndo()">
+                <button mat-icon-button [disabled]="adminComponent.configHistoryService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndoConfig()">
                     <mat-icon>undo</mat-icon>
                 </button>
-                <button mat-icon-button [disabled]="adminComponent.undoRedoService.isFutureEmpty()" color="primary" title="Redo" (click)="onRedo()">
+                <button mat-icon-button [disabled]="adminComponent.configHistoryService.isFutureEmpty()" color="primary" title="Redo" (click)="onRedoConfig()">
                     <mat-icon>redo</mat-icon>
                 </button>
                 <button mat-icon-button [disabled]="!adminComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">

@@ -99,7 +99,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.editorService.clipboardService.validateConfig().subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedConfig();
       this.editorComponent.updateConfigData(configData);
-      this.editorComponent.addToUndoRedo(configData);
+      this.editorComponent.addToConfigHistory(configData);
     });
   }
 
@@ -107,11 +107,11 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.editorService.clipboardService.copy(this.configData);
   }
 
-  onClickUndo() {
+  onClickUndoConfig() {
     this.editorComponent.undoConfig();
   }
 
-  onRedo() {
+  onRedoConfig() {
     this.editorComponent.redoConfig();
   }
 }

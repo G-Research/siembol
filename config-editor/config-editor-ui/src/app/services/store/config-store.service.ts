@@ -10,6 +10,7 @@ import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
 import { AdminConfig } from '@app/model/config-model';
+import { ClipboardService } from '../clipboard.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -67,8 +68,18 @@ export class ConfigStoreService {
     return this.testStoreService;
   }
 
-  constructor(private user: string, private metaDataMap: UiMetadata, private configLoaderService: ConfigLoaderService) {
-    this.testStoreService = new TestStoreService(this.user, this.store, this.configLoaderService);
+  constructor(
+    private user: string,
+    private metaDataMap: UiMetadata,
+    private configLoaderService: ConfigLoaderService,
+    private clipboardService: ClipboardService
+  ) {
+    this.testStoreService = new TestStoreService(
+      this.user,
+      this.store,
+      this.configLoaderService,
+      this.clipboardService
+    );
   }
 
   initialise(configs: Config[], deployment: any, testCaseMap: TestCaseMap) {
@@ -357,19 +368,9 @@ export class ConfigStoreService {
     this.updateEditedConfigAndTestCase(newConfig, null);
   }
 
-  updatePastedConfig(config: ConfigData) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedConfig(config).build();
-    this.store.next(newState);
-  }
-
-  updatePastedAdminConfig(config: AdminConfig) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedAdminConfig(config).build();
-    this.store.next(newState);
-  }
-
   setNewEditedPastedConfig() {
     const currentState = this.store.getValue();
-    const configData = currentState.pastedConfig;
+    const configData = this.clipboardService.configToBePasted;
     if (!configData) {
       throw Error('No pasted config available');
     }
@@ -388,12 +389,11 @@ export class ConfigStoreService {
       version: 0,
     };
     this.updateEditedConfigAndTestCase(pasted, null);
-    this.updatePastedConfig(undefined);
   }
 
   setEditedPastedConfig(): Config {
     const currentState = this.store.getValue();
-    const configData = currentState.pastedConfig;
+    const configData = this.clipboardService.configToBePasted;
     const editedConfig = currentState.editedConfig;
     const pastedConfig = cloneDeep(editedConfig);
     pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
@@ -402,20 +402,18 @@ export class ConfigStoreService {
       [this.metaDataMap.author]: this.user,
     });
     this.updateEditedConfig(pastedConfig);
-    this.updatePastedConfig(undefined);
     return pastedConfig.configData;
   }
 
   setEditedPastedAdminConfig(): Config {
     const currentState = this.store.getValue();
-    const configData = currentState.pastedAdminConfig;
+    const configData = this.clipboardService.adminConfigToBePasted;
     const adminConfig = currentState.adminConfig;
     const pastedConfig = cloneDeep(adminConfig);
     pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
       config_version: adminConfig.version,
     });
     this.updateAdmin(pastedConfig);
-    this.updatePastedAdminConfig(undefined);
     return pastedConfig.configData;
   }
 

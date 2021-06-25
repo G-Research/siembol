@@ -11,14 +11,14 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, take, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
-import { UndoRedoService } from '@app/services/undo-redo.service';
+import { ConfigHistoryService } from '@app/services/config-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-generic-editor',
   styleUrls: ['./editor.component.scss'],
   templateUrl: './editor.component.html',
-  providers: [UndoRedoService],
+  providers: [ConfigHistoryService],
 })
 export class EditorComponent implements OnInit, OnDestroy {
   titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX)]);
@@ -30,7 +30,6 @@ export class EditorComponent implements OnInit, OnDestroy {
   public form: FormGroup = new FormGroup({});
   public editedConfig$: Observable<Config>;
   public config: Config;
-  private markHistoryChange = false;
 
   @Input() field: FormlyFieldConfig;
 
@@ -40,7 +39,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     private editorService: EditorService,
     private router: Router,
     private cd: ChangeDetectorRef,
-    private undoRedoService: UndoRedoService
+    private configHistoryService: ConfigHistoryService
   ) {
     this.editedConfig$ = editorService.configStore.editedConfig$;
   }
@@ -58,11 +57,10 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
-      if (this.form.valid && !this.markHistoryChange) {
-        this.addToUndoRedo(cloneDeep(values), this.field.templateOptions.tabIndex);
+      if (this.form.valid) {
+        this.addToConfigHistory(cloneDeep(values), this.field.templateOptions.tabIndex);
         this.updateConfigInStore(values);
       }
-      this.markHistoryChange = false;
     });
   }
 
@@ -76,27 +74,26 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   updateConfigData(configData: ConfigData) {
-    this.configData = configData;
+    this.configData = cloneDeep(configData);
     this.cd.markForCheck();
   }
 
-  addToUndoRedo(config: any, tabIndex: number = 0) {
-    this.undoRedoService.addState(config, tabIndex);
+  addToConfigHistory(config: any, tabIndex: number = 0) {
+    this.configHistoryService.addConfig(config, tabIndex);
   }
 
   undoConfig() {
-    this.markHistoryChange = true;
-    let nextState = this.undoRedoService.undo();
+    let nextState = this.configHistoryService.undoConfig();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);
-    this.updateConfigData(this.editorService.configSchema.wrapConfig(this.config.configData));
+    this.updateConfigData(nextState.formState);
   }
 
   redoConfig() {
-    let nextState = this.undoRedoService.redo();
+    let nextState = this.configHistoryService.redoConfig();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);
-    this.updateConfigData(this.editorService.configSchema.wrapConfig(this.config.configData));
+    this.updateConfigData(nextState.formState);
   }
 
   onSubmit() {
@@ -116,8 +113,8 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.router.navigate([this.editorService.serviceName, 'edit'], {
           queryParams: { configName: this.configName },
         });
-        this.undoRedoService.clear();
-        this.addToUndoRedo(cloneDeep(this.configData), this.field.templateOptions.tabIndex);
+        this.configHistoryService.clear();
+        this.addToConfigHistory(cloneDeep(this.configData), this.field.templateOptions.tabIndex);
       }
     });
   }

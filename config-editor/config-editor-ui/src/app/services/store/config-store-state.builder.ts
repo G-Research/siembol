@@ -236,21 +236,6 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  pastedConfig(config: ConfigData) {
-    this.state.pastedConfig = config;
-    return this;
-  }
-
-  pastedTestCase(testCase: TestCase) {
-    this.state.pastedTestCase = testCase;
-    return this;
-  }
-
-  pastedAdminConfig(adminConfig: AdminConfig) {
-    this.state.pastedAdminConfig = adminConfig;
-    return this;
-  }
-
   build(): ConfigStoreState {
     return this.state;
   }

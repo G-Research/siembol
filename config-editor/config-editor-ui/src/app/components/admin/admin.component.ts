@@ -13,14 +13,14 @@ import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { UndoRedoService } from '@app/services/undo-redo.service';
+import { ConfigHistoryService } from '@app/services/config-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-admin-editor',
   styleUrls: ['./admin.component.scss'],
   templateUrl: './admin.component.html',
-  providers: [UndoRedoService],
+  providers: [ConfigHistoryService],
 })
 export class AdminComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
@@ -33,8 +33,9 @@ export class AdminComponent implements OnInit, OnDestroy {
   config: AdminConfig;
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
-  private markHistoryChange = false;
+  markHistoryChange = false;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
+
   constructor(
     public dialog: MatDialog,
     public snackbar: PopupService,
@@ -42,7 +43,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     private router: Router,
     private configService: AppConfigService,
     private cd: ChangeDetectorRef,
-    private undoRedoService: UndoRedoService
+    private configHistoryService: ConfigHistoryService
   ) {
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
@@ -54,17 +55,12 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.config = config;
       //NOTE: in the form we are using wrapping config to handle optionals, unions
       if (config !== null) {
-        this.updateAndWrapConfigData(config.configData);
+        this.updateAndWrapConfigData(this.editorService.adminSchema.wrapConfig(config.configData));
       }
     });
-    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
-      if (
-        this.form.valid &&
-        !this.markHistoryChange &&
-        (!this.undoRedoService.getCurrent() ||
-          JSON.stringify(this.undoRedoService.getCurrent().formState) !== JSON.stringify(values))
-      ) {
-        this.addToUndoRedo(cloneDeep(values), this.field.templateOptions.tabIndex);
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+      if (this.form.valid && !this.markHistoryChange) {
+        this.addToConfigHistory(cloneDeep(values), this.field.templateOptions.tabIndex);
         this.updateConfigInStore(values);
       }
       this.markHistoryChange = false;
@@ -81,7 +77,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   updateAndWrapConfigData(configData: ConfigData) {
-    this.configData = this.editorService.adminSchema.wrapConfig(configData);
+    this.configData = cloneDeep(configData);
     this.editorService.adminSchema.wrapAdminConfig(this.configData);
     this.cd.markForCheck();
   }
@@ -113,6 +109,13 @@ export class AdminComponent implements OnInit, OnDestroy {
   onSyncWithGit() {
     this.blockUI.start('loading admin config');
     this.editorService.configStore.reloadAdminConfig().subscribe(() => {
+      this.adminConfig$.pipe(take(1)).subscribe(config => {
+        this.config = config;
+        if (config !== null) {
+          this.updateAndWrapConfigData(this.editorService.adminSchema.wrapConfig(config.configData));
+        }
+        this.configHistoryService.clear();
+      });
       this.blockUI.stop();
     });
     setTimeout(() => {
@@ -122,22 +125,24 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   undoConfig() {
     this.markHistoryChange = true;
-    let nextState = this.undoRedoService.undo();
+    let nextState = this.configHistoryService.undoConfig();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);
-    this.updateAndWrapConfigData(this.config.configData);
+    this.updateAndWrapConfigData(nextState.formState);
+    this.form.updateValueAndValidity();
   }
 
   redoConfig() {
     this.markHistoryChange = true;
-    let nextState = this.undoRedoService.redo();
+    let nextState = this.configHistoryService.redoConfig();
     this.field.templateOptions.tabIndex = nextState.tabIndex;
     this.updateConfigInStore(nextState.formState);
-    this.updateAndWrapConfigData(this.config.configData);
+    this.updateAndWrapConfigData(nextState.formState);
+    this.form.updateValueAndValidity();
   }
 
-  addToUndoRedo(config: any, tabIndex: number = 0) {
-    this.undoRedoService.addState(config, tabIndex);
+  addToConfigHistory(config: any, tabIndex: number = 0) {
+    this.configHistoryService.addConfig(config, tabIndex);
   }
 
   private updateConfigInStore(configData: ConfigData) {

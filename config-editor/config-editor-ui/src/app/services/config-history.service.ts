@@ -8,40 +8,42 @@ interface ValidConfigState {
   formState: any;
 }
 
-export class UndoRedoService {
+export class ConfigHistoryService {
   private history: ConfigHistory = { past: [], future: [] };
 
   clear() {
     this.history = { past: [], future: [] };
   }
 
-  addState(config: any, tabIndex: number = undefined) {
-    this.history.past.splice(0, 0, {
-      formState: config,
-      tabIndex: tabIndex,
-    });
-    this.history.future = [];
+  addConfig(config: any, tabIndex: number = undefined) {
+    if (!this.isConfigEqualToCurrent(config)) {
+      this.history.past.splice(0, 0, {
+        formState: config,
+        tabIndex: tabIndex,
+      });
+      this.history.future = [];
+    }
   }
 
-  getCurrent(): ValidConfigState {
+  getCurrentConfig(): ValidConfigState {
     if (this.history.past.length == 0) {
       return undefined;
     }
     return this.history.past[0];
   }
 
-  undo(): ValidConfigState {
+  undoConfig(): ValidConfigState {
     if (this.isHistoryEmpty()) {
-      return undefined;
+      throw Error('Unable to undo: history is empty.');
     }
-    this.history.future.splice(0, 0, this.getCurrent());
+    this.history.future.splice(0, 0, this.getCurrentConfig());
     this.history.past.shift();
-    return this.getCurrent();
+    return this.getCurrentConfig();
   }
 
-  redo(): ValidConfigState {
+  redoConfig(): ValidConfigState {
     if (this.isFutureEmpty()) {
-      return undefined;
+      throw new Error('Unable to redo: future is empty.');
     }
     let nextState = this.history.future[0];
     this.history.past.splice(0, 0, nextState);
@@ -55,5 +57,10 @@ export class UndoRedoService {
 
   isHistoryEmpty(): boolean {
     return this.history.past.length < 2;
+  }
+
+  private isConfigEqualToCurrent(config: any): boolean {
+    let current = this.getCurrentConfig();
+    return current && JSON.stringify(current.formState) === JSON.stringify(config);
   }
 }
