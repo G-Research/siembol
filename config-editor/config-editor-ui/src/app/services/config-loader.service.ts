@@ -83,13 +83,15 @@ export class ConfigLoaderService {
   }
 
   getSchema(): Observable<JSONSchema7> {
-    return this.http.get<SchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`).map(x => {
-      try {
-        return x.rules_schema;
-      } catch {
-        throw new Error("Call to schema endpoint didn't return the expected schema");
-      }
-    });
+    return this.http
+      .get<SchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`)
+      .map(x => {
+        try {
+          return x.rules_schema;
+        } catch {
+          throw new Error("Call to schema endpoint didn't return the expected schema");
+        }
+      });
   }
 
   getAdminSchema(): Observable<JSONSchema7> {
@@ -118,14 +120,19 @@ export class ConfigLoaderService {
 
   getRelease(): Observable<DeploymentWrapper> {
     return this.http
-      .get<DeploymentGitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`)
+      .get<DeploymentGitFiles<any>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`
+      )
       .pipe(
         map(result => {
           const file = result.files[0];
           if (file) {
             let extras = {};
             if (this.uiMetadata.deployment.extras) {
-              extras = this.uiMetadata.deployment.extras.reduce((a, x) => ({ ...a, [x]: file.content[x] }), {});
+              extras = this.uiMetadata.deployment.extras.reduce(
+                (a, x) => ({ ...a, [x]: file.content[x] }),
+                {}
+              );
             }
             return {
               deploymentHistory: file.file_history,
@@ -164,7 +171,9 @@ export class ConfigLoaderService {
 
   getAdminConfig(): Observable<AdminConfig> {
     return this.http
-      .get<AdminConfigGitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/adminconfig`)
+      .get<AdminConfigGitFiles<any>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/adminconfig`
+      )
       .pipe(
         map(result => {
           const file = result.files[0];
@@ -189,17 +198,15 @@ export class ConfigLoaderService {
 
   getTestCases(): Observable<TestCaseMap> {
     return this.http
-      .get<GitFiles<Content<any>>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`)
+      .get<GitFiles<Content<any>>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`
+      )
       .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
-  validateConfig(config: Config): Observable<any> {
-    const json = JSON.stringify(config.configData, null, 2);
+  validateConfig(config: any): Observable<any> {
+    const json = JSON.stringify(config, null, 2);
 
-    return this.validateConfigJson(json);
-  }
-
-  validateConfigJson(json: string): Observable<any> {
     return this.http.post<any>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate?singleConfig=true`,
       json
@@ -213,21 +220,23 @@ export class ConfigLoaderService {
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate`, json);
   }
 
-  validateAdminConfig(config: AdminConfig): Observable<any> {
-    const json = JSON.stringify(config.configData, null, 2);
+  validateAdminConfig(config: any): Observable<any> {
+    const json = JSON.stringify(config, null, 2);
 
-    return this.validateAdminConfigJson(json);
-  }
-
-  validateAdminConfigJson(json: string): Observable<any> {
-    return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/validate`, json);
+    return this.http.post<any>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/validate`,
+      json
+    );
   }
 
   submitRelease(deployment: Deployment): Observable<any> {
     const releaseFormat = this.marshalDeploymentFormat(deployment);
     const json = JSON.stringify(releaseFormat, null, 2);
 
-    return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`, json);
+    return this.http.post<any>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`,
+      json
+    );
   }
 
   submitConfig(config: Config): Observable<Config[]> {
@@ -310,7 +319,10 @@ export class ConfigLoaderService {
     const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
 
     return this.http
-      .put<GitFiles<TestCase>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json)
+      .put<GitFiles<TestCase>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`,
+        json
+      )
       .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
@@ -318,7 +330,10 @@ export class ConfigLoaderService {
     const json = JSON.stringify(cloneDeep(testCase.testCase), null, 2);
 
     return this.http
-      .post<GitFiles<TestCase>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`, json)
+      .post<GitFiles<TestCase>>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/testcases`,
+        json
+      )
       .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
@@ -430,7 +445,9 @@ export class ConfigLoaderService {
 
     return Object.assign(d, {
       [this.uiMetadata.deployment.version]: deployment.deploymentVersion,
-      [this.uiMetadata.deployment.config_array]: deployment.configs.map(config => cloneDeep(config.configData)),
+      [this.uiMetadata.deployment.config_array]: deployment.configs.map(config =>
+        cloneDeep(config.configData)
+      ),
     });
   }
 }

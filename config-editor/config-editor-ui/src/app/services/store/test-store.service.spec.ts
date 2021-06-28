@@ -7,12 +7,12 @@ import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap } from 'tes
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
-import { ClipboardService } from '../clipboard.service';
+import { ClipboardStoreService } from '../clipboard-store.service';
 
 describe('TestStoreService', () => {
   let configLoader: ConfigLoaderService;
   let service: TestStoreService;
-  let clipboardService: ClipboardService;
+  let clipboardService: ClipboardStoreService;
   beforeEach(() => {
     mockStore.editedConfig.testCases = [cloneDeep(mockTestCaseWrapper1), cloneDeep(mockTestCaseWrapper2)];
     const store = new BehaviorSubject(mockStore);
@@ -26,13 +26,13 @@ describe('TestStoreService', () => {
           },
         },
         {
-          provide: ClipboardService,
+          provide: ClipboardStoreService,
           useValue: jasmine.createSpy(),
         },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
-    clipboardService = TestBed.inject(ClipboardService);
+    clipboardService = TestBed.inject(ClipboardStoreService);
     service = new TestStoreService('siembol', store, configLoader, clipboardService);
   });
 
@@ -75,7 +75,9 @@ describe('TestStoreService', () => {
       spyOn(configLoader, 'evaluateTestCase').and.returnValue(of(mockEvaluateTestCaseMatch).pipe(delay(1)));
       service.runEditedConfigTestSuite();
       tick(1);
-      expect(service['store'].getValue().editedConfig.testCases[1].testCaseResult).toEqual(mockEvaluateTestCaseMatch);
+      expect(service['store'].getValue().editedConfig.testCases[1].testCaseResult).toEqual(
+        mockEvaluateTestCaseMatch
+      );
     }));
   });
 });

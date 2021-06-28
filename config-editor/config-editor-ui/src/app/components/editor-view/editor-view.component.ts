@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Config } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
@@ -10,7 +19,7 @@ import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
-import { TestingType } from '@app/model/config-model';
+import { TestingType, Type } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
@@ -45,7 +54,9 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
-    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription });
+    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
+      map: SchemaService.renameDescription,
+    });
   }
 
   testCaseEnabled: () => boolean = () => false;
@@ -60,6 +71,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
         this.previousTab = this.selectedTab;
       }
     });
+    this.editorComponent.configData.onChange();
   }
 
   ngAfterViewInit() {
@@ -67,9 +79,10 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.configData = config.configData;
       this.testingEnabled = () =>
         this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
-
       this.testCaseEnabled = () =>
-        this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
+        this.editorService.metaDataMap.testing.testCaseEnabled &&
+        this.editorComponent.form.valid &&
+        !config.isNew;
     });
   }
 
@@ -96,7 +109,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickPaste() {
-    this.editorService.clipboardService.validateConfig().subscribe(() => {
+    this.editorService.configStore.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedConfig();
       this.editorComponent.updateConfigData(configData);
       this.editorComponent.addToConfigHistory(configData);
@@ -104,7 +117,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickCopy() {
-    this.editorService.clipboardService.copy(this.configData);
+    this.editorService.configStore.clipboardService.copy(this.configData);
   }
 
   onClickUndoConfig() {

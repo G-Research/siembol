@@ -5,14 +5,14 @@ import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase, TestCase }
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { ConfigTestResult, TestingType } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
-import { ClipboardService } from '../clipboard.service';
+import { ClipboardStoreService } from '../clipboard-store.service';
 
 export class TestStoreService {
   constructor(
     private user: string,
     private store: BehaviorSubject<ConfigStoreState>,
     private configLoaderService: ConfigLoaderService,
-    private clipboardService: ClipboardService
+    private clipboardService: ClipboardStoreService
   ) {}
 
   setEditedTestCaseByName(testCaseName: string) {
@@ -48,7 +48,7 @@ export class TestStoreService {
 
   setEditedPastedTestCaseNew() {
     const currentState = this.store.getValue();
-    const testCase = this.clipboardService.testCaseToBePasted;
+    const testCase = this.clipboardService.configToBePasted;
     testCase.version = 0;
     testCase.author = this.user;
     testCase.test_case_name = `test_${currentState.editedConfig.testCases.length + 1}`;
@@ -62,7 +62,7 @@ export class TestStoreService {
 
   setEditedPastedTestCase(): any {
     const currentState = this.store.getValue();
-    const testCase = this.clipboardService.testCaseToBePasted;
+    const testCase = this.clipboardService.configToBePasted;
     const editedTestCase = currentState.editedTestCase;
     const pastedTestCase = cloneDeep(editedTestCase);
     pastedTestCase.testCase = Object.assign({}, cloneDeep(testCase), {
@@ -133,21 +133,23 @@ export class TestStoreService {
       .build();
     this.store.next(runningTest);
 
-    return this.configLoaderService.evaluateTestCase(state.editedConfig.configData, state.editedTestCase).subscribe(
-      (testCaseResult: TestCaseResult) => {
-        const newState = new ConfigStoreStateBuilder(this.store.getValue())
-          .editedTestCaseResult(testCaseResult)
-          .build();
-        this.store.next(newState);
-      },
-      err => {
-        const newState = new ConfigStoreStateBuilder(this.store.getValue())
-          .editedTestCaseResult({ isRunning: false })
-          .build();
-        this.store.next(newState);
-        throw err;
-      }
-    );
+    return this.configLoaderService
+      .evaluateTestCase(state.editedConfig.configData, state.editedTestCase)
+      .subscribe(
+        (testCaseResult: TestCaseResult) => {
+          const newState = new ConfigStoreStateBuilder(this.store.getValue())
+            .editedTestCaseResult(testCaseResult)
+            .build();
+          this.store.next(newState);
+        },
+        err => {
+          const newState = new ConfigStoreStateBuilder(this.store.getValue())
+            .editedTestCaseResult({ isRunning: false })
+            .build();
+          this.store.next(newState);
+          throw err;
+        }
+      );
   }
 
   runEditedConfigTestSuite() {
@@ -221,7 +223,9 @@ export class TestStoreService {
 
   private getTestCaseByName(testCaseName: string): TestCaseWrapper {
     const currentState = this.store.getValue();
-    const testCase = currentState.editedConfig.testCases.find(x => x.testCase.test_case_name === testCaseName);
+    const testCase = currentState.editedConfig.testCases.find(
+      x => x.testCase.test_case_name === testCaseName
+    );
     if (testCase === undefined) {
       throw Error('no test case with such name');
     }

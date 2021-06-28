@@ -28,7 +28,7 @@ export class RawJsonAccessor implements ControlValueAccessor {
 
   registerOnChange(fn: any) {
     this.onChange = value => {
-      fn(this.checkJson(value));
+      fn(this.parseJson(value));
     };
   }
 
@@ -36,7 +36,7 @@ export class RawJsonAccessor implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  checkJson(value: any) {
+  private parseJson(value: any) {
     try {
       return JSON.parse(value);
     } catch (e) {

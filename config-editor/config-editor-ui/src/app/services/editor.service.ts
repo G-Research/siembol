@@ -11,7 +11,6 @@ import { mergeMap } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { RepositoryLinks } from '@app/model/config-model';
 import { AdminSchemaService } from './schema/admin-schema.service';
-import { ClipboardService } from './clipboard.service';
 
 export class ServiceContext {
   metaDataMap: UiMetadata;
@@ -23,7 +22,6 @@ export class ServiceContext {
   testSpecificationSchema?: JSONSchema7;
   adminMode: boolean;
   repositoryLinks$: Observable<RepositoryLinks>;
-  clipboardService: ClipboardService;
 }
 
 @Injectable({
@@ -62,9 +60,6 @@ export class EditorService {
   public get testSpecificationSchema() {
     return this.serviceContext.testSpecificationSchema;
   }
-  public get clipboardService() {
-    return this.serviceContext.clipboardService;
-  }
 
   constructor(private http: HttpClient, private config: AppConfigService, private appService: AppService) {}
 
@@ -75,8 +70,7 @@ export class EditorService {
   }
 
   public createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore, repositoryLinks$, clipboardService] =
-      this.initialiseContext(serviceName);
+    const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
     const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
       ? configLoader.getTestSpecificationSchema()
       : of({});
@@ -107,7 +101,6 @@ export class EditorService {
             repositoryLinks$,
             serviceName,
             testSpecificationSchema: testSpecSchema,
-            clipboardService,
           };
         }
         throwError('Can not load service');
@@ -115,8 +108,7 @@ export class EditorService {
   }
 
   public createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore, repositoryLinks$, clipboardService] =
-      this.initialiseContext(serviceName);
+    const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
 
     return configLoader
       .getAdminSchema()
@@ -132,7 +124,6 @@ export class EditorService {
             metaDataMap,
             repositoryLinks$,
             serviceName,
-            clipboardService,
           };
         }
         throwError('Can not load admin service');
@@ -141,13 +132,13 @@ export class EditorService {
 
   private initialiseContext(
     serviceName: string
-  ): [UiMetadata, string, ConfigLoaderService, ConfigStoreService, Observable<RepositoryLinks>, ClipboardService] {
+  ): [UiMetadata, string, ConfigLoaderService, ConfigStoreService, Observable<RepositoryLinks>] {
     const metaDataMap = this.appService.getUiMetadataMap(serviceName);
     const user = this.appService.user;
     const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, metaDataMap);
-    const clipboardService = new ClipboardService(configLoader);
-    const configStore = new ConfigStoreService(user, metaDataMap, configLoader, clipboardService);
+
+    const configStore = new ConfigStoreService(user, metaDataMap, configLoader);
     const repositoryLinks$ = this.appService.getRepositoryLinks(serviceName);
-    return [metaDataMap, user, configLoader, configStore, repositoryLinks$, clipboardService];
+    return [metaDataMap, user, configLoader, configStore, repositoryLinks$];
   }
 }

@@ -9,7 +9,7 @@ import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { AdminComponent } from '../admin/admin.component';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, Type } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
@@ -34,7 +34,9 @@ export class AdminViewComponent implements OnDestroy {
     this.serviceName = editorService.serviceName;
     this.schema = editorService.adminSchema.schema;
     this.adminConfig$ = editorService.configStore.adminConfig$;
-    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription });
+    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
+      map: SchemaService.renameDescription,
+    });
   }
 
   public ngAfterViewInit() {
@@ -54,7 +56,7 @@ export class AdminViewComponent implements OnDestroy {
   }
 
   onClickPaste() {
-    this.editorService.clipboardService.validateAdminConfig().subscribe(() => {
+    this.editorService.configStore.clipboardService.validateConfig(Type.ADMIN_TYPE).subscribe(() => {
       let configData = this.editorService.configStore.setEditedPastedAdminConfig();
       this.adminComponent.updateAndWrapConfigData(configData);
       this.adminComponent.addToConfigHistory(configData);
@@ -64,7 +66,7 @@ export class AdminViewComponent implements OnDestroy {
   }
 
   onClickCopy() {
-    this.editorService.clipboardService.copy(this.configData);
+    this.editorService.configStore.clipboardService.copy(this.configData);
   }
 
   onClickUndoConfig() {

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
 import { Type } from '@app/model/config-model';
@@ -139,14 +146,14 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onPasteTestCase() {
-    this.editorService.clipboardService.validateTestCase().subscribe(() => {
+    this.editorService.configStore.clipboardService.validateConfig(Type.TESTCASE_TYPE).subscribe(() => {
       const pastedTest = this.editorService.configStore.testService.setEditedPastedTestCase();
       this.configHistoryService.addConfig(pastedTest);
     });
   }
 
   onCopyTestCase() {
-    this.editorService.clipboardService.copy(this.testCase);
+    this.editorService.configStore.clipboardService.copy(this.testCase);
   }
 
   private getFormTestCaseWrapper(): TestCaseWrapper {

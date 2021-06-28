@@ -15,6 +15,7 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { Type } from '@app/model/config-model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -126,7 +127,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     if (event.container.id === 'deployment-list') {
       if (event.previousContainer.id === 'store-list') {
         this.configStore.addConfigToDeploymentInPosition(event.previousIndex, event.currentIndex);
-      } else if (event.previousContainer.id === 'deployment-list' && event.currentIndex !== event.previousIndex) {
+      } else if (
+        event.previousContainer.id === 'deployment-list' &&
+        event.currentIndex !== event.previousIndex
+      ) {
         this.configStore.moveConfigInDeployment(event.previousIndex, event.currentIndex);
       }
     }
@@ -230,7 +234,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClickPaste() {
-    this.editorService.clipboardService.validateConfig().subscribe(() => {
+    this.editorService.configStore.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
       this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
     });
   }

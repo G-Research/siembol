@@ -10,7 +10,7 @@ import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
 import { AdminConfig } from '@app/model/config-model';
-import { ClipboardService } from '../clipboard.service';
+import { ClipboardStoreService } from '../clipboard-store.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -63,22 +63,27 @@ export class ConfigStoreService {
   /*eslint-enable */
 
   private testStoreService: TestStoreService;
+  private clipboardStoreService: ClipboardStoreService;
 
   get testService(): TestStoreService {
     return this.testStoreService;
   }
 
+  get clipboardService(): ClipboardStoreService {
+    return this.clipboardStoreService;
+  }
+
   constructor(
     private user: string,
     private metaDataMap: UiMetadata,
-    private configLoaderService: ConfigLoaderService,
-    private clipboardService: ClipboardService
+    private configLoaderService: ConfigLoaderService
   ) {
+    this.clipboardStoreService = new ClipboardStoreService(this.configLoaderService);
     this.testStoreService = new TestStoreService(
       this.user,
       this.store,
       this.configLoaderService,
-      this.clipboardService
+      this.clipboardStoreService
     );
   }
 
@@ -227,7 +232,9 @@ export class ConfigStoreService {
   }
 
   reloadStoreAndDeployment(): Observable<any> {
-    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled ? this.configLoaderService.getTestCases() : of({});
+    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled
+      ? this.configLoaderService.getTestCases()
+      : of({});
     return Observable.forkJoin(
       this.configLoaderService.getConfigs(),
       this.configLoaderService.getRelease(),
@@ -251,7 +258,7 @@ export class ConfigStoreService {
       throw Error('empty edited config');
     }
 
-    return this.configLoaderService.validateConfig(config);
+    return this.configLoaderService.validateConfig(config.configData);
   }
 
   validateAdminConfig(): Observable<any> {
@@ -260,7 +267,7 @@ export class ConfigStoreService {
       throw Error('empty admin config');
     }
 
-    return this.configLoaderService.validateAdminConfig(config);
+    return this.configLoaderService.validateAdminConfig(config.configData);
   }
 
   submitEditedConfig(): Observable<boolean> {
@@ -315,7 +322,8 @@ export class ConfigStoreService {
    */
   setEditedConfigAndTestCaseByName(configName: string, testCaseName: string): boolean {
     const editedConfig = this.store.value.editedConfig;
-    const config = editedConfig && configName === editedConfig.name ? editedConfig : this.getConfigByName(configName);
+    const config =
+      editedConfig && configName === editedConfig.name ? editedConfig : this.getConfigByName(configName);
     if (config === undefined) {
       return false;
     }
@@ -370,7 +378,7 @@ export class ConfigStoreService {
 
   setNewEditedPastedConfig() {
     const currentState = this.store.getValue();
-    const configData = this.clipboardService.configToBePasted;
+    const configData = this.clipboardStoreService.configToBePasted;
     if (!configData) {
       throw Error('No pasted config available');
     }
@@ -393,7 +401,7 @@ export class ConfigStoreService {
 
   setEditedPastedConfig(): Config {
     const currentState = this.store.getValue();
-    const configData = this.clipboardService.configToBePasted;
+    const configData = this.clipboardStoreService.configToBePasted;
     const editedConfig = currentState.editedConfig;
     const pastedConfig = cloneDeep(editedConfig);
     pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
@@ -407,7 +415,7 @@ export class ConfigStoreService {
 
   setEditedPastedAdminConfig(): Config {
     const currentState = this.store.getValue();
-    const configData = this.clipboardService.adminConfigToBePasted;
+    const configData = this.clipboardStoreService.configToBePasted;
     const adminConfig = currentState.adminConfig;
     const pastedConfig = cloneDeep(adminConfig);
     pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
@@ -418,6 +426,8 @@ export class ConfigStoreService {
   }
 
   updateEditedConfig(config: Config) {
+    // cleaning/wrapping function?
+    // add to history service -> reset between change in configs -> have one for testcases, one for configs?
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).editedConfig(config).build();
     this.store.next(newState);
   }

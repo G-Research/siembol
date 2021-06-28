@@ -8,6 +8,7 @@ import { TestStoreService } from '@app/services/store/test-store.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { Type } from '@app/model/config-model';
 
 @Component({
   selector: 're-test-centre',
@@ -87,7 +88,10 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   onDeleteTestCase(index: number) {
     this.blockUI.start('deleting test case');
     this.editorService.configStore
-      .deleteTestCase(this.testCases[index].testCase.config_name, this.testCases[index].testCase.test_case_name)
+      .deleteTestCase(
+        this.testCases[index].testCase.config_name,
+        this.testCases[index].testCase.test_case_name
+      )
       .subscribe(() => {
         this.blockUI.stop();
       });
@@ -97,7 +101,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   }
 
   onPasteTestCaseNew() {
-    this.editorService.clipboardService.validateTestCase().subscribe(() => {
+    this.editorService.configStore.clipboardService.validateConfig(Type.TESTCASE_TYPE).subscribe(() => {
       this.router.navigate([], {
         relativeTo: this.activeRoute,
         queryParams: { pasteTestCase: true },

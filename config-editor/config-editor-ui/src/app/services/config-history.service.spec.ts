@@ -5,7 +5,7 @@ const state2 = { test: 'test2' };
 const state3 = { test: 'test3' };
 const state4 = { test: 'test4' };
 
-describe('ConfigHistoryService', () => {
+fdescribe('ConfigHistoryService', () => {
   let service: ConfigHistoryService;
 
   beforeEach(() => {
@@ -42,5 +42,12 @@ describe('ConfigHistoryService', () => {
   it('should throw error', () => {
     service.addConfig(state1);
     expect(() => service.undoConfig()).toThrow(new Error('Unable to undo: history is empty.'));
+  });
+
+  it('should not add same config twice', () => {
+    service.addConfig(state1);
+    service.addConfig(state1);
+    service.addConfig(state1);
+    expect(service.isHistoryEmpty()).toBeTrue();
   });
 });
