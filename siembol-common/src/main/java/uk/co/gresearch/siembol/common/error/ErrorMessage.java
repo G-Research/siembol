@@ -32,6 +32,8 @@ public class ErrorMessage {
     private Long timestamp = System.currentTimeMillis();
     @JsonProperty("source_type")
     private String sourceType = "error";
+    @JsonProperty("rule_name")
+    private String ruleName;
 
     public String getGuid() {
         return guid;
@@ -99,6 +101,14 @@ public class ErrorMessage {
 
     public void setRawMessage(byte[] message) {
         rawMessage = new String(message, UTF_8);
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 
     @Override

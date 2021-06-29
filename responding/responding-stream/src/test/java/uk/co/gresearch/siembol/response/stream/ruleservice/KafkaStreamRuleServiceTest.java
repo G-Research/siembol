@@ -1,11 +1,20 @@
 package uk.co.gresearch.siembol.response.stream.ruleservice;
 
-import com.github.charithe.kafka.EphemeralKafkaBroker;
-import com.github.charithe.kafka.KafkaJunitRule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.adrianwalker.multilinestring.Multiline;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.TestInputTopic;
+import org.apache.kafka.streams.TestOutputTopic;
+import org.apache.kafka.streams.TopologyTestDriver;
 import org.junit.*;
 import org.mockito.Mockito;
-import org.springframework.boot.actuate.health.Status;
+import uk.co.gresearch.siembol.common.error.ErrorMessage;
+import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.response.stream.rest.application.ResponseConfigurationProperties;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
@@ -13,13 +22,12 @@ import uk.co.gresearch.siembol.response.common.ResponseAlert;
 import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 import uk.co.gresearch.siembol.response.engine.RulesEngine;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class KafkaStreamRuleServiceTest {
     /**
@@ -33,8 +41,8 @@ public class KafkaStreamRuleServiceTest {
     @Multiline
     private static String alertStr;
 
-    @Rule
-    public KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
+    private static final ObjectReader ERROR_READER = new ObjectMapper()
+            .readerFor(ErrorMessage.class);
 
     private KafkaStreamRulesService streamService;
     private RulesProvider rulesProvider;
@@ -43,83 +51,86 @@ public class KafkaStreamRuleServiceTest {
     private String errorTopic = "error";
     private RespondingResultAttributes resultAttributes;
     private ResponseAlert responseAlert;
+    private KafkaStreams kafkaStreams;
+    private TestingDriverKafkaStreamsFactory streamsFactory;
+    private TopologyTestDriver testDriver;
+    private TestInputTopic<String, String>  testInputTopic;
+    private TestOutputTopic<String, String>  testErrorTopic;
 
     @Before
     public void setUp() {
-        kafkaRule.waitForStartup();
         responseAlert = new ResponseAlert();
         resultAttributes = new RespondingResultAttributes();
         resultAttributes.setAlert(responseAlert);
 
         rulesProvider = Mockito.mock(RulesProvider.class);
         rulesEngine = Mockito.mock(RulesEngine.class);
+        kafkaStreams = Mockito.mock(KafkaStreams.class);
+        streamsFactory = new TestingDriverKafkaStreamsFactory(kafkaStreams);
 
         when(rulesProvider.getEngine()).thenReturn(rulesEngine);
         ResponseConfigurationProperties properties = new ResponseConfigurationProperties();
         properties.setInputTopic(inputTopic);
         properties.setErrorTopic(errorTopic);
         properties.setStreamConfig(new HashMap<>());
-        String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
         properties.getStreamConfig().put("application.id", "siembol-response-" + UUID.randomUUID().toString());
-        properties.getStreamConfig().put("bootstrap.servers", bootstrapServer);
-        properties.getStreamConfig().put("security.protocol", "PLAINTEXT");
-
-        streamService = new KafkaStreamRulesService(rulesProvider, properties);
+        streamService = new KafkaStreamRulesService(rulesProvider, properties, streamsFactory);
+        testDriver = streamsFactory.getTestDriver();
+        testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
+                Serdes.String().serializer());
+        testErrorTopic = testDriver.createOutputTopic(errorTopic, Serdes.String().deserializer(),
+                Serdes.String().deserializer());
     }
 
     @After
-    public void tearDown() {
-        streamService.close();
+    public void tearDown() throws IOException {
+        streamsFactory.close();
     }
 
-    @Ignore
     @Test
-    public void testMatchEngineTest() throws Exception {
+    public void testMatchEngineTest() {
         when(rulesEngine.evaluate(any(ResponseAlert.class)))
                 .thenReturn(RespondingResult.fromEvaluationResult(ResponseEvaluationResult.MATCH, responseAlert));
-        kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());;
-        Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
+        testInputTopic.pipeInput(alertStr);
+        Assert.assertTrue(testErrorTopic.isEmpty());
     }
 
-    @Ignore
     @Test
-    public void testNoMatchEngineTest() throws Exception {
+    public void testNoMatchEngineTest() throws JsonProcessingException {
         resultAttributes.setMessage("no rule matched");
         when(rulesEngine.evaluate(any(ResponseAlert.class)))
                 .thenReturn(RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, responseAlert));
-        kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());
-
-        List<String> outputEvent = kafkaRule.helper().consumeStrings(errorTopic, 1)
-                .get(15, TimeUnit.SECONDS);
-        Assert.assertNotNull(outputEvent);
-        Assert.assertEquals(1, outputEvent.size());
-        Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
+        testInputTopic.pipeInput(alertStr);
+        Assert.assertFalse(testErrorTopic.isEmpty());
+        verify(rulesEngine, times(1)).evaluate(any());
+        String errorMessageStr = testErrorTopic.readValue();
+        ErrorMessage errorMessage = ERROR_READER.readValue(errorMessageStr);
+        Assert.assertEquals(ErrorType.RESPONSE_ERROR, errorMessage.getErrorType());
+        Assert.assertEquals(alertStr, errorMessage.getRawMessage());
     }
 
-    @Ignore
     @Test
-    public void testErrorMatchEngineTest() throws Exception {
+    public void testErrorMatchEngineTest() throws JsonProcessingException {
         when(rulesEngine.evaluate(any(ResponseAlert.class)))
                 .thenReturn(RespondingResult.fromException(new IllegalStateException("tmp")));
-        kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());
-
-        List<String> outputEvent = kafkaRule.helper().consumeStrings(errorTopic, 1)
-                .get(10, TimeUnit.SECONDS);
-        Assert.assertNotNull(outputEvent);
-        Assert.assertEquals(1, outputEvent.size());
-        Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
+        testInputTopic.pipeInput(alertStr);
+        Assert.assertFalse(testErrorTopic.isEmpty());
+        verify(rulesEngine, times(1)).evaluate(any());
+        String errorMessageStr = testErrorTopic.readValue();
+        ErrorMessage errorMessage = ERROR_READER.readValue(errorMessageStr);
+        Assert.assertEquals(ErrorType.RESPONSE_ERROR, errorMessage.getErrorType());
+        Assert.assertEquals(alertStr, errorMessage.getRawMessage());
     }
 
-    @Ignore
     @Test
-    public void testExceptionEngineTest() throws Exception {
+    public void testExceptionEngineTest() throws JsonProcessingException {
         when(rulesEngine.evaluate(any(ResponseAlert.class))).thenThrow(new IllegalStateException());
-        kafkaRule.helper().produceStrings(inputTopic, alertStr.trim());
-
-        List<String> outputEvent = kafkaRule.helper().consumeStrings(errorTopic, 1)
-                .get(15, TimeUnit.SECONDS);
-        Assert.assertNotNull(outputEvent);
-        Assert.assertEquals(1, outputEvent.size());
-        Assert.assertEquals(Status.UP, streamService.checkHealth().toFuture().get().getStatus());
+        testInputTopic.pipeInput(alertStr);
+        Assert.assertFalse(testErrorTopic.isEmpty());
+        verify(rulesEngine, times(1)).evaluate(any());
+        String errorMessageStr = testErrorTopic.readValue();
+        ErrorMessage errorMessage = ERROR_READER.readValue(errorMessageStr);
+        Assert.assertEquals(ErrorType.RESPONSE_ERROR, errorMessage.getErrorType());
+        Assert.assertEquals(alertStr, errorMessage.getRawMessage());
     }
 }

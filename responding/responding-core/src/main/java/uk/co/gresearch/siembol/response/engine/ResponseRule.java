@@ -45,10 +45,11 @@ public class ResponseRule implements Evaluable {
             try {
                 RespondingResult result = evaluator.evaluate(currentAlert);
                 if (result.getStatusCode() != RespondingResult.StatusCode.OK) {
-                    LOG.debug("Error match of the rule {} with message {}",
+                    LOG.error("Error match of the rule {} with message {}",
                             fullRuleName,
                             result.getAttributes().getMessage());
                     errorsCounter.increment();
+                    result.getAttributes().setRuleName(fullRuleName);
                     return result;
                 }
                 switch (result.getAttributes().getResult()) {
@@ -62,8 +63,11 @@ public class ResponseRule implements Evaluable {
                 }
                 currentAlert = result.getAttributes().getAlert();
             } catch (Exception e) {
+                LOG.error("Exception {} during evaluating the rule {}", e, fullRuleName);
                 errorsCounter.increment();
-                return RespondingResult.fromException(e);
+                RespondingResult ret = RespondingResult.fromException(e);
+                ret.getAttributes().setRuleName(fullRuleName);
+                return ret;
             }
         }
 
