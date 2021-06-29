@@ -20,14 +20,12 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
-import { ConfigHistoryService } from '@app/services/config-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-generic-editor',
   styleUrls: ['./editor.component.scss'],
   templateUrl: './editor.component.html',
-  providers: [ConfigHistoryService],
 })
 export class EditorComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;

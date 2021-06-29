@@ -1,15 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ViewChild,
-  OnInit,
-  OnDestroy,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
 import { Type } from '@app/model/config-model';
-import { FormlyForm, FormlyFieldConfig } from '@ngx-formly/core';
+import { FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';

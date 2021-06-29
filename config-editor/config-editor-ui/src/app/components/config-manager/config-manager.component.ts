@@ -127,10 +127,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     if (event.container.id === 'deployment-list') {
       if (event.previousContainer.id === 'store-list') {
         this.configStore.addConfigToDeploymentInPosition(event.previousIndex, event.currentIndex);
-      } else if (
-        event.previousContainer.id === 'deployment-list' &&
-        event.currentIndex !== event.previousIndex
-      ) {
+      } else if (event.previousContainer.id === 'deployment-list' && event.currentIndex !== event.previousIndex) {
         this.configStore.moveConfigInDeployment(event.previousIndex, event.currentIndex);
       }
     }

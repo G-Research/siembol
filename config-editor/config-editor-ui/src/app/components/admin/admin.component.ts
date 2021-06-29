@@ -22,14 +22,12 @@ import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ConfigHistoryService } from '@app/services/config-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 're-admin-editor',
   styleUrls: ['./admin.component.scss'],
   templateUrl: './admin.component.html',
-  providers: [ConfigHistoryService],
 })
 export class AdminComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
