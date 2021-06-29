@@ -29,6 +29,7 @@ export class AdminViewComponent implements OnDestroy {
   field: FormlyFieldConfig;
 
   adminConfig$: Observable<AdminConfig>;
+  version: number;
 
   constructor(private formlyJsonschema: FormlyJsonschema, private editorService: EditorService) {
     this.serviceName = editorService.serviceName;
@@ -42,11 +43,7 @@ export class AdminViewComponent implements OnDestroy {
   public ngAfterViewInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.configData = config.configData;
-    });
-    this.adminConfig$.pipe(take(1)).subscribe((config: Config) => {
-      this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
-        map: SchemaService.renameDescription,
-      });
+      this.version = config.version;
     });
   }
 
@@ -56,13 +53,7 @@ export class AdminViewComponent implements OnDestroy {
   }
 
   onClickPaste() {
-    this.editorService.configStore.clipboardService.validateConfig(Type.ADMIN_TYPE).subscribe(() => {
-      let configData = this.editorService.configStore.setEditedPastedAdminConfig();
-      this.adminComponent.updateAndWrapConfigData(configData);
-      this.adminComponent.addToConfigHistory(configData);
-      this.adminComponent.markHistoryChange = true;
-      this.adminComponent.form.updateValueAndValidity();
-    });
+    this.editorService.configStore.setEditedPastedAdminConfig();
   }
 
   onClickCopy() {
@@ -70,10 +61,19 @@ export class AdminViewComponent implements OnDestroy {
   }
 
   onClickUndoConfig() {
-    this.adminComponent.undoConfig();
+    this.editorService.configStore.undoAdminConfig();
+    this.adminComponent.setMarkHistoryChange();
   }
 
   onRedoConfig() {
-    this.adminComponent.redoConfig();
+    this.editorService.configStore.redoAdminConfig();
+    this.adminComponent.setMarkHistoryChange();
+  }
+
+  onConfigDataChange(configData: any) {
+    this.configData = this.editorService.adminSchema.unwrapAdminConfigData(
+      cloneDeep(configData),
+      this.version
+    );
   }
 }

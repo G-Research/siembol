@@ -2,7 +2,7 @@ import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { JSONSchema7 } from 'json-schema';
 import * as omitEmpty from 'omit-empty';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, ConfigData } from '@app/model/config-model';
 import { SchemaService } from './schema.service';
 
 export class AdminSchemaService extends SchemaService {
@@ -10,7 +10,11 @@ export class AdminSchemaService extends SchemaService {
   private rawObjectsPaths: string[];
   private readonly SPECIAL_CHAR_TO_REPLACE_DOT = '___';
 
-  constructor(protected uiMetadata: UiMetadata, protected user: string, protected originalSchema: JSONSchema7) {
+  constructor(
+    protected uiMetadata: UiMetadata,
+    protected user: string,
+    protected originalSchema: JSONSchema7
+  ) {
     super(uiMetadata, user, originalSchema);
     this.rawObjectsPaths = [];
     this._schema = cloneDeep(this.originalSchema);
@@ -81,11 +85,15 @@ export class AdminSchemaService extends SchemaService {
   }
 
   public unwrapAdminConfig(config: AdminConfig): AdminConfig {
-    const re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, 'g');
-    this.formatAdminConfig(config.configData, '', re, '.');
-    config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
-    config.configData = this.produceOrderedJson(config.configData, '/');
-    config.configData = omitEmpty(config.configData);
+    config.configData = this.unwrapAdminConfigData(config.configData, config.version);
     return config;
+  }
+
+  unwrapAdminConfigData(configData: ConfigData, version: number): ConfigData {
+    const re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, 'g');
+    this.formatAdminConfig(configData, '', re, '.');
+    configData[ADMIN_VERSION_FIELD_NAME] = version;
+    configData = this.produceOrderedJson(configData, '/');
+    return omitEmpty(configData);
   }
 }

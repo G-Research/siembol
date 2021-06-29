@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -24,6 +33,7 @@ import { ConfigHistoryService } from '@app/services/config-history.service';
 })
 export class AdminComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
+  @Output() configDataChange: EventEmitter<string> = new EventEmitter<string>();
   @BlockUI() blockUI: NgBlockUI;
   ngUnsubscribe = new Subject();
   configData: ConfigData = {};
@@ -42,8 +52,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     private editorService: EditorService,
     private router: Router,
     private configService: AppConfigService,
-    private cd: ChangeDetectorRef,
-    private configHistoryService: ConfigHistoryService
+    private cd: ChangeDetectorRef
   ) {
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
@@ -51,7 +60,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.adminConfig$.pipe(take(1)).subscribe(config => {
+    this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
       this.config = config;
       //NOTE: in the form we are using wrapping config to handle optionals, unions
       if (config !== null) {
@@ -60,8 +69,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     });
     this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
-        this.addToConfigHistory(cloneDeep(values), this.field.templateOptions.tabIndex);
-        this.updateConfigInStore(values);
+        this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
+        this.configDataChange.emit(this.configData);
       }
       this.markHistoryChange = false;
     });
@@ -72,10 +81,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  updateConfigInStoreFromForm() {
-    this.updateConfigInStore(this.form.value);
-  }
-
   updateAndWrapConfigData(configData: ConfigData) {
     this.configData = cloneDeep(configData);
     this.editorService.adminSchema.wrapAdminConfig(this.configData);
@@ -83,7 +88,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.updateConfigInStoreFromForm();
+    this.updateConfigInStore();
     this.adminPullRequestPending$.pipe(skip(1), take(1)).subscribe(a => {
       if (!a.pull_request_pending) {
         const dialogRef = this.dialog.open(SubmitDialogComponent, {
@@ -109,13 +114,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   onSyncWithGit() {
     this.blockUI.start('loading admin config');
     this.editorService.configStore.reloadAdminConfig().subscribe(() => {
-      this.adminConfig$.pipe(take(1)).subscribe(config => {
-        this.config = config;
-        if (config !== null) {
-          this.updateAndWrapConfigData(this.editorService.adminSchema.wrapConfig(config.configData));
-        }
-        this.configHistoryService.clear();
-      });
       this.blockUI.stop();
     });
     setTimeout(() => {
@@ -123,32 +121,18 @@ export class AdminComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  undoConfig() {
+  setMarkHistoryChange() {
     this.markHistoryChange = true;
-    let nextState = this.configHistoryService.undoConfig();
-    this.field.templateOptions.tabIndex = nextState.tabIndex;
-    this.updateConfigInStore(nextState.formState);
-    this.updateAndWrapConfigData(nextState.formState);
     this.form.updateValueAndValidity();
   }
 
-  redoConfig() {
-    this.markHistoryChange = true;
-    let nextState = this.configHistoryService.redoConfig();
-    this.field.templateOptions.tabIndex = nextState.tabIndex;
-    this.updateConfigInStore(nextState.formState);
-    this.updateAndWrapConfigData(nextState.formState);
-    this.form.updateValueAndValidity();
-  }
-
-  addToConfigHistory(config: any, tabIndex: number = 0) {
-    this.configHistoryService.addConfig(config, tabIndex);
-  }
-
-  private updateConfigInStore(configData: ConfigData) {
+  private cleanConfig(configData: any) {
     const configToClean = cloneDeep(this.config) as AdminConfig;
     configToClean.configData = cloneDeep(configData);
-    this.config = this.editorService.adminSchema.unwrapAdminConfig(configToClean);
-    this.editorService.configStore.updateAdmin(this.config);
+    return this.editorService.adminSchema.unwrapAdminConfig(configToClean);
+  }
+
+  private updateConfigInStore() {
+    this.editorService.configStore.updateAdmin(this.cleanConfig(this.form.value));
   }
 }

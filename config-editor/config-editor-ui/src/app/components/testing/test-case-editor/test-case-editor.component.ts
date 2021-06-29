@@ -21,14 +21,12 @@ import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.compone
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '@app/services/app.service';
 import { SchemaService } from '@app/services/schema/schema.service';
-import { ConfigHistoryService } from '@app/services/config-history.service';
 
 @Component({
   selector: 're-test-case-editor',
   templateUrl: './test-case-editor.component.html',
   styleUrls: ['./test-case-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ConfigHistoryService],
 })
 export class TestCaseEditorComponent implements OnInit, OnDestroy {
   public ngUnsubscribe = new Subject();
@@ -39,7 +37,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   public testCaseWrapper: TestCaseWrapper;
   public testCase: any;
 
-  private testStoreService: TestStoreService;
+  public testStoreService: TestStoreService;
   private markHistoryChange = false;
 
   public form: FormGroup = new FormGroup({});
@@ -49,8 +47,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private cd: ChangeDetectorRef,
     private router: Router,
-    private activeRoute: ActivatedRoute,
-    public configHistoryService: ConfigHistoryService
+    private activeRoute: ActivatedRoute
   ) {
     this.editedTestCase$ = editorService.configStore.editedTestCase$;
     this.testStoreService = editorService.configStore.testService;
@@ -75,11 +72,10 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
         this.cd.detectChanges();
       });
     }
-
-    this.configHistoryService.addConfig(cloneDeep(this.form.value));
-    this.form.valueChanges.pipe(debounceTime(200), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+    this.testStoreService.addToTestCaseHistory(this.getFormTestCaseWrapper());
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
-        this.configHistoryService.addConfig(cloneDeep(values));
+        this.testStoreService.addToTestCaseHistory(this.getTestCaseWrapper(cloneDeep(values)));
       }
       this.markHistoryChange = false;
     });
@@ -97,8 +93,8 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       data: {
         name: currentTestCase.testCase.test_case_name,
         type: Type.TESTCASE_TYPE,
-        validate: () => this.editorService.configStore.testService.validateEditedTestCase(),
-        submit: () => this.editorService.configStore.testService.submitEditedTestCase(),
+        validate: () => this.testStoreService.validateEditedTestCase(),
+        submit: () => this.testStoreService.submitEditedTestCase(),
       },
       disableClose: true,
     });
@@ -124,17 +120,13 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   undoTestCase() {
-    this.markHistoryChange = true;
-    let nextState = this.configHistoryService.undoConfig();
-    this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(nextState.formState));
-    this.form.updateValueAndValidity();
+    this.testStoreService.undoTestCase();
+    this.setMarkHistoryChange();
   }
 
   redoTestCase() {
-    this.markHistoryChange = true;
-    let nextState = this.configHistoryService.redoConfig();
-    this.testStoreService.updateEditedTestCase(this.getTestCaseWrapper(nextState.formState));
-    this.form.updateValueAndValidity();
+    this.testStoreService.redoTestCase();
+    this.setMarkHistoryChange();
   }
 
   onCancelEditing() {
@@ -146,14 +138,17 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onPasteTestCase() {
-    this.editorService.configStore.clipboardService.validateConfig(Type.TESTCASE_TYPE).subscribe(() => {
-      const pastedTest = this.editorService.configStore.testService.setEditedPastedTestCase();
-      this.configHistoryService.addConfig(pastedTest);
-    });
+    this.editorService.configStore.testService.setEditedPastedTestCase();
   }
 
   onCopyTestCase() {
     this.editorService.configStore.clipboardService.copy(this.testCase);
+  }
+
+  //Note: workaround as rawjson triggers an old form change
+  setMarkHistoryChange() {
+    this.markHistoryChange = true;
+    this.form.updateValueAndValidity();
   }
 
   private getFormTestCaseWrapper(): TestCaseWrapper {

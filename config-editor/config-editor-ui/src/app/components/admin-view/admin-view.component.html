@@ -2,10 +2,10 @@
     <div class="left-panel" *ngIf="configData">
         <span class="buttons">
             <div class="right-button">
-                <button mat-icon-button [disabled]="adminComponent.configHistoryService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndoConfig()">
+                <button mat-icon-button [disabled]="editorService.configStore.configHistoryService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndoConfig()">
                     <mat-icon>undo</mat-icon>
                 </button>
-                <button mat-icon-button [disabled]="adminComponent.configHistoryService.isFutureEmpty()" color="primary" title="Redo" (click)="onRedoConfig()">
+                <button mat-icon-button [disabled]="editorService.configStore.configHistoryService.isFutureEmpty()" color="primary" title="Redo" (click)="onRedoConfig()">
                     <mat-icon>redo</mat-icon>
                 </button>
                 <button mat-icon-button [disabled]="!adminComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">
@@ -24,7 +24,7 @@
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
         <ng-scrollbar class="scrollbar" [track]="'all'">
-            <re-admin-editor [field]="field"></re-admin-editor>
+            <re-admin-editor [field]="field" (configDataChange)="onConfigDataChange($event)"></re-admin-editor>
         </ng-scrollbar>
     </div>
 </div>

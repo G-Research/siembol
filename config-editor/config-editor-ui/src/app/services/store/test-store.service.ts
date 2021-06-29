@@ -3,11 +3,13 @@ import { ConfigStoreState } from '../../model/store-state';
 import { ConfigLoaderService } from '../config-loader.service';
 import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase, TestCase } from '../../model/test-case';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
-import { ConfigTestResult, TestingType } from '../../model/config-model';
+import { ConfigTestResult, TestingType, Type } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
+import { ConfigHistoryService } from '../config-history.service';
 
 export class TestStoreService {
+  testCaseHistoryService = new ConfigHistoryService();
   constructor(
     private user: string,
     private store: BehaviorSubject<ConfigStoreState>,
@@ -16,11 +18,13 @@ export class TestStoreService {
   ) {}
 
   setEditedTestCaseByName(testCaseName: string) {
+    this.testCaseHistoryService.clear();
     const testCase = this.getTestCaseByName(testCaseName);
     this.updateEditedTestCase(testCase);
   }
 
   setEditedClonedTestCaseByName(testCaseName: string) {
+    this.testCaseHistoryService.clear();
     const testCase = this.getTestCaseByName(testCaseName);
     testCase.fileHistory = null;
     testCase.testCaseResult = null;
@@ -31,6 +35,7 @@ export class TestStoreService {
   }
 
   setEditedTestCaseNew() {
+    this.testCaseHistoryService.clear();
     const currentState = this.store.getValue();
     const testCase = {
       testCase: {
@@ -60,19 +65,21 @@ export class TestStoreService {
     this.updateEditedTestCase(testCaseWrapper);
   }
 
-  setEditedPastedTestCase(): any {
-    const currentState = this.store.getValue();
-    const testCase = this.clipboardService.configToBePasted;
-    const editedTestCase = currentState.editedTestCase;
-    const pastedTestCase = cloneDeep(editedTestCase);
-    pastedTestCase.testCase = Object.assign({}, cloneDeep(testCase), {
-      version: editedTestCase.testCase.version,
-      author: editedTestCase.testCase.author,
-      config_name: editedTestCase.testCase.config_name,
-      test_case_name: editedTestCase.testCase.test_case_name,
+  setEditedPastedTestCase() {
+    this.clipboardService.validateConfig(Type.TESTCASE_TYPE).subscribe(() => {
+      const currentState = this.store.getValue();
+      const testCase = this.clipboardService.configToBePasted;
+      const editedTestCase = currentState.editedTestCase;
+      const pastedTestCase = cloneDeep(editedTestCase);
+      pastedTestCase.testCase = Object.assign({}, cloneDeep(testCase), {
+        version: editedTestCase.testCase.version,
+        author: editedTestCase.testCase.author,
+        config_name: editedTestCase.testCase.config_name,
+        test_case_name: editedTestCase.testCase.test_case_name,
+      });
+      this.testCaseHistoryService.addConfig(pastedTestCase);
+      this.updateEditedTestCase(pastedTestCase);
     });
-    this.updateEditedTestCase(pastedTestCase);
-    return pastedTestCase.testCase;
   }
 
   updateEditedTestCase(testCase: TestCaseWrapper) {
@@ -219,6 +226,24 @@ export class TestStoreService {
   testDeployment(testSpecification: any): Observable<ConfigTestResult> {
     const deployment = this.store.getValue().deployment;
     return this.configLoaderService.testDeploymentConfig(deployment, testSpecification);
+  }
+
+  undoTestCase() {
+    let nextState = this.testCaseHistoryService.undoConfig();
+    this.updateEditedTestCase(nextState.formState);
+  }
+
+  redoTestCase() {
+    let nextState = this.testCaseHistoryService.redoConfig();
+    this.updateEditedTestCase(nextState.formState);
+  }
+
+  addToTestCaseHistory(config: any, tabIndex: number = 0) {
+    this.testCaseHistoryService.addConfig(config, tabIndex);
+  }
+
+  clearTestCaseHistory() {
+    this.testCaseHistoryService.clear();
   }
 
   private getTestCaseByName(testCaseName: string): TestCaseWrapper {

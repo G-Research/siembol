@@ -9,8 +9,9 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
+import { ConfigHistoryService } from '../config-history.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -64,6 +65,7 @@ export class ConfigStoreService {
 
   private testStoreService: TestStoreService;
   private clipboardStoreService: ClipboardStoreService;
+  private configHistoryService: ConfigHistoryService;
 
   get testService(): TestStoreService {
     return this.testStoreService;
@@ -85,6 +87,7 @@ export class ConfigStoreService {
       this.configLoaderService,
       this.clipboardStoreService
     );
+    this.configHistoryService = new ConfigHistoryService();
   }
 
   initialise(configs: Config[], deployment: any, testCaseMap: TestCaseMap) {
@@ -247,6 +250,7 @@ export class ConfigStoreService {
   }
 
   reloadAdminConfig(): Observable<any> {
+    this.configHistoryService.clear();
     return this.configLoaderService.getAdminConfig().map((config: AdminConfig) => {
       this.updateAdmin(config);
     });
@@ -292,6 +296,8 @@ export class ConfigStoreService {
           .editedConfigByName(config.name)
           .build();
         this.store.next(newState);
+        this.configHistoryService.clear();
+        this.configHistoryService.addConfig(config);
 
         return true;
       }
@@ -321,6 +327,7 @@ export class ConfigStoreService {
    * @returns false if config or test case don't exist, else true
    */
   setEditedConfigAndTestCaseByName(configName: string, testCaseName: string): boolean {
+    this.clearConfigHistory();
     const editedConfig = this.store.value.editedConfig;
     const config =
       editedConfig && configName === editedConfig.name ? editedConfig : this.getConfigByName(configName);
@@ -340,6 +347,7 @@ export class ConfigStoreService {
   }
 
   setEditedClonedConfigByName(configName: string) {
+    this.clearConfigHistory();
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
       throw Error('no config with such name');
@@ -361,6 +369,7 @@ export class ConfigStoreService {
   }
 
   setEditedConfigNew() {
+    this.clearConfigHistory();
     const currentState = this.store.getValue();
     const newConfig = {
       author: this.user,
@@ -377,6 +386,7 @@ export class ConfigStoreService {
   }
 
   setNewEditedPastedConfig() {
+    this.clearConfigHistory();
     const currentState = this.store.getValue();
     const configData = this.clipboardStoreService.configToBePasted;
     if (!configData) {
@@ -399,35 +409,37 @@ export class ConfigStoreService {
     this.updateEditedConfigAndTestCase(pasted, null);
   }
 
-  setEditedPastedConfig(): Config {
-    const currentState = this.store.getValue();
-    const configData = this.clipboardStoreService.configToBePasted;
-    const editedConfig = currentState.editedConfig;
-    const pastedConfig = cloneDeep(editedConfig);
-    pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
-      [this.metaDataMap.name]: editedConfig.name,
-      [this.metaDataMap.version]: editedConfig.version,
-      [this.metaDataMap.author]: this.user,
+  setEditedPastedConfig() {
+    this.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
+      const currentState = this.store.getValue();
+      const configData = this.clipboardStoreService.configToBePasted;
+      const editedConfig = currentState.editedConfig;
+      const pastedConfig = cloneDeep(editedConfig);
+      pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
+        [this.metaDataMap.name]: editedConfig.name,
+        [this.metaDataMap.version]: editedConfig.version,
+        [this.metaDataMap.author]: this.user,
+      });
+      this.updateEditedConfig(pastedConfig);
+      this.configHistoryService.addConfig(pastedConfig);
     });
-    this.updateEditedConfig(pastedConfig);
-    return pastedConfig.configData;
   }
 
-  setEditedPastedAdminConfig(): Config {
-    const currentState = this.store.getValue();
-    const configData = this.clipboardStoreService.configToBePasted;
-    const adminConfig = currentState.adminConfig;
-    const pastedConfig = cloneDeep(adminConfig);
-    pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
-      config_version: adminConfig.version,
+  setEditedPastedAdminConfig() {
+    this.clipboardService.validateConfig(Type.ADMIN_TYPE).subscribe(() => {
+      const currentState = this.store.getValue();
+      const configData = this.clipboardStoreService.configToBePasted;
+      const adminConfig = currentState.adminConfig;
+      const pastedConfig = cloneDeep(adminConfig);
+      pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
+        config_version: adminConfig.version,
+      });
+      this.updateAdmin(pastedConfig);
+      this.configHistoryService.addConfig(pastedConfig);
     });
-    this.updateAdmin(pastedConfig);
-    return pastedConfig.configData;
   }
 
   updateEditedConfig(config: Config) {
-    // cleaning/wrapping function?
-    // add to history service -> reset between change in configs -> have one for testcases, one for configs?
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).editedConfig(config).build();
     this.store.next(newState);
   }
@@ -458,6 +470,34 @@ export class ConfigStoreService {
 
       this.store.next(newState);
     });
+  }
+
+  undoConfig() {
+    let nextState = this.configHistoryService.undoConfig();
+    this.updateEditedConfig(nextState.formState);
+  }
+
+  redoConfig() {
+    let nextState = this.configHistoryService.redoConfig();
+    this.updateEditedConfig(nextState.formState);
+  }
+
+  undoAdminConfig() {
+    let nextState = this.configHistoryService.undoConfig();
+    this.updateAdmin(nextState.formState);
+  }
+
+  redoAdminConfig() {
+    let nextState = this.configHistoryService.redoConfig();
+    this.updateAdmin(nextState.formState);
+  }
+
+  addToConfigHistory(config: any, tabIndex: number = 0) {
+    this.configHistoryService.addConfig(config, tabIndex);
+  }
+
+  clearConfigHistory() {
+    this.configHistoryService.clear();
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

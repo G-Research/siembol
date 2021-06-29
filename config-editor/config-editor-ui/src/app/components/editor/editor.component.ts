@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -8,7 +17,7 @@ import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, take, takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ConfigHistoryService } from '@app/services/config-history.service';
@@ -21,6 +30,8 @@ import { ConfigHistoryService } from '@app/services/config-history.service';
   providers: [ConfigHistoryService],
 })
 export class EditorComponent implements OnInit, OnDestroy {
+  @Input() field: FormlyFieldConfig;
+  @Output() configDataChange: EventEmitter<string> = new EventEmitter<string>();
   titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX)]);
 
   public ngUnsubscribe = new Subject();
@@ -31,35 +42,29 @@ export class EditorComponent implements OnInit, OnDestroy {
   public editedConfig$: Observable<Config>;
   public config: Config;
 
-  @Input() field: FormlyFieldConfig;
-
   constructor(
     public dialog: MatDialog,
     public snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private cd: ChangeDetectorRef,
-    private configHistoryService: ConfigHistoryService
+    private cd: ChangeDetectorRef
   ) {
     this.editedConfig$ = editorService.configStore.editedConfig$;
   }
 
   ngOnInit() {
-    this.editedConfig$.pipe(take(1)).subscribe(config => {
-      //NOTE: in the form we are using wrapping config to handle optionals, unions
+    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
+      this.config = config;
       if (config) {
         this.configData = this.editorService.configSchema.wrapConfig(config.configData);
         this.configName = config.name;
       }
-    });
-    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
-      this.config = config;
       this.cd.markForCheck();
     });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid) {
-        this.addToConfigHistory(cloneDeep(values), this.field.templateOptions.tabIndex);
-        this.updateConfigInStore(values);
+        this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
+        this.configDataChange.emit(this.configData);
       }
     });
   }
@@ -69,35 +74,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  updateConfigInStoreFromForm() {
-    this.updateConfigInStore(this.form.value);
-  }
-
-  updateConfigData(configData: ConfigData) {
-    this.configData = cloneDeep(configData);
-    this.cd.markForCheck();
-  }
-
-  addToConfigHistory(config: any, tabIndex: number = 0) {
-    this.configHistoryService.addConfig(config, tabIndex);
-  }
-
-  undoConfig() {
-    let nextState = this.configHistoryService.undoConfig();
-    this.field.templateOptions.tabIndex = nextState.tabIndex;
-    this.updateConfigInStore(nextState.formState);
-    this.updateConfigData(nextState.formState);
-  }
-
-  redoConfig() {
-    let nextState = this.configHistoryService.redoConfig();
-    this.field.templateOptions.tabIndex = nextState.tabIndex;
-    this.updateConfigInStore(nextState.formState);
-    this.updateConfigData(nextState.formState);
+  updateConfigInStore() {
+    this.editorService.configStore.updateEditedConfig(this.cleanConfig(this.form.value));
   }
 
   onSubmit() {
-    this.updateConfigInStoreFromForm();
+    this.updateConfigInStore();
     const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: {
         name: this.configName,
@@ -113,16 +95,14 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.router.navigate([this.editorService.serviceName, 'edit'], {
           queryParams: { configName: this.configName },
         });
-        this.configHistoryService.clear();
-        this.addToConfigHistory(cloneDeep(this.configData), this.field.templateOptions.tabIndex);
       }
     });
   }
 
-  private updateConfigInStore(configData: ConfigData) {
+  private cleanConfig(configData: ConfigData): Config {
     const configToClean = cloneDeep(this.config) as Config;
     configToClean.configData = cloneDeep(configData);
     configToClean.name = this.configName;
-    this.editorService.configStore.updateEditedConfig(this.editorService.configSchema.cleanConfig(configToClean));
+    return this.editorService.configSchema.cleanConfig(configToClean);
   }
 }

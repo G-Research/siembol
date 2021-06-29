@@ -71,7 +71,6 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
         this.previousTab = this.selectedTab;
       }
     });
-    this.editorComponent.configData.onChange();
   }
 
   ngAfterViewInit() {
@@ -99,7 +98,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
         queryParamsHandling: 'merge',
       });
     } else if (this.previousTab === CONFIG_TAB.index) {
-      this.editorComponent.updateConfigInStoreFromForm();
+      this.editorComponent.updateConfigInStore();
     }
     this.previousTab = this.selectedTab;
   }
@@ -109,11 +108,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickPaste() {
-    this.editorService.configStore.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
-      let configData = this.editorService.configStore.setEditedPastedConfig();
-      this.editorComponent.updateConfigData(configData);
-      this.editorComponent.addToConfigHistory(configData);
-    });
+    this.editorService.configStore.setEditedPastedConfig();
   }
 
   onClickCopy() {
@@ -121,10 +116,15 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickUndoConfig() {
-    this.editorComponent.undoConfig();
+    this.editorService.configStore.undoConfig();
   }
 
   onRedoConfig() {
-    this.editorComponent.redoConfig();
+    this.editorService.configStore.redoConfig();
+  }
+
+  onConfigDataChange(configData: any) {
+    configData = this.editorService.configSchema.unwrapConfig(configData);
+    this.configData = this.editorService.configSchema.cleanConfigData(cloneDeep(configData));
   }
 }
