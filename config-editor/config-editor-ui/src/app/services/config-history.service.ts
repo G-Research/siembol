@@ -4,7 +4,6 @@ interface ConfigHistory {
 }
 
 interface ValidConfigState {
-  tabIndex?: number;
   formState: any;
 }
 
@@ -15,11 +14,10 @@ export class ConfigHistoryService {
     this.history = { past: [], future: [] };
   }
 
-  addConfig(config: any, tabIndex: number = undefined) {
+  addConfig(config: any) {
     if (!this.isConfigEqualToCurrent(config)) {
       this.history.past.splice(0, 0, {
         formState: config,
-        tabIndex: tabIndex,
       });
       this.history.future = [];
     }

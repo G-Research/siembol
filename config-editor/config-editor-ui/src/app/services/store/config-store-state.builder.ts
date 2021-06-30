@@ -236,6 +236,11 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
+  pastedConfig(config: any) {
+    this.state.pastedConfig = config;
+    return this;
+  }
+
   build(): ConfigStoreState {
     return this.state;
   }

@@ -16,7 +16,7 @@
                             <mat-icon>add</mat-icon>
                         </a>
                     </div>
-                    <div class="add-button">
+                    <div *ngIf="!disableEditingFeatures" class="add-button">
                         <a mat-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
                             <mat-icon>content_paste</mat-icon>
                         </a>

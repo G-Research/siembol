@@ -1,40 +1,48 @@
-import { inject, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Type } from '@app/model/config-model';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import { mockStore } from 'testing/store';
 import { ClipboardStoreService } from './clipboard-store.service';
 import { ConfigLoaderService } from './config-loader.service';
 
-fdescribe('ClipboardService', () => {
+describe('ClipboardService', () => {
+  let service: ClipboardStoreService;
+  let configLoader: ConfigLoaderService;
   beforeEach(() => {
+    const store = new BehaviorSubject(mockStore);
     TestBed.configureTestingModule({
       providers: [
-        ClipboardStoreService,
         {
           provide: ConfigLoaderService,
-          useValue: { validateAdminConfigJson: () => of(undefined) },
+          useValue: { validateAdminConfig: () => of(undefined) },
         },
       ],
     });
+    configLoader = TestBed.inject(ConfigLoaderService);
+    service = new ClipboardStoreService(configLoader, store);
   });
 
-  it('should create', inject([ClipboardStoreService], (service: ClipboardStoreService) => {
+  it('should create', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 
-  it('should validate admin config', inject([ClipboardStoreService], (service: ClipboardStoreService) => {
+  it('should validate admin config', done => {
     spyOn(navigator.clipboard, 'readText').and.returnValue(Promise.resolve('{"name": "test"}'));
+    let spy = spyOn(service, 'updatePastedConfig');
     service.validateConfig(Type.ADMIN_TYPE).subscribe(() => {
-      expect(service.configToBePasted).toEqual({ name: 'test' });
+      expect(spy).toHaveBeenCalledOnceWith({ name: 'test' });
+      done();
     });
-  }));
+  });
 
-  it('should not be json', inject([ClipboardStoreService], (service: ClipboardStoreService) => {
+  it('should not be json', done => {
     spyOn(navigator.clipboard, 'readText').and.returnValue(Promise.resolve('test'));
     service.validateConfig(Type.ADMIN_TYPE).subscribe(
       () => {},
       error => {
         expect(error.message).toEqual('Clipboard is not JSON');
+        done();
       }
     );
-  }));
+  });
 });

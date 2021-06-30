@@ -4,7 +4,7 @@
             <div class="left-button">
                 <button mat-raised-button (click)="changeRoute()">Back</button>
             </div>
-            <div class="right-button" *ngIf="!this.editorService.metaDataMap.disableEditingFeatures">
+            <div class="right-button" *ngIf="!editorService.metaDataMap.disableEditingFeatures">
                 <button mat-icon-button [disabled]="editorService.configStore.configHistoryService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndoConfig()">
                     <mat-icon>undo</mat-icon>
                 </button>

@@ -65,7 +65,7 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.updateAndWrapConfigData(this.editorService.adminSchema.wrapConfig(config.configData));
       }
     });
-    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
         this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
         this.configDataChange.emit(this.configData);
@@ -119,6 +119,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
+  //Note: workaround as rawjson triggers an old form change on undo/redo
   setMarkHistoryChange() {
     this.markHistoryChange = true;
     this.form.updateValueAndValidity();

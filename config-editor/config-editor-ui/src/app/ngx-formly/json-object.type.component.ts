@@ -78,7 +78,7 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDest
     const key = Array.isArray(this.field.key) ? this.field.key[0] : this.field.key;
     this.tree = cloneDeep(this.field.parent.model[key]);
     this.changeDetector.markForCheck();
-    this.formControl.valueChanges.pipe(debounceTime(400), takeUntil(this.ngUnsubscribe)).subscribe(s => {
+    this.formControl.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(s => {
       if (s) {
         this.formControl.setErrors(null);
         this.valid = true;

@@ -138,7 +138,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     this.editorService.configStore.clipboardService.copy(this.testCase);
   }
 
-  //Note: workaround as rawjson triggers an old form change
+  //Note: workaround as rawjson triggers an old form change on undo/redo
   setMarkHistoryChange() {
     this.markHistoryChange = true;
     this.form.updateValueAndValidity();

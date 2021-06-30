@@ -60,6 +60,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   filterUpgradable$: Observable<boolean>;
   deploymentHistory$: Observable<FileHistory[]>;
   deploymentHistory;
+  disableEditingFeatures: boolean;
 
   private ngUnsubscribe = new Subject();
   private filteredConfigs: Config[];
@@ -72,6 +73,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private router: Router,
     private configService: AppConfigService
   ) {
+    this.disableEditingFeatures = editorService.metaDataMap.disableEditingFeatures;
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.allConfigs$;
 

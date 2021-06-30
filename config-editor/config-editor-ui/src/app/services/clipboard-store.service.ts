@@ -1,19 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Type } from '@app/model/config-model';
-import { from, Observable, throwError } from 'rxjs';
+import { ConfigStoreState } from '@app/model/store-state';
+import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
 import { ConfigLoaderService } from './config-loader.service';
+import { ConfigStoreStateBuilder } from './store/config-store-state.builder';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClipboardStoreService {
-  private config: any;
-
-  get configToBePasted() {
-    return this.config;
-  }
-
-  constructor(private configLoader: ConfigLoaderService) {}
+  constructor(private configLoader: ConfigLoaderService, private store: BehaviorSubject<ConfigStoreState>) {}
 
   validateConfig(type: Type): Observable<boolean> {
     return this.getClipboard()
@@ -28,12 +24,21 @@ export class ClipboardStoreService {
           });
       })
       .map((json: string) => {
-        this.config = json;
+        this.updatePastedConfig(json);
         return true;
       });
   }
 
-  validateType(type: Type, json: any): Observable<any> {
+  copy(str: any) {
+    navigator.clipboard.writeText(JSON.stringify(str));
+  }
+
+  updatePastedConfig(config: any) {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue()).pastedConfig(config).build();
+    this.store.next(newState);
+  }
+
+  private validateType(type: Type, json: any): Observable<any> {
     if (type === Type.CONFIG_TYPE) {
       return this.configLoader.validateConfig(json);
     } else if (type === Type.ADMIN_TYPE) {
@@ -41,10 +46,6 @@ export class ClipboardStoreService {
     } else {
       return this.configLoader.validateTestCase(json);
     }
-  }
-
-  copy(str: any) {
-    navigator.clipboard.writeText(JSON.stringify(str));
   }
 
   private isJsonString(str: string): boolean {

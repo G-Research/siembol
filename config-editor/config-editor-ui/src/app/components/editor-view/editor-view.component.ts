@@ -79,9 +79,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.testingEnabled = () =>
         this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
       this.testCaseEnabled = () =>
-        this.editorService.metaDataMap.testing.testCaseEnabled &&
-        this.editorComponent.form.valid &&
-        !config.isNew;
+        this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
     });
   }
 
