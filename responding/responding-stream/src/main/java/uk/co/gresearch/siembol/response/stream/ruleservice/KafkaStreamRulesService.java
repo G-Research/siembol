@@ -1,9 +1,7 @@
 package uk.co.gresearch.siembol.response.stream.ruleservice;
 
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.kstream.KStreamBuilder;
+import org.apache.kafka.streams.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
@@ -31,28 +29,38 @@ public class KafkaStreamRulesService implements RulesService {
     private final KafkaStreams streams;
     private final RulesProvider rulesProvider;
 
-    public KafkaStreamRulesService(RulesProvider rulesProvider, ResponseConfigurationProperties properties) {
+    public KafkaStreamRulesService(RulesProvider rulesProvider,
+                                   ResponseConfigurationProperties properties) {
+        this(rulesProvider, properties, new KafkaStreamsFactoryImpl());
+    }
+
+    KafkaStreamRulesService(RulesProvider rulesProvider,
+                            ResponseConfigurationProperties properties,
+                            KafkaStreamsFactory kafkaStreamsFactory) {
         this.rulesProvider = rulesProvider;
-        streams = createStreams(properties);
+        streams = createStreams(kafkaStreamsFactory, properties);
         streams.start();
     }
 
-    private KafkaStreams createStreams(ResponseConfigurationProperties properties) {
+    private KafkaStreams createStreams(KafkaStreamsFactory kafkaStreamsFactory,
+                                       ResponseConfigurationProperties properties) {
         LOG.info(INIT_START);
-        KStreamBuilder builder = new KStreamBuilder();
+        StreamsBuilder builder = new StreamsBuilder();
         builder.<String, String>stream(properties.getInputTopic())
-                .mapValues(x -> processMessage(x))
+                .mapValues(this::processMessage)
                 .filter((x, y) -> y.getStatusCode() != OK)
                 .mapValues(x -> x.getAttributes().getMessage())
                 .to(properties.getErrorTopic());
 
         Properties configuration = new Properties();
         configuration.putAll(properties.getStreamConfig());
-        configuration.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        configuration.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        configuration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        configuration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        Topology topology = builder.build(configuration);
 
+        KafkaStreams ret = kafkaStreamsFactory.createKafkaStreams(topology, configuration);
         LOG.info(INIT_COMPLETED);
-        return new KafkaStreams(builder, configuration);
+        return ret;
     }
 
     private RespondingResult formatErrorMessage(RespondingResult result, String originalString) {
@@ -61,6 +69,7 @@ public class KafkaStreamRulesService implements RulesService {
         msg.setErrorType(ErrorType.RESPONSE_ERROR);
         msg.setMessage(result.getAttributes().getMessage());
         msg.setRawMessage(originalString);
+        msg.setRuleName(result.getAttributes().getRuleName());
 
         RespondingResultAttributes attributes = new RespondingResultAttributes();
         attributes.setMessage(msg.toString());
@@ -94,9 +103,9 @@ public class KafkaStreamRulesService implements RulesService {
 
     @Override
     public Mono<Health> checkHealth() {
-        return Mono.just(streams.state() == KafkaStreams.State.ERROR
-                ? Health.down().build()
-                : Health.up().build());
+        return Mono.just(streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
+                ? Health.up().build() :
+                Health.down().build());
     }
 
     @Override

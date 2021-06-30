@@ -6,7 +6,7 @@
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
     <name>siembol</name>
-    <version>1.1.8-SNAPSHOT</version>
+    <version>1.1.9-SNAPSHOT</version>
     <description>A scalable, advanced security analytics framework based on open-source big data technologies.</description>
     <inceptionYear>2019</inceptionYear>
     <url>https://siembol.io/</url>
@@ -47,7 +47,8 @@
         <curator_test_version>2.13.0</curator_test_version>
         <zookeeper_version>3.4.6</zookeeper_version>
         <storm_version>1.2.1</storm_version>
-        <kafka_version>0.10.2.2</kafka_version>
+        <kafka_storm_version>0.10.2.2</kafka_storm_version>
+        <kafka_version>2.8.0</kafka_version>
         <kafka_junit_version>3.1.1</kafka_junit_version>
         <spark_version>2.2.0</spark_version>
         <hadoop_version>3.3.1</hadoop_version>
