@@ -30,13 +30,13 @@ public class KafkaStreamRulesService implements RulesService {
     private final RulesProvider rulesProvider;
 
     public KafkaStreamRulesService(RulesProvider rulesProvider,
-                            ResponseConfigurationProperties properties) {
+                                   ResponseConfigurationProperties properties) {
         this(rulesProvider, properties, new KafkaStreamsFactoryImpl());
     }
 
     KafkaStreamRulesService(RulesProvider rulesProvider,
-                                   ResponseConfigurationProperties properties,
-                                   KafkaStreamsFactory kafkaStreamsFactory) {
+                            ResponseConfigurationProperties properties,
+                            KafkaStreamsFactory kafkaStreamsFactory) {
         this.rulesProvider = rulesProvider;
         streams = createStreams(kafkaStreamsFactory, properties);
         streams.start();

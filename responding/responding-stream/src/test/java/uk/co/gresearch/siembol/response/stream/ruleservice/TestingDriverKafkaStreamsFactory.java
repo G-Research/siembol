@@ -5,7 +5,6 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Properties;
 
 public class TestingDriverKafkaStreamsFactory implements KafkaStreamsFactory, Closeable {
@@ -27,7 +26,7 @@ public class TestingDriverKafkaStreamsFactory implements KafkaStreamsFactory, Cl
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (testDriver != null) {
             testDriver.close();
         }

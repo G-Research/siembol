@@ -1,10 +1,8 @@
 package uk.co.gresearch.siembol.response.stream.ruleservice;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.adrianwalker.multilinestring.Multiline;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -13,6 +11,9 @@ import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.junit.*;
 import org.mockito.Mockito;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
+import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.response.stream.rest.application.ResponseConfigurationProperties;
@@ -22,7 +23,6 @@ import uk.co.gresearch.siembol.response.common.ResponseAlert;
 import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 import uk.co.gresearch.siembol.response.engine.RulesEngine;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -47,8 +47,8 @@ public class KafkaStreamRuleServiceTest {
     private KafkaStreamRulesService streamService;
     private RulesProvider rulesProvider;
     private RulesEngine rulesEngine;
-    private String inputTopic = "input";
-    private String errorTopic = "error";
+    private final String inputTopic = "input";
+    private final String errorTopic = "error";
     private RespondingResultAttributes resultAttributes;
     private ResponseAlert responseAlert;
     private KafkaStreams kafkaStreams;
@@ -73,7 +73,7 @@ public class KafkaStreamRuleServiceTest {
         properties.setInputTopic(inputTopic);
         properties.setErrorTopic(errorTopic);
         properties.setStreamConfig(new HashMap<>());
-        properties.getStreamConfig().put("application.id", "siembol-response-" + UUID.randomUUID().toString());
+        properties.getStreamConfig().put("application.id", "siembol-response-" + UUID.randomUUID());
         streamService = new KafkaStreamRulesService(rulesProvider, properties, streamsFactory);
         testDriver = streamsFactory.getTestDriver();
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
@@ -83,7 +83,7 @@ public class KafkaStreamRuleServiceTest {
     }
 
     @After
-    public void tearDown() throws IOException {
+    public void tearDown()  {
         streamsFactory.close();
     }
 
@@ -132,5 +132,33 @@ public class KafkaStreamRuleServiceTest {
         ErrorMessage errorMessage = ERROR_READER.readValue(errorMessageStr);
         Assert.assertEquals(ErrorType.RESPONSE_ERROR, errorMessage.getErrorType());
         Assert.assertEquals(alertStr, errorMessage.getRawMessage());
+    }
+
+    @Test
+    public void testHealthUpCreated() {
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.CREATED);
+        Mono<Health> health = streamService.checkHealth();
+        Assert.assertEquals(Status.UP, health.block().getStatus());
+    }
+
+    @Test
+    public void testHealthUpRunning() {
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.RUNNING);
+        Mono<Health> health = streamService.checkHealth();
+        Assert.assertEquals(Status.UP, health.block().getStatus());
+    }
+
+    @Test
+    public void testHealthUpRebalancing() {
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.REBALANCING);
+        Mono<Health> health = streamService.checkHealth();
+        Assert.assertEquals(Status.UP, health.block().getStatus());
+    }
+
+    @Test
+    public void testHealthDownError() {
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.ERROR);
+        Mono<Health> health = streamService.checkHealth();
+        Assert.assertEquals(Status.DOWN, health.block().getStatus());
     }
 }
