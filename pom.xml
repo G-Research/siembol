@@ -44,7 +44,7 @@
         <mockito_version>3.11.2</mockito_version>
         <shade_version>3.2.4</shade_version>
         <curator_version>4.3.0</curator_version>
-        <curator_test_version>2.13.0</curator_test_version>
+        <curator_test_version>5.1.0</curator_test_version>
         <zookeeper_version>3.4.6</zookeeper_version>
         <storm_version>1.2.1</storm_version>
         <kafka_storm_version>0.10.2.2</kafka_storm_version>
