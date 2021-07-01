@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.util.ResourceUtils;
-import uk.co.gresearch.siembol.common.testing.TestingZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
@@ -84,19 +84,19 @@ public class ConfigEditorConfiguration implements DisposableBean {
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
     StormApplicationProvider stormApplicationProvider() throws Exception {
-        return StormApplicationProviderImpl.create(zookeeperConnectorFactory(), properties.getStormTopologiesZookeeper());
+        return StormApplicationProviderImpl.create(zooKeeperConnectorFactory(), properties.getStormTopologiesZookeeper());
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
     SynchronisationService synchronisationService() throws Exception {
         serviceAggregator = serviceAggregator();
-        ZookeeperConnectorFactory zookeeperConnectorFactory = zookeeperConnectorFactory();
+        ZooKeeperConnectorFactory zooKeeperConnectorFactory = zooKeeperConnectorFactory();
         StormApplicationProvider stormApplicationProvider = stormApplicationProvider();
         List<ConfigServiceHelper> aggregatorServices = serviceAggregator
                 .getAggregatorServices()
                 .stream()
-                .map(x -> new ConfigServiceHelperImpl(x, properties, zookeeperConnectorFactory))
+                .map(x -> new ConfigServiceHelperImpl(x, properties, zooKeeperConnectorFactory))
                 .collect(Collectors.toList());
 
         SynchronisationService ret = new SynchronisationServiceImpl.Builder(stormApplicationProvider)
@@ -109,12 +109,12 @@ public class ConfigEditorConfiguration implements DisposableBean {
 
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
-    ZookeeperConnectorFactory zookeeperConnectorFactory() throws Exception {
+    ZooKeeperConnectorFactory zooKeeperConnectorFactory() throws Exception {
         if (properties.getTestingZookeeperFiles() == null) {
-            return new ZookeeperConnectorFactoryImpl();
+            return new ZooKeeperConnectorFactoryImpl();
         }
 
-        TestingZookeeperConnectorFactory ret = new TestingZookeeperConnectorFactory();
+        TestingZooKeeperConnectorFactory ret = new TestingZooKeeperConnectorFactory();
         for (Map.Entry<String, String> entry: properties.getTestingZookeeperFiles().entrySet()){
             File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + entry.getValue());
             String content = new String(Files.readAllBytes(file.toPath()));

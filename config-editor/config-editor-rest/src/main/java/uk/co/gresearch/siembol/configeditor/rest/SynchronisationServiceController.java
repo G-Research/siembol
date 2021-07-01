@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationException;
@@ -51,7 +50,7 @@ public class SynchronisationServiceController {
 
     @PostMapping(value = "/api/v1/sync/webhook", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> synchronise(
-            @AuthenticationPrincipal Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @RequestParam List<String> serviceNames,
             @RequestParam String syncType,
             @RequestBody String body,
@@ -72,9 +71,9 @@ public class SynchronisationServiceController {
     @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
     @GetMapping(value = "/api/v1/{service}/topologies", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTopologies(
-            @AuthenticationPrincipal Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service) {
-        checkAdminAuthorisation(authentication, service);
+        checkAdminAuthorisation(principal, service);
 
         return stormApplicationProvider
                 .getStormTopologies(service)
@@ -84,10 +83,10 @@ public class SynchronisationServiceController {
     @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
     @PostMapping(value = "/api/v1/{service}/topologies/{topology}/restart", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> restartTopology(
-            @AuthenticationPrincipal Authentication authentication,
+            @AuthenticationPrincipal Object principal,
             @PathVariable("service") String service,
             @PathVariable("topology") String topology) throws ExecutionException, InterruptedException {
-        checkAdminAuthorisation(authentication, service);
+        checkAdminAuthorisation(principal, service);
         Callable<ResponseEntity<ConfigEditorAttributes>> task = () -> stormApplicationProvider
                 .restartStormTopology(service, topology)
                 .toResponseEntity();
@@ -95,8 +94,8 @@ public class SynchronisationServiceController {
         return executorService.submit(task).get();
     }
 
-    private void checkAdminAuthorisation(Authentication authentication, String service) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+    private void checkAdminAuthorisation(Object principal, String service) {
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         if (AuthorisationProvider.AuthorisationResult.ALLOWED
                 != authorisationProvider.getUserAuthorisation(user, service)) {

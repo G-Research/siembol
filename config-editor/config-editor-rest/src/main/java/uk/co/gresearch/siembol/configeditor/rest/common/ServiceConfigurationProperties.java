@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.rest.common;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
 
@@ -13,7 +13,7 @@ public class ServiceConfigurationProperties {
     @NestedConfigurationProperty
     private ConfigStoreProperties configStore;
     @NestedConfigurationProperty
-    private ZookeeperAttributesDto releaseZookeeper;
+    private ZooKeeperAttributesDto releaseZookeeper;
     @NestedConfigurationProperty
     private String topologyImage;
     private SynchronisationType synchronisation;
@@ -54,11 +54,11 @@ public class ServiceConfigurationProperties {
         this.attributes = attributes;
     }
 
-    public ZookeeperAttributesDto getReleaseZookeeper() {
+    public ZooKeeperAttributesDto getReleaseZookeeper() {
         return releaseZookeeper;
     }
 
-    public void setReleaseZookeeper(ZookeeperAttributesDto releaseZookeeper) {
+    public void setReleaseZookeeper(ZooKeeperAttributesDto releaseZookeeper) {
         this.releaseZookeeper = releaseZookeeper;
     }
 

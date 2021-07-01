@@ -12,7 +12,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
 
@@ -111,7 +111,7 @@ public class StormApplicationProviderTest {
     public static String updatedTopologies;
 
 
-    private ZookeeperConnector zookeeperConnector;
+    private ZooKeeperConnector zooKeeperConnector;
     private StormApplicationProviderImpl stormApplicationProvider;
     private Set<String> services;
     private List<StormTopologyDto> topologiesToUpdate;
@@ -119,10 +119,10 @@ public class StormApplicationProviderTest {
     @Before
     public void setUp() throws IOException {
         services = new HashSet<>();
-        zookeeperConnector = Mockito.mock(ZookeeperConnector.class);
-        when(zookeeperConnector.getData()).thenReturn(initTopologies);
-        doNothing().when(zookeeperConnector).addCacheListener(any());
-        stormApplicationProvider = new StormApplicationProviderImpl(zookeeperConnector);
+        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
+        when(zooKeeperConnector.getData()).thenReturn(initTopologies);
+        doNothing().when(zooKeeperConnector).addCacheListener(any());
+        stormApplicationProvider = new StormApplicationProviderImpl(zooKeeperConnector);
         topologiesToUpdate = ((StormTopologiesDto)TOPOLOGIES_READER.readValue(updatedTopologies)).getTopologies();
     }
 
@@ -198,7 +198,7 @@ public class StormApplicationProviderTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertTrue(result.getAttributes().getTopologies().isEmpty());
-        verify(zookeeperConnector, times(1)).setData(any());
+        verify(zooKeeperConnector, times(1)).setData(any());
     }
 
     @Test
@@ -211,7 +211,7 @@ public class StormApplicationProviderTest {
         Assert.assertEquals("alert", result.getAttributes().getTopologies().get(0).getServiceName());
         Assert.assertEquals("1", result.getAttributes().getTopologies().get(0).getTopologyId());
         Assert.assertEquals("secret", result.getAttributes().getTopologies().get(0).getImage());
-        verify(zookeeperConnector, times(1)).setData(any());
+        verify(zooKeeperConnector, times(1)).setData(any());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class StormApplicationProviderTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertEquals(3, result.getAttributes().getTopologies().size());
-        verify(zookeeperConnector, times(1)).setData(any());
+        verify(zooKeeperConnector, times(1)).setData(any());
     }
 
     @Test
@@ -232,14 +232,14 @@ public class StormApplicationProviderTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNull(result.getAttributes().getTopologies());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        verify(zookeeperConnector, times(0)).setData(any());
+        verify(zooKeeperConnector, times(0)).setData(any());
     }
 
     @Test(expected = IllegalStateException.class)
     public void wrongInitTopologies() throws Exception {
-        when(zookeeperConnector.getData()).thenReturn("INVALID");
-        doNothing().when(zookeeperConnector).addCacheListener(any());
-        stormApplicationProvider = new StormApplicationProviderImpl(zookeeperConnector);
+        when(zooKeeperConnector.getData()).thenReturn("INVALID");
+        doNothing().when(zooKeeperConnector).addCacheListener(any());
+        stormApplicationProvider = new StormApplicationProviderImpl(zooKeeperConnector);
     }
 
     @Test

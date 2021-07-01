@@ -6,7 +6,7 @@ import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class IsInSetMatcher extends RuleMatcher {
+public class IsInSetMatcher extends BasicMatcher {
     private final static String EMPTY_SET_OF_STRING = "Empty constantStrings of string in the matcher";
     private final Set<String> constantStrings;
     private final List<String> variableStrings;
@@ -67,7 +67,7 @@ public class IsInSetMatcher extends RuleMatcher {
     }
 
     public static abstract class Builder<T extends IsInSetMatcher>
-            extends RuleMatcher.Builder<T> {
+            extends BasicMatcher.Builder<T> {
         private String wordDelimiter = "\n";
         protected boolean caseInsensitiveCompare = false;
         protected List<String> words;
@@ -85,7 +85,7 @@ public class IsInSetMatcher extends RuleMatcher {
         }
 
         public IsInSetMatcher.Builder<T> data(String data) {
-            String words[] = data.split(wordDelimiter);
+            String[] words = data.split(wordDelimiter);
             return words(Arrays.asList(words));
         }
 

@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.testing.TestingZookeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.deployment.storm.model.StormResponseDto;
 import uk.co.gresearch.siembol.deployment.storm.model.TopologyManagerInfoDto;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProvider;
@@ -131,25 +131,25 @@ public class TopologyManagerServiceImplTests {
     TopologyManagerService service;
     KubernetesProvider kubernetesProvider = mock(KubernetesProvider.class);
     StormProvider stormProvider = mock(StormProvider.class);
-    ZookeeperConnector desiredZookeeper;
-    ZookeeperConnector savedZookeeper;
-    TestingZookeeperConnectorFactory zookeeperConnectorFactory;
-    ZookeeperAttributesDto desiredSpec;
-    ZookeeperAttributesDto savedSpec;
+    ZooKeeperConnector desiredZookeeper;
+    ZooKeeperConnector savedZookeeper;
+    TestingZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    ZooKeeperAttributesDto desiredSpec;
+    ZooKeeperAttributesDto savedSpec;
 
     public TopologyManagerServiceImplTests() throws JsonProcessingException {
     }
 
     @Before
     public void setUp() {
-        desiredSpec = new ZookeeperAttributesDto();
-        savedSpec = new ZookeeperAttributesDto();
+        desiredSpec = new ZooKeeperAttributesDto();
+        savedSpec = new ZooKeeperAttributesDto();
         desiredSpec.setZkPath("/siembol/desired");
         savedSpec.setZkPath("/siembol/saved");
 
-        zookeeperConnectorFactory = new TestingZookeeperConnectorFactory();
-        desiredZookeeper = zookeeperConnectorFactory.createZookeeperConnector(desiredSpec);
-        savedZookeeper = zookeeperConnectorFactory.createZookeeperConnector(savedSpec);
+        zooKeeperConnectorFactory = new TestingZooKeeperConnectorFactory();
+        desiredZookeeper = zooKeeperConnectorFactory.createZookeeperConnector(desiredSpec);
+        savedZookeeper = zooKeeperConnectorFactory.createZookeeperConnector(savedSpec);
         service = new TopologyManagerServiceImpl(stormProvider, kubernetesProvider, desiredZookeeper, savedZookeeper, 0);
     }
 
@@ -354,8 +354,8 @@ public class TopologyManagerServiceImplTests {
 
     @Test
     public void testManagerInfoAllSynced() {
-        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies4);
-        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies4);
+        zooKeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies4);
+        zooKeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies4);
         TopologyManagerInfoDto info = service.getTopologyManagerInfo();
         Assert.assertEquals(4, info.getNumberSynchronised());
         Assert.assertEquals(0, info.getNumberDifferent());
@@ -365,8 +365,8 @@ public class TopologyManagerServiceImplTests {
 
     @Test
     public void testManagerInfoDifferent() {
-        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies2);
-        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies2changed);
+        zooKeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies2);
+        zooKeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies2changed);
         TopologyManagerInfoDto info = service.getTopologyManagerInfo();
         Assert.assertEquals(0, info.getNumberSynchronised());
         Assert.assertEquals(2, info.getNumberDifferent());
@@ -375,8 +375,8 @@ public class TopologyManagerServiceImplTests {
 
     @Test
     public void testManagerInfoMissingDesired() {
-        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies2);
-        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies3);
+        zooKeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies2);
+        zooKeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies3);
         TopologyManagerInfoDto info = service.getTopologyManagerInfo();
         Assert.assertEquals(2, info.getNumberSynchronised());
         Assert.assertEquals(1, info.getNumberDifferent());
@@ -385,8 +385,8 @@ public class TopologyManagerServiceImplTests {
 
     @Test
     public void testManagerInfoMissingSaved() {
-        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies3);
-        zookeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies2);
+        zooKeeperConnectorFactory.setData(desiredSpec.getZkPath(), topologies3);
+        zooKeeperConnectorFactory.setData(savedSpec.getZkPath(), topologies2);
         TopologyManagerInfoDto info = service.getTopologyManagerInfo();
         Assert.assertEquals(2, info.getNumberSynchronised());
         Assert.assertEquals(1, info.getNumberDifferent());
@@ -395,7 +395,7 @@ public class TopologyManagerServiceImplTests {
 
     @Test
     public void testManagerInfoInvalidSpecification() {
-        zookeeperConnectorFactory.setData(desiredSpec.getZkPath(), "INVALID");
+        zooKeeperConnectorFactory.setData(desiredSpec.getZkPath(), "INVALID");
         TopologyManagerInfoDto info = service.getTopologyManagerInfo();
         Assert.assertNotNull(info);
         Assert.assertNull(info.getTopologies());

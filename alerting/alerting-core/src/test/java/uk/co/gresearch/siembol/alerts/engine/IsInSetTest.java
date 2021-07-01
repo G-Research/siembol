@@ -57,7 +57,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(rest, EvaluationResult.MATCH);
-        Assert.assertEquals(matcher.CanModifyEvent(), false);
+        Assert.assertEquals(matcher.canModifyEvent(), false);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -208,7 +208,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -236,7 +236,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -250,7 +250,7 @@ public class IsInSetTest {
         EvaluationResult rest = matcher.match(event);
 
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertFalse(matcher.CanModifyEvent());
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test(expected = IllegalArgumentException.class)

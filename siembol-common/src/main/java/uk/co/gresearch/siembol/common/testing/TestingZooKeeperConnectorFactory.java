@@ -1,9 +1,9 @@
 package uk.co.gresearch.siembol.common.testing;
 
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,23 +13,23 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TestingZookeeperConnectorFactory implements ZookeeperConnectorFactory {
+public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFactory {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Map<String, String> cache = new HashMap<>();
 
-    public ZookeeperConnector createZookeeperConnector(ZookeeperAttributesDto attributes) {
-        return new TestingZookeeperConnector(attributes.getZkPath());
+    public ZooKeeperConnector createZookeeperConnector(ZooKeeperAttributesDto attributes) {
+        return new TestingZooKeeperConnector(attributes.getZkPath());
     }
 
     public void setData(String path, String data) {
         cache.put(path, data);
     }
 
-    public class TestingZookeeperConnector implements ZookeeperConnector {
+    public class TestingZooKeeperConnector implements ZooKeeperConnector {
         private final String path;
         private final List<NodeCacheListener> callBacks = new ArrayList<>();
 
-        public TestingZookeeperConnector(String path) {
+        public TestingZooKeeperConnector(String path) {
             this.path = path;
         }
 

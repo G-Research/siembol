@@ -5,9 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import uk.co.gresearch.siembol.common.model.ZookeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.response.common.*;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.withSettings;
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.MATCH;
 
-public class ZookeeperRulesProviderTest {
+public class ZooKeeperRulesProviderTest {
     /**
      * {
      *   "rules_version": 111,
@@ -47,10 +47,10 @@ public class ZookeeperRulesProviderTest {
     public static String testingRules;
     private RespondingCompiler compiler;
     private MetricFactory testMetricFactory;
-    private ZookeeperConnectorFactory zookeeperConnectorFactory;
-    private ZookeeperConnector rulesZookeeperConnector;
-    private ZookeeperRulesProvider rulesProvider;
-    private ZookeeperAttributesDto zookeperAttributes;
+    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private ZooKeeperConnector rulesZooKeeperConnector;
+    private ZooKeeperRulesProvider rulesProvider;
+    private ZooKeeperAttributesDto zooKeperAttributes;
 
     @Before
     public void setUp() throws Exception {
@@ -66,14 +66,14 @@ public class ZookeeperRulesProviderTest {
                 .build();
 
 
-        zookeperAttributes = new ZookeeperAttributesDto();
-        zookeeperConnectorFactory = Mockito.mock(ZookeeperConnectorFactory.class, withSettings().serializable());
+        zooKeperAttributes = new ZooKeeperAttributesDto();
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
 
-        rulesZookeeperConnector = Mockito.mock(ZookeeperConnector.class, withSettings().serializable());
-        when(zookeeperConnectorFactory.createZookeeperConnector(zookeperAttributes))
-                .thenReturn(rulesZookeeperConnector);
-        when(rulesZookeeperConnector.getData()).thenReturn(testingRules);
-        rulesProvider = new ZookeeperRulesProvider(zookeeperConnectorFactory, zookeperAttributes, compiler);
+        rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
+        when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeperAttributes))
+                .thenReturn(rulesZooKeeperConnector);
+        when(rulesZooKeeperConnector.getData()).thenReturn(testingRules);
+        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeperAttributes, compiler);
 
     }
 
@@ -89,8 +89,8 @@ public class ZookeeperRulesProviderTest {
 
     @Test(expected = java.lang.IllegalStateException.class)
     public void testInvalidRulesInit() throws Exception {
-        when(rulesZookeeperConnector.getData()).thenReturn("INVALID");
-        rulesProvider = new ZookeeperRulesProvider(zookeeperConnectorFactory, zookeperAttributes, compiler);
+        when(rulesZooKeeperConnector.getData()).thenReturn("INVALID");
+        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeperAttributes, compiler);
     }
 
     @Test

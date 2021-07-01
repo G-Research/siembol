@@ -10,7 +10,7 @@ public class Rule extends AbstractRule {
     }
 
     private static final String RULE_MATCH_FORMAT_STR = "Rule: %s matches with the event:";
-    private final List<RuleMatcher> matchers;
+    private final List<Matcher> matchers;
     private final EnumSet<RuleFlags> flags;
 
     protected Rule(Builder<?> builder) {
@@ -22,7 +22,7 @@ public class Rule extends AbstractRule {
     @Override
     public AlertingResult match(Map<String, Object> log) {
         Map<String, Object> current = canModifyEvent() ? new HashMap<>(log) : log;
-        for (RuleMatcher matcher : matchers) {
+        for (Matcher matcher : matchers) {
             EvaluationResult result = matcher.match(current);
             if (result == EvaluationResult.NO_MATCH) {
                 return AlertingResult.fromEvaluationResult(EvaluationResult.NO_MATCH, current);
@@ -44,10 +44,10 @@ public class Rule extends AbstractRule {
 
     public static abstract class Builder<T extends Rule> extends AbstractRule.Builder<T>{
         protected static final String MISSING_MATCHERS = "Missing matchers in alerts rule builder";
-        protected List<RuleMatcher> matchers;
+        protected List<Matcher> matchers;
         protected EnumSet<RuleFlags> flags = EnumSet.noneOf(RuleFlags.class);
 
-        public Builder<T> matchers(List<RuleMatcher> matchers) {
+        public Builder<T> matchers(List<Matcher> matchers) {
             this.matchers = matchers;
             return this;
         }
@@ -61,8 +61,8 @@ public class Rule extends AbstractRule {
             if (matchers == null || matchers.isEmpty()) {
                 throw new IllegalArgumentException(MISSING_MATCHERS);
             }
-            for (RuleMatcher matcher : matchers) {
-                if (matcher.CanModifyEvent()) {
+            for (Matcher matcher : matchers) {
+                if (matcher.canModifyEvent()) {
                     flags.add(RuleFlags.CAN_MODIFY_EVENT);
                     break;
                 }

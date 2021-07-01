@@ -6,7 +6,7 @@ import com.github.reinert.jjschema.Attributes;
 import java.io.Serializable;
 
 @Attributes(title = "zookeeper attributes", description = "Zookeeper attributes for node cache")
-public class ZookeeperAttributesDto implements Serializable {
+public class ZooKeeperAttributesDto implements Serializable {
     private static final long serialVersionUID = 1L;
     @JsonProperty("zk.url")
     @Attributes(required = true, description = "Zookeeper servers url. Multiple servers are separated by comma")

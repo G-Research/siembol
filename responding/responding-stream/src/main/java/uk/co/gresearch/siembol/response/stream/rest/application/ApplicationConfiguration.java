@@ -66,7 +66,7 @@ public class ApplicationConfiguration implements DisposableBean {
     RulesProvider rulesProvider() throws Exception {
         rulesProvider = properties.getInactiveStreamService()
                 ? () -> null :
-                new ZookeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler);
+                new ZooKeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler);
 
         return rulesProvider;
     }
