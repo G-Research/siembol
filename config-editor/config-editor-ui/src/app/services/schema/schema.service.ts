@@ -4,7 +4,6 @@ import { cloneDeep, set } from 'lodash';
 import { ConfigData } from '@app/model';
 import { JSONSchema7 } from 'json-schema';
 import { FormlyFieldConfig } from '@ngx-formly/core';
-import { replacer } from '@app/commons/helper-functions';
 
 export class SchemaService {
   titleCasePipe: TitleCasePipe = new TitleCasePipe();
@@ -79,6 +78,10 @@ export class SchemaService {
     }
   }
 
+  areJsonEqual(config1: any, config2: any) {
+    return JSON.stringify(config1) === JSON.stringify(config2);
+  }
+
   protected returnSubTree(tree, path: string): any {
     let subtree = cloneDeep(tree);
     path.split('.').forEach(node => {
@@ -90,7 +93,7 @@ export class SchemaService {
 
   // function to go through the output json and reorder the properties such that it is consistent with the schema
   protected produceOrderedJson(configData: ConfigData, path: string) {
-    if (this.modelOrder[path]) {
+    if (configData && this.modelOrder[path]) {
       const currentCfg = cloneDeep(configData);
       configData = {};
       for (const key of this.modelOrder[path]) {

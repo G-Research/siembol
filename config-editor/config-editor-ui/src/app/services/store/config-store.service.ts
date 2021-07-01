@@ -248,6 +248,8 @@ export class ConfigStoreService {
     this.configHistoryService.clear();
     return this.configLoaderService.getAdminConfig().map((config: AdminConfig) => {
       this.updateAdmin(config);
+      this.configHistoryService.clear();
+      this.configHistoryService.addConfig(config);
     });
   }
 
@@ -308,6 +310,8 @@ export class ConfigStoreService {
     return this.configLoaderService.submitAdminConfig(adminConfig).map((result: any) => {
       if (result) {
         this.loadAdminPullRequestStatus();
+        this.configHistoryService.clear();
+        this.configHistoryService.addConfig(adminConfig);
         return true;
       }
       return false;

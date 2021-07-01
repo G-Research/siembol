@@ -26,7 +26,11 @@ export class UrlHistoryService {
   }
 
   private add(item: string, history: string[]): string[] {
-    if (this.appService.isHomePath(item) || this.appService.authenticationService.isCallbackUrl(item)) {
+    if (
+      this.appService.isHomePath(item) ||
+      this.appService.authenticationService.isCallbackUrl(item) ||
+      this.appService.isNewConfig(item)
+    ) {
       return history;
     }
     history.push(item);

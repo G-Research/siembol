@@ -28,7 +28,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   public options: any;
 
   public testCaseWrapper: TestCaseWrapper;
-  public testCase: any;
+  public testCase: any = {};
 
   public testStoreService: TestStoreService;
   private markHistoryChange = false;
@@ -60,15 +60,18 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       this.field = schemaConverter.toFieldConfig(schema, this.options);
 
       this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
-        this.testCaseWrapper = testCaseWrapper;
-        this.testCase = testCaseWrapper !== null ? cloneDeep(this.testCaseWrapper.testCase) : {};
-        this.cd.detectChanges();
+        if (testCaseWrapper && !this.editorService.configSchema.areJsonEqual(testCaseWrapper.testCase, this.testCase)) {
+          this.testCaseWrapper = testCaseWrapper;
+          this.testCase = cloneDeep(this.testCaseWrapper.testCase);
+          this.cd.detectChanges();
+        }
       });
     }
     this.testStoreService.addToTestCaseHistory(this.getFormTestCaseWrapper());
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
         this.testStoreService.addToTestCaseHistory(this.getTestCaseWrapper(cloneDeep(values)));
+        this.testStoreService.updateEditedTestCase(this.getFormTestCaseWrapper());
       }
       this.markHistoryChange = false;
     });

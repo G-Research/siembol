@@ -20,7 +20,8 @@ export class ClipboardStoreService {
             return json;
           })
           .catch(e => {
-            return throwError(e.error.message);
+            let message = e.error.exception ? e.error.exception : e.error.message;
+            return throwError('Unable to paste config from clipboard: ' + message);
           });
       })
       .map((json: string) => {

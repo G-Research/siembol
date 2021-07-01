@@ -29,7 +29,7 @@
         <ng-scrollbar class="scrollbar" [track]="'all'">
             <mat-tab-group [dynamicHeight]="true" (selectedTabChange)="onTabChange()" [(selectedIndex)]="selectedTab">
                 <mat-tab [label]="CONFIG_TAB.name">
-                    <re-generic-editor [field]="field" (configDataChange)="onConfigDataChange($event)">
+                    <re-generic-editor [field]="field">
                     </re-generic-editor>
                 </mat-tab>
                 <mat-tab [label]="TESTING_TAB.name" [disabled]="!testingEnabled()">

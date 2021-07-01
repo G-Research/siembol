@@ -29,7 +29,7 @@ describe('UrlHistoryService', () => {
           provide: AppConfigService,
           useValue: jasmine.createSpyObj(
             'AppConfigService',
-            { isHomePath: false },
+            { isHomePath: false, isNewConfig: false },
             {
               authenticationService: new MockAuth(),
               environment: 'test',

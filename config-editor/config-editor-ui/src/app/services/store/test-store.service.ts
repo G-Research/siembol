@@ -123,6 +123,8 @@ export class TestStoreService {
           .editedConfigTestCases(editedConfigTestCases)
           .build();
         this.store.next(newState);
+        this.testCaseHistoryService.clear();
+        this.testCaseHistoryService.addConfig(testCaseWrapper);
 
         return true;
       }

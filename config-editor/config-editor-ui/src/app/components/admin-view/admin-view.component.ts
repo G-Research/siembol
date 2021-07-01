@@ -7,9 +7,9 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { AdminComponent } from '../admin/admin.component';
-import { AdminConfig, Type } from '@app/model/config-model';
+import { AdminConfig } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
@@ -23,16 +23,12 @@ export class AdminViewComponent implements OnDestroy {
 
   ngUnsubscribe = new Subject();
   configData: any;
-  serviceName: string;
+
   schema: JSONSchema7;
-
   field: FormlyFieldConfig;
-
   adminConfig$: Observable<AdminConfig>;
-  version: number;
 
   constructor(private formlyJsonschema: FormlyJsonschema, private editorService: EditorService) {
-    this.serviceName = editorService.serviceName;
     this.schema = editorService.adminSchema.schema;
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
@@ -43,7 +39,6 @@ export class AdminViewComponent implements OnDestroy {
   public ngAfterViewInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.configData = config.configData;
-      this.version = config.version;
     });
   }
 
@@ -68,12 +63,5 @@ export class AdminViewComponent implements OnDestroy {
   onRedoConfig() {
     this.editorService.configStore.redoAdminConfig();
     this.adminComponent.setMarkHistoryChange();
-  }
-
-  onConfigDataChange(configData: any) {
-    this.configData = this.editorService.adminSchema.unwrapAdminConfigData(
-      cloneDeep(configData),
-      this.version
-    );
   }
 }

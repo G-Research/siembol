@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -31,10 +22,10 @@ import { AppConfigService } from '@app/services/app-config.service';
 })
 export class AdminComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
-  @Output() configDataChange: EventEmitter<string> = new EventEmitter<string>();
+
   @BlockUI() blockUI: NgBlockUI;
   ngUnsubscribe = new Subject();
-  configData: ConfigData = {};
+  configData: ConfigData;
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
   adminConfig$: Observable<AdminConfig>;
@@ -59,16 +50,14 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
-      this.config = config;
-      //NOTE: in the form we are using wrapping config to handle optionals, unions
-      if (config !== null) {
-        this.updateAndWrapConfigData(this.editorService.adminSchema.wrapConfig(config.configData));
+      if (config !== null && !this.editorService.adminSchema.areConfigEqual(config.configData, this.configData)) {
+        this.updateAndWrapConfig(config);
       }
     });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
         this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
-        this.configDataChange.emit(this.configData);
+        this.updateConfigInStore();
       }
       this.markHistoryChange = false;
     });
@@ -77,12 +66,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
-
-  updateAndWrapConfigData(configData: ConfigData) {
-    this.configData = cloneDeep(configData);
-    this.editorService.adminSchema.wrapAdminConfig(this.configData);
-    this.cd.markForCheck();
   }
 
   onSubmit() {
@@ -119,10 +102,18 @@ export class AdminComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  //Note: workaround as rawjson triggers an old form change on undo/redo
   setMarkHistoryChange() {
+    //Note: workaround as rawjson triggers an old form change on undo/redo
     this.markHistoryChange = true;
     this.form.updateValueAndValidity();
+  }
+
+  private updateAndWrapConfig(config: AdminConfig) {
+    //NOTE: in the form we are using wrapping config to handle optionals, unions
+    this.config = config;
+    this.configData = this.editorService.adminSchema.wrapConfig(config.configData);
+    this.editorService.adminSchema.wrapAdminConfig(this.configData);
+    this.cd.markForCheck();
   }
 
   private cleanConfig(configData: any) {

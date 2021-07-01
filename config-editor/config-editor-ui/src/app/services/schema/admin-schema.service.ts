@@ -10,11 +10,7 @@ export class AdminSchemaService extends SchemaService {
   private rawObjectsPaths: string[];
   private readonly SPECIAL_CHAR_TO_REPLACE_DOT = '___';
 
-  constructor(
-    protected uiMetadata: UiMetadata,
-    protected user: string,
-    protected originalSchema: JSONSchema7
-  ) {
+  constructor(protected uiMetadata: UiMetadata, protected user: string, protected originalSchema: JSONSchema7) {
     super(uiMetadata, user, originalSchema);
     this.rawObjectsPaths = [];
     this._schema = cloneDeep(this.originalSchema);
@@ -85,15 +81,22 @@ export class AdminSchemaService extends SchemaService {
   }
 
   public unwrapAdminConfig(config: AdminConfig): AdminConfig {
-    config.configData = this.unwrapAdminConfigData(config.configData, config.version);
+    config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
+    config.configData = this.unwrapAdminConfigData(config.configData);
     return config;
   }
 
-  unwrapAdminConfigData(configData: ConfigData, version: number): ConfigData {
+  unwrapAdminConfigData(configData: ConfigData): ConfigData {
     const re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, 'g');
     this.formatAdminConfig(configData, '', re, '.');
-    configData[ADMIN_VERSION_FIELD_NAME] = version;
     configData = this.produceOrderedJson(configData, '/');
     return omitEmpty(configData);
+  }
+
+  areConfigEqual(config1: any, config2: any) {
+    return this.areJsonEqual(
+      this.unwrapAdminConfigData(cloneDeep(config1)),
+      this.unwrapAdminConfigData(cloneDeep(config2))
+    );
   }
 }

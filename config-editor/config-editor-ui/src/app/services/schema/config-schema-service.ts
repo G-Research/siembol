@@ -69,4 +69,8 @@ export class ConfigSchemaService extends SchemaService {
     config.configData = this.cleanConfigData(config.configData);
     return config;
   }
+
+  public areConfigEqual(config1: any, config2: any) {
+    return this.areJsonEqual(this.cleanConfigData(config1), this.cleanConfigData(config2));
+  }
 }

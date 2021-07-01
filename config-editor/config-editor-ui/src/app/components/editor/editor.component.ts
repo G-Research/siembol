@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -29,16 +20,14 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 })
 export class EditorComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
-  @Output() configDataChange: EventEmitter<string> = new EventEmitter<string>();
   titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX)]);
 
   public ngUnsubscribe = new Subject();
-  public configName: string;
-  public configData: ConfigData = {};
   public options: FormlyFormOptions = {};
   public form: FormGroup = new FormGroup({});
   public editedConfig$: Observable<Config>;
   public config: Config;
+  public configData: ConfigData;
 
   constructor(
     public dialog: MatDialog,
@@ -51,18 +40,18 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
-      this.config = config;
-      if (config) {
-        this.configData = this.editorService.configSchema.wrapConfig(config.configData);
-        this.configName = config.name;
+    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
+      if (
+        !this.configData ||
+        (config !== null && !this.editorService.configSchema.areConfigEqual(config.configData, this.configData))
+      ) {
+        this.updateAndWrapConfig(config);
       }
-      this.cd.markForCheck();
     });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid) {
         this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
-        this.configDataChange.emit(this.configData);
+        this.updateConfigInStore();
       }
     });
   }
@@ -72,15 +61,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  updateConfigInStore() {
-    this.editorService.configStore.updateEditedConfig(this.cleanConfig(this.form.value));
-  }
-
   onSubmit() {
-    this.updateConfigInStore();
     const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: {
-        name: this.configName,
+        name: this.config.name,
         type: Type.CONFIG_TYPE,
         validate: () => this.editorService.configStore.validateEditedConfig(),
         submit: () => this.editorService.configStore.submitEditedConfig(),
@@ -91,16 +75,26 @@ export class EditorComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(success => {
       if (success) {
         this.router.navigate([this.editorService.serviceName, 'edit'], {
-          queryParams: { configName: this.configName },
+          queryParams: { configName: this.config.name },
         });
       }
     });
   }
 
+  private updateAndWrapConfig(config: Config) {
+    this.config = config;
+    this.configData = this.editorService.configSchema.wrapConfig(config.configData);
+    this.cd.markForCheck();
+  }
+
   private cleanConfig(configData: ConfigData): Config {
     const configToClean = cloneDeep(this.config) as Config;
     configToClean.configData = cloneDeep(configData);
-    configToClean.name = this.configName;
+    configToClean.name = this.config.name;
     return this.editorService.configSchema.cleanConfig(configToClean);
+  }
+
+  private updateConfigInStore() {
+    this.editorService.configStore.updateEditedConfig(this.cleanConfig(this.form.value));
   }
 }

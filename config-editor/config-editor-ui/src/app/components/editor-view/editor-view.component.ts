@@ -1,15 +1,6 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Config } from '@app/model';
+import { Config, ConfigData } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { EditorService } from '@app/services/editor.service';
@@ -19,7 +10,7 @@ import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
-import { TestingType, Type } from '@app/model/config-model';
+import { TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
@@ -36,8 +27,8 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly CONFIG_TAB = CONFIG_TAB;
   readonly NO_TAB = -1;
   ngUnsubscribe = new Subject();
-  configData: any;
-  serviceName: string;
+  configData: ConfigData;
+
   schema: JSONSchema7;
   selectedTab = this.CONFIG_TAB.index;
   previousTab = this.NO_TAB;
@@ -51,7 +42,6 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private activeRoute: ActivatedRoute
   ) {
-    this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
     this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
@@ -95,14 +85,12 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
         queryParams: { testCaseName: null },
         queryParamsHandling: 'merge',
       });
-    } else if (this.previousTab === CONFIG_TAB.index) {
-      this.editorComponent.updateConfigInStore();
     }
     this.previousTab = this.selectedTab;
   }
 
   changeRoute() {
-    this.router.navigate([this.serviceName]);
+    this.router.navigate([this.editorService.serviceName]);
   }
 
   onClickPaste() {
@@ -119,10 +107,5 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onRedoConfig() {
     this.editorService.configStore.redoConfig();
-  }
-
-  onConfigDataChange(configData: any) {
-    configData = this.editorService.configSchema.unwrapConfig(configData);
-    this.configData = this.editorService.configSchema.cleanConfigData(cloneDeep(configData));
   }
 }
