@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.response.evaluators.matching;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.engine.IsInSetMatcher;
 import uk.co.gresearch.siembol.alerts.engine.RegexMatcher;
-import uk.co.gresearch.siembol.alerts.engine.RuleMatcher;
+import uk.co.gresearch.siembol.alerts.engine.BasicMatcher;
 import uk.co.gresearch.siembol.response.common.Evaluable;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.ResponseAlert;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MatchingEvaluator implements Evaluable {
-    private final List<RuleMatcher> matchers;
+    private final List<BasicMatcher> matchers;
     private final MatchingEvaluatorResultDto matchingResult;
 
     public MatchingEvaluator(MatchingEvaluatorAttributesDto attributesDto) {
@@ -28,7 +28,7 @@ public class MatchingEvaluator implements Evaluable {
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         ResponseAlert current = (ResponseAlert)alert.clone();
-        for (RuleMatcher matcher : matchers) {
+        for (BasicMatcher matcher : matchers) {
             EvaluationResult result = matcher.match(current);
             if (result == EvaluationResult.NO_MATCH) {
                 return RespondingResult.fromEvaluationResult(
@@ -39,7 +39,7 @@ public class MatchingEvaluator implements Evaluable {
                 matchingResult.computeFromEvaluationResult(EvaluationResult.MATCH), current);
     }
 
-    private RuleMatcher createMatcher(MatcherDto matcherDto) {
+    private BasicMatcher createMatcher(MatcherDto matcherDto) {
         switch (matcherDto.getType()) {
             case REGEX_MATCH:
                 return RegexMatcher

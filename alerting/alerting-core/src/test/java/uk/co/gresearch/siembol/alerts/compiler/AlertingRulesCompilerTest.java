@@ -70,6 +70,74 @@ public class AlertingRulesCompilerTest {
     @Multiline
     public static String goodAlert;
 
+    /**
+     *{
+     *  "source_type" : "secret",
+     *  "is_alert" : "TruE",
+     *  "dummy_field_int" : 1,
+     *  "dummy_field_boolean" : false,
+     *  "is_secret" : "true"
+     *}
+     **/
+    @Multiline
+    public static String goodAlertWithSecret;
+
+    /**
+     * {
+     *   "rule_name": "siembol_alert_generic_with_composite_matchers",
+     *   "rule_version": 1,
+     *   "rule_author": "dummy",
+     *   "rule_description": "Test rule with composite matchers",
+     *   "source_type": "*",
+     *   "matchers": [
+     *     {
+     *       "matcher_type": "REGEX_MATCH",
+     *       "is_negated": false,
+     *       "field": "is_alert",
+     *       "data": "(?i)true"
+     *     },
+     *     {
+     *       "matcher_type": "REGEX_MATCH",
+     *       "is_negated": false,
+     *       "field": "source_type",
+     *       "data": "(?<sensor>.*)"
+     *     },
+     *     {
+     *       "matcher_type": "COMPOSITE_OR",
+     *       "is_negated": false,
+     *       "matchers": [
+     *         {
+     *           "matcher_type": "REGEX_MATCH",
+     *           "is_negated": false,
+     *           "field": "is_secret",
+     *           "data": "(?i)true"
+     *         },
+     *         {
+     *           "matcher_type": "COMPOSITE_AND",
+     *           "is_negated": false,
+     *           "matchers": [
+     *             {
+     *               "matcher_type": "REGEX_MATCH",
+     *               "is_negated": false,
+     *               "field": "is_public",
+     *               "data": "(?i)true"
+     *             },
+     *             {
+     *               "matcher_type": "REGEX_MATCH",
+     *               "is_negated": false,
+     *               "field": "is_detected",
+     *               "data": "(?i)yes"
+     *             }
+     *           ]
+     *         }
+     *       ]
+     *     }
+     *   ]
+     * }
+     **/
+    @Multiline
+    public static String ruleWithCompositeMatchers;
+
     private AlertingCompiler compiler;
 
     @Before
@@ -197,6 +265,38 @@ public class AlertingRulesCompilerTest {
                 goodAlert);
 
         Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+    }
+
+    @Test
+    public void validationRuleWithCompositeMatchersOK() {
+        AlertingResult ret = compiler.validateRule(ruleWithCompositeMatchers);
+        Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
+    }
+
+    @Test
+    public void validationRuleWithCompositeMatchersInvalid() {
+        AlertingResult ret = compiler.validateRule(ruleWithCompositeMatchers.replace("\"matchers\"",
+                "\"invalid_matchers\""));
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+    }
+
+    @Test
+    public void compileRulesWithCompositeMatcher() {
+        String rules = "{ \"rules_version\" : 1, \"tags\" : [], \"rules\" : [" + ruleWithCompositeMatchers + "]}";
+        AlertingResult compileResult = compiler.compile(rules);
+
+        Assert.assertEquals(AlertingResult.StatusCode.OK, compileResult.getStatusCode());
+        Assert.assertNotNull(compileResult.getAttributes().getEngine());
+
+        AlertingResult matchResult1 = compileResult.getAttributes().getEngine().evaluate(goodAlert);
+        Assert.assertEquals(AlertingResult.StatusCode.OK, matchResult1.getStatusCode());
+        Assert.assertEquals(EvaluationResult.NO_MATCH, matchResult1.getAttributes().getEvaluationResult());
+
+        AlertingResult matchResult2 = compileResult.getAttributes().getEngine().evaluate(goodAlertWithSecret);
+        Assert.assertEquals(AlertingResult.StatusCode.OK, matchResult2.getStatusCode());
+        Assert.assertEquals(EvaluationResult.MATCH, matchResult2.getAttributes().getEvaluationResult());
+        Assert.assertEquals(1, matchResult2.getAttributes().getOutputEvents().size());
+        Assert.assertEquals("secret", matchResult2.getAttributes().getOutputEvents().get(0).get("sensor"));
     }
 }
 

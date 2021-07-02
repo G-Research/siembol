@@ -15,4 +15,4 @@ spec:
           image: --image--
           name: --name--
       securityContext:
-        runAsUser: 1000
+        runAsUser: 101

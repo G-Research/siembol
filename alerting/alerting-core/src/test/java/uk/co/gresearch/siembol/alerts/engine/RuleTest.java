@@ -20,14 +20,14 @@ public class RuleTest {
     private Map<String, Object> event = new HashMap<>();
     private List<Pair<String, String>> constants;
     private List<Pair<String, Object>> protections;
-    private RuleMatcher matcher;
+    private BasicMatcher matcher;
     private Rule rule;
 
     @Before
     public void setUp() {
         constants = Arrays.asList(Pair.of("detection_source", "alerts"));
         protections = Arrays.asList(Pair.of(AlertingFields.MAX_PER_HOUR_FIELD.toString(), Integer.valueOf(1)));
-        matcher = Mockito.mock(RuleMatcher.class);
+        matcher = Mockito.mock(BasicMatcher.class);
         when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.MATCH);
     }
 
@@ -88,7 +88,7 @@ public class RuleTest {
 
     @Test
     public void testGoodCanModifyEvent() {
-        when(matcher.CanModifyEvent()).thenReturn(true);
+        when(matcher.canModifyEvent()).thenReturn(true);
 
         rule = Rule.builder()
                 .matchers(Arrays.asList(matcher))

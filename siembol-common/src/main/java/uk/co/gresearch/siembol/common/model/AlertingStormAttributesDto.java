@@ -36,7 +36,7 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
     private JsonRawStringDto kafkaProducerProperties;
     @JsonProperty("zookeeper.attributes")
     @Attributes(required = true, description = "The zookeeper attributes for alerting rules")
-    private ZookeeperAttributesDto zookeperAttributes;
+    private ZooKeeperAttributesDto zookeperAttributes;
     @Attributes(required = true, description = "Storm attributes for the topology")
     @JsonProperty("storm.attributes")
     private StormAttributesDto stormAttributes;
@@ -138,11 +138,11 @@ public class AlertingStormAttributesDto extends AdminConfigDto implements Serial
         this.kafkaWriterBoltNumExecutors = kafkaWriterBoltNumExecutors;
     }
 
-    public ZookeeperAttributesDto getZookeperAttributes() {
+    public ZooKeeperAttributesDto getZookeperAttributes() {
         return zookeperAttributes;
     }
 
-    public void setZookeperAttributes(ZookeeperAttributesDto zookeperAttributes) {
+    public void setZookeperAttributes(ZooKeeperAttributesDto zookeperAttributes) {
         this.zookeperAttributes = zookeperAttributes;
     }
 

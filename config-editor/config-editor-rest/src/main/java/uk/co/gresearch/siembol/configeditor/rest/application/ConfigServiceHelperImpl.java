@@ -2,8 +2,8 @@ package uk.co.gresearch.siembol.configeditor.rest.application;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.ServiceType;
@@ -34,13 +34,13 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
     private final ServiceConfigurationProperties serviceConfigurationProperties;
     private final AdminConfigInfoProvider adminConfigInfoProvider = new AdminConfigInfoProvider();
     private final ConfigInfoProvider configInfoProvider;
-    private final Optional<ZookeeperConnector> zookeeperConnector;
+    private final Optional<ZooKeeperConnector> zooKeeperConnector;
     private final boolean shouldSyncRelease;
     private final boolean shouldSyncAdminConfig;
 
     public ConfigServiceHelperImpl(ServiceAggregatorService aggregatorService,
                                    ConfigEditorConfigurationProperties properties,
-                                   ZookeeperConnectorFactory zookeeperConnectorFactory) {
+                                   ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
         this.aggregatorService = aggregatorService;
         this.serviceConfigurationProperties = properties.getServices().get(aggregatorService.getName());
         this.shouldSyncRelease = properties.getSynchronisation().isReleaseEnabled()
@@ -67,8 +67,8 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
         }
 
         try {
-            zookeeperConnector = shouldZookeeperRelease
-                    ? Optional.of(zookeeperConnectorFactory
+            zooKeeperConnector = shouldZookeeperRelease
+                    ? Optional.of(zooKeeperConnectorFactory
                     .createZookeeperConnector(serviceConfigurationProperties.getReleaseZookeeper()))
                     : Optional.empty();
         } catch (Exception e) {
@@ -144,8 +144,8 @@ public class ConfigServiceHelperImpl implements ConfigServiceHelper {
     }
 
     @Override
-    public Optional<ZookeeperConnector> getZookeeperReleaseConnector() {
-        return zookeeperConnector;
+    public Optional<ZooKeeperConnector> getZookeeperReleaseConnector() {
+        return zooKeeperConnector;
     }
 
     @Override

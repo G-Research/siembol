@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.deployment.storm.model.StormResponseTopologyDto;
 import uk.co.gresearch.siembol.deployment.storm.model.TopologyManagerInfoDto;
 import uk.co.gresearch.siembol.deployment.storm.model.TopologyStateDto;
@@ -31,16 +31,16 @@ public class TopologyManagerServiceImpl implements TopologyManagerService {
             .readerFor(StormTopologiesDto.class);
 
     private final StormProvider stormProvider;
-    private final ZookeeperConnector zookeeperDesiredState;
-    private final ZookeeperConnector zookeeperSavedState;
+    private final ZooKeeperConnector zookeeperDesiredState;
+    private final ZooKeeperConnector zookeeperSavedState;
     private final KubernetesProvider kubernetesProvider;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final AtomicReference<Optional<Exception>> exception = new AtomicReference<>(Optional.empty());
 
     public TopologyManagerServiceImpl(StormProvider stormProvider,
                                       KubernetesProvider kubernetesProvider,
-                                      ZookeeperConnector zookeeperDesiredState,
-                                      ZookeeperConnector zookeeperSavedState,
+                                      ZooKeeperConnector zookeeperDesiredState,
+                                      ZooKeeperConnector zookeeperSavedState,
                                       int scheduleAtFixedRate) {
         this.stormProvider = stormProvider;
         this.kubernetesProvider = kubernetesProvider;

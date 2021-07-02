@@ -13,6 +13,7 @@ public class RespondingResultAttributes {
     private Evaluable respondingEvaluator;
     private String message;
     private String attributesSchema;
+    private String ruleName;
     @JsonProperty("rules_schema")
     @JsonRawValue
     private String rulesSchema;
@@ -170,5 +171,13 @@ public class RespondingResultAttributes {
 
     public void setTestSpecification(String testSpecification) {
         this.testSpecification = testSpecification;
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 }

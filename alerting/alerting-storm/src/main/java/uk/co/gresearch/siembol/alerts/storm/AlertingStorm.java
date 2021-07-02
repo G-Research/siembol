@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngineType;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
-import uk.co.gresearch.siembol.common.zookeper.ZookeeperConnectorFactoryImpl;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Base64;
@@ -52,7 +52,7 @@ public class AlertingStorm {
     }
 
     public static StormTopology createTopology(AlertingStormAttributesDto attributes,
-                                               ZookeeperConnectorFactory zookeeperConnectorFactory) {
+                                               ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout(KAFKA_SPOUT,
@@ -60,7 +60,7 @@ public class AlertingStorm {
                 attributes.getKafkaSpoutNumExecutors());
 
         builder.setBolt(AlertingEngineType.SIEMBOL_ALERTS.getEngineName(),
-                new AlertingEngineBolt(attributes, zookeeperConnectorFactory), attributes.getAlertingEngineBoltNumExecutors())
+                new AlertingEngineBolt(attributes, zooKeeperConnectorFactory), attributes.getAlertingEngineBoltNumExecutors())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(KAFKA_WRITER,
@@ -71,7 +71,7 @@ public class AlertingStorm {
     }
 
     public static StormTopology createCorrelationAlertingTopology(AlertingStormAttributesDto attributes,
-                                                                  ZookeeperConnectorFactory zookeeperConnectorFactory) {
+                                                                  ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout(KAFKA_SPOUT,
@@ -79,7 +79,7 @@ public class AlertingStorm {
                 attributes.getKafkaSpoutNumExecutors());
 
         builder.setBolt(AlertingEngineType.SIEMBOL_CORRELATION_ALERTS.getEngineName(),
-                new CorrelationAlertingEngineBolt(attributes, zookeeperConnectorFactory),
+                new CorrelationAlertingEngineBolt(attributes, zooKeeperConnectorFactory),
                 attributes.getAlertingEngineBoltNumExecutors())
                 .fieldsGrouping(KAFKA_SPOUT, new Fields(TupleFieldNames.CORRELATION_KEY.toString()));
 
@@ -105,12 +105,12 @@ public class AlertingStorm {
 
         Config config = new Config();
         config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
-        ZookeeperConnectorFactory zookeeperConnectorFactory = new ZookeeperConnectorFactoryImpl();
+        ZooKeeperConnectorFactory zooKeeperConnectorFactory = new ZooKeeperConnectorFactoryImpl();
 
 
         StormTopology topology = engineType == AlertingEngineType.SIEMBOL_ALERTS
-                ? createTopology(attributes, zookeeperConnectorFactory)
-                : createCorrelationAlertingTopology(attributes, zookeeperConnectorFactory);
+                ? createTopology(attributes, zooKeeperConnectorFactory)
+                : createCorrelationAlertingTopology(attributes, zooKeeperConnectorFactory);
         String topologyName = attributes.getTopologyName() != null
                 ? attributes.getTopologyName()
                 : engineType.toString();

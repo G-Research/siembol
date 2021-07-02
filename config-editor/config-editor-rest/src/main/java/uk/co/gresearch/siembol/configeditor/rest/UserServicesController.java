@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +27,8 @@ public class UserServicesController {
 
     @CrossOrigin
     @RequestMapping(value = "/user", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ConfigEditorAttributes> getLoggedInUser(@AuthenticationPrincipal Authentication authentication) {
-        UserInfo user = userInfoProvider.getUserInfo(authentication);
+    public ResponseEntity<ConfigEditorAttributes> getLoggedInUser(@AuthenticationPrincipal Object principal) {
+        UserInfo user = userInfoProvider.getUserInfo(principal);
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         attr.setUserName(user.getUserName());
         attr.setServices(serviceAggregator.getConfigEditorServices(user));
