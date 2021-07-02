@@ -16,11 +16,9 @@ export class ClipboardStoreService {
       .mergeMap(s => {
         const json = JSON.parse(s);
         return this.validateType(type, json)
-          .map(() => {
-            return json;
-          })
+          .map(() => json)
           .catch(e => {
-            let message = e.error.exception ? e.error.exception : e.error.message;
+            const message = e.error.exception ? e.error.exception : e.error.message;
             return throwError('Unable to paste config from clipboard: ' + message);
           });
       })
@@ -44,9 +42,9 @@ export class ClipboardStoreService {
       return this.configLoader.validateConfig(json);
     } else if (type === Type.ADMIN_TYPE) {
       return this.configLoader.validateAdminConfig(json);
-    } else {
+    } 
       return this.configLoader.validateTestCase(json);
-    }
+    
   }
 
   private isJsonString(str: string): boolean {

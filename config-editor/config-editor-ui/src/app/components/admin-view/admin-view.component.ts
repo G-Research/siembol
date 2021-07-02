@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, OnDestroy, ViewChild } from '@angular/core';
-import { Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Config } from '@app/model';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { EditorService } from '@app/services/editor.service';
@@ -18,7 +17,7 @@ import { SchemaService } from '@app/services/schema/schema.service';
   styleUrls: ['./admin-view.component.scss'],
   templateUrl: './admin-view.component.html',
 })
-export class AdminViewComponent implements OnDestroy {
+export class AdminViewComponent implements AfterViewInit, OnDestroy {
   @ViewChild(AdminComponent) adminComponent: AdminComponent;
 
   ngUnsubscribe = new Subject();
@@ -36,7 +35,7 @@ export class AdminViewComponent implements OnDestroy {
     });
   }
 
-  public ngAfterViewInit() {
+  ngAfterViewInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.configData = config.configData;
     });

@@ -22,12 +22,12 @@ export class EditorComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
   titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX)]);
 
-  public ngUnsubscribe = new Subject();
-  public options: FormlyFormOptions = {};
-  public form: FormGroup = new FormGroup({});
-  public editedConfig$: Observable<Config>;
-  public config: Config;
-  public configData: ConfigData;
+  ngUnsubscribe = new Subject();
+  options: FormlyFormOptions = {};
+  form: FormGroup = new FormGroup({});
+  editedConfig$: Observable<Config>;
+  config: Config;
+  configData: ConfigData;
 
   constructor(
     public dialog: MatDialog,
@@ -48,9 +48,8 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.updateAndWrapConfig(config);
       }
     });
-    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
       if (this.form.valid) {
-        this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
         this.updateConfigInStore();
       }
     });
@@ -95,6 +94,6 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   private updateConfigInStore() {
-    this.editorService.configStore.updateEditedConfig(this.cleanConfig(this.form.value));
+    this.editorService.configStore.updateEditedConfigAndHistory(this.cleanConfig(this.form.value));
   }
 }

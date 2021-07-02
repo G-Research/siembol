@@ -1,6 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { UiMetadata } from '@model/ui-metadata-map';
-import { cloneDeep, set } from 'lodash';
+import { cloneDeep} from 'lodash';
 import { ConfigData } from '@app/model';
 import { JSONSchema7 } from 'json-schema';
 import { FormlyFieldConfig } from '@ngx-formly/core';
@@ -26,7 +26,7 @@ export class SchemaService {
     return field;
   }
 
-  public wrapConfig(obj: any): any {
+  wrapConfig(obj: any): any {
     const ret = cloneDeep(obj);
     this.wrapOptionalsInArray(ret);
     if (this.unionPath && Object.keys(ret).length !== 0) {
@@ -35,7 +35,7 @@ export class SchemaService {
     return ret;
   }
 
-  public unwrapConfig(obj: any): any {
+  unwrapConfig(obj: any): any {
     let returnObject = cloneDeep(obj);
     if (this.unionPath) {
       returnObject = this.unwrapConfigFromUnion(returnObject, this.unionPath);
@@ -43,7 +43,7 @@ export class SchemaService {
     return this.unwrapOptionalsFromArrays(returnObject);
   }
 
-  public formatTitlesInSchema(obj: any, propKey?: string): any {
+  formatTitlesInSchema(obj: any, propKey?: string): any {
     if (obj === undefined || obj === null || typeof obj !== typeof {}) {
       return;
     }
@@ -76,10 +76,6 @@ export class SchemaService {
         this.formatTitlesInSchema(obj[key], key);
       }
     }
-  }
-
-  areJsonEqual(config1: any, config2: any) {
-    return JSON.stringify(config1) === JSON.stringify(config2);
   }
 
   protected returnSubTree(tree, path: string): any {

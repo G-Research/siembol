@@ -106,9 +106,13 @@ export class ConfigStoreService {
 
   updateAdmin(config: AdminConfig) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).adminConfig(config).build();
-
     this.store.next(newState);
     this.loadAdminPullRequestStatus();
+  }
+
+  updateAdminAndHistory(config: AdminConfig) {
+    this.configHistoryService.addConfig(cloneDeep(config));
+    this.updateAdmin(config);
   }
 
   updateSearchTerm(searchTerm: string) {
@@ -338,6 +342,7 @@ export class ConfigStoreService {
         return false;
       }
       this.updateEditedConfigAndTestCase(config, testCase);
+      this.testService.testCaseHistoryService.addConfig(testCase);
     } else {
       this.updateEditedConfigAndTestCase(config, null);
     }
@@ -442,6 +447,11 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
+  updateEditedConfigAndHistory(config: Config) {
+    this.configHistoryService.addConfig(cloneDeep(config));
+    this.updateEditedConfig(config);
+  }
+
   deleteConfig(configName: string): Observable<any> {
     return this.configLoaderService.deleteConfig(configName).map(data => {
       const newState = new ConfigStoreStateBuilder(this.store.getValue())
@@ -471,32 +481,28 @@ export class ConfigStoreService {
   }
 
   undoConfig() {
-    let nextState = this.configHistoryService.undoConfig();
+    const nextState = this.configHistoryService.undoConfig();
     this.updateEditedConfig(nextState.formState);
   }
 
   redoConfig() {
-    let nextState = this.configHistoryService.redoConfig();
+    const nextState = this.configHistoryService.redoConfig();
     this.updateEditedConfig(nextState.formState);
   }
 
   undoAdminConfig() {
-    let nextState = this.configHistoryService.undoConfig();
+    const nextState = this.configHistoryService.undoConfig();
     this.updateAdmin(nextState.formState);
   }
 
   redoAdminConfig() {
-    let nextState = this.configHistoryService.redoConfig();
+    const nextState = this.configHistoryService.redoConfig();
     this.updateAdmin(nextState.formState);
-  }
-
-  addToConfigHistory(config: any) {
-    this.configHistoryService.addConfig(config);
   }
 
   clearConfigHistory() {
     this.configHistoryService.clear();
-    this.testStoreService.clearTestCaseHistory();
+    this.testStoreService.testCaseHistoryService.clear();
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

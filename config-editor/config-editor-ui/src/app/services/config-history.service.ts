@@ -1,6 +1,8 @@
+import { areJsonEqual } from "@app/commons/helper-functions";
+
 interface ConfigHistory {
-  past: Array<ValidConfigState>;
-  future: Array<ValidConfigState>;
+  past: ValidConfigState[];
+  future: ValidConfigState[];
 }
 
 interface ValidConfigState {
@@ -24,7 +26,7 @@ export class ConfigHistoryService {
   }
 
   getCurrentConfig(): ValidConfigState {
-    if (this.history.past.length == 0) {
+    if (this.history.past.length === 0) {
       return undefined;
     }
     return this.history.past[0];
@@ -43,14 +45,14 @@ export class ConfigHistoryService {
     if (this.isFutureEmpty()) {
       throw new Error('Unable to redo: future is empty.');
     }
-    let nextState = this.history.future[0];
+    const nextState = this.history.future[0];
     this.history.past.splice(0, 0, nextState);
     this.history.future.shift();
     return nextState;
   }
 
   isFutureEmpty(): boolean {
-    return this.history.future.length == 0;
+    return this.history.future.length === 0;
   }
 
   isHistoryEmpty(): boolean {
@@ -58,7 +60,7 @@ export class ConfigHistoryService {
   }
 
   private isConfigEqualToCurrent(config: any): boolean {
-    let current = this.getCurrentConfig();
-    return current && JSON.stringify(current.formState) === JSON.stringify(config);
+    const current = this.getCurrentConfig();
+    return current && areJsonEqual(current.formState, config);
   }
 }

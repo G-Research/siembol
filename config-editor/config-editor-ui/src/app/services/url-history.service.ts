@@ -8,7 +8,6 @@ import { AppConfigService } from '@app/services/app-config.service';
 export class UrlHistoryService {
   private readonly max_size: number;
   private readonly HISTORY_KEY: string;
-
   constructor(private router: Router, private appService: AppConfigService) {
     this.HISTORY_KEY = 'siembol_history-' + this.appService.environment;
     this.max_size = this.appService.historyMaxSize;
@@ -20,7 +19,7 @@ export class UrlHistoryService {
     });
   }
 
-  public getHistoryPreviousUrls(): string[] {
+  getHistoryPreviousUrls(): string[] {
     const history = localStorage.getItem(this.HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   }

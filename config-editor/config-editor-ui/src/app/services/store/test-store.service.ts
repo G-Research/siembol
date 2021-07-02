@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ConfigStoreState } from '../../model/store-state';
 import { ConfigLoaderService } from '../config-loader.service';
-import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase, TestCase } from '../../model/test-case';
+import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from '../../model/test-case';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { ConfigTestResult, TestingType, Type } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
@@ -18,24 +18,23 @@ export class TestStoreService {
   ) {}
 
   setEditedTestCaseByName(testCaseName: string) {
-    this.testCaseHistoryService.clear();
     const testCase = this.getTestCaseByName(testCaseName);
-    this.updateEditedTestCase(testCase);
+    this.testCaseHistoryService.addConfig(testCase);
+    this.clearAndInitialiseTestCaseHistory(testCase);
   }
 
   setEditedClonedTestCaseByName(testCaseName: string) {
-    this.testCaseHistoryService.clear();
     const testCase = this.getTestCaseByName(testCaseName);
     testCase.fileHistory = null;
     testCase.testCaseResult = null;
     testCase.testCase.version = 0;
     testCase.testCase.test_case_name = `${testCase.testCase.test_case_name}_clone`;
     testCase.testCase.author = this.user;
+    this.clearAndInitialiseTestCaseHistory(testCase);
     this.updateEditedTestCase(testCase);
   }
 
   setEditedTestCaseNew() {
-    this.testCaseHistoryService.clear();
     const currentState = this.store.getValue();
     const testCase = {
       testCase: {
@@ -48,6 +47,7 @@ export class TestStoreService {
       },
       testCaseResult: undefined,
     } as TestCaseWrapper;
+    this.clearAndInitialiseTestCaseHistory(testCase);
     this.updateEditedTestCase(testCase);
   }
 
@@ -60,8 +60,9 @@ export class TestStoreService {
     const testCaseWrapper = {
       fileHistory: null,
       testCaseResult: null,
-      testCase: testCase,
+      testCase,
     };
+    this.clearAndInitialiseTestCaseHistory(testCaseWrapper);
     this.updateEditedTestCase(testCaseWrapper);
   }
 
@@ -85,6 +86,11 @@ export class TestStoreService {
   updateEditedTestCase(testCase: TestCaseWrapper) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).editedTestCase(testCase).build();
     this.store.next(newState);
+  }
+
+  updateEditedTestCaseAndHistory(testCase: TestCaseWrapper) {
+    this.testCaseHistoryService.addConfig(testCase);
+    this.updateEditedTestCase(testCase);
   }
 
   cancelEditingTestCase() {
@@ -229,21 +235,18 @@ export class TestStoreService {
   }
 
   undoTestCase() {
-    let nextState = this.testCaseHistoryService.undoConfig();
+    const nextState = this.testCaseHistoryService.undoConfig();
     this.updateEditedTestCase(nextState.formState);
   }
 
   redoTestCase() {
-    let nextState = this.testCaseHistoryService.redoConfig();
+    const nextState = this.testCaseHistoryService.redoConfig();
     this.updateEditedTestCase(nextState.formState);
   }
 
-  addToTestCaseHistory(config: any) {
-    this.testCaseHistoryService.addConfig(config);
-  }
-
-  clearTestCaseHistory() {
+  private clearAndInitialiseTestCaseHistory(testCaseWrapper: TestCaseWrapper) {
     this.testCaseHistoryService.clear();
+    this.testCaseHistoryService.addConfig(testCaseWrapper);
   }
 
   private getTestCaseByName(testCaseName: string): TestCaseWrapper {

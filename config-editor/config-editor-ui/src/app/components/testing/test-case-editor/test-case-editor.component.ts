@@ -14,6 +14,7 @@ import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.compone
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '@app/services/app.service';
 import { SchemaService } from '@app/services/schema/schema.service';
+import { areJsonEqual } from '@app/commons/helper-functions';
 
 @Component({
   selector: 're-test-case-editor',
@@ -22,18 +23,17 @@ import { SchemaService } from '@app/services/schema/schema.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestCaseEditorComponent implements OnInit, OnDestroy {
-  public ngUnsubscribe = new Subject();
-  public editedTestCase$: Observable<TestCaseWrapper>;
-  public field: FormlyFieldConfig;
-  public options: any;
+  ngUnsubscribe = new Subject();
+  editedTestCase$: Observable<TestCaseWrapper>;
+  field: FormlyFieldConfig;
+  options: any;
 
-  public testCaseWrapper: TestCaseWrapper;
-  public testCase: any = {};
+  testCaseWrapper: TestCaseWrapper;
+  testCase: any = {};
 
-  public testStoreService: TestStoreService;
+  testStoreService: TestStoreService;
+  form: FormGroup = new FormGroup({});
   private markHistoryChange = false;
-
-  public form: FormGroup = new FormGroup({});
   constructor(
     private appService: AppService,
     private editorService: EditorService,
@@ -49,7 +49,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.editorService.metaDataMap.testing.testCaseEnabled) {
       const subschema = cloneDeep(this.editorService.testSpecificationSchema);
-      let schema = cloneDeep(this.appService.testCaseSchema);
+      const schema = cloneDeep(this.appService.testCaseSchema);
       schema.properties.test_specification = subschema;
       const schemaConverter = new FormlyJsonschema();
       this.editorService.configSchema.formatTitlesInSchema(schema, '');
@@ -60,18 +60,16 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       this.field = schemaConverter.toFieldConfig(schema, this.options);
 
       this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
-        if (testCaseWrapper && !this.editorService.configSchema.areJsonEqual(testCaseWrapper.testCase, this.testCase)) {
+        if (testCaseWrapper && !areJsonEqual(testCaseWrapper.testCase, this.testCase)) {
           this.testCaseWrapper = testCaseWrapper;
           this.testCase = cloneDeep(this.testCaseWrapper.testCase);
           this.cd.detectChanges();
         }
       });
     }
-    this.testStoreService.addToTestCaseHistory(this.getFormTestCaseWrapper());
-    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
       if (this.form.valid && !this.markHistoryChange) {
-        this.testStoreService.addToTestCaseHistory(this.getTestCaseWrapper(cloneDeep(values)));
-        this.testStoreService.updateEditedTestCase(this.getFormTestCaseWrapper());
+        this.testStoreService.updateEditedTestCaseAndHistory(this.getFormTestCaseWrapper());
       }
       this.markHistoryChange = false;
     });
@@ -141,8 +139,8 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     this.editorService.configStore.clipboardService.copy(this.testCase);
   }
 
-  //Note: workaround as rawjson triggers an old form change on undo/redo
   setMarkHistoryChange() {
+    //Note: workaround as rawjson triggers an old form change on undo/redo
     this.markHistoryChange = true;
     this.form.updateValueAndValidity();
   }

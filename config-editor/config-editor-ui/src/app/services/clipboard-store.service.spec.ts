@@ -28,7 +28,7 @@ describe('ClipboardService', () => {
 
   it('should validate admin config', done => {
     spyOn(navigator.clipboard, 'readText').and.returnValue(Promise.resolve('{"name": "test"}'));
-    let spy = spyOn(service, 'updatePastedConfig');
+    const spy = spyOn(service, 'updatePastedConfig');
     service.validateConfig(Type.ADMIN_TYPE).subscribe(() => {
       expect(spy).toHaveBeenCalledOnceWith({ name: 'test' });
       done();

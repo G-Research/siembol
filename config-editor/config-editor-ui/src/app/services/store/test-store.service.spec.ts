@@ -75,9 +75,7 @@ describe('TestStoreService', () => {
       spyOn(configLoader, 'evaluateTestCase').and.returnValue(of(mockEvaluateTestCaseMatch).pipe(delay(1)));
       service.runEditedConfigTestSuite();
       tick(1);
-      expect(service['store'].getValue().editedConfig.testCases[1].testCaseResult).toEqual(
-        mockEvaluateTestCaseMatch
-      );
+      expect(service['store'].getValue().editedConfig.testCases[1].testCaseResult).toEqual(mockEvaluateTestCaseMatch);
     }));
   });
 });

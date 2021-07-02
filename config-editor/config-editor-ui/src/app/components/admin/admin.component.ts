@@ -54,9 +54,8 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.updateAndWrapConfig(config);
       }
     });
-    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
       if (this.form.valid && !this.markHistoryChange) {
-        this.editorService.configStore.addToConfigHistory(this.cleanConfig(cloneDeep(values)));
         this.updateConfigInStore();
       }
       this.markHistoryChange = false;
@@ -123,6 +122,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   private updateConfigInStore() {
-    this.editorService.configStore.updateAdmin(this.cleanConfig(this.form.value));
+    this.editorService.configStore.updateAdminAndHistory(this.cleanConfig(this.form.value));
   }
 }

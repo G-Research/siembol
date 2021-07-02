@@ -21,17 +21,21 @@ export function copyTextToClipboard(text: string): boolean {
 }
 
 export function parseUrl(path: string): UrlInfo {
-  let url = new URL(path, location.origin);
-  let paths = url.pathname.substring(1).split('/');
+  const url = new URL(path, location.origin);
+  const paths = url.pathname.substring(1).split('/');
 
-  let service = paths[0];
-  let mode = paths[1] == 'admin' ? 'admin' : '';
-  let configName = url.searchParams.get('configName');
-  let testCaseName = url.searchParams.get('testCaseName');
+  const service = paths[0];
+  const mode = paths[1] === 'admin' ? 'admin' : '';
+  const configName = url.searchParams.get('configName');
+  const testCaseName = url.searchParams.get('testCaseName');
 
-  return { service: service, mode: mode, configName: configName, testCaseName: testCaseName };
+  return { service, mode, configName, testCaseName };
 }
 
 export function replacer(key, value) {
   return value === null ? undefined : value;
+}
+
+export function areJsonEqual(config1: any, config2: any) {
+  return JSON.stringify(config1) === JSON.stringify(config2);
 }

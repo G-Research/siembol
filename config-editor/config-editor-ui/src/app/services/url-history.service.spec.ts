@@ -6,7 +6,7 @@ import { NavigationEnd, Router } from '@angular/router';
 
 export class MockAuth {
   // eslint-disable-next-line no-unused-vars
-  public isCallbackUrl(s: string) {
+  isCallbackUrl(s: string) {
     return false;
   }
 }
