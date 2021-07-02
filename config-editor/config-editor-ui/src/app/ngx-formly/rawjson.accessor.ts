@@ -2,21 +2,22 @@ import { Directive, forwardRef, ElementRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
-  selector: '[rawJsonAccessor]',
+  selector: '[appRawjsonDirective]',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => RawJsonAccessor),
+      useExisting: forwardRef(() => RawJsonDirective),
       multi: true,
     },
   ],
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()',
   },
 })
-export class RawJsonAccessor implements ControlValueAccessor {
+export class RawJsonDirective implements ControlValueAccessor {
   onChange;
   onTouched;
 

@@ -17,12 +17,6 @@ export class TestStoreService {
     private clipboardService: ClipboardStoreService
   ) {}
 
-  setEditedTestCaseByName(testCaseName: string) {
-    const testCase = this.getTestCaseByName(testCaseName);
-    this.testCaseHistoryService.addConfig(testCase);
-    this.clearAndInitialiseTestCaseHistory(testCase);
-  }
-
   setEditedClonedTestCaseByName(testCaseName: string) {
     const testCase = this.getTestCaseByName(testCaseName);
     testCase.fileHistory = null;
@@ -129,8 +123,7 @@ export class TestStoreService {
           .editedConfigTestCases(editedConfigTestCases)
           .build();
         this.store.next(newState);
-        this.testCaseHistoryService.clear();
-        this.testCaseHistoryService.addConfig(testCaseWrapper);
+        this.clearAndInitialiseTestCaseHistory(testCaseWrapper);
 
         return true;
       }

@@ -32,7 +32,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   config: AdminConfig;
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
-  markHistoryChange = false;
+  private markHistoryChange = false;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
 
   constructor(
@@ -54,9 +54,9 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.updateAndWrapConfig(config);
       }
     });
-    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
-        this.updateConfigInStore();
+        this.editorService.configStore.updateAdminAndHistory(this.cleanConfig(values));
       }
       this.markHistoryChange = false;
     });
@@ -68,7 +68,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.updateConfigInStore();
     this.adminPullRequestPending$.pipe(skip(1), take(1)).subscribe(a => {
       if (!a.pull_request_pending) {
         const dialogRef = this.dialog.open(SubmitDialogComponent, {
@@ -119,9 +118,5 @@ export class AdminComponent implements OnInit, OnDestroy {
     const configToClean = cloneDeep(this.config) as AdminConfig;
     configToClean.configData = cloneDeep(configData);
     return this.editorService.adminSchema.unwrapAdminConfig(configToClean);
-  }
-
-  private updateConfigInStore() {
-    this.editorService.configStore.updateAdminAndHistory(this.cleanConfig(this.form.value));
   }
 }

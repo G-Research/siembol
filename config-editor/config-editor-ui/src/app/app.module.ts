@@ -68,7 +68,7 @@ import { HttpErrorInterceptor } from './http-error-interceptor';
 import { GlobalErrorHandler } from './error-handler';
 import { HelpLinkWrapperComponent } from './ngx-formly/help-link.wrapper';
 import { UrlHistoryService } from './services/url-history.service';
-import { RawJsonAccessor } from './ngx-formly/rawjson.accessor';
+import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 
 export function configServiceFactory(config: AppConfigService) {
@@ -92,7 +92,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [
-    RawJsonAccessor,
+    RawJsonDirective,
     AppComponent,
     HomeComponent,
     PageNotFoundComponent,

@@ -81,11 +81,9 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onSubmitTestCase() {
-    const currentTestCase = this.getFormTestCaseWrapper();
-    this.testStoreService.updateEditedTestCase(currentTestCase);
     const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: {
-        name: currentTestCase.testCase.test_case_name,
+        name: this.testCase.test_case_name,
         type: Type.TESTCASE_TYPE,
         validate: () => this.testStoreService.validateEditedTestCase(),
         submit: () => this.testStoreService.submitEditedTestCase(),
@@ -97,7 +95,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
         this.router.navigate([], {
           relativeTo: this.activeRoute,
           queryParams: {
-            testCaseName: currentTestCase.testCase.test_case_name,
+            testCaseName: this.testCase.test_case_name,
             newTestCase: null,
             cloneTestCase: null,
             pasteTestCase: null,
@@ -109,7 +107,6 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onRunTestCase() {
-    this.testStoreService.updateEditedTestCase(this.getFormTestCaseWrapper());
     this.testStoreService.runEditedTestCase();
   }
 

@@ -16,6 +16,7 @@ export class EditorServiceGuard implements CanActivate {
       return true;
     }
 
-    return this.editorService.createConfigServiceContext(serviceName).map(x => this.editorService.setServiceContext(x));
+    return this.editorService.createConfigServiceContext(serviceName)
+      .map(x => this.editorService.setServiceContext(x));
   }
 }

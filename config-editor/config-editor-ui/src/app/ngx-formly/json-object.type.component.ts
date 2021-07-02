@@ -22,7 +22,7 @@ import { cloneDeep } from 'lodash';
           spellcheck="false"
           [errorStateMatcher]="errorStateMatcher"
           [formControl]="formControl"
-          rawJsonAccessor
+          appRawjsonDirective
         >
         </textarea>
         <ng-container *ngIf="valid; else invalidJson">

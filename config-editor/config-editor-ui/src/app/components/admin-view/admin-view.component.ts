@@ -27,7 +27,10 @@ export class AdminViewComponent implements AfterViewInit, OnDestroy {
   field: FormlyFieldConfig;
   adminConfig$: Observable<AdminConfig>;
 
-  constructor(private formlyJsonschema: FormlyJsonschema, private editorService: EditorService) {
+  constructor(
+    private formlyJsonschema: FormlyJsonschema, 
+    private editorService: EditorService
+  ) {
     this.schema = editorService.adminSchema.schema;
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
@@ -37,7 +40,7 @@ export class AdminViewComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
-      this.configData = config.configData;
+      this.configData = config.configData || {};
     });
   }
 

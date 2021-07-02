@@ -1,8 +1,8 @@
 import { ConfigStoreState } from '@app/model/store-state';
 import { cloneDeep } from 'lodash';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Config, ConfigData, Deployment, FileHistory } from '../../model';
-import { TestCase, TestCaseMap } from '@app/model/test-case';
+import { Config, Deployment, FileHistory } from '../../model';
+import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
 import { AdminConfig } from '@app/model/config-model';
 

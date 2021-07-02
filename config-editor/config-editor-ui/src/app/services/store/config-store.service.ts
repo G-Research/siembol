@@ -249,7 +249,6 @@ export class ConfigStoreService {
   }
 
   reloadAdminConfig(): Observable<any> {
-    this.configHistoryService.clear();
     return this.configLoaderService.getAdminConfig().map((config: AdminConfig) => {
       this.updateAdmin(config);
       this.configHistoryService.clear();
