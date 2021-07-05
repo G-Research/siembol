@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
 
 @Component({
@@ -63,7 +63,7 @@ import { FieldArrayType } from '@ngx-formly/core';
     `,
   ],
 })
-export class TabArrayTypeComponent extends FieldArrayType {
+export class TabArrayTypeComponent extends FieldArrayType implements OnInit {
   selectedTab = 0;
 
   getUnionType(model): string {

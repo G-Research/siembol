@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FieldType } from '@ngx-formly/core';
 
 @Component({
@@ -24,7 +24,7 @@ import { FieldType } from '@ngx-formly/core';
     `,
   ],
 })
-export class TabsetTypeComponent extends FieldType {
+export class TabsetTypeComponent extends FieldType implements OnInit {
   defaultOptions = {
     defaultValue: {},
   };
