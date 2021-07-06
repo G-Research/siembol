@@ -130,7 +130,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   onCopyTestCase() {
-    this.editorService.configStore.clipboardService.copy(this.testCase);
+    this.editorService.configStore.clipboardService.copyFromClipboard(this.testCase);
   }
 
   setMarkHistoryChange() {

@@ -28,7 +28,7 @@ export class ClipboardStoreService {
       });
   }
 
-  copy(str: any) {
+  copyFromClipboard(str: any) {
     navigator.clipboard.writeText(JSON.stringify(str));
   }
 
