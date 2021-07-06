@@ -50,6 +50,13 @@ export class AppConfigService {
     return false;
   }
 
+  isNewConfig(path: string): boolean {
+    if (path.includes('newConfig=true') || path.includes('pasteConfig=true')) {
+      return true;
+    }
+    return false;
+  }
+
   get adminPath(): string {
     return '/admin';
   }

@@ -87,7 +87,7 @@ export class ConfigLoaderService {
       try {
         return x.rules_schema;
       } catch {
-        throw new Error("Call to schema endpoint didn't return the expected schema");
+        throw new Error('Call to schema endpoint didn\'t return the expected schema');
       }
     });
   }
@@ -99,7 +99,7 @@ export class ConfigLoaderService {
         try {
           return x.admin_config_schema;
         } catch {
-          throw new Error("Call to schema endpoint didn't return the expected schema");
+          throw new Error('Call to schema endpoint didn\'t return the expected schema');
         }
       });
   }
@@ -193,8 +193,8 @@ export class ConfigLoaderService {
       .pipe(map(result => this.testCaseFilesToMap(result.files)));
   }
 
-  validateConfig(config: Config): Observable<any> {
-    const json = JSON.stringify(config.configData, null, 2);
+  validateConfig(config: any): Observable<any> {
+    const json = JSON.stringify(config, null, 2);
 
     return this.http.post<any>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate?singleConfig=true`,
@@ -209,8 +209,8 @@ export class ConfigLoaderService {
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate`, json);
   }
 
-  validateAdminConfig(config: AdminConfig): Observable<any> {
-    const json = JSON.stringify(config.configData, null, 2);
+  validateAdminConfig(config: any): Observable<any> {
+    const json = JSON.stringify(config, null, 2);
 
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/validate`, json);
   }
@@ -374,7 +374,7 @@ export class ConfigLoaderService {
         if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.testCaseEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
-        let configAndTestCases = {
+        const configAndTestCases = {
           configs: result.configs_files.map(file => this.getConfigFromFile(file)),
           testCases: {},
         };

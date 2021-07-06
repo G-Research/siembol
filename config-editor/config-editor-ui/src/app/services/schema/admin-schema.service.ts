@@ -2,8 +2,9 @@ import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { JSONSchema7 } from 'json-schema';
 import * as omitEmpty from 'omit-empty';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, ConfigData } from '@app/model/config-model';
 import { SchemaService } from './schema.service';
+import { areJsonEqual } from '@app/commons/helper-functions';
 
 export class AdminSchemaService extends SchemaService {
   private readonly _schema: JSONSchema7;
@@ -20,11 +21,11 @@ export class AdminSchemaService extends SchemaService {
     delete this._schema.properties[ADMIN_VERSION_FIELD_NAME];
   }
 
-  public get schema() {
+  get schema() {
     return this._schema;
   }
 
-  public wrapAdminSchema(obj: any, path: string) {
+  wrapAdminSchema(obj: any, path: string) {
     if (obj.type === 'rawobject') {
       this.rawObjectsPaths.push(path);
     }
@@ -52,7 +53,7 @@ export class AdminSchemaService extends SchemaService {
     }
   }
 
-  public formatAdminConfig(obj: any, path: string, re: RegExp, replace: string) {
+  formatAdminConfig(obj: any, path: string, re: RegExp, replace: string) {
     if (obj === undefined || obj === null || typeof obj !== typeof {}) {
       return;
     }
@@ -75,17 +76,31 @@ export class AdminSchemaService extends SchemaService {
     }
   }
 
-  public wrapAdminConfig(obj: any) {
+  wrapAdminConfig(obj: any) {
     const re = /\./g;
     this.formatAdminConfig(obj, '', re, this.SPECIAL_CHAR_TO_REPLACE_DOT);
   }
 
-  public unwrapAdminConfig(config: AdminConfig): AdminConfig {
-    const re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, 'g');
-    this.formatAdminConfig(config.configData, '', re, '.');
-    config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
-    config.configData = this.produceOrderedJson(config.configData, '/');
-    config.configData = omitEmpty(config.configData);
+  unwrapAdminConfig(config: AdminConfig): AdminConfig {
+    if (config.configData) {
+      config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
+      config.configData = this.unwrapAdminConfigData(config.configData);
+    }
     return config;
+  }
+
+  unwrapAdminConfigData(configData: ConfigData): ConfigData {
+    const config = cloneDeep(configData);
+    const re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, 'g');
+    this.formatAdminConfig(config, '', re, '.');
+    configData = this.produceOrderedJson(config, '/');
+    return omitEmpty(config);
+  }
+
+  areConfigEqual(config1: any, config2: any) {
+    return areJsonEqual(
+      this.unwrapAdminConfig(config1),
+      this.unwrapAdminConfig(config2)
+    );
   }
 }

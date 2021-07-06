@@ -18,6 +18,9 @@ mat-card-content {
 
 .buttons {
     height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .left-panel {
@@ -35,7 +38,6 @@ mat-card-content {
 .left-button {
     margin-right: auto;
     margin-left: 5px;
-    color: orange;
 }
 
 .scrollbar {

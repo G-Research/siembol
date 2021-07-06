@@ -4,11 +4,11 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorService } from '@services/editor.service';
 import { TestCaseWrapper } from '@model/test-case';
-import { TestStoreService } from '../../../services/store/test-store.service';
-import { TestCaseResult } from '../../../model/test-case';
+import { TestStoreService } from '@app/services/store/test-store.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { Type } from '@app/model/config-model';
 
 @Component({
   selector: 're-test-centre',
@@ -85,41 +85,28 @@ export class TestCentreComponent implements OnInit, OnDestroy {
     this.testStoreService.runEditedConfigTestSuite();
   }
 
-  onCancelEditing() {
-    this.router.navigate([], {
-      relativeTo: this.activeRoute,
-      queryParams: { testCaseName: null, newTestCase: null, cloneTestCase: null },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  getTestBadge(testCaseResult: TestCaseResult): string {
-    if (!testCaseResult) {
-      return 'test-default';
-    }
-
-    if (testCaseResult.isRunning) {
-      return 'test-running';
-    }
-
-    return !testCaseResult.evaluationResult
-      ? 'test-skipped'
-      : testCaseResult.evaluationResult.number_failed_assertions > 0
-      ? 'test-fail'
-      : testCaseResult.evaluationResult.number_skipped_assertions > 0
-      ? 'test-skipped'
-      : 'test-success';
-  }
-
   onDeleteTestCase(index: number) {
     this.blockUI.start('deleting test case');
     this.editorService.configStore
-      .deleteTestCase(this.testCases[index].testCase.config_name, this.testCases[index].testCase.test_case_name)
+      .deleteTestCase(
+        this.testCases[index].testCase.config_name,
+        this.testCases[index].testCase.test_case_name
+      )
       .subscribe(() => {
         this.blockUI.stop();
       });
     setTimeout(() => {
       this.blockUI.stop();
     }, this.configService.blockingTimeout);
+  }
+
+  onPasteTestCaseNew() {
+    this.editorService.configStore.clipboardService.validateConfig(Type.TESTCASE_TYPE).subscribe(() => {
+      this.router.navigate([], {
+        relativeTo: this.activeRoute,
+        queryParams: { pasteTestCase: true },
+        queryParamsHandling: 'merge',
+      });
+    });
   }
 }

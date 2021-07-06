@@ -39,7 +39,7 @@
 
 <ng-container *ngIf="uiMetadata.deployment.extras !== undefined">
   <form [formGroup]="form">
-    <formly-form [model]="extrasData" [fields]="fields" [options]="options" [form]="form"
+    <formly-form [model]="extrasData" [fields]="[field]" [options]="options" [form]="form"
       (modelChange)="updateOutput($event)"></formly-form>
   </form>
   <button mat-raised-button color="primary" (click)="onValidate()">VALIDATE</button>

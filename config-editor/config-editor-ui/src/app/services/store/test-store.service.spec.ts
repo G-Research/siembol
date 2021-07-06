@@ -7,10 +7,12 @@ import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap } from 'tes
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
+import { ClipboardStoreService } from '../clipboard-store.service';
 
 describe('TestStoreService', () => {
   let configLoader: ConfigLoaderService;
   let service: TestStoreService;
+  let clipboardService: ClipboardStoreService;
   beforeEach(() => {
     mockStore.editedConfig.testCases = [cloneDeep(mockTestCaseWrapper1), cloneDeep(mockTestCaseWrapper2)];
     const store = new BehaviorSubject(mockStore);
@@ -23,10 +25,15 @@ describe('TestStoreService', () => {
             submitTestCase: () => of(mockTestCaseMap),
           },
         },
+        {
+          provide: ClipboardStoreService,
+          useValue: jasmine.createSpy(),
+        },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
-    service = new TestStoreService('siembol', store, configLoader);
+    clipboardService = TestBed.inject(ClipboardStoreService);
+    service = new TestStoreService('siembol', store, configLoader, clipboardService);
   });
 
   it('should be created', () => {

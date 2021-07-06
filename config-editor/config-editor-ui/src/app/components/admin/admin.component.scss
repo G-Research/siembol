@@ -3,7 +3,17 @@ mat-card {
     max-width: 1000px;
     min-width: 800px;
     margin: 20px auto;
-}
+    mat-card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      h2 {
+        word-break: break-word;
+        font-size: 20pt;
+        flex: 1;
+      }
+    }
+  }
 
 ::ng-deep .show-text .mat-input-element {
     -webkit-text-fill-color: unset !important;

@@ -16,6 +16,11 @@
                             <mat-icon>add</mat-icon>
                         </a>
                     </div>
+                    <div *ngIf="!disableEditingFeatures" class="add-button">
+                        <a mat-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
+                            <mat-icon>content_paste</mat-icon>
+                        </a>
+                    </div>
                 </div>
                 <mat-divider></mat-divider>
                 <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"

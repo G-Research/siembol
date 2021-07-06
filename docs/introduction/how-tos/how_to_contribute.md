@@ -112,11 +112,10 @@ npm install
 
 Always update and commit dependencies in the [package lock file](/config-editor/config-editor-ui/package-lock.json)
 
-> **_note:_** Use the `nocontribute` author to commit the lock file in order not to include this file in the contributor statistics:
+> **_note:_** Please compress the package-lock.json file into one line so it does not affect the contributor statistics. Powershell example:
 
 ```shell
-git add package-lock.json
-git commit -m 'updating package lock file' --author='nocontribute <>'
+Get-Content package-lock.json | ConvertFrom-Json | ConvertTo-Json -compress -Depth 10 | Out-File package-lock2.json -Encoding ascii ; rm package-lock.json ; mv package-lock2.json package-lock.json
 ```
 
 ### Increase the config editor's UI version

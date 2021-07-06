@@ -48,3 +48,14 @@ button {
 mat-expansion-panel {
     width: 99%;
 }
+
+mat-card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h2 {
+      word-break: break-word;
+      font-size: 20pt;
+      flex: 1;
+    }
+  }

@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Config } from '@app/model';
+import { Config, ConfigData } from '@app/model';
 import { CONFIG_TAB, TESTING_TAB, TEST_CASE_TAB } from '@app/model/test-case';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { EditorService } from '@app/services/editor.service';
@@ -27,13 +27,13 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly CONFIG_TAB = CONFIG_TAB;
   readonly NO_TAB = -1;
   ngUnsubscribe = new Subject();
-  configData: any;
-  serviceName: string;
+  configData: ConfigData;
+
   schema: JSONSchema7;
   selectedTab = this.CONFIG_TAB.index;
   previousTab = this.NO_TAB;
   testingType = TestingType.CONFIG_TESTING;
-  fields: FormlyFieldConfig[] = [];
+  field: FormlyFieldConfig;
   editedConfig$: Observable<Config>;
 
   constructor(
@@ -42,12 +42,11 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private activeRoute: ActivatedRoute
   ) {
-    this.serviceName = editorService.serviceName;
     this.schema = editorService.configSchema.schema;
     this.editedConfig$ = editorService.configStore.editedConfig$;
-    this.fields = [
-      this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
-    ];
+    this.field = this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), {
+      map: SchemaService.renameDescription,
+    });
   }
 
   testCaseEnabled: () => boolean = () => false;
@@ -66,17 +65,11 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
-      this.fields = [
-        this.formlyJsonschema.toFieldConfig(cloneDeep(this.schema), { map: SchemaService.renameDescription }),
-      ];
-
+      this.configData = config.configData;
       this.testingEnabled = () =>
         this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
-
       this.testCaseEnabled = () =>
         this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
-
-      this.configData = config.configData;
     });
   }
 
@@ -92,13 +85,27 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
         queryParams: { testCaseName: null },
         queryParamsHandling: 'merge',
       });
-    } else if (this.previousTab === CONFIG_TAB.index) {
-      this.editorComponent.updateConfigInStore();
     }
     this.previousTab = this.selectedTab;
   }
 
   changeRoute() {
-    this.router.navigate([this.serviceName]);
+    this.router.navigate([this.editorService.serviceName]);
+  }
+
+  onClickPaste() {
+    this.editorService.configStore.setEditedPastedConfig();
+  }
+
+  onClickCopy() {
+    this.editorService.configStore.clipboardService.copyFromClipboard(this.configData);
+  }
+
+  onClickUndoConfig() {
+    this.editorService.configStore.undoConfig();
+  }
+
+  onRedoConfig() {
+    this.editorService.configStore.redoConfig();
   }
 }

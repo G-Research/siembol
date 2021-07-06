@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
 
 @Component({
   selector: 'formly-tab-array',
   template: `
     <div>
-      <mat-tab-group animationDuration="0ms" [(selectedIndex)]="selectedIndex">
+      <mat-tab-group animationDuration="0ms" [(selectedIndex)]="selectedTab" (selectedTabChange)="onTabChange()">
         <mat-tab *ngFor="let tab of field.fieldGroup; let i = index" [label]="getUnionType(tab?.model)">
           <span class="align-right">
             <svg
@@ -25,7 +25,7 @@ import { FieldArrayType } from '@ngx-formly/core';
         </mat-tab>
       </mat-tab-group>
       <div class="align-right">
-        <button mat-raised-button color="primary" (click)="add(selectedIndex + 1)">add</button>
+        <button mat-raised-button color="primary" (click)="add(selectedTab + 1)">add</button>
       </div>
     </div>
   `,
@@ -63,8 +63,8 @@ import { FieldArrayType } from '@ngx-formly/core';
     `,
   ],
 })
-export class TabArrayTypeComponent extends FieldArrayType {
-  selectedIndex = 0;
+export class TabArrayTypeComponent extends FieldArrayType implements OnInit {
+  selectedTab = 0;
 
   getUnionType(model): string {
     const keys = Object.keys(model);
@@ -74,7 +74,7 @@ export class TabArrayTypeComponent extends FieldArrayType {
   add(i: number) {
     const modelLength = this.model ? this.model.length : 0;
     super.add(modelLength);
-    this.selectedIndex = i;
+    this.selectedTab = i;
     for (let j = this.model.length - 1; j >= i; j--) {
       this.moveDown(j);
     }
@@ -86,6 +86,14 @@ export class TabArrayTypeComponent extends FieldArrayType {
     }
 
     this.reorder(i, i + 1);
+  }
+
+  ngOnInit() {
+    this.selectedTab = this.field.templateOptions.tabIndex;
+  }
+
+  onTabChange() {
+    this.field.templateOptions.tabIndex = this.selectedTab;
   }
 
   private reorder(oldI: number, newI: number) {

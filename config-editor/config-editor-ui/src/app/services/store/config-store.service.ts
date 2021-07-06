@@ -1,7 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import 'rxjs/add/operator/finally';
-import { AppConfigService } from '../app-config.service';
 import { Config, Deployment, PullRequestInfo } from '../../model';
 import { ConfigStoreState } from '../../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../../model/test-case';
@@ -9,7 +8,9 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, Type } from '@app/model/config-model';
+import { ClipboardStoreService } from '../clipboard-store.service';
+import { ConfigHistoryService } from '../config-history.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -28,6 +29,7 @@ const initialConfigStoreState: ConfigStoreState = {
   searchTerm: undefined,
   sortedConfigs: [],
   testCaseMap: {},
+  pastedConfig: undefined,
 };
 
 const initialPullRequestState: PullRequestInfo = {
@@ -59,16 +61,30 @@ export class ConfigStoreService {
   public readonly pullRequestPending$ = this.pullRequestInfo.asObservable();
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
   public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
+
   /*eslint-enable */
 
   private testStoreService: TestStoreService;
+  private clipboardStoreService: ClipboardStoreService;
+  private configHistoryService: ConfigHistoryService;
 
   get testService(): TestStoreService {
     return this.testStoreService;
   }
 
+  get clipboardService(): ClipboardStoreService {
+    return this.clipboardStoreService;
+  }
+
   constructor(private user: string, private metaDataMap: UiMetadata, private configLoaderService: ConfigLoaderService) {
-    this.testStoreService = new TestStoreService(this.user, this.store, this.configLoaderService);
+    this.clipboardStoreService = new ClipboardStoreService(this.configLoaderService, this.store);
+    this.testStoreService = new TestStoreService(
+      this.user,
+      this.store,
+      this.configLoaderService,
+      this.clipboardStoreService
+    );
+    this.configHistoryService = new ConfigHistoryService();
   }
 
   initialise(configs: Config[], deployment: any, testCaseMap: TestCaseMap) {
@@ -90,9 +106,13 @@ export class ConfigStoreService {
 
   updateAdmin(config: AdminConfig) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).adminConfig(config).build();
-
     this.store.next(newState);
     this.loadAdminPullRequestStatus();
+  }
+
+  updateAdminAndHistory(config: AdminConfig) {
+    this.configHistoryService.addConfig(cloneDeep(config));
+    this.updateAdmin(config);
   }
 
   updateSearchTerm(searchTerm: string) {
@@ -231,6 +251,8 @@ export class ConfigStoreService {
   reloadAdminConfig(): Observable<any> {
     return this.configLoaderService.getAdminConfig().map((config: AdminConfig) => {
       this.updateAdmin(config);
+      this.configHistoryService.clear();
+      this.configHistoryService.addConfig(config);
     });
   }
 
@@ -240,7 +262,7 @@ export class ConfigStoreService {
       throw Error('empty edited config');
     }
 
-    return this.configLoaderService.validateConfig(config);
+    return this.configLoaderService.validateConfig(config.configData);
   }
 
   validateAdminConfig(): Observable<any> {
@@ -249,7 +271,7 @@ export class ConfigStoreService {
       throw Error('empty admin config');
     }
 
-    return this.configLoaderService.validateAdminConfig(config);
+    return this.configLoaderService.validateAdminConfig(config.configData);
   }
 
   submitEditedConfig(): Observable<boolean> {
@@ -274,6 +296,8 @@ export class ConfigStoreService {
           .editedConfigByName(config.name)
           .build();
         this.store.next(newState);
+        this.configHistoryService.clear();
+        this.configHistoryService.addConfig(config);
 
         return true;
       }
@@ -289,6 +313,8 @@ export class ConfigStoreService {
     return this.configLoaderService.submitAdminConfig(adminConfig).map((result: any) => {
       if (result) {
         this.loadAdminPullRequestStatus();
+        this.configHistoryService.clear();
+        this.configHistoryService.addConfig(adminConfig);
         return true;
       }
       return false;
@@ -303,6 +329,7 @@ export class ConfigStoreService {
    * @returns false if config or test case don't exist, else true
    */
   setEditedConfigAndTestCaseByName(configName: string, testCaseName: string): boolean {
+    this.clearConfigHistory();
     const editedConfig = this.store.value.editedConfig;
     const config = editedConfig && configName === editedConfig.name ? editedConfig : this.getConfigByName(configName);
     if (config === undefined) {
@@ -321,6 +348,7 @@ export class ConfigStoreService {
   }
 
   setEditedClonedConfigByName(configName: string) {
+    this.clearConfigHistory();
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
       throw Error('no config with such name');
@@ -342,6 +370,7 @@ export class ConfigStoreService {
   }
 
   setEditedConfigNew() {
+    this.clearConfigHistory();
     const currentState = this.store.getValue();
     const newConfig = {
       author: this.user,
@@ -357,9 +386,68 @@ export class ConfigStoreService {
     this.updateEditedConfigAndTestCase(newConfig, null);
   }
 
+  setNewEditedPastedConfig() {
+    this.clearConfigHistory();
+    const currentState = this.store.getValue();
+    const configData = currentState.pastedConfig;
+    if (!configData) {
+      throw Error('No pasted config available');
+    }
+    const pasted = {
+      author: this.user,
+      configData: Object.assign({}, cloneDeep(configData), {
+        [this.metaDataMap.name]: `new_entry_${currentState.configs.length}`,
+        [this.metaDataMap.version]: 0,
+        [this.metaDataMap.author]: this.user,
+      }),
+      description: 'no description',
+      isNew: true,
+      name: `new_entry_${currentState.configs.length}`,
+      savedInBackend: false,
+      testCases: [],
+      version: 0,
+    };
+    this.updateEditedConfigAndTestCase(pasted, null);
+  }
+
+  setEditedPastedConfig() {
+    this.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
+      const currentState = this.store.getValue();
+      const configData = currentState.pastedConfig;
+      const editedConfig = currentState.editedConfig;
+      const pastedConfig = cloneDeep(editedConfig);
+      pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
+        [this.metaDataMap.name]: editedConfig.name,
+        [this.metaDataMap.version]: editedConfig.version,
+        [this.metaDataMap.author]: this.user,
+      });
+      this.updateEditedConfig(pastedConfig);
+      this.configHistoryService.addConfig(pastedConfig);
+    });
+  }
+
+  setEditedPastedAdminConfig() {
+    this.clipboardService.validateConfig(Type.ADMIN_TYPE).subscribe(() => {
+      const currentState = this.store.getValue();
+      const configData = currentState.pastedConfig;
+      const adminConfig = currentState.adminConfig;
+      const pastedConfig = cloneDeep(adminConfig);
+      pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
+        config_version: adminConfig.version,
+      });
+      this.updateAdmin(pastedConfig);
+      this.configHistoryService.addConfig(pastedConfig);
+    });
+  }
+
   updateEditedConfig(config: Config) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue()).editedConfig(config).build();
     this.store.next(newState);
+  }
+
+  updateEditedConfigAndHistory(config: Config) {
+    this.configHistoryService.addConfig(cloneDeep(config));
+    this.updateEditedConfig(config);
   }
 
   deleteConfig(configName: string): Observable<any> {
@@ -388,6 +476,31 @@ export class ConfigStoreService {
 
       this.store.next(newState);
     });
+  }
+
+  undoConfig() {
+    const nextState = this.configHistoryService.undoConfig();
+    this.updateEditedConfig(nextState.formState);
+  }
+
+  redoConfig() {
+    const nextState = this.configHistoryService.redoConfig();
+    this.updateEditedConfig(nextState.formState);
+  }
+
+  undoAdminConfig() {
+    const nextState = this.configHistoryService.undoConfig();
+    this.updateAdmin(nextState.formState);
+  }
+
+  redoAdminConfig() {
+    const nextState = this.configHistoryService.redoConfig();
+    this.updateAdmin(nextState.formState);
+  }
+
+  clearConfigHistory() {
+    this.configHistoryService.clear();
+    this.testStoreService.testCaseHistoryService.clear();
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

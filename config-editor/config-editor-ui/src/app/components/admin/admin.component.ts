@@ -8,7 +8,7 @@ import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, take, skip } from 'rxjs/operators';
+import { takeUntil, take, debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -21,17 +21,20 @@ import { AppConfigService } from '@app/services/app-config.service';
   templateUrl: './admin.component.html',
 })
 export class AdminComponent implements OnInit, OnDestroy {
-  @Input() fields: FormlyFieldConfig[];
+  @Input() field: FormlyFieldConfig;
+
   @BlockUI() blockUI: NgBlockUI;
   ngUnsubscribe = new Subject();
-  configData: ConfigData = {};
+  configData$: Observable<ConfigData>;
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
   adminConfig$: Observable<AdminConfig>;
   config: AdminConfig;
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
+  private markHistoryChange = false;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
+
   constructor(
     public dialog: MatDialog,
     public snackbar: PopupService,
@@ -42,17 +45,21 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
     this.serviceName = editorService.serviceName;
+    this.configData$ = this.adminConfig$
+    .pipe(takeUntil(this.ngUnsubscribe))
+    .do(x => {
+      this.config = x
+    })
+    .filter(x => !this.editorService.adminSchema.areConfigEqual(x, this.prepareAdminConfig(this.form.value)))    
+    .map(x => this.updateAndWrapConfig(x));
   }
 
   ngOnInit() {
-    this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
-      this.config = config;
-      this.configData = this.editorService.adminSchema.wrapConfig(config.configData);
-      this.editorService.adminSchema.wrapAdminConfig(this.configData);
-      this.options.formState = {
-        mainModel: this.configData,
-        rawObjects: {},
-      };
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
+      if (this.form.valid && !this.markHistoryChange) {
+        this.editorService.configStore.updateAdminAndHistory(this.cleanConfig(values));
+      }
+      this.markHistoryChange = false;
     });
   }
 
@@ -61,21 +68,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  updateConfigInStore() {
-    const configToClean = cloneDeep(this.config) as AdminConfig;
-    configToClean.configData = cloneDeep(this.form.value);
-    configToClean.configData = this.editorService.adminSchema.cleanRawObjects(
-      configToClean.configData,
-      this.options.formState.rawObjects
-    );
-    const configToUpdate = this.editorService.adminSchema.unwrapAdminConfig(configToClean);
-
-    this.editorService.configStore.updateAdmin(configToUpdate);
-  }
-
   onSubmit() {
-    this.updateConfigInStore();
-    this.adminPullRequestPending$.pipe(skip(1), take(1)).subscribe(a => {
+    this.adminPullRequestPending$.pipe(take(1)).subscribe(a => {
       if (!a.pull_request_pending) {
         const dialogRef = this.dialog.open(SubmitDialogComponent, {
           data: {
@@ -105,5 +99,28 @@ export class AdminComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.blockUI.stop();
     }, this.configService.blockingTimeout);
+  }
+
+  setMarkHistoryChange() {
+    //Note: workaround as rawjson triggers an old form change on undo/redo
+    this.markHistoryChange = true;
+    this.form.updateValueAndValidity();
+  }
+
+  private updateAndWrapConfig(config: AdminConfig) {
+    //NOTE: in the form we are using wrapping config to handle optionals, unions
+    const configData = this.editorService.adminSchema.wrapConfig(config.configData);
+    this.editorService.adminSchema.wrapAdminConfig(configData);
+    return configData;
+  }
+
+  private prepareAdminConfig(configData: ConfigData) {
+    const config = cloneDeep(this.config) as AdminConfig;
+    config.configData = cloneDeep(configData);
+    return config;
+  }
+
+  private cleanConfig(configData: any) {
+    return this.editorService.adminSchema.unwrapAdminConfig(this.prepareAdminConfig(configData));
   }
 }

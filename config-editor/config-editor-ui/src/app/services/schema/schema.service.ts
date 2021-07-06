@@ -1,10 +1,9 @@
 import { TitleCasePipe } from '@angular/common';
 import { UiMetadata } from '@model/ui-metadata-map';
-import { cloneDeep, set } from 'lodash';
+import { cloneDeep} from 'lodash';
 import { ConfigData } from '@app/model';
 import { JSONSchema7 } from 'json-schema';
 import { FormlyFieldConfig } from '@ngx-formly/core';
-import { replacer } from '@app/commons/helper-functions';
 
 export class SchemaService {
   titleCasePipe: TitleCasePipe = new TitleCasePipe();
@@ -27,7 +26,7 @@ export class SchemaService {
     return field;
   }
 
-  public wrapConfig(obj: any): any {
+  wrapConfig(obj: any): any {
     const ret = cloneDeep(obj);
     this.wrapOptionalsInArray(ret);
     if (this.unionPath && Object.keys(ret).length !== 0) {
@@ -36,7 +35,7 @@ export class SchemaService {
     return ret;
   }
 
-  public unwrapConfig(obj: any): any {
+  unwrapConfig(obj: any): any {
     let returnObject = cloneDeep(obj);
     if (this.unionPath) {
       returnObject = this.unwrapConfigFromUnion(returnObject, this.unionPath);
@@ -44,17 +43,7 @@ export class SchemaService {
     return this.unwrapOptionalsFromArrays(returnObject);
   }
 
-  public cleanRawObjects(config: any, rawObjects: any): any {
-    for (const element in rawObjects) {
-      if (Object.prototype.hasOwnProperty.call(rawObjects, element)) {
-        const paths = element.split('.');
-        set(config, paths, rawObjects[element]);
-      }
-    }
-    return JSON.parse(JSON.stringify(config, replacer));
-  }
-
-  public formatTitlesInSchema(obj: any, propKey?: string): any {
+  formatTitlesInSchema(obj: any, propKey?: string): any {
     if (obj === undefined || obj === null || typeof obj !== typeof {}) {
       return;
     }
@@ -100,7 +89,7 @@ export class SchemaService {
 
   // function to go through the output json and reorder the properties such that it is consistent with the schema
   protected produceOrderedJson(configData: ConfigData, path: string) {
-    if (this.modelOrder[path]) {
+    if (configData && this.modelOrder[path]) {
       const currentCfg = cloneDeep(configData);
       configData = {};
       for (const key of this.modelOrder[path]) {

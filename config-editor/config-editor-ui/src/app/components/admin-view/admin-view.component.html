@@ -1,5 +1,21 @@
 <div class="container">
     <div class="left-panel" *ngIf="configData">
+        <span class="buttons">
+            <div class="right-button">
+                <button mat-icon-button [disabled]="editorService.configStore.configHistoryService.isHistoryEmpty()" color="primary" title="Undo" (click)="onClickUndoConfig()">
+                    <mat-icon>undo</mat-icon>
+                </button>
+                <button mat-icon-button [disabled]="editorService.configStore.configHistoryService.isFutureEmpty()" color="primary" title="Redo" (click)="onRedoConfig()">
+                    <mat-icon>redo</mat-icon>
+                </button>
+                <button mat-icon-button [disabled]="!adminComponent.form.valid" color="primary" title="Copy Config to Clipboard" (click)="onClickCopy()">
+                    <mat-icon>content_copy</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" title="Paste Config from Clipboard" (click)="onClickPaste()">
+                    <mat-icon>content_paste</mat-icon>
+                </button>
+            </div>
+        </span>
         <mat-divider class="vert-divider" [vertical]="false"></mat-divider>
         <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertAll'" [appearance]="'standard'">
             <re-json-tree [json]="configData" [prevKey]="'$'" [copyOnClick]="false"></re-json-tree>
@@ -8,7 +24,7 @@
     <mat-divider [vertical]="true"></mat-divider>
     <div class="viewport">
         <ng-scrollbar class="scrollbar" [track]="'all'">
-            <re-admin-editor [fields]="fields"></re-admin-editor>
+            <re-admin-editor [field]="field"></re-admin-editor>
         </ng-scrollbar>
     </div>
 </div>

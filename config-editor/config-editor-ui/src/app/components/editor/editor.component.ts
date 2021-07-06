@@ -8,83 +8,96 @@ import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 're-generic-editor',
-    styleUrls: ['./editor.component.scss'],
-    templateUrl: './editor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 're-generic-editor',
+  styleUrls: ['./editor.component.scss'],
+  templateUrl: './editor.component.html',
 })
 export class EditorComponent implements OnInit, OnDestroy {
-    titleFormControl = new FormControl('', [
-        Validators.pattern(NAME_REGEX)
-    ]);
+  @Input() field: FormlyFieldConfig;
+  titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX), Validators.required]);
+  ngUnsubscribe = new Subject();
+  options: FormlyFormOptions = {};
+  form: FormGroup = new FormGroup({});
+  config: Config;
+  configData$: Observable<ConfigData>;
+  editedConfig$: Observable<Config>;
+  configName: string;
 
-    public ngUnsubscribe = new Subject();
-    public configName: string;
-    public configData: ConfigData = {};
-    public options: FormlyFormOptions = {};
-    public form: FormGroup = new FormGroup({});
-    public editedConfig$: Observable<Config>;
-    public config: Config;
+  constructor(
+    public dialog: MatDialog,
+    public snackbar: PopupService,
+    private editorService: EditorService,
+    private router: Router
+  ) {
+    this.editedConfig$ = editorService.configStore.editedConfig$;
+    this.configData$ = this.editedConfig$
+    .pipe(takeUntil(this.ngUnsubscribe))
+    .do(x => {
+      this.config = x;
+      this.configName = this.config.name;
+    })
+    .filter(x => 
+      !this.editorService.configSchema.areConfigEqual(x, this.prepareConfig(this.form.value))
+    )
+    .map(x => this.editorService.configSchema.wrapConfig(x.configData));
+  }
 
-    @Input() fields: FormlyFieldConfig[];
-
-    constructor(public dialog: MatDialog, public snackbar: PopupService,
-        private editorService: EditorService, private router: Router) {
-        this.editedConfig$ = editorService.configStore.editedConfig$;
-    }
-
-    ngOnInit() {
-        this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
-            this.config = config;
-            //NOTE: in the form we are using wrapping config to handle optionals, unions
-            this.configData = this.editorService.configSchema.wrapConfig(config.configData);
-            this.configName = this.config.name;
-            this.options.formState = {
-                mainModel: this.configData,
-            }
-        });
-    }
-
-    ngOnDestroy() {
-        this.ngUnsubscribe.next();
-        this.ngUnsubscribe.complete();
-    }
-
-    updateConfigInStore() {
-        const configToClean = cloneDeep(this.config) as Config;
-        configToClean.configData = cloneDeep(this.form.value);
-        configToClean.name = this.configName;
-        const configToUpdate = this.editorService.configSchema.cleanConfig(configToClean);
-        this.editorService.configStore.updateEditedConfig(configToUpdate);
-    }
-
-    onSubmit() {
+  ngOnInit() {
+    this.titleFormControl.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      if (this.titleFormControl.valid) {
         this.updateConfigInStore();
-        const dialogRef = this.dialog.open(SubmitDialogComponent,
-            {
-                data: {
-                    name: this.configName,
-                    type: Type.CONFIG_TYPE,
-                    validate: () => this.editorService.configStore.validateEditedConfig(),
-                    submit: () => this.editorService.configStore.submitEditedConfig()
-                },
-                disableClose: true
-            });
+      }
+    });
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      if (this.form.valid) {
+        this.updateConfigInStore();
+      }
+    });
+  }
 
-        dialogRef.afterClosed().subscribe(
-            success => {
-                if (success) {
-                    this.router.navigate(
-                        [this.editorService.serviceName, 'edit'],
-                        { queryParams: { configName: this.configName } }
-                    );
-                }
-            }
-        );
-    }
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  onSubmit() {
+    const dialogRef = this.dialog.open(SubmitDialogComponent, {
+      data: {
+        name: this.configName,
+        type: Type.CONFIG_TYPE,
+        validate: () => this.editorService.configStore.validateEditedConfig(),
+        submit: () => this.editorService.configStore.submitEditedConfig(),
+      },
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe(success => {
+      if (success) {
+        this.router.navigate([this.editorService.serviceName, 'edit'], {
+          queryParams: { configName: this.configName },
+        });
+      }
+    });
+  }
+
+  private prepareConfig(configData: ConfigData): Config {
+    const config = cloneDeep(this.config) as Config;
+    config.configData = cloneDeep(configData);
+    config.name = this.configName;
+    return config;
+  }
+
+  private cleanConfig(configData: ConfigData): Config {
+    return this.editorService.configSchema.cleanConfig(this.prepareConfig(configData));
+  }
+
+  private updateConfigInStore() {
+    this.editorService.configStore.updateEditedConfigAndHistory(this.cleanConfig(this.form.value));
+  }
 }

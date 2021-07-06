@@ -1,36 +1,20 @@
 
 <block-ui>
     <mat-card>
-        <mat-card-title *ngIf="(editingTestCase$ | async) === false">
-            <h2>Test Suite</h2>
-            <div class="button-group-end">
-                <button mat-icon-button color="primary" title="Add New Test Case" (click)="onAddTestCase()">
-                    <mat-icon>add</mat-icon>
-                </button>
-                <button mat-raised-button color="accent" title="Run Test Suite" (click)="onRunTestSuite()"
-                    [disabled]="testCases?.length === 0">Run Test Suite</button>
-            </div>
-        </mat-card-title>
-        <mat-card-title *ngIf="(editingTestCase$ | async)">
-            <button mat-raised-button title="Test Suite" (click)="onCancelEditing()"><</button>
-            <h2>{{ testCase.testCase.test_case_name }} v{{ testCase.testCase.version }}</h2>
-            <div class="test-status-badge" *ngIf="testCase?.testCaseResult"
-                [ngClass]="getTestBadge(testCase.testCaseResult)"
-                [popper]="testCaseResult"
-                [popperTrigger]="'hover'"
-                [popperPlacement]="'left-start'"
-                [popperHideOnScroll]="true"
-                [popperDisableStyle]="true">
-                <popper-content #testCaseResult>
-                    <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>
-                </popper-content> 
-                {{testCase.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon 
-                    class="test-icon">done</mat-icon>{{testCase.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
-                    class="test-icon">clear</mat-icon>
-                {{testCase.testCaseResult?.evaluationResult?.number_skipped_assertions}}<strong>?</strong>
-            </div>
-        </mat-card-title>
-        <div *ngIf="(editingTestCase$ | async) === false; else editTestCaseTemplate">
+        <div *ngIf="(editingTestCase$ | async) === false">
+            <mat-card-title >
+                <h2>Test Suite</h2>
+                <div class="button-group-end">
+                    <button mat-icon-button color="primary" title="Add New Test Case" (click)="onAddTestCase()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" title="Paste Test Case" (click)="onPasteTestCaseNew()">
+                        <mat-icon>content_paste</mat-icon>
+                    </button>
+                    <button mat-raised-button color="accent" title="Run Test Suite" (click)="onRunTestSuite()"
+                        [disabled]="testCases?.length === 0">Run Test Suite</button>
+                </div>
+            </mat-card-title>
             <div class="box" *ngFor="let testCase of testCases; index as i">
                 <div class="inline">
                     <div class="column-fixed" 
@@ -68,34 +52,13 @@
                                 </a>
                             </span>
                             <span>
-                                <div *ngIf="testCase?.testCaseResult?.evaluationResult" 
-                                    class="test-status-badge"
-                                    [ngClass]="getTestBadge(testCase.testCaseResult)"
-                                    [popper]="testCaseResult"
-                                    [popperTrigger]="'hover'"
-                                    [popperPlacement]="'left-start'"
-                                    [popperHideOnScroll]="true"
-                                    [popperDisableStyle]="true"
-                                    [popperAppendTo]="'body'"
-                                    [popperModifiers]="{preventOverflow: {boundariesElement: 'viewport'}}"
-                                    >
-                                    <popper-content #testCaseResult>
-                                        <re-test-results [testResult]="testCase.testCaseResult"></re-test-results>
-                                    </popper-content>
-                                    {{testCase?.testCaseResult?.evaluationResult?.number_matched_assertions}}<mat-icon
-                                        class="test-icon">done</mat-icon>
-                                    {{testCase?.testCaseResult?.evaluationResult?.number_failed_assertions}}<mat-icon
-                                        class="test-icon">clear</mat-icon>
-                                    {{testCase?.testCaseResult?.evaluationResult?.number_skipped_assertions}}<strong>?</strong>
-                                </div>
+                                <re-test-status-badge [testCaseWrapper]="testCase"></re-test-status-badge>
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <ng-template #editTestCaseTemplate>
-            <re-test-case-editor></re-test-case-editor>
-        </ng-template>
+        <re-test-case-editor *ngIf="(editingTestCase$ | async)"></re-test-case-editor>
     </mat-card>
 </block-ui>

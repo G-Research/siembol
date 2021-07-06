@@ -15,6 +15,7 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { Type } from '@app/model/config-model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,6 +60,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   filterUpgradable$: Observable<boolean>;
   deploymentHistory$: Observable<FileHistory[]>;
   deploymentHistory;
+  disableEditingFeatures: boolean;
 
   private ngUnsubscribe = new Subject();
   private filteredConfigs: Config[];
@@ -71,6 +73,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private router: Router,
     private configService: AppConfigService
   ) {
+    this.disableEditingFeatures = editorService.metaDataMap.disableEditingFeatures;
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.allConfigs$;
 
@@ -227,5 +230,11 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.blockUI.stop();
     }, this.configService.blockingTimeout);
+  }
+
+  onClickPaste() {
+    this.editorService.configStore.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
+      this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
+    });
   }
 }

@@ -68,6 +68,8 @@ import { HttpErrorInterceptor } from './http-error-interceptor';
 import { GlobalErrorHandler } from './error-handler';
 import { HelpLinkWrapperComponent } from './ngx-formly/help-link.wrapper';
 import { UrlHistoryService } from './services/url-history.service';
+import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
+import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -90,6 +92,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [
+    RawJsonDirective,
     AppComponent,
     HomeComponent,
     PageNotFoundComponent,
@@ -127,6 +130,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ConfigTestingComponent,
     JsonObjectTypeComponent,
     TestResultsComponent,
+    TestStatusBadgeComponent,
     TestCaseHelpComponent,
     JsonTreeComponent,
     UnionTypeComponent,

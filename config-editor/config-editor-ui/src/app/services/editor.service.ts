@@ -31,46 +31,45 @@ export class EditorService {
   private serviceContext: ServiceContext = new ServiceContext();
   private serviceNameSubject = new BehaviorSubject<string>(null);
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  public serviceName$ = this.serviceNameSubject.asObservable();
+  serviceName$ = this.serviceNameSubject.asObservable();
 
-  public get metaDataMap() {
+  get metaDataMap() {
     return this.serviceContext.metaDataMap;
   }
-  public get configLoader() {
+  get configLoader() {
     return this.serviceContext.configLoader;
   }
-  public get configStore() {
+  get configStore() {
     return this.serviceContext.configStore;
   }
-  public get serviceName() {
+  get serviceName() {
     return this.serviceContext.serviceName;
   }
-  public get configSchema() {
+  get configSchema() {
     return this.serviceContext.configSchema;
   }
-  public get adminSchema() {
+  get adminSchema() {
     return this.serviceContext.adminSchema;
   }
-  public get adminMode() {
+  get adminMode() {
     return this.serviceContext.adminMode;
   }
-  public get repositoryLinks$() {
+  get repositoryLinks$() {
     return this.serviceContext.repositoryLinks$;
   }
-
-  public get testSpecificationSchema() {
+  get testSpecificationSchema() {
     return this.serviceContext.testSpecificationSchema;
   }
 
   constructor(private http: HttpClient, private config: AppConfigService, private appService: AppService) {}
 
-  public setServiceContext(serviceContext: ServiceContext): boolean {
+  setServiceContext(serviceContext: ServiceContext): boolean {
     this.serviceContext = serviceContext;
     this.serviceNameSubject.next(this.serviceName);
     return true;
   }
 
-  public createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
+  createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
     const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
     const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
       ? configLoader.getTestSpecificationSchema()
@@ -108,7 +107,7 @@ export class EditorService {
       });
   }
 
-  public createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
+  createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
     const [metaDataMap, user, configLoader, configStore, repositoryLinks$] = this.initialiseContext(serviceName);
 
     return configLoader

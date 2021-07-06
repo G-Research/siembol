@@ -18,7 +18,8 @@
             "perConfigTestEnabled": true,
             "deploymentTestEnabled": true,
             "testCaseEnabled": false
-        }
+        },
+        "disableEditingFeatures": true
     },
     "alert": {
         "deployment": {

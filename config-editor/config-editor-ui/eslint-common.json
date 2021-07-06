@@ -4,7 +4,7 @@
     "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
     "plugin:@angular-eslint/template/process-inline-templates",
     "eslint:recommended",
-    "plugin:prettier/recommended"
+    "prettier"
   ],
   "rules": {
     "@typescript-eslint/explicit-member-accessibility": ["error", { "accessibility": "no-public" }],
