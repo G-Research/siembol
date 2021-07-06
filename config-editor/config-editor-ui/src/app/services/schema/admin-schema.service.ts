@@ -82,22 +82,25 @@ export class AdminSchemaService extends SchemaService {
   }
 
   unwrapAdminConfig(config: AdminConfig): AdminConfig {
-    config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
-    config.configData = this.unwrapAdminConfigData(config.configData);
+    if (config.configData) {
+      config.configData[ADMIN_VERSION_FIELD_NAME] = config.version;
+      config.configData = this.unwrapAdminConfigData(config.configData);
+    }
     return config;
   }
 
   unwrapAdminConfigData(configData: ConfigData): ConfigData {
+    const config = cloneDeep(configData);
     const re = new RegExp(this.SPECIAL_CHAR_TO_REPLACE_DOT, 'g');
-    this.formatAdminConfig(configData, '', re, '.');
-    configData = this.produceOrderedJson(configData, '/');
-    return omitEmpty(configData);
+    this.formatAdminConfig(config, '', re, '.');
+    configData = this.produceOrderedJson(config, '/');
+    return omitEmpty(config);
   }
 
   areConfigEqual(config1: any, config2: any) {
     return areJsonEqual(
-      this.unwrapAdminConfigData(cloneDeep(config1)),
-      this.unwrapAdminConfigData(cloneDeep(config2))
+      this.unwrapAdminConfig(config1),
+      this.unwrapAdminConfig(config2)
     );
   }
 }

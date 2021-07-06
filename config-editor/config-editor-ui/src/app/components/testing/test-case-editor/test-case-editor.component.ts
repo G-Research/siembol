@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
 import { Type } from '@app/model/config-model';
@@ -14,7 +14,6 @@ import { SubmitDialogComponent } from '../../submit-dialog/submit-dialog.compone
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from '@app/services/app.service';
 import { SchemaService } from '@app/services/schema/schema.service';
-import { areJsonEqual } from '@app/commons/helper-functions';
 
 @Component({
   selector: 're-test-case-editor',
@@ -38,7 +37,6 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     private appService: AppService,
     private editorService: EditorService,
     private dialog: MatDialog,
-    private cd: ChangeDetectorRef,
     private router: Router,
     private activeRoute: ActivatedRoute
   ) {
@@ -60,10 +58,9 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       this.field = schemaConverter.toFieldConfig(schema, this.options);
 
       this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
-        if (testCaseWrapper && !areJsonEqual(testCaseWrapper.testCase, this.testCase)) {
+        if (testCaseWrapper && !this.editorService.configSchema.areTestCasesEqual(testCaseWrapper.testCase, this.testCase)) {
           this.testCaseWrapper = testCaseWrapper;
           this.testCase = cloneDeep(this.testCaseWrapper.testCase);
-          this.cd.detectChanges();
         }
       });
     }

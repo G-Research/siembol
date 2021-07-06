@@ -48,12 +48,6 @@ export class ConfigSchemaService extends SchemaService {
     return depSchema;
   }
 
-  cleanConfigData(configData: ConfigData): ConfigData {
-    let cfg = this.produceOrderedJson(configData, '/');
-    cfg = omitEmpty(cfg);
-    return cfg;
-  }
-
   cleanConfig(config: Config): Config {
     config.configData = this.unwrapConfig(config.configData);
     if (config.isNew) {
@@ -71,7 +65,17 @@ export class ConfigSchemaService extends SchemaService {
     return config;
   }
 
-  areConfigEqual(config1: any, config2: any) {
-    return areJsonEqual(this.cleanConfigData(config1), this.cleanConfigData(config2));
+  areConfigEqual(config1: any, config2: any): boolean {
+    return areJsonEqual(this.cleanConfig(config1), this.cleanConfig(config2));
+  }
+
+  areTestCasesEqual(config1, config2): boolean {
+    return areJsonEqual(omitEmpty(config1), omitEmpty(config2));
+  }
+
+  private cleanConfigData(configData: ConfigData): ConfigData {
+    let cfg = this.produceOrderedJson(configData, '/');
+    cfg = omitEmpty(cfg);
+    return cfg;
   }
 }

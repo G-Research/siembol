@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Params } from '@angular/router';
 
 import { EditorService } from '../services/editor.service';
 import { Observable } from 'rxjs';
@@ -14,35 +14,35 @@ export class ConfigEditGuard implements CanActivate {
     if (!this.editorService.configStore || !this.editorService.configStore.editedConfig$) {
       return false;
     }
+    if (!this.setConfig(route.queryParams)) {
+      return false;
+    }
+    return this.editorService.configStore.editedConfig$.map(x => x !== null);
+  }
 
-    const configName = route.queryParams.configName;
-    const testCaseName = route.queryParams.testCaseName;
-    const newConfig = route.queryParams.newConfig;
-    const cloneConfig = route.queryParams.cloneConfig;
-    const pasteConfig = route.queryParams.pasteConfig;
-    const newTestCase = route.queryParams.newTestCase;
-    const cloneTestCase = route.queryParams.cloneTestCase;
-    const pasteTestCase = route.queryParams.pasteTestCase;
+  private setTestCase(params: Params) {
+    if (params.cloneTestCase) {
+      this.editorService.configStore.testService.setEditedClonedTestCaseByName(params.cloneTestCase);
+    } else if (params.newTestCase) {
+      this.editorService.configStore.testService.setEditedTestCaseNew();
+    } else if (params.pasteTestCase) {
+      this.editorService.configStore.testService.setEditedPastedTestCaseNew();
+    }
+  }
 
-    if (cloneConfig) {
-      this.editorService.configStore.setEditedClonedConfigByName(cloneConfig);
-    } else if (newConfig) {
+  private setConfig(params: Params): boolean {
+    if (params.cloneConfig) {
+      this.editorService.configStore.setEditedClonedConfigByName(params.cloneConfig);
+    } else if (params.newConfig) {
       this.editorService.configStore.setEditedConfigNew();
-    } else if (pasteConfig) {
+    } else if (params.pasteConfig) {
       this.editorService.configStore.setNewEditedPastedConfig();
-    } else if (configName) {
-      if (!this.editorService.configStore.setEditedConfigAndTestCaseByName(configName, testCaseName)) {
+    } else if (params.configName) {
+      if (!this.editorService.configStore.setEditedConfigAndTestCaseByName(params.configName, params.testCaseName)) {
         return false;
       }
-      if (cloneTestCase) {
-        this.editorService.configStore.testService.setEditedClonedTestCaseByName(cloneTestCase);
-      } else if (newTestCase) {
-        this.editorService.configStore.testService.setEditedTestCaseNew();
-      } else if (pasteTestCase) {
-        this.editorService.configStore.testService.setEditedPastedTestCaseNew();
-      }
+      this.setTestCase(params);
     }
-
-    return this.editorService.configStore.editedConfig$.map(x => x !== null);
+    return true;
   }
 }

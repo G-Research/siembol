@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -20,32 +20,38 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 })
 export class EditorComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
-  titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX)]);
-
+  titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX), Validators.required]);
   ngUnsubscribe = new Subject();
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
-  editedConfig$: Observable<Config>;
   config: Config;
-  configData: ConfigData;
+  configData$: Observable<ConfigData>;
+  editedConfig$: Observable<Config>;
+  configName: string;
 
   constructor(
     public dialog: MatDialog,
     public snackbar: PopupService,
     private editorService: EditorService,
-    private router: Router,
-    private cd: ChangeDetectorRef
+    private router: Router
   ) {
     this.editedConfig$ = editorService.configStore.editedConfig$;
+    this.configData$ = this.editedConfig$
+    .pipe(takeUntil(this.ngUnsubscribe))
+    .do(x => {
+      this.config = x;
+      this.configName = this.config.name;
+    })
+    .filter(x => 
+      !this.editorService.configSchema.areConfigEqual(x, this.prepareConfig(this.form.value))
+    )
+    .map(x => this.editorService.configSchema.wrapConfig(x.configData));
   }
 
   ngOnInit() {
-    this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
-      if (
-        !this.configData ||
-        (config !== null && !this.editorService.configSchema.areConfigEqual(config.configData, this.configData))
-      ) {
-        this.updateAndWrapConfig(config);
+    this.titleFormControl.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      if (this.titleFormControl.valid) {
+        this.updateConfigInStore();
       }
     });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
@@ -63,7 +69,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   onSubmit() {
     const dialogRef = this.dialog.open(SubmitDialogComponent, {
       data: {
-        name: this.config.name,
+        name: this.configName,
         type: Type.CONFIG_TYPE,
         validate: () => this.editorService.configStore.validateEditedConfig(),
         submit: () => this.editorService.configStore.submitEditedConfig(),
@@ -74,23 +80,21 @@ export class EditorComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(success => {
       if (success) {
         this.router.navigate([this.editorService.serviceName, 'edit'], {
-          queryParams: { configName: this.config.name },
+          queryParams: { configName: this.configName },
         });
       }
     });
   }
 
-  private updateAndWrapConfig(config: Config) {
-    this.config = config;
-    this.configData = this.editorService.configSchema.wrapConfig(config.configData);
-    this.cd.markForCheck();
+  private prepareConfig(configData: ConfigData): Config {
+    const config = cloneDeep(this.config) as Config;
+    config.configData = cloneDeep(configData);
+    config.name = this.configName;
+    return config;
   }
 
   private cleanConfig(configData: ConfigData): Config {
-    const configToClean = cloneDeep(this.config) as Config;
-    configToClean.configData = cloneDeep(configData);
-    configToClean.name = this.config.name;
-    return this.editorService.configSchema.cleanConfig(configToClean);
+    return this.editorService.configSchema.cleanConfig(this.prepareConfig(configData));
   }
 
   private updateConfigInStore() {

@@ -38,12 +38,12 @@ export class ClipboardStoreService {
   }
 
   private validateType(type: Type, json: any): Observable<any> {
-    if (type === Type.CONFIG_TYPE) {
-      return this.configLoader.validateConfig(json);
-    } else if (type === Type.ADMIN_TYPE) {
-      return this.configLoader.validateAdminConfig(json);
-    } 
-      return this.configLoader.validateTestCase(json);
+    switch (type) {
+      case Type.CONFIG_TYPE: return this.configLoader.validateConfig(json);
+      case Type.ADMIN_TYPE: return this.configLoader.validateAdminConfig(json);
+      default: return this.configLoader.validateTestCase(json);
+    }
+    
     
   }
 

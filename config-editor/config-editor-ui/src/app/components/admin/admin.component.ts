@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
@@ -8,7 +8,7 @@ import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, take, skip, debounceTime } from 'rxjs/operators';
+import { takeUntil, take, debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -25,7 +25,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   @BlockUI() blockUI: NgBlockUI;
   ngUnsubscribe = new Subject();
-  configData: ConfigData;
+  configData$: Observable<ConfigData>;
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
   adminConfig$: Observable<AdminConfig>;
@@ -40,20 +40,21 @@ export class AdminComponent implements OnInit, OnDestroy {
     public snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private configService: AppConfigService,
-    private cd: ChangeDetectorRef
+    private configService: AppConfigService
   ) {
     this.adminConfig$ = editorService.configStore.adminConfig$;
     this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
     this.serviceName = editorService.serviceName;
+    this.configData$ = this.adminConfig$
+    .pipe(takeUntil(this.ngUnsubscribe))
+    .do(x => {
+      this.config = x
+    })
+    .filter(x => !this.editorService.adminSchema.areConfigEqual(x, this.prepareAdminConfig(this.form.value)))    
+    .map(x => this.updateAndWrapConfig(x));
   }
 
   ngOnInit() {
-    this.adminConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(config => {
-      if (config !== null && !this.editorService.adminSchema.areConfigEqual(config.configData, this.configData)) {
-        this.updateAndWrapConfig(config);
-      }
-    });
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(values => {
       if (this.form.valid && !this.markHistoryChange) {
         this.editorService.configStore.updateAdminAndHistory(this.cleanConfig(values));
@@ -68,7 +69,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.adminPullRequestPending$.pipe(skip(1), take(1)).subscribe(a => {
+    this.adminPullRequestPending$.pipe(take(1)).subscribe(a => {
       if (!a.pull_request_pending) {
         const dialogRef = this.dialog.open(SubmitDialogComponent, {
           data: {
@@ -108,15 +109,18 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   private updateAndWrapConfig(config: AdminConfig) {
     //NOTE: in the form we are using wrapping config to handle optionals, unions
-    this.config = config;
-    this.configData = this.editorService.adminSchema.wrapConfig(config.configData);
-    this.editorService.adminSchema.wrapAdminConfig(this.configData);
-    this.cd.markForCheck();
+    const configData = this.editorService.adminSchema.wrapConfig(config.configData);
+    this.editorService.adminSchema.wrapAdminConfig(configData);
+    return configData;
+  }
+
+  private prepareAdminConfig(configData: ConfigData) {
+    const config = cloneDeep(this.config) as AdminConfig;
+    config.configData = cloneDeep(configData);
+    return config;
   }
 
   private cleanConfig(configData: any) {
-    const configToClean = cloneDeep(this.config) as AdminConfig;
-    configToClean.configData = cloneDeep(configData);
-    return this.editorService.adminSchema.unwrapAdminConfig(configToClean);
+    return this.editorService.adminSchema.unwrapAdminConfig(this.prepareAdminConfig(configData));
   }
 }

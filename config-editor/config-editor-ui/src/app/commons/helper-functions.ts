@@ -1,4 +1,5 @@
 import { UrlInfo } from '@app/model/config-model';
+import { isEqual } from 'lodash';
 
 export function copyTextToClipboard(text: string): boolean {
   const textArea = document.createElement('textarea');
@@ -37,5 +38,5 @@ export function replacer(key, value) {
 }
 
 export function areJsonEqual(config1: any, config2: any) {
-  return JSON.stringify(config1) === JSON.stringify(config2);
+  return isEqual(config1, config2);
 }

@@ -341,7 +341,6 @@ export class ConfigStoreService {
         return false;
       }
       this.updateEditedConfigAndTestCase(config, testCase);
-      this.testService.testCaseHistoryService.addConfig(testCase);
     } else {
       this.updateEditedConfigAndTestCase(config, null);
     }
