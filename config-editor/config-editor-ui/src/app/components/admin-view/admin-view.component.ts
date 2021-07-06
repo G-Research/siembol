@@ -54,7 +54,7 @@ export class AdminViewComponent implements AfterViewInit, OnDestroy {
   }
 
   onClickCopy() {
-    this.editorService.configStore.clipboardService.copy(this.configData);
+    this.editorService.configStore.clipboardService.copyFromClipboard(this.configData);
   }
 
   onClickUndoConfig() {

@@ -98,7 +98,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onClickCopy() {
-    this.editorService.configStore.clipboardService.copy(this.configData);
+    this.editorService.configStore.clipboardService.copyFromClipboard(this.configData);
   }
 
   onClickUndoConfig() {
