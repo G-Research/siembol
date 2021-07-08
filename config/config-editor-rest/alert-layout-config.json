@@ -207,15 +207,15 @@
                     },
                     "description": "Matchers of the rule",
                     "minItems": 1
-                },
-                "$..rules..tags.items": {
-                    "widget": {
-                        "formlyConfig": {
-                            "wrappers": [
-                                "panel"
-                            ]
-                        }
-                    }
+                }
+            }
+        },
+        "$..rules..tags.items": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "panel"
+                    ]
                 }
             }
         }

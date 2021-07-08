@@ -100,4 +100,5 @@ export class EditorComponent implements OnInit, OnDestroy {
   private updateConfigInStore() {
     this.editorService.configStore.updateEditedConfigAndHistory(this.cleanConfig(this.form.value));
   }
-}
+;
+    }

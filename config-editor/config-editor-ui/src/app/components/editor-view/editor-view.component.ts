@@ -82,7 +82,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.previousTab === TEST_CASE_TAB.index) {
       this.router.navigate([], {
         relativeTo: this.activeRoute,
-        queryParams: { testCaseName: null },
+        queryParams: { testCaseName: null, newTestCase: null, pasteTestCase: null },
         queryParamsHandling: 'merge',
       });
     }

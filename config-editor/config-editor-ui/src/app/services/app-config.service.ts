@@ -51,7 +51,12 @@ export class AppConfigService {
   }
 
   isNewConfig(path: string): boolean {
-    if (path.includes('newConfig=true') || path.includes('pasteConfig=true')) {
+    if (
+      path.includes('newConfig=true') ||
+      path.includes('pasteConfig=true') ||
+      path.includes('newTestCase=true') ||
+      path.includes('pasteTestCase=true')
+    ) {
       return true;
     }
     return false;

@@ -1,6 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { UiMetadata } from '@model/ui-metadata-map';
-import { cloneDeep} from 'lodash';
+import { cloneDeep } from 'lodash';
 import { ConfigData } from '@app/model';
 import { JSONSchema7 } from 'json-schema';
 import { FormlyFieldConfig } from '@ngx-formly/core';
@@ -211,7 +211,7 @@ export class SchemaService {
     for (const part of path) {
       sub = sub[part];
     }
-    for (let i = 0; i < sub.length; i++) {
+    for (let i = 0; sub && i < sub.length; i++) {
       const keys = Object.keys(sub[i]);
       const temp = sub[i][keys[0]];
       sub[i][keys[0]] = undefined;

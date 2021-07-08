@@ -58,8 +58,11 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       this.field = schemaConverter.toFieldConfig(schema, this.options);
 
       this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
-        if (testCaseWrapper && !this.editorService.configSchema.areTestCasesEqual(testCaseWrapper.testCase, this.testCase)) {
-          this.testCaseWrapper = testCaseWrapper;
+        this.testCaseWrapper = testCaseWrapper;
+        if (
+          testCaseWrapper &&
+          !this.editorService.configSchema.areTestCasesEqual(testCaseWrapper.testCase, this.testCase)
+        ) {
           this.testCase = cloneDeep(this.testCaseWrapper.testCase);
         }
       });

@@ -49,6 +49,7 @@ export class ConfigSchemaService extends SchemaService {
   }
 
   cleanConfig(config: Config): Config {
+    config = cloneDeep(config);
     config.configData = this.unwrapConfig(config.configData);
     if (config.isNew) {
       config.configData[this.uiMetadata.name] = config.name;
@@ -65,8 +66,8 @@ export class ConfigSchemaService extends SchemaService {
     return config;
   }
 
-  areConfigEqual(config1: any, config2: any): boolean {
-    return areJsonEqual(this.cleanConfig(config1), this.cleanConfig(config2));
+  areConfigEqual(configStore: any, configBeCleaned: any): boolean {
+    return areJsonEqual(configStore, this.cleanConfig(configBeCleaned));
   }
 
   areTestCasesEqual(config1, config2): boolean {

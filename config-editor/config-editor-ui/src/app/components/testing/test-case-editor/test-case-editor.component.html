@@ -15,35 +15,35 @@
             <mat-icon>content_paste</mat-icon>
         </button>
     </div>
-    <re-test-status-badge [testCaseWrapper]="testCaseWrapper"></re-test-status-badge>
+    <re-test-status-badge [testCaseWrapper]="(editedTestCase$ | async)"></re-test-status-badge>
 </mat-card-title>
 <div class="console">
     <span class="title">
         <h4>
             <mat-icon class="left-icon">computer</mat-icon>Test Output
         </h4>
-        <h4 *ngIf="testCaseWrapper?.testCaseResult?.testResult?.test_result_raw_output" class="output-help">Click the
+        <h4 *ngIf="(editedTestCase$ | async)?.testCaseResult?.testResult?.test_result_raw_output" class="output-help">Click the
             JSON key to copy the absolute JSON path to clipboard</h4>
     </span>
-    <div class="json-tree" *ngIf="testCaseWrapper?.testCaseResult?.testResult?.test_result_raw_output">
-        <re-json-tree [json]="testCaseWrapper.testCaseResult.testResult.test_result_raw_output || {}" [prevKey]="'$'">
+    <div class="json-tree" *ngIf="(editedTestCase$ | async)?.testCaseResult?.testResult?.test_result_raw_output">
+        <re-json-tree [json]="(editedTestCase$ | async).testCaseResult.testResult.test_result_raw_output || {}" [prevKey]="'$'">
         </re-json-tree>
     </div>
     <mat-expansion-panel
-        [expanded]="testCaseWrapper?.testCaseResult?.testResult?.message || testCaseWrapper?.testCaseResult?.testResult?.exception || testCaseWrapper?.testCaseResult?.testResult?.test_result_output">
+        [expanded]="(editedTestCase$ | async)?.testCaseResult?.testResult?.message || (editedTestCase$ | async)?.testCaseResult?.testResult?.exception || (editedTestCase$ | async)?.testCaseResult?.testResult?.test_result_output">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 Output Messages
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <div *ngIf="testCaseWrapper?.testCaseResult?.testResult?.message">
-            <pre>{{ testCaseWrapper.testCaseResult.testResult.message }}</pre>
+        <div *ngIf="(editedTestCase$ | async)?.testCaseResult?.testResult?.message">
+            <pre>{{ (editedTestCase$ | async).testCaseResult.testResult.message }}</pre>
         </div>
-        <div *ngIf="testCaseWrapper?.testCaseResult?.testResult?.exception">
-            <pre>{{ testCaseWrapper.testCaseResult.testResult.exception }}</pre>
+        <div *ngIf="(editedTestCase$ | async)?.testCaseResult?.testResult?.exception">
+            <pre>{{ (editedTestCase$ | async).testCaseResult.testResult.exception }}</pre>
         </div>
-        <div *ngIf="testCaseWrapper?.testCaseResult?.testResult?.test_result_output">
-            <pre>{{ testCaseWrapper.testCaseResult.testResult.test_result_output }}</pre>
+        <div *ngIf="(editedTestCase$ | async)?.testCaseResult?.testResult?.test_result_output">
+            <pre>{{ (editedTestCase$ | async).testCaseResult.testResult.test_result_output }}</pre>
         </div>
     </mat-expansion-panel>
 </div>
