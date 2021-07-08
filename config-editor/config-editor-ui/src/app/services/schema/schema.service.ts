@@ -211,11 +211,13 @@ export class SchemaService {
     for (const part of path) {
       sub = sub[part];
     }
-    for (let i = 0; sub && i < sub.length; i++) {
-      const keys = Object.keys(sub[i]);
-      const temp = sub[i][keys[0]];
-      sub[i][keys[0]] = undefined;
-      sub[i] = { ...temp };
+    if (sub) {
+      for (let i = 0; i < sub.length; i++) {
+        const keys = Object.keys(sub[i]);
+        const temp = sub[i][keys[0]];
+        sub[i][keys[0]] = undefined;
+        sub[i] = { ...temp };
+      }
     }
     return obj;
   }

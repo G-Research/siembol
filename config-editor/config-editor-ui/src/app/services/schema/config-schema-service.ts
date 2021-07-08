@@ -66,10 +66,6 @@ export class ConfigSchemaService extends SchemaService {
     return config;
   }
 
-  areConfigEqual(configStore: any, configBeCleaned: any): boolean {
-    return areJsonEqual(configStore, this.cleanConfig(configBeCleaned));
-  }
-
   areTestCasesEqual(config1, config2): boolean {
     return areJsonEqual(omitEmpty(config1), omitEmpty(config2));
   }
