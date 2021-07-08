@@ -11,6 +11,7 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
+import { areJsonEqual } from '@app/commons/helper-functions';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +44,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.configName = this.config.name;
     })
     .filter(x => 
-      !this.editorService.configSchema.areConfigEqual(x, this.prepareConfig(this.form.value))
+      !areJsonEqual(x, this.cleanConfig(this.form.value))
     )
     .map(x => this.editorService.configSchema.wrapConfig(x.configData));
   }

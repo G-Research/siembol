@@ -17,7 +17,7 @@
     "$..routing_parser": {
       "widget": {
         "formlyConfig": {
-          "hideExpression": "formState.mainModel.parsing_app_settings.parsing_app_type !== 'router_parsing'"
+          "hideExpression": "field.parent.parent.model.parsing_app_settings.parsing_app_type !== 'router_parsing'"
         }
       }
     },
@@ -47,7 +47,7 @@
     "$..single_parser": {
       "widget": {
         "formlyConfig": {
-          "hideExpression": "formState.mainModel.parsing_app_settings.parsing_app_type !== 'single_parser'"
+          "hideExpression": "field.parent.parent.model.parsing_app_settings.parsing_app_type !== 'single_parser'"
         }
       }
     },

@@ -30,7 +30,11 @@
     </form>
   </mat-card-content>
   <mat-card-actions align="end">
-    <button class="submit-button" mat-raised-button color="accent" type="submit" [disabled]="!form.valid || titleFormControl.hasError('required') || titleFormControl.hasError('pattern')"
+    <button 
+      class="submit-button" 
+      mat-raised-button color="accent" 
+      type="submit" 
+      [disabled]="!form.valid || titleFormControl.hasError('pattern') || (titleFormControl.hasError('required') && (editedConfig$ | async).isNew)"
       (click)="onSubmit()">
       Submit
     </button>

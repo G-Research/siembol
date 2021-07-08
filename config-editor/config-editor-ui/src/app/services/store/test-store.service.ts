@@ -56,7 +56,7 @@ export class TestStoreService {
       testCaseResult: null,
       testCase,
     };
-    this.clearAndInitialiseTestCaseHistory(testCaseWrapper);
+    this.testCaseHistoryService.clear();
     this.updateEditedTestCase(testCaseWrapper);
   }
 
