@@ -1,23 +1,24 @@
 # Custom vars
 # -------------------------
 
-current_version:  1.0.0
+current_version:  1.1.0
 name: Siembol
 
 # Main Logo
 # -------------------------
 
-logo_regular: "media/logo/siembol_Logo-small.png"
-logo_small_devices: "media/logo/siembol_Logo-small.png"
+logo_regular: "/media/logo/siembol_Logo-small.png"
+logo_small_devices: "/media/logo/siembol_Logo-small.png"
 
 
 # Main Navigation Links
 # -------------------------
-
 navbar_links:
 
   - title: "Features"
-    url: "#features"
+    url: "/#features"
+  - title: "News"
+    url: "/news"
   - title: "GitHub"
     url: "https://github.com/G-Research/siembol"
 
@@ -78,35 +79,35 @@ work_thumbs:
  - title: "Maxime Corporis Set"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-01.jpg"
+   image: "/media/img/work-01.jpg"
  - title: "Veritatis Vel Recusandae"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-02.jpg"
+   image: "/media/img/work-02.jpg"
  - title: "Consectetur Adipisicing"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-03.jpg"
+   image: "/media/img/work-03.jpg"
  - title: "Asperiores Soluta"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-04.jpg"
+   image: "/media/img/work-04.jpg"
  - title: "Officiis Aspernatur"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-05.jpg"   
+   image: "/media/img/work-05.jpg"   
  - title: "Soluta Asperiores"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-06.jpg"
+   image: "/media/img/work-06.jpg"
  - title: "Adipisicing Consectetur"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-07.jpg"
+   image: "/media/img/work-07.jpg"
  - title: "Maxime Corporis Set"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "media/img/work-08.jpg"
+   image: "/media/img/work-08.jpg"
 
 # Contact
 # -------------------------
