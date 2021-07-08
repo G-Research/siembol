@@ -32,7 +32,7 @@
     "@angular/router": "^11.2.9",
     "@ngx-formly/core": "^6.0.0-next.1",
     "@ngx-formly/material": "^6.0.0-next.1",
-    "@types/json-schema": "^7.0.7",
+    "@types/json-schema": "^7.0.8",
     "json-schema": "^0.3.0",
     "lodash": "^4.17.21",
     "material-design-icons": "^3.0.1",
