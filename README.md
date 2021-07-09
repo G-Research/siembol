@@ -1,9 +1,9 @@
 ![Siembol](logo.svg)
 
-Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources which allows security teams to respond to attacks before they become incidents.
+Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, which allows security teams to respond to attacks before they become incidents.
 
 - [Introduction](/docs/introduction/introduction.md)
-    - [How to try siembol](/docs/introduction/how-tos/how_to_try_siembol.md)
+    - [How to try Siembol](/docs/introduction/how-tos/how_to_try_siembol.md)
     - [How to contribute](/docs/introduction/how-tos/how_to_contribute.md)
 - [Siembol UI](/docs/siembol_ui/siembol_ui.md)
     - [Adding a new configuration](/docs/siembol_ui/how-tos/how_to_add_new_config_in_siembol_ui.md)
@@ -11,14 +11,14 @@ Siembol provides a scalable, advanced security analytics framework based on open
     - [Deploying configurations](/docs/siembol_ui/how-tos/how_to_deploy_configurations_in_siembol_ui.md)
     - [Testing configurations](/docs/siembol_ui/how-tos/how_to_test_config_in_siembol_ui.md)
     - [Testing deployments](/docs/siembol_ui/how-tos/how_to_test_deployment_in_siembol_ui.md)  
-    - [Adding links to the home page](/docs/siembol_ui/how-tos/how_to_add_links_to_siembol_ui_home_page.md)
+    - [Adding links to the homepage](/docs/siembol_ui/how-tos/how_to_add_links_to_siembol_ui_home_page.md)
     - [Setting up OAUTH2 OIDC](/docs/siembol_ui/how-tos/how_to_setup_oauth2_oidc_in_siembol_ui.md)
     - [Modifying the layout](/docs/siembol_ui/how-tos/how_to_modify_ui_layout.md)
 - Siembol services    
     - [Setting up a service in the config editor rest](/docs/services/how-tos/how_to_set_up_service_in_config_editor_rest.md)
     - [Alerting service](/docs/services/siembol_alerting_services.md)
     - [Parsing service](/docs/services/siembol_parsing_services.md)
-        - [How to set-up NetFlow v9 parsing](/docs/services/how-tos/how_to_setup_netflow_v9_parsing.md)
+        - [How to setup NetFlow v9 parsing](/docs/services/how-tos/how_to_setup_netflow_v9_parsing.md)
     - [Enrichment service](/docs/services/siembol_enrichment_service.md)
         - [Setting up an enrichment table](/docs/services/how-tos/how_to_set_up_enrichment_table.md)
     - [Response service](/docs/services/siembol_response_service.md)
