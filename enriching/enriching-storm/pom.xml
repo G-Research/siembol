@@ -81,12 +81,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.adrianwalker</groupId>
-            <artifactId>multiline-string</artifactId>
-            <version>${multiline_string_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
             <version>${zookeeper_version}</version>

@@ -43,12 +43,6 @@
             <version>1.1.9-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.adrianwalker</groupId>
-            <artifactId>multiline-string</artifactId>
-            <version>${multiline_string_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit_version}</version>

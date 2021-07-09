@@ -160,12 +160,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.adrianwalker</groupId>
-            <artifactId>multiline-string</artifactId>
-            <version>${multiline_string_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <version>1.7.2</version>
@@ -217,6 +211,24 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven_compiler_version}</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Xlint:-processing</arg>
+                    </compilerArgs>
+                    <source>${java_version}</source>
+                    <target>${java_version}</target>
+                    <showWarnings>true</showWarnings>
+                    <annotationProcessors>
+                        <annotationProcessor>org.adrianwalker.multilinestring.MultilineProcessor</annotationProcessor>
+                    </annotationProcessors>
+                </configuration>
             </plugin>
         </plugins>
     </build>
