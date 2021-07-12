@@ -1,0 +1,34 @@
+# Chart for siembol
+apiVersion: v2
+description: Siembol is an open-source, real-time Security Information & Event Management tool based on big data technologies, providing a scalable, advanced security analytics framework
+name: siembol
+type: application
+version: 0.1.2
+keywords:
+- kafka
+- zookeeper
+- storm
+- hdfs
+- security
+- metron
+home: https://github.com/G-Research/charts
+sources:
+- https://github.com/G-Research/siembol
+- https://github.com/G-Research/charts/src/siembol
+- https://github.com/G-Research/charts/siembol
+maintainers:
+- name: stackedsax
+- name: of13tch
+- name: jgiannuzzi
+- name: yasram1
+
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+ 
+service:
+  type: ClusterIP
+  port: 80

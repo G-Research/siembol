@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "siembol.manager.appname.fullname" $ }}
+  name: {{ include "siembol.manager.appname.fullname" $ }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ include "siembol.manager.appname.fullname" $ }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "siembol.manager.appname.fullname" $ }}
+      name: {{ include "siembol.manager.appname.fullname" $ }}
+    spec:
+      serviceAccountName: {{ include "siembol.manager.serviceaccount.fullname" $ }}
+      containers:
+      - image: {{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}
+        workingDir: {{ .Values.manager.mountPath }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.manager.imagePullPolicy | quote }}
+        name: {{ include "siembol.manager.appname.fullname" $ }}
+        ports:
+          - containerPort: 8082
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"
+        securityContext:
+          runAsUser: 101
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 8082
+        #     scheme: HTTP
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 30
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 8082
+        #     scheme: HTTP
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        volumeMounts:
+        - name: {{ include "siembol.manager.appname.fullname" $ }}
+          mountPath: {{ .Values.manager.mountPath }}/application.properties
+          subPath: application.properties
+          readOnly: true
+        - name: {{ include "siembol.manager.appname.fullname" $ }}
+          mountPath: {{ .Values.manager.mountPath }}/storm-submit.yaml
+          subPath: storm-submit.yaml
+          readOnly: true
+      volumes:
+      - name: {{ include "siembol.manager.appname.fullname" $ }}
+        configMap:
+          name: {{ include "siembol.manager.appname.fullname" $ }}
+      terminationGracePeriodSeconds: 300

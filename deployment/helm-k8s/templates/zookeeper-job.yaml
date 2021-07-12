@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-zookeeper-nodes
+        image: bitnami/zookeeper:3.7.0-debian-10-r0
+        imagePullPolicy: Always
+        command:
+          - /bin/bash
+          - -o
+          - pipefail
+          - -euc
+          - >
+            server="zookeeper-0";
+            zkCli.sh -server ${server} get /siembol >/dev/null -w || zkCli.sh -server ${server} create /siembol >/dev/null;
+            zkCli.sh -server ${server} get /siembol/alerting >/dev/null || zkCli.sh -server ${server} create /siembol/alerting >/dev/null;
+            zkCli.sh -server ${server} set /siembol/alerting '{"rules_version":1,"tags":[{"tag_name":"detection_source","tag_value":"siembol_alerts"}],"rules":[{"rule_name":"test_rule","rule_version":1,"rule_author":"dummy","rule_protection":{"max_per_hour":100,"max_per_day":10000},"rule_description":"test rule - is_alert is equal to true","source_type":"secret","matchers":[{"matcher_type":"REGEX_MATCH","is_negated":false,"field":"is_alert","data":"(?i)true"}]}]}' >/dev/null;
+            zkCli.sh -server ${server} get /siembol/synchronise >/dev/null || zkCli.sh -server ${server} create /siembol/synchronise >/dev/null;
+            zkCli.sh -server ${server} set /siembol/synchronise '{}' >/dev/null;
+            zkCli.sh -server ${server} get /siembol/cache >/dev/null || zkCli.sh -server ${server} create /siembol/cache >/dev/null;
+            zkCli.sh -server ${server} set /siembol/cache '{}' >/dev/null;
+      restartPolicy: Never
+  backoffLimit: 4

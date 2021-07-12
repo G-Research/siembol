@@ -1,0 +1,6 @@
+{
+    "environment": "demo",
+    "serviceRoot": "https://rest.siembol.local/",
+    "uiBootstrapPath": "./ui-bootstrap.json",
+    "authType": "disabled"
+}
