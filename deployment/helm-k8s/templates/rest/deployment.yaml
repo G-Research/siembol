@@ -74,7 +74,7 @@ spec:
           readOnly: true        
         {{ end -}}
         - name: rules-dir
-          mountPath: /rules
+          mountPath: /tmp/siembol-config
         - name: config-dir
           mountPath: /config
       restartPolicy: Always
