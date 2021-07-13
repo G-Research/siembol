@@ -64,34 +64,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
-Create a fully qualified alerting deploy topology name and fullname.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-
-{{- define "siembol.alerting.deploy.topology.name" -}}
-{{- printf "%s-%s" (include "siembol.name" .) .Values.alerting.deploy.topology.name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{- define "siembol.alerting.deploy.topology.fullname" -}}
-{{- $name := default .Chart.Name .Values.alerting.deploy.topology.name -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create a fully qualified alerting deploy rules name and fullname.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-
-{{- define "siembol.alerting.deploy.rules.name" -}}
-{{- printf "%s-%s" (include "siembol.name" .) .Values.alerting.deploy.rules.name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{- define "siembol.alerting.deploy.rules.fullname" -}}
-{{- $name := default .Chart.Name .Values.alerting.deploy.rules.name -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
 Common labels
 */}}
 {{- define "siembol.labels" -}}
