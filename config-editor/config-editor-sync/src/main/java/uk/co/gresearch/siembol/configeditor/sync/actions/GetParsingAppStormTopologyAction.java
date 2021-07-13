@@ -72,12 +72,13 @@ public class GetParsingAppStormTopologyAction implements SynchronisationAction {
                 //THe reason is not to change attributes for storm topologies that are not related to the config change
                 currentAdminConfig.setOverriddenApplications(null);
                 currentAdminConfig.setConfigVersion(null);
-                for (OverriddenApplicationAttributesDto overriddenApplication: adminConfig.getOverriddenApplications()) {
-                    if (overriddenApplication.getApplicationName().equals(application.getParsingApplicationName())) {
-                        currentAdminConfig.setStormAttributes(
-                                overriddenApplication.getStormAttributes());
-                        currentAdminConfig.setKafkaBatchWriterAttributes(
-                                overriddenApplication.getKafkaBatchWriterAttributes());
+                if (adminConfig.getOverriddenApplications() != null) {
+                    for (OverriddenApplicationAttributesDto overriddenApp : adminConfig.getOverriddenApplications()) {
+                        if (overriddenApp.getApplicationName().equals(application.getParsingApplicationName())) {
+                            currentAdminConfig.setStormAttributes(overriddenApp.getStormAttributes());
+                            currentAdminConfig.setKafkaBatchWriterAttributes(
+                                    overriddenApp.getKafkaBatchWriterAttributes());
+                        }
                     }
                 }
 

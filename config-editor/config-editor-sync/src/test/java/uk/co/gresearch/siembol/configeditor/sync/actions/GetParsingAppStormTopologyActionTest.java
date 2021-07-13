@@ -84,6 +84,40 @@ public class GetParsingAppStormTopologyActionTest {
 
     /**
      *{
+     *   "config_version": 1,
+     *   "client.id.prefix": "siembol.writer",
+     *   "group.id.prefix": "siembol.reader",
+     *   "zookeeper.attributes": {
+     *     "zk.url": "global_url",
+     *     "zk.path": "global_path",
+     *     "zk.base.sleep.ms": 1000,
+     *     "zk.max.retries": 3
+     *   },
+     *   "kafka.batch.writer.attributes": {
+     *     "batch.size": 50,
+     *     "producer.properties": {
+     *       "bootstrap.servers": "global_servers",
+     *       "security.protocol": "SASL_PLAINTEXT"
+     *     }
+     *   },
+     *   "storm.attributes": {
+     *     "bootstrap.servers": "dummy",
+     *     "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
+     *     "kafka.spout.properties": {
+     *       "session.timeout.ms": 300000,
+     *       "security.protocol": "SASL_PLAINTEXT"
+     *     },
+     *     "storm.config": {
+     *       "num.workers": 1
+     *     }
+     *   }
+     * }
+     **/
+    @Multiline
+    public static String adminConfigNoOverriddenApplications;
+
+    /**
+     *{
      *   "parsing_applications_version": 0,
      *   "parsing_applications": [
      *     {
@@ -196,6 +230,56 @@ public class GetParsingAppStormTopologyActionTest {
         Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
 
         Assert.assertEquals(Integer.valueOf(2),
+                adminConfigSecret.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
+        Assert.assertEquals(Integer.valueOf(1),
+                adminConfigPublic.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
+    }
+
+    @Test
+    public void getStormTopologyNoOverriddenAppsOk() throws IOException {
+
+        context.setAdminConfig(adminConfigNoOverriddenApplications);
+        when(serviceHelper.isInitAdminConfig(eq(adminConfigNoOverriddenApplications))).thenReturn(false);
+        when(serviceHelper.isInitRelease(eq(release))).thenReturn(false);
+
+        ConfigEditorResult result = getStormTopologyAction.execute(context);
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getServiceContext());
+        Assert.assertTrue(result.getAttributes().getServiceContext().getStormTopologies().isPresent());
+        Assert.assertEquals(2, result.getAttributes().getServiceContext().getStormTopologies().get().size());
+
+        verify(serviceHelper, times(2)).getStormTopologyImage();
+        verify(serviceHelper, times(2)).getName();
+
+        StormTopologyDto topologySecret = result.getAttributes().getServiceContext().getStormTopologies().get().get(0);
+        StormTopologyDto topologyPublic = result.getAttributes().getServiceContext().getStormTopologies().get().get(1);
+        Assert.assertEquals(serviceName, topologySecret.getServiceName());
+        Assert.assertEquals("parsing-secret", topologySecret.getTopologyName());
+        Assert.assertEquals("parsing-public", topologyPublic.getTopologyName());
+        Assert.assertEquals(topologyImage, topologySecret.getImage());
+        Assert.assertEquals(topologyImage, topologyPublic.getImage());
+        Assert.assertNotNull(topologySecret.getTopologyId());
+        Assert.assertNotNull(topologyPublic.getTopologyId());
+        Assert.assertEquals(2, topologySecret.getAttributes().size());
+        Assert.assertEquals(2, topologyPublic.getAttributes().size());
+
+        String adminConfigSecretStr = new String(Base64.getDecoder().decode(topologySecret.getAttributes().get(0)));
+        StormParsingApplicationAttributesDto adminConfigSecret = ADMIN_CONFIG_READER.readValue(adminConfigSecretStr);
+
+        String adminConfigPublicStr = new String(Base64.getDecoder().decode(topologyPublic.getAttributes().get(0)));
+        StormParsingApplicationAttributesDto adminConfigPublic = ADMIN_CONFIG_READER.readValue(adminConfigPublicStr);
+
+        Assert.assertFalse(adminConfigSecretStr.contains("overridden.applications"));
+        Assert.assertFalse(adminConfigSecretStr.contains("config_version"));
+        Assert.assertFalse(adminConfigPublicStr.contains("overridden.applications"));
+        Assert.assertFalse(adminConfigPublicStr.contains("config_version"));
+
+        Assert.assertEquals(50, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
+        Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
+        Assert.assertEquals(50, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
+        Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
+
+        Assert.assertEquals(Integer.valueOf(1),
                 adminConfigSecret.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
         Assert.assertEquals(Integer.valueOf(1),
                 adminConfigPublic.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
