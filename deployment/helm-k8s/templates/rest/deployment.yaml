@@ -61,7 +61,7 @@ spec:
         - name: JAVA_OPTS
           value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
         {{ end }}
-        - name: GIT_PSWD
+        - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
               name: {{ include "siembol.rest.fullname" $ }}-secrets
