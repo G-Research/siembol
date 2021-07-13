@@ -55,6 +55,8 @@ spec:
         - configMapRef:
             name: {{ .Values.rest.configmap.name }}
         env:
+        - name: XDG_CONFIG_HOME
+          value: /config/jgit/.config
         {{ if .Values.tls.enabled -}}
         - name: JAVA_OPTS
           value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
@@ -77,6 +79,8 @@ spec:
           readOnly: true
         - name: rules-dir
           mountPath: /rules
+        - name: config-dir
+          mountPath: /config
       restartPolicy: Always
       volumes:
       {{ if .Values.tls.enabled -}}
@@ -91,5 +95,7 @@ spec:
           - key: application.properties
             path: application.properties
       - name: rules-dir
+        emptyDir: {}
+      - name: config-dir
         emptyDir: {}
       terminationGracePeriodSeconds: 300
