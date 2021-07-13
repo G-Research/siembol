@@ -81,7 +81,7 @@ storm:
 rest:
   image: 
     repository: "gresearchdev/siembol-config-editor-rest"
-    tag: "1.1.9-SNAPSHOT"
+    tag: "latest"
     pullPolicy: Always
 
   appName: "config-editor-rest"

@@ -24,7 +24,7 @@ spec:
       containers:
       - image: {{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}
         workingDir: {{ .Values.manager.mountPath }}
-        imagePullPolicy: {{ default "IfNotPresent" .Values.manager.imagePullPolicy | quote }}
+        imagePullPolicy: {{ .Values.manager.image.pullPolicy }}
         name: {{ include "siembol.manager.appname.fullname" $ }}
         ports:
           - containerPort: 8082

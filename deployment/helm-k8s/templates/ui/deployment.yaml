@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
-        imagePullPolicy: {{ default "IfNotPresent" .Values.ui.imagePullPolicy | quote }}
+        imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
         name: {{ include "siembol.ui.fullname" $ }}
         securityContext:
           runAsUser: 101
