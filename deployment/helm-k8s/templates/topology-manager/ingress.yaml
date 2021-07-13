@@ -23,5 +23,5 @@ spec:
           service:
             name: {{ include "siembol.manager.appname.fullname" $ }}
             port: 
-              number: 8082
+              number: {{ .Values.manager.service.port }}
 {{- end -}}

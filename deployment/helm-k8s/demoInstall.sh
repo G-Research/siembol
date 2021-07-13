@@ -4,8 +4,8 @@ CONFIG_MAP_NAME_GIT="github-details"
 GIT_SECRET_NAME="siembol-config-editor-rest-secrets"
 NAMESPACE="siembol"
 
-echo "************** First Iteration Install Script **************"
-echo "************************************************************"
+echo "************** Install Script For Demo **************"
+echo "*****************************************************"
 read -p 'Github username: ' GIT_USERNAME
 read -p 'Github URL: ' GIT_URL
 read -p 'Github repo name: ' GIT_REPO_NAME

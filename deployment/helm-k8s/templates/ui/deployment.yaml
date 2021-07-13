@@ -28,25 +28,25 @@ spec:
         securityContext:
           runAsUser: 101
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.ui.containerPort }}
         readinessProbe:
           httpGet:
             path: /index.html
-            port: 8080
+            port: {{ .Values.ui.service.port }}
             scheme: HTTP
           initialDelaySeconds: 15
           periodSeconds: 30
         livenessProbe:
           httpGet:
             path: /index.html
-            port: 8080
+            port: {{ .Values.ui.service.port }}
             scheme: HTTP
           initialDelaySeconds: 300
           periodSeconds: 30
         resources:
          limits:
           cpu: 1
-          memory: 100Mi
+          memory: "256Mi"
          requests:
           cpu: 0.1
-          memory: 100Mi
+          memory: "128Mi"
