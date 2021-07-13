@@ -37,31 +37,18 @@ spec:
             cpu: "1000m"
         securityContext:
           runAsUser: 101
-        # readinessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 8082
-        #     scheme: HTTP
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 30
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 8082
-        #     scheme: HTTP
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        volumeMounts:
-        - name: {{ include "siembol.manager.appname.fullname" $ }}
-          mountPath: {{ .Values.manager.mountPath }}/application.properties
-          subPath: application.properties
-          readOnly: true
-        - name: {{ include "siembol.manager.appname.fullname" $ }}
-          mountPath: {{ .Values.manager.mountPath }}/storm-submit.yaml
-          subPath: storm-submit.yaml
-          readOnly: true
-      volumes:
-      - name: {{ include "siembol.manager.appname.fullname" $ }}
-        configMap:
-          name: {{ include "siembol.manager.appname.fullname" $ }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
       terminationGracePeriodSeconds: 300

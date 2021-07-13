@@ -50,14 +50,3 @@ spec:
          requests:
           cpu: 0.1
           memory: 100Mi
-        volumeMounts:
-        - name: ui-config
-          mountPath: "/usr/share/nginx/html/config/ui-config.json"
-          subPath: "ui-config.json"
-          readOnly: true
-      volumes:
-      - name: ui-config
-        projected:
-          sources:
-          - configMap:
-              name: "ui-config"

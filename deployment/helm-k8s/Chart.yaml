@@ -16,11 +16,6 @@ sources:
 - https://github.com/G-Research/siembol
 - https://github.com/G-Research/charts/src/siembol
 - https://github.com/G-Research/charts/siembol
-maintainers:
-- name: stackedsax
-- name: of13tch
-- name: jgiannuzzi
-- name: yasram1
 
 
 replicaCount: 1

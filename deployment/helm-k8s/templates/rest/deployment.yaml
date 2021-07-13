@@ -73,10 +73,6 @@ spec:
           subPath: cacerts
           readOnly: true        
         {{ end -}}
-        - name: {{ include "siembol.rest.fullname" $ }}
-          mountPath: {{ .Values.rest.mountPath }}/application.properties
-          subPath: application.properties
-          readOnly: true
         - name: rules-dir
           mountPath: /rules
         - name: config-dir
@@ -88,12 +84,6 @@ spec:
         secret:
           secretName: cacerts
       {{- end }}
-      - name: {{ include "siembol.rest.fullname" $ }}
-        configMap:
-          name: {{ include "siembol.rest.fullname" $ }}
-          items:
-          - key: application.properties
-            path: application.properties
       - name: rules-dir
         emptyDir: {}
       - name: config-dir
