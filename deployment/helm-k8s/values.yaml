@@ -27,7 +27,7 @@ zookeeper:
   image:
     registry: docker.io
     repository: bitnami/zookeeper
-    tag: 3.4.12-debian-9-r1
+    tag: 3.7.0-debian-10-r0
     pullPolicy: Always
   init:
     name: init-zookeeper-nodes
@@ -86,6 +86,7 @@ rest:
 
   appName: "config-editor-rest"
   containerPort: 8081
+  
   mountPath: "/opt/config-editor-rest"
 
   configmap:
@@ -126,6 +127,7 @@ ui:
 
 manager:
   appName: "storm-topology-manager"
+  serviceAccount: "storm-topology-manager"
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
     tag: "latest"

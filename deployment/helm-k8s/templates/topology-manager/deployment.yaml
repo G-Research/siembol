@@ -20,6 +20,7 @@ spec:
         app: {{ include "siembol.manager.appname.fullname" $ }}
       name: {{ include "siembol.manager.appname.fullname" $ }}
     spec:
+      serviceAccountName: {{ include "siembol.manager.serviceaccount.fullname" $ }}
       containers:
       - image: {{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}
         workingDir: {{ .Values.manager.mountPath }}
