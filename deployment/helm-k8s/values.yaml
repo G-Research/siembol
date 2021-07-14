@@ -1,0 +1,135 @@
+# -----------------------------------------------------------------------------
+# General seimbol parameters
+# -----------------------------------------------------------------------------
+
+namespace: "siembol"
+environment: "dev"
+
+# Enable TLS via certmanager
+tls:
+  enabled: true
+
+
+# -----------------------------------------------------------------------------
+# ZooKeeper parameters
+# -----------------------------------------------------------------------------
+
+zookeeper:
+  ## If `zookeeper.enabled: false`, the `servers` value must be set.
+  ## `storm.zookeeper.servers` and `kafka.externalZookeeper.servers`
+  ## should be updated to match this value.
+  ## If `zookeeper.enabled: true`, this chart will spin up ZooKeeper 
+  ## service with the default name: "{{ .Release.Name }}-zookeeper".
+  ## The Storm and Kafka sub-charts will use this same service by 
+  ## using the default values below.
+  enabled: true 
+  # servers: "ext-zk-zookeeper"
+  image:
+    registry: docker.io
+    repository: bitnami/zookeeper
+    tag: 3.7.0-debian-10-r0
+    pullPolicy: Always
+
+
+# -----------------------------------------------------------------------------
+# Kafka parameters
+# -----------------------------------------------------------------------------
+
+kafka:
+  persistence:
+    enabled: false
+  # disable Kafka's ZooKeeper and use a templatized value to use Siembol's zk
+  zookeeper:
+    enabled: false
+  externalZookeeper:
+    # This value will be evaluated in the context of the Kafka sub-chart
+    servers: ["{{ .Release.Name }}-zookeeper"]
+
+# -----------------------------------------------------------------------------
+# Storm parameters
+# -----------------------------------------------------------------------------
+
+storm:
+  # disable Storm's ZooKeeper and use a templatized value to use Siembol's zk
+  zookeeper:
+    enabled: false 
+    # This value will be evaluated in the context of the Storm sub-chart
+    servers: ["{{ .Release.Name }}-zookeeper"]
+  service:
+    ui:
+      name: storm-ui
+      port: 8080
+  ingress:
+    enabled: true
+    hostname: storm.local
+
+
+# -----------------------------------------------------------------------------
+# config-editor-rest parameters
+# -----------------------------------------------------------------------------
+
+rest:
+  image: 
+    repository: "gresearchdev/siembol-config-editor-rest"
+    tag: "latest"
+    pullPolicy: Always
+
+  appName: "config-editor-rest"
+  containerPort: 8081
+  
+  mountPath: "/opt/config-editor-rest"
+
+  configmap:
+    name: "github-details"
+
+  service:
+    port: 8081
+  ingress:
+    enabled: true
+    hostname: rest.siembol.local
+
+# -----------------------------------------------------------------------------
+# config-editor-ui parameters
+# -----------------------------------------------------------------------------
+
+ui:
+  image: 
+    repository: "gresearchdev/siembol-config-editor-ui"
+    tag: "latest"
+    pullPolicy: Always
+
+  appName: config-editor-ui
+  containerPort: 8080
+
+  service:
+    port: 8080
+    intport: 80
+
+  # Run with an ingress
+  ingress:
+    enabled: true
+    hostname: siembol.local
+
+
+# -----------------------------------------------------------------------------
+# storm-topology-manager parameters
+# -----------------------------------------------------------------------------
+
+manager:
+  appName: "storm-topology-manager"
+  serviceAccount: "storm-topology-manager"
+  image: 
+    repository: "gresearchdev/siembol-storm-topology-manager"
+    tag: "latest"
+    pullPolicy: Always
+  containerPort: 8082
+
+  mountPath: "/opt/storm-topology-manager"
+
+  service:
+    port: 8082
+
+  # Run with an ingress
+  ingress:
+    enabled: true
+    hostname: topology-manager.siembol.local

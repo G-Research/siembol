@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "siembol.ui.fullname" $ }}
+  name: {{ include "siembol.ui.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "siembol.ui.fullname" $ }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "siembol.ui.fullname" $ }}
+      name: {{ include "siembol.ui.fullname" $ }}
+    spec:
+      containers:
+      - image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
+        imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+        name: {{ include "siembol.ui.fullname" $ }}
+        securityContext:
+          runAsUser: 101
+        ports:
+        - containerPort: {{ .Values.ui.containerPort }}
+        readinessProbe:
+          httpGet:
+            path: /index.html
+            port: {{ .Values.ui.service.port }}
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /index.html
+            port: {{ .Values.ui.service.port }}
+            scheme: HTTP
+          initialDelaySeconds: 300
+          periodSeconds: 30
+        resources:
+         limits:
+          cpu: 1
+          memory: "256Mi"
+         requests:
+          cpu: 0.1
+          memory: "128Mi"

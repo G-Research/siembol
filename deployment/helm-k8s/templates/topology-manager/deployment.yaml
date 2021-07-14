@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "siembol.manager.appname.fullname" $ }}
+  name: {{ include "siembol.manager.appname.fullname" $ }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ include "siembol.manager.appname.fullname" $ }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "siembol.manager.appname.fullname" $ }}
+      name: {{ include "siembol.manager.appname.fullname" $ }}
+    spec:
+      serviceAccountName: {{ include "siembol.manager.serviceaccount.fullname" $ }}
+      containers:
+      - image: {{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}
+        workingDir: {{ .Values.manager.mountPath }}
+        imagePullPolicy: {{ .Values.manager.image.pullPolicy }}
+        name: {{ include "siembol.manager.appname.fullname" $ }}
+        ports:
+          - containerPort: {{ .Values.manager.containerPort }}
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
+        securityContext:
+          runAsUser: 101
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.manager.service.port }}
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.manager.service.port }}
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      terminationGracePeriodSeconds: 300

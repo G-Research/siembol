@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "siembol.ui.fullname" $ }}
+  namespace: {{ .Values.ui.namespace }}
+spec:
+  selector:
+    app: {{ include "siembol.ui.fullname" $ }}
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{ .Values.ui.service.intport }}
+    targetPort: {{ .Values.ui.service.port }}
