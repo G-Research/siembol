@@ -37,7 +37,9 @@ const initialPullRequestState: PullRequestInfo = {
   pull_request_url: undefined,
 };
 
-let importers: Importers;
+const importers: Importers = {
+  config_importers: [],
+};
 
 export class ConfigStoreService {
   private readonly store = new BehaviorSubject<ConfigStoreState>(initialConfigStoreState);
