@@ -29,16 +29,6 @@ zookeeper:
     repository: bitnami/zookeeper
     tag: 3.7.0-debian-10-r0
     pullPolicy: Always
-  init:
-    name: init-zookeeper-nodes
-    backofflimit: 3
-    nodes: # add or remove node names below, these will be initialised with empty JSON by a 'Job'
-      - name: /siembol/synchronise
-      - name: /siembol/alerts
-      - name: /siembol/correlation_alerts
-      - name: /siembol/parser_configs
-      - name: /siembol/cache
-
 
 
 # -----------------------------------------------------------------------------
