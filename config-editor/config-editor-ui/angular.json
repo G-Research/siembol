@@ -22,7 +22,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
             "assets": [
-              { "glob": "**/*", "input": "node_modules/ngx-monaco-editor/assets/monaco", "output": "./assets/monaco/" },
+              { "glob": "**/*", "input": "node_modules/ngx-monaco-editor/assets/monaco", "output": "assets/monaco" },
               "src/assets",
               "src/favicon.ico",
               "src/config/ui-config.json",
