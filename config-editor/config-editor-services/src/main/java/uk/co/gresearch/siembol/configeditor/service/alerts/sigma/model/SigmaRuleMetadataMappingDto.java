@@ -10,7 +10,7 @@ import java.util.List;
 public class SigmaRuleMetadataMappingDto {
     @JsonProperty("rule_name")
     @Attributes(required = true, description = "Rule name that uniquely identifies the rule")
-    private String ruleName = "imported_from_${title}_{id}";
+    private String ruleName = "imported_from_${title}_${id}";
 
     @JsonProperty("rule_description")
     @Attributes(description = "The description of the rule")

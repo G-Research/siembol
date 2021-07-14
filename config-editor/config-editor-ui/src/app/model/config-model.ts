@@ -190,6 +190,6 @@ export interface ConfigToImport {
   config_to_import: string;
 }
 
-export interface importedConfig {
+export interface ImportedConfig {
   imported_configuration: any;
 }

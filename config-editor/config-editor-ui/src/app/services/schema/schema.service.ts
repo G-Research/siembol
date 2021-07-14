@@ -78,7 +78,8 @@ export class SchemaService {
     }
   }
 
-  removeEmptyArrays(obj: any) {
+  removeEmptyArrays(obj: any): any {
+    obj = cloneDeep(obj);
     if (obj === undefined || obj === null || typeof obj !== typeof {}) {
       return obj;
     }

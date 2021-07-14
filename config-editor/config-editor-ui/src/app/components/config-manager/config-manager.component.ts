@@ -94,7 +94,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.filterUpgradable$ = this.configStore.filterUpgradable$;
 
     this.deploymentHistory$ = this.configStore.deploymentHistory$;
-    this.importers$ = this.editorService.configLoader.getImporters();
+    this.importers$ = this.configStore.importers$;
   }
 
   ngOnInit() {
@@ -115,7 +115,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(h => (this.deploymentHistory = { fileHistory: h }));
 
-    this.importers$.pipe(take(1)).subscribe(i => {
+    this.importers$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(i => {
       this.importers = i;
     });
   }

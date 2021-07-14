@@ -26,7 +26,7 @@ export class ImporterDialogComponent {
     scrollBeyondLastLine: false, 
     fontSize: "14px",
   };
-  config = '<paste config here>';
+  config: string;
   name: string;
   
   constructor(
@@ -36,6 +36,7 @@ export class ImporterDialogComponent {
     private formlyJsonschema: FormlyJsonschema
     ) {
       this.name = data.importer_name; 
+      this.config = `<paste ${this.name} config here>`;
       const schema = data.importer_attributes_schema;
       this.service.configSchema.formatTitlesInSchema(schema, '');
       this.field = this.formlyJsonschema.toFieldConfig(schema, {

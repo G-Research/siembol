@@ -8,7 +8,7 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, ConfigToImport, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigToImport, Importers, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 
@@ -37,10 +37,13 @@ const initialPullRequestState: PullRequestInfo = {
   pull_request_url: undefined,
 };
 
+let importers: Importers;
+
 export class ConfigStoreService {
   private readonly store = new BehaviorSubject<ConfigStoreState>(initialConfigStoreState);
   private readonly pullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
   private readonly adminPullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
+  private readonly importers = new BehaviorSubject<Importers>(importers);
 
   /*eslint-disable */
   public readonly allConfigs$ = this.store.asObservable().map(x => x.configs);
@@ -61,6 +64,7 @@ export class ConfigStoreService {
   public readonly pullRequestPending$ = this.pullRequestInfo.asObservable();
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
   public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
+  public readonly importers$ = this.importers.asObservable();
 
   /*eslint-enable */
 
@@ -102,6 +106,7 @@ export class ConfigStoreService {
 
     this.store.next(newState);
     this.loadPullRequestStatus();
+    this.loadImporters();
   }
 
   updateAdmin(config: AdminConfig) {
@@ -396,13 +401,12 @@ export class ConfigStoreService {
     const pasted = {
       author: this.user,
       configData: Object.assign({}, cloneDeep(configData), {
-        [this.metaDataMap.name]: `new_entry_${currentState.configs.length}`,
         [this.metaDataMap.version]: 0,
         [this.metaDataMap.author]: this.user,
       }),
       description: 'no description',
       isNew: true,
-      name: `new_entry_${currentState.configs.length}`,
+      name: configData[this.metaDataMap.name],
       savedInBackend: false,
       testCases: [],
       version: 0,
@@ -510,6 +514,14 @@ export class ConfigStoreService {
         return true;
       }
       return false;
+    });
+  }
+
+  loadImporters() {
+    this.configLoaderService.getImporters().subscribe((i: Importers) => {
+      if (i) {
+        this.importers.next(i);
+      }
     });
   }
 

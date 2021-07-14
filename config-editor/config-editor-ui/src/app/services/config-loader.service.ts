@@ -19,7 +19,7 @@ import {
   ConfigAndTestCases,
   GitFilesDelete,
   Importers,
-  importedConfig,
+  ImportedConfig,
   ConfigToImport,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
@@ -403,7 +403,7 @@ export class ConfigLoaderService {
     );
   }
 
-  importConfig(config: ConfigToImport): Observable<importedConfig> {
+  importConfig(config: ConfigToImport): Observable<ImportedConfig> {
     return this.http
       .post<any>(
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/import`,
