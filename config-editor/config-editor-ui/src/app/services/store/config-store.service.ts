@@ -8,7 +8,7 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigToImport, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 
@@ -501,6 +501,16 @@ export class ConfigStoreService {
   clearConfigHistory() {
     this.configHistoryService.clear();
     this.testStoreService.testCaseHistoryService.clear();
+  }
+
+  importConfig(configToImport: ConfigToImport): Observable<boolean> {
+    return this.configLoaderService.importConfig(configToImport).map(result => {
+      if (result.imported_configuration) {
+        this.clipboardService.updatePastedConfig(result.imported_configuration);
+        return true;
+      }
+      return false;
+    });
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

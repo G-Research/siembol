@@ -21,6 +21,32 @@
                             <mat-icon>content_paste</mat-icon>
                         </a>
                     </div>
+                    <div *ngIf="(importers$ | async)?.config_importers.length > 0" class="add-button">
+                        <a 
+                          *ngIf="(importers$ | async)?.config_importers.length == 1" 
+                          mat-button 
+                          color="primary" 
+                          title="Import Config from Clipboard" 
+                          (click)="onClickImport(0)">
+                            <mat-icon>file_upload</mat-icon>
+                        </a>
+                        <a 
+                          *ngIf="(importers$ | async)?.config_importers.length > 1"
+                          mat-button 
+                          [matMenuTriggerFor]="menu" 
+                          color="primary" 
+                          title="Import Config from Clipboard" >
+                            <mat-icon>file_upload</mat-icon>
+                        </a>
+                        <mat-menu #menu="matMenu">
+                            <button 
+                              *ngFor="let importer of (importers$ | async)?.config_importers; index as i;" 
+                              (click)="onClickImport(i)" 
+                              mat-menu-item>
+                              {{importer.importer_name | titlecase}} Importer
+                            </button>
+                          </mat-menu>
+                    </div>
                 </div>
                 <mat-divider></mat-divider>
                 <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
