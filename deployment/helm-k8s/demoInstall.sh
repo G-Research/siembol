@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CONFIG_MAP_NAME_GIT="github-details"
 GIT_SECRET_NAME="siembol-config-editor-rest-secrets"
@@ -33,25 +33,15 @@ git_details () {
 }
 
 init_zookeeper_nodes () {
+    declare -a ZookeeperNodes=("/siembol/synchronise" "/siembol/alerts" "/siembol/correlation_alerts" "/siembol/parser_configs" "/siembol/cache") 
     echo "Creating Zookeeper nodes "
     POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/name=zookeeper,app.kubernetes.io/instance=siembol-zookeeper,app.kubernetes.io/component=zookeeper" -o jsonpath="{.items[0].metadata.name}")
     kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol/synchronise
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set /siembol/synchronise '{}'
-    echo "'synchronise' node initialised with empty JSON object"
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol/alerts
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set /siembol/alerts '{}'
-    echo "'alerts' node initialised with empty JSON object"
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol/correlation_alerts
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set /siembol/correlation_alerts '{}'
-    echo "'correlation_alerts' node initialised with empty JSON object"
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol/parser_configs
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set /siembol/parser_configs '{}'
-    echo "'parser_configs' node initialised with empty JSON object"
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol/cache
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set /siembol/cache '{}'
-    echo "'cache' node initialised with empty JSON object"
-    sleep 1
+    for node in "${ZookeeperNodes[@]}"; do
+        kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create $node
+        kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set $node '{}'
+        echo "$node node initialised with empty JSON object"
+    done
 
 }
 
