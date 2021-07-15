@@ -59,24 +59,26 @@ You should now see the Siembol UI homepage.
 
 ### Kafka UI
 
-We are using Kafdrop UI to view topics and messages. 
+We are using Kafdrop UI to view topics and messages.  You can send messages to parsing topics and to test siembol configs. 
+
 1. To install this and create a kafka client pod:
 ```bash
 deployment/helm-k8s/quickstart_install/kafkaExtra.sh
 ```
-2. Open two command prompts/terminals and exec into the kafka client pod in both:
+
+2. Exec into the kafka client pod:
  ```bash
  kubectl exec --tty -i kafka-client --namespace siembol -- bash
  ```
- then treat one as the producer and the other as consumer:
- #### Producer:
+ 3. Connect to the broker:
  ```bash
- kafka-console-producer.sh --bootstrap-server kafka-0.kafka-headless.siembol.svc.cluster.local:9092 --topic aws.cloudtrail
+ kafka-console-producer.sh \
+--broker-list kafka-0.kafka-headless.siembol.svc.cluster.local:9092 \
+--topic <your-topic>
  ```
- #### Consumer:
- ```bash
- kafka-console-consumer.sh --bootstrap-server kafka.siembol.svc.cluster.local:9092 --topic aws.cloudtrail --from-beginning
- ```
+ 4. Produce your message
+
+
 
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:
