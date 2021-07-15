@@ -76,7 +76,7 @@ deployment/helm-k8s/quickstart_install/kafkaExtra.sh
 --broker-list kafka-0.kafka-headless.siembol.svc.cluster.local:9092 \
 --topic <your-topic>
  ```
- 4. Produce your message
+ 4. Produce your message in terminal window
 
 
 
