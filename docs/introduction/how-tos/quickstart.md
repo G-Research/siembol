@@ -55,7 +55,9 @@ In a browser, go to:
 
   * https://siembol.local/home
 
-You should now see the Siembol UI homepage.
+You should now see the Siembol UI homepage. You can also try Storm UI to see running topologies:
+
+  * https://storm.local
 
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:
