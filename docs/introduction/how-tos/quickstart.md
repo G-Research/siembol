@@ -57,6 +57,27 @@ In a browser, go to:
 
 You should now see the Siembol UI homepage.
 
+### Kafka UI
+
+We are using Kafdrop UI to view topics and messages. 
+1. To install this and create a kafka client pod:
+```bash
+deployment/helm-k8s/quickstart_install/kafkaExtra.sh
+```
+2. Open two command prompts/terminals and exec into the kafka client pod in both:
+ ```bash
+ kubectl exec --tty -i kafka-client --namespace siembol -- bash
+ ```
+ then treat one as the producer and the other as consumer:
+ #### Producer:
+ ```bash
+ kafka-console-producer.sh --bootstrap-server kafka-0.kafka-headless.siembol.svc.cluster.local:9092 --topic aws.cloudtrail
+ ```
+ #### Consumer:
+ ```bash
+ kafka-console-consumer.sh --bootstrap-server kafka.siembol.svc.cluster.local:9092 --topic aws.cloudtrail --from-beginning
+ ```
+
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:
 
