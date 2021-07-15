@@ -14,6 +14,5 @@ kubectl run kafka-client --restart='Never' --image docker.io/bitnami/kafka:2.8.0
 NODE_PORT=$(kubectl get --namespace siembol -o jsonpath="{.spec.ports[0].nodePort}" services kafdrop)
 NODE_IP=$(kubectl get nodes --namespace siembol -o jsonpath="{.items[0].status.addresses[0].address}")
 
-echo "Kafka UI url: http://$NODE_IP:$NODE_PORT"
 
 echo "************************************************************"
