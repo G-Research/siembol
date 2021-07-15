@@ -15,7 +15,8 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { Type } from '@app/model/config-model';
+import { Importers, Type } from '@app/model/config-model';
+import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +62,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   deploymentHistory$: Observable<FileHistory[]>;
   deploymentHistory;
   disableEditingFeatures: boolean;
+  importers$: Observable<Importers>;
+  importers: Importers;
 
   private ngUnsubscribe = new Subject();
   private filteredConfigs: Config[];
@@ -91,6 +94,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.filterUpgradable$ = this.configStore.filterUpgradable$;
 
     this.deploymentHistory$ = this.configStore.deploymentHistory$;
+    this.importers$ = this.configStore.importers$;
   }
 
   ngOnInit() {
@@ -110,6 +114,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.deploymentHistory$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(h => (this.deploymentHistory = { fileHistory: h }));
+
+    this.importers$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(i => {
+      this.importers = i;
+    });
   }
 
   ngOnDestroy() {
@@ -236,5 +244,16 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.editorService.configStore.clipboardService.validateConfig(Type.CONFIG_TYPE).subscribe(() => {
       this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
     });
+  }
+
+  onClickImport(index: number) {
+    const data = this.importers.config_importers[index];
+    const dialogRef = this.dialog.open(ImporterDialogComponent, { data });   
+    dialogRef.afterClosed().subscribe(success => {
+      if (success) {
+        this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
+      }
+    });
+
   }
 }

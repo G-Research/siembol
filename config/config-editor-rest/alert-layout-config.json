@@ -314,5 +314,25 @@
                 }
             }
         }
+    },
+    "importers_layout": {
+        "$..tags.items": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "panel"
+                    ]
+                }
+            }
+        },
+        "$..field_mapping.items": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "panel"
+                    ]
+                }
+            }
+        }
     }
 }

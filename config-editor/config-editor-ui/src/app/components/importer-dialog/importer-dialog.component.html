@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>{{name | titlecase}} Importer</h1>
+<div class="container">
+  <div class="fields">
+    <h2>Importer Attributes</h2>
+    <mat-divider></mat-divider>
+    <ng-scrollbar class="scrollbar" [track]="'all'" [position]="'invertAll'" [appearance]="'standard'">
+    <form #formly [formGroup]="form">
+      <formly-form [model]="model" [fields]="[field]" [options]="options" [form]="form"></formly-form>
+    </form>
+  </ng-scrollbar>
+  </div>
+  <mat-divider [vertical]="true"></mat-divider>
+  <div class="editor">
+    <h2>{{name | titlecase}} Rule</h2>
+    <mat-divider></mat-divider>
+    <ngx-monaco-editor style="height: 100%" [options]="editorOptions" [(ngModel)]="config"></ngx-monaco-editor>
+  </div>
+</div>
+<div mat-dialog-actions class="button-row">
+  <button mat-raised-button color="primary" [disabled]="!form.valid" (click)="onClickImport()">IMPORT</button>
+  <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+</div>
