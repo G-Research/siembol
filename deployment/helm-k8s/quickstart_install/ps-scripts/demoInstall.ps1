@@ -3,10 +3,10 @@ $GIT_SECRET_NAME="siembol-config-editor-rest-secrets"
 $NAMESPACE="siembol"
 
 function Git-Details {
-    $GIT_USERNAME = Read-Host -Prompt 'Github username: '
-    $GIT_URL = Read-Host -Prompt 'Github URL: '
-    $GIT_REPO_NAME = Read-Host -Prompt 'Github repo name: ' 
-    $GIT_TOKEN = Read-Host -Prompt 'Github personal token: ' 
+    $GIT_USERNAME = Read-Host -Prompt 'Github username'
+    $GIT_URL = Read-Host -Prompt 'Github URL'
+    $GIT_REPO_NAME = Read-Host -Prompt 'Github repo name' 
+    $GIT_TOKEN = Read-Host -Prompt 'Github personal token' 
 
     Write-Output "You entered these details: "
     Write-Output "Github username: $GIT_USERNAME"
