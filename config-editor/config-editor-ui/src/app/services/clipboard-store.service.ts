@@ -29,7 +29,7 @@ export class ClipboardStoreService {
   }
 
   copyFromClipboard(str: any) {
-    navigator.clipboard.writeText(JSON.stringify(str));
+    navigator.clipboard.writeText(JSON.stringify(str, null, 2));
   }
 
   updatePastedConfig(config: any) {
