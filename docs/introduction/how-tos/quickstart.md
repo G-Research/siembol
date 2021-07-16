@@ -55,7 +55,32 @@ In a browser, go to:
 
   * https://siembol.local/home
 
-You should now see the Siembol UI homepage.
+You should now see the Siembol UI homepage. You can also try Storm UI to see running topologies:
+
+  * https://storm.local
+
+### Kafka UI
+
+We are using Kafdrop UI to view topics and messages.  You can send messages to parsing topics and to test siembol configs. 
+
+1. To install this and create a kafka client pod:
+```bash
+deployment/helm-k8s/quickstart_install/kafkaExtra.sh
+```
+
+2. Exec into the kafka client pod:
+ ```bash
+ kubectl exec --tty -i kafka-client --namespace siembol -- bash
+ ```
+ 3. Connect to the broker:
+ ```bash
+ kafka-console-producer.sh \
+--broker-list kafka-0.kafka-headless.siembol.svc.cluster.local:9092 \
+--topic <your-topic>
+ ```
+ 4. Produce your message in terminal window
+
+
 
 ### Kafka UI
 
