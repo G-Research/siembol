@@ -41,7 +41,7 @@ There are four types of matchers:
 - `COMPOSITE_AND` - Used to combine matchers with AND
 - `COMPOSITE_OR` - Used to combine matchers with OR
 
-A composite matcher is recursive, when it is selected you can create new matchers inside it. 
+A composite matcher is recursive, when it is selected you can create new matchers inside of it. 
 
 `Note : the level of recursion of composite matchers is limited to 3`
 
