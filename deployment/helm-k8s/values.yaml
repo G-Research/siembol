@@ -99,7 +99,7 @@ ui:
     tag: "latest"
     pullPolicy: Always
 
-  appName: config-editor-ui
+  appName: "config-editor-ui"
   containerPort: 8080
 
   service:
@@ -134,3 +134,9 @@ manager:
   ingress:
     enabled: true
     hostname: topology-manager.siembol.local
+
+# -----------------------------------------------------------------------------
+# siembol response parameters
+# -----------------------------------------------------------------------------
+response:
+  appName: "response"
