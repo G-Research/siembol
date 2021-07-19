@@ -38,12 +38,10 @@ There are four types of matchers:
     - `data`: the regex statement in Java using syntax from [https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event.
 - `IS_IN_SET` - An "is_in_set" matcher compares the value of a field to a set of strings defined in `data`. if the value is in the set then the matcher returns true. 
     - `data` - A list of strings to compare the value to. New line delimited. Does not support regex - each line must be a literal match however, field substitution is supported in this field. The global tag with the name `detection_source` is used to identify the detection engine that triggers the alert.
-- `COMPOSITE_AND` - Used to combine matchers with AND
-- `COMPOSITE_OR` - Used to combine matchers with OR
+- `COMPOSITE_AND` - Used to combine matchers from the list `matchers` with AND logic operation
+- `COMPOSITE_OR` - Used to combine matchers from the list `matchers` with OR logic operation
 
-A composite matcher is recursive, when it is selected you can create new matchers inside of it. 
-
-`Note : the level of recursion of composite matchers is limited to 3`
+`Note : A composite matcher is recursive in alerting engine, however the level of recursion is limited to 3 in Siembol UI for simplicity`
 
 ### Global Tags and Rule Protection
 Global tags and global rule protection are defined in the deployment of the rules. These are added to the alert after matching unless are overridden by individual rule settings. 
