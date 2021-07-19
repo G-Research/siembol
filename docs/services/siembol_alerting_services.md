@@ -28,7 +28,7 @@ Tip: if you want to match on multiple data sources, set the source type to be * 
 
 #### Matchers
 Matchers allow you to select the events you want the rule to alert on.
-- `matcher_type` - Type of matcher, either `REGEX_MATCH`, `IS_IN_SET`, `COMPOSITE_AND` or, `COMPOSITE_OR`
+- `matcher_type` - Type of matcher, either `REGEX_MATCH`, `IS_IN_SET`, `COMPOSITE_AND` or `COMPOSITE_OR`
 - `is_negated`- The matcher is negated
     private Boolean negated = false;
 - `field` - The name of the field on which the matcher will be evaluated
