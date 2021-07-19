@@ -8,14 +8,14 @@ Write-Output == create and install CA ==
 mkcert -install
 
 Write-Output == create k8s cluster ==
-minikube start --profile $namespace --driver hyperv --cpus 4 --memory 4g --disk-size 40g --addons ingress
+minikube start --profile $namespace --driver hyperv --cpus 4 --memory 8g --disk-size 40g --addons ingress
 minikube profile $namespace
 
 Write-Output == install dns host entries ==
-Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'siembol.local' -Description 'resolver for ui.siembol.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'siembol.local' -Description 'resolver for siembol.local'
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'rest.siembol.local' -Description 'resolver for rest.siembol.local'
-Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'storm.local' -Description 'resolver for storm.siembol.local'
-Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'topology-manager.siembol.local' -Description 'resolver for storm.siembol.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'storm.local' -Description 'resolver for storm.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'topology-manager.siembol.local' -Description 'resolver for topology-manager.siembol.local'
 
 Write-Output == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io
