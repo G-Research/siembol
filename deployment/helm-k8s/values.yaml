@@ -55,6 +55,7 @@ storm:
     enabled: false 
     # This value will be evaluated in the context of the Storm sub-chart
     servers: ["{{ .Release.Name }}-zookeeper"]
+  appName: "storm"
   service:
     ui:
       name: storm-ui

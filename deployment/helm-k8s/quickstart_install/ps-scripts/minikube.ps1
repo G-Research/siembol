@@ -43,4 +43,4 @@ spec:
 "@ | Out-file $certfile.FullName
 
 kubectl apply -f $certfile.FullName
-Remove-Item $certfile.FullName -Force 
+Remove-Item $certfile.FullName -Force
