@@ -52,7 +52,7 @@ kafka:
 storm:
   # disable Storm's ZooKeeper and use a templatized value to use Siembol's zk
   zookeeper:
-    enabled: false
+    enabled: false 
     # This value will be evaluated in the context of the Storm sub-chart
     servers: ["{{ .Release.Name }}-zookeeper"]
   appName: "storm"
