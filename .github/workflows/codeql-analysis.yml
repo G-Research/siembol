@@ -17,8 +17,9 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ master ]
+  # Run schedule at 04:00 on Monday.
   schedule:
-    - cron: '41 17 * * 5'
+    - cron: '0 4 * * 1' 
 
 jobs:
   analyze:
