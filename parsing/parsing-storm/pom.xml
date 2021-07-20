@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>parsing</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>parsing-app</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
