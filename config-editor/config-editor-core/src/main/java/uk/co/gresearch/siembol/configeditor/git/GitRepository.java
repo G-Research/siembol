@@ -87,7 +87,8 @@ public class GitRepository implements Closeable {
 
         for (Map.Entry<String, Optional<String>> file : configInfo.getFilesContent().entrySet()) {
             Path filePath = Paths.get(currentPath.toString(), file.getKey()).normalize();
-            if (!filePath.startsWith(currentPath)) {
+            if (!filePath.startsWith(currentPath)
+                    || !filePath.endsWith(file.getKey())) {
                 return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
                         String.format(WRONG_FILENAME_MESSAGE, file.getKey()));
             }
