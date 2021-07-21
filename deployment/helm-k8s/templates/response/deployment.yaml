@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.response.appName }}
+  name: {{ include "siembol.response.fullname" $ }}
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.response.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Values.response.appName }}
+      app: {{ include "siembol.response.fullname" $ }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: {{ .Values.response.appName }}
-      name: {{ .Values.response.appName }}
+        app: {{ include "siembol.response.fullname" $ }}
+      name: {{ include "siembol.response.fullname" $ }}
     spec:
       containers:
       - image: {{ .Values.response.image.name }}:{{ .Values.response.image.tag }}
         imagePullPolicy: {{ .Values.response.image.pullPolicy }}
-        name: {{ .Values.response.appName }}
+        name: {{ include "siembol.response.fullname" $ }}
         securityContext:
           runAsUser: 1000
         resources:
@@ -53,4 +53,4 @@ spec:
       volumes:
       - name: cacerts
         secret:
-          secretName: certs
+          secretName: cacerts
