@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.response.appName }}
+  namespace: {{ .Values.response.namespace }}
+spec:
+  replicas: {{ .Values.response.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.response.appName }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.response.appName }}
+      name: {{ .Values.response.appName }}
+    spec:
+      containers:
+      - image: {{ .Values.response.image.name }}:{{ .Values.response.image.tag }}
+        imagePullPolicy: {{ .Values.response.image.pullPolicy }}
+        name: {{ .Values.response.appName }}
+        securityContext:
+          runAsUser: 1000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.5"
+          limits:
+            memory: "1024Mi"
+            cpu: "1"
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.response.health.path }}
+            port: {{ .Values.response.health.port }}
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.response.health.path }}
+            port: {{ .Values.response.health.port }}
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        env:
+        - name: JAVA_OPTS
+          value: {{ .Values.response.javaOpts }}
+        volumeMounts:
+        - name: cacerts
+          mountPath: /etc/ssl/certs/java/cacerts
+          subPath: cacerts
+          readOnly: true
+      volumes:
+      - name: cacerts
+        secret:
+          secretName: certs
