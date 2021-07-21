@@ -108,7 +108,7 @@ or
 ```bash 
 deployment/helm-k8s/quickstart_install/ps-scripts/cleanUp.ps1
 ```
-2. For deleting everything siembol related incl. config maps, secrets, certs and namespace:
+2. For deleting everything; delete the siembol minikube profile:
 ```bash
 minikube delete -p siembol
 sudo rm /etc/resolver/minikube-*
