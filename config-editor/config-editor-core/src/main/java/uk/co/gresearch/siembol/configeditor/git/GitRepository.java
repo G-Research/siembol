@@ -32,6 +32,7 @@ public class GitRepository implements Closeable {
     private static final String ERROR_INIT_MSG = "Error during git repository initialisation";
     private static final String ERROR_PUSH_MSG = "Error during git repository push with message: %s";
     private static final String GIT_REPO_DIRECTORY_URL_FORMAT = "%s/%s/tree/%s/%s";
+    private static final String WRONG_FILENAME_MESSAGE = "Wrong filename %s";
     private final CredentialsProvider credentialsProvider;
     private final Git git;
     private final String gitUrl;
@@ -85,7 +86,13 @@ public class GitRepository implements Closeable {
         }
 
         for (Map.Entry<String, Optional<String>> file : configInfo.getFilesContent().entrySet()) {
-            Path filePath = Paths.get(currentPath.toString(), file.getKey());
+            Path filePath = Paths.get(currentPath.toString(), file.getKey()).normalize();
+            if (!filePath.startsWith(currentPath)
+                    || !filePath.endsWith(file.getKey())) {
+                return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
+                        String.format(WRONG_FILENAME_MESSAGE, file.getKey()));
+            }
+
             if (file.getValue().isPresent()) {
                 Files.write(filePath, file.getValue().get().getBytes());
             } else {
