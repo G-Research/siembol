@@ -150,10 +150,10 @@ response:
     hostname: response.siembol.local
 
   service:
-    port: 8089
+    port: 8088
 
   health:
     path: /health
-    port: 8089
+    port: 8088
 
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"

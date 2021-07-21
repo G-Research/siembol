@@ -16,10 +16,17 @@ spec:
     - host: {{ .Values.response.ingress.hostname }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Values.response.appName }}
-                port:
-                  number: {{ .Values.response.service.port }}
+        - path: /health
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
+        - path: /info
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
