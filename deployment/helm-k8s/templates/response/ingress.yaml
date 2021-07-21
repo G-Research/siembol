@@ -9,11 +9,11 @@ spec:
   {{ if .Values.tls.enabled -}}
   tls:
     - hosts:
-      - {{ .Values.response.fqdn }}
+      - {{ .Values.response.ingress.hostname }}
       secretName: {{ .Values.response.appName }}-tls
   {{ end }}
   rules:
-    - host: {{ .Values.response.fqdn }}
+    - host: {{ .Values.response.ingress.hostname }}
       http:
         paths:
           - path: /

@@ -140,3 +140,13 @@ manager:
 # -----------------------------------------------------------------------------
 response:
   appName: "response"
+  replicaCount: 1
+  image:
+    name: "gresearchdev/siembol-response"
+    tag: "latest"
+    pullPolicy: Always
+  ingress:
+    hostname: response.siembol.local
+
+  service:
+    port: 8089
