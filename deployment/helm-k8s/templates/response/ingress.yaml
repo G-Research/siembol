@@ -30,3 +30,10 @@ spec:
               name: {{ include "siembol.response.fullname" $ }}
               port:
                 number: {{ .Values.response.service.port }}
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
