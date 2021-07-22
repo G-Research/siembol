@@ -13,7 +13,7 @@ spec:
           labels:
             name: {{ include "siembol.manager.appname.cleanup.name" $ }}
         spec:
-          serviceAccountName: {{ .Values.manager.serviceAccount }}
+          serviceAccountName: {{ include "siembol.manager.serviceaccount.fullname" $ }}
           containers:
           - name: {{ include "siembol.manager.appname.cleanup.name" $ }}
             image: {{ .Values.manager.cleanupjob.image.repository }}:{{ .Values.manager.cleanupjob.image.tag }}
@@ -21,7 +21,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - kubectl -n siembol delete jobs --field-selector status.successful=1 -l name=storm-topology-manager
+            - kubectl -n siembol delete jobs --field-selector status.successful=1
             securityContext:
               runAsUser: 1000
           restartPolicy: OnFailure
