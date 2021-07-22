@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "siembol.manager.appname.cleanup.name" $ }}
+spec:
+  schedule: {{ .Values.manager.cleanupjob.schedule }}
+  failedJobsHistoryLimit: {{ .Values.manager.cleanupjob.failedjobshistoryLimit }}
+  successfulJobsHistoryLimit: {{ .Values.manager.cleanupjob.successfulJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            name: {{ include "siembol.manager.appname.cleanup.name" $ }}
+        spec:
+          serviceAccountName: {{ .Values.manager.serviceAccount }}
+          containers:
+          - name: {{ include "siembol.manager.appname.cleanup.name" $ }}
+            image: {{ .Values.manager.cleanupjob.image.repository }}:{{ .Values.manager.cleanupjob.image.tag }}
+            imagePullPolicy: {{ .Values.manager.cleanupjob.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - kubectl -n siembol delete jobs --field-selector status.successful=1 -l name=storm-topology-manager
+            securityContext:
+              runAsUser: 1000
+          restartPolicy: OnFailure
