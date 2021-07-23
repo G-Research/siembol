@@ -5,7 +5,7 @@ metadata:
   name: {{ include "siembol.response.fullname" $ }}
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.response.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ include "siembol.response.fullname" $ }}

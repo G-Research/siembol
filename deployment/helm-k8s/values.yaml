@@ -151,7 +151,6 @@ manager:
 response:
   enabled: false # flag to deploy siembol-response, false by default
   appName: "response"
-  replicaCount: 1
   image:
     name: "gresearchdev/siembol-responding-stream"
     tag: "latest"
