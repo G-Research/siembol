@@ -423,6 +423,7 @@ export class ConfigStoreService {
       const editedConfig = currentState.editedConfig;
       const pastedConfig = cloneDeep(editedConfig);
       pastedConfig.author = this.user;
+      pastedConfig.description = configData[this.metaDataMap.description];
       pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
         [this.metaDataMap.name]: editedConfig.name,
         [this.metaDataMap.version]: editedConfig.version,
