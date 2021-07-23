@@ -99,7 +99,7 @@ ui:
     tag: "latest"
     pullPolicy: Always
 
-  appName: config-editor-ui
+  appName: "config-editor-ui"
   containerPort: 8080
 
   service:
@@ -144,3 +144,26 @@ manager:
       repository: alpine/k8s
       tag: "1.18.16"
       pullPolicy: Always
+
+# -----------------------------------------------------------------------------
+# siembol response parameters
+# -----------------------------------------------------------------------------
+response:
+  appName: "response"
+  replicaCount: 1
+  image:
+    name: "gresearchdev/siembol-responding-stream"
+    tag: "latest"
+    pullPolicy: Always
+
+  ingress:
+    hostname: response.siembol.local
+
+  service:
+    port: 8080
+
+  health:
+    path: /health
+    port: 8080
+
+  javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"

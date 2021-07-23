@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "siembol.response.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    cert-manager.io/issuer: ca-issuer
+spec:
+  {{ if .Values.tls.enabled -}}
+  tls:
+    - hosts:
+      - {{ .Values.response.ingress.hostname }}
+      secretName: {{ .Values.response.appName }}-tls
+  {{ end }}
+  rules:
+    - host: {{ .Values.response.ingress.hostname }}
+      http:
+        paths:
+        - path: /health
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
+        - path: /info
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
