@@ -134,6 +134,16 @@ manager:
   ingress:
     enabled: true
     hostname: topology-manager.siembol.local
+  
+  cleanupjob:
+    name: clean-lingering-siembol-jobs
+    schedule: "*/15 * * * *"
+    failedjobshistoryLimit: 1
+    successfulJobsHistoryLimit: 1
+    image:
+      repository: alpine/k8s
+      tag: "1.18.16"
+      pullPolicy: Always
 
 # -----------------------------------------------------------------------------
 # siembol response parameters
