@@ -50,6 +50,15 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a fully qualified siembol-response fullname.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "siembol.response.fullname" -}}
+{{- $name := default .Chart.Name .Values.response.appName -}}
+{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Create a fully qualified Service Account and App fullname for the Topology Manager.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
