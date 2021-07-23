@@ -31,7 +31,7 @@ spec:
               name: {{ include "siembol.response.fullname" $ }}
               port:
                 number: {{ .Values.response.service.port }}
-        {{ if eq .Values.environment.dev "dev" -}}
+        {{ if eq .Values.environment "dev" -}}
         - path: /api
           pathType: Prefix
           backend:
