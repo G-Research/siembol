@@ -139,6 +139,7 @@ manager:
 # siembol response parameters
 # -----------------------------------------------------------------------------
 response:
+  enabled: false # flag to deploy siembol-response, false by default
   appName: "response"
   replicaCount: 1
   image:

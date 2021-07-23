@@ -1,3 +1,4 @@
+{{- if .Values.response.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,6 +41,7 @@ spec:
           httpGet:
             path: {{ .Values.response.health.path }}
             port: {{ .Values.response.health.port }}
+            scheme: HTTP
           initialDelaySeconds: 20
           periodSeconds: 10
         env:
@@ -54,3 +56,4 @@ spec:
       - name: cacerts
         secret:
           secretName: cacerts
+{{- end -}}
