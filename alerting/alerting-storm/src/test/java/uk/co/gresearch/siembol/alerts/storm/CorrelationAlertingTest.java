@@ -12,11 +12,12 @@ import org.apache.storm.generated.StormTopology;
 import org.junit.*;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -144,8 +145,8 @@ public class CorrelationAlertingTest {
     @ClassRule
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
-    private ZooKeeperConnector rulesZooKeeperConnector;
-    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private ZooKeeperCompositeConnector rulesZooKeeperConnector;
+    private ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
     private AlertingStormAttributesDto alertingStormAttributes;
     private StormTopology topology;
 
@@ -153,12 +154,12 @@ public class CorrelationAlertingTest {
     public void setUp() throws Exception {
         alertingStormAttributes = JSON_PARSERS_CONFIG_READER
                 .readValue(testConfig);
-        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperCompositeConnectorFactory.class, withSettings().serializable());
 
-        rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
+        rulesZooKeeperConnector = Mockito.mock(ZooKeeperCompositeConnector.class, withSettings().serializable());
         when(zooKeeperConnectorFactory.createZookeeperConnector(alertingStormAttributes.getZookeperAttributes()))
                 .thenReturn(rulesZooKeeperConnector);
-        when(rulesZooKeeperConnector.getData()).thenReturn(simpleCorrelationRules);
+        when(rulesZooKeeperConnector.getData()).thenReturn(Arrays.asList(simpleCorrelationRules));
 
         String bootstrapServer = String.format("127.0.0.1:%d", kafkaRule.helper().kafkaPort());
         alertingStormAttributes.getStormAttributes().setBootstrapServers(bootstrapServer);

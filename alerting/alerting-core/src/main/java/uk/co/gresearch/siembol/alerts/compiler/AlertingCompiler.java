@@ -19,6 +19,10 @@ public interface AlertingCompiler {
     AlertingResult compile(String rules, TestingLogger logger);
 
     default AlertingResult compile(List<String> rulesList, TestingLogger logger) {
+        if (rulesList.size() == 1) {
+            return compile(rulesList.get(0), logger);
+        }
+
         List<AlertingEngine> engines = new ArrayList<>();
         for (String rules: rulesList) {
             AlertingResult result = compile(rules, logger);
@@ -41,6 +45,10 @@ public interface AlertingCompiler {
 
     default AlertingResult compile(String rules) {
         return compile(rules, new InactiveTestingLogger());
+    }
+
+    default AlertingResult compile(List<String> rulesList) {
+        return compile(rulesList, new InactiveTestingLogger());
     }
 
     default AlertingResult getSchema() {

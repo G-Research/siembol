@@ -23,14 +23,19 @@ public class CompositeAlertingEngine implements AlertingEngine {
             if (result.getStatusCode() != OK) {
                 return result;
             }
-            outputEvents.addAll(result.getAttributes().getOutputEvents());
-            exceptionsEvents.addAll(result.getAttributes().getExceptionEvents());
+            if (result.getAttributes().getOutputEvents() != null) {
+                outputEvents.addAll(result.getAttributes().getOutputEvents());
+            }
+
+            if (result.getAttributes().getExceptionEvents() != null) {
+                exceptionsEvents.addAll(result.getAttributes().getExceptionEvents());
+            }
         }
 
         AlertingAttributes attributes = new AlertingAttributes();
         attributes.setEvaluationResult(outputEvents.isEmpty() ? EvaluationResult.NO_MATCH : EvaluationResult.MATCH);
-        attributes.setOutputEvents(outputEvents);
-        attributes.setExceptionEvents(exceptionsEvents);
+        attributes.setOutputEvents(outputEvents.isEmpty() ? null : outputEvents);
+        attributes.setExceptionEvents(exceptionsEvents.isEmpty() ? null : exceptionsEvents);
         return new AlertingResult(OK, attributes);
     }
 
