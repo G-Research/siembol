@@ -80,7 +80,11 @@
                     </span>
                     <ng-template #prMessage>
                         <span>
-                            <a mat-button color="accent" *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" href="{{(pullRequestPending$ | async)?.pull_request_url}}"
+                            <a mat-button 
+                                color="accent" 
+                                *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" 
+                                href="{{(pullRequestPending$ | async)?.pull_request_url}}"
+                                rel="noopener noreferrer"
                                 target="_blank">PR for release pending</a>
                             <button class="button" mat-button color="accent" title="sync with git" (click)="onSyncWithGit()">
                                 <mat-icon>refresh</mat-icon>
