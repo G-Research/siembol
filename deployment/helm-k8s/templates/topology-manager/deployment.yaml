@@ -52,8 +52,10 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
         env:
+        {{ if .Values.tls.enabled -}}
         - name: JAVA_OPTS
           value: {{ .Values.manager.javaOpts }}
+        {{- end }}
         volumeMounts:
         {{ if .Values.tls.enabled -}}
         - name: cacerts
