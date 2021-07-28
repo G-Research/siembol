@@ -63,7 +63,7 @@ storm:
   service:
     ui:
       name: storm-ui
-      port: 8085
+      port: 8080
   ingress:
     enabled: true
     fqdn: storm.local
