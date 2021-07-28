@@ -55,6 +55,7 @@ spec:
           mountPath: /etc/ssl/certs/java/cacerts
           subPath: cacerts
           readOnly: true
+      restartPolicy: Always
       volumes:
       - name: cacerts
         secret:

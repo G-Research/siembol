@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ include "siembol.rest.fullname" $}}
+        app: {{ include "siembol.rest.fullname" $ }}
       name: {{ include "siembol.rest.fullname" $ }}
     spec:
       containers:
@@ -33,8 +33,8 @@ spec:
             memory: "512Mi"
             cpu: "500m"
           limits:
-            memory: "1024Mi"
-            cpu: "1500m"
+            memory: "2048Mi"
+            cpu: "1000m"
         securityContext:
           runAsUser: 101
         readinessProbe:
@@ -59,7 +59,7 @@ spec:
           value: /config/jgit/.config
         {{ if .Values.tls.enabled -}}
         - name: JAVA_OPTS
-          value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
+          value: {{ .Values.rest.javaOpts }}
         {{ end }}
         - name: GITHUB_TOKEN
           valueFrom:
@@ -74,7 +74,7 @@ spec:
           readOnly: true        
         {{ end -}}
         - name: rules-dir
-          mountPath: /tmp/siembol-config
+          mountPath: {{ .Values.rest.rulesDir }}
         - name: config-dir
           mountPath: /config
       restartPolicy: Always
