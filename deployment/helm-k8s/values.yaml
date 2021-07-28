@@ -107,10 +107,10 @@ ui:
     pullPolicy: Always
 
   appName: "config-editor-ui"
-  containerPort: 8080
+  containerPort: 8083
 
   service:
-    port: 8080
+    port: 8083
     intport: 80
 
   # Run with an ingress
@@ -168,10 +168,10 @@ response:
     fqdn: response.siembol.local
 
   service:
-    port: 8083
+    port: 8080
 
   health:
     path: /health
-    port: 8083
+    port: 8080
 
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
