@@ -6,7 +6,7 @@ Siembol provides a scalable, advanced security analytics framework based on open
 History
 -------
 
-Siembol was developed in-house at G-Research as a security data processing application, forming the core of the G-Research Security Data Platform. We knew that we needed a highly efficient, real-time event processing engine and implemented [Splunk](https://www.splunk.com/) and [Apache Metron](https://metron.apache.org/) in the early years of our experience. However, neither product attended to all of our needs -- we wanted specific features that mattered to G-Research.
+Siembol was developed in-house at G-Research as a security data processing application, forming the core of the G-Research Security Data Platform. We knew that we needed a highly efficient, real-time event processing engine and used [Splunk](https://www.splunk.com/) and [Apache Metron](https://metron.apache.org/) in the early years of our experience. However, neither product attended to all of our needs -- we wanted specific features that mattered to G-Research.
 
 As early adopters of Metron, we believed in the product and tried hard to adapt it to our needs. Ultimately, we recognized its limitations and we began to add the missing features and shore up its instabilities. Sadly, by the time we were able to give back to the Metron community, Metron's time had passed. However, as we still believe in the core mission of Metron, we are releasing our work under the project name, 'Siembol'. We hope this will provide the security community with an effective alternative, filling the void left by Metron's move to the [Apache Attic](https://attic.apache.org/).
 
@@ -31,7 +31,7 @@ _Easy installation for use with prepared Docker images and Helm charts._ Metronâ
 ### Components for Alert Escalation
 
 - Security teams can easily create a rule-based alert from a single data source, or they can create advanced correlation rules that combine various data sources.
-- We are planning to prepare a tool for translating Sigma rule specification (generic and open signature format for SIEM alerting [https://github.com/SigmaHQ/sigma](https://github.com/SigmaHQ/sigma)) in the Siembol alerting rule engine.
+- Siembol UI supports translating Sigma rule specification (generic and open signature format for SIEM alerting [https://github.com/SigmaHQ/sigma](https://github.com/SigmaHQ/sigma)) into the Siembol alerting rule.
 
 ### Integration with Other Systems â€“ Siembol Response
 
@@ -79,7 +79,7 @@ Use-Cases
 
 - For example, data repositories can be enriched by data classification, network devices by a network zone, username by active directory group, etc. By using Siembol alerting services, CSIRT teams can use the tool to add detection on top of normalized logs. Alerts triggered from the detections are integrated into incident response and defined and evaluated by the Siembol response service. This allows for integration of Siembol with systems such as [Jira](https://www.atlassian.com/software/jira), [Hive](https://thehive-project.org/), or [Cortex](https://github.com/TheHive-Project/Cortex), and provides additional enrichments by searching ELK or doing LDAP queries. 
 
-- At G-Research we use Siembol to parse, normalize, enrich and detect approximately 100k events a second. Per day, this adds up to volumes of approximately 15TB of raw data, or 13 billion events.
+- At G-Research we use Siembol to parse, normalize, enrich and detect approximately 150k events a second. Per day, this adds up to volumes of approximately 15TB of raw data, or 13 billion events.
 
 
 ### Detection Tool for Detection of Leaks and Attacks on Infrastructure
@@ -99,7 +99,7 @@ High Level Architecture
 - Parsing - normalizing logs in messages with one layer of key/value pairs.
 - Enrichment - adding useful data to events to assist in detection and investigations.
 - Alerting - filtering matching events from an incoming data stream of events based on a configurable rule set. The correlation alerting allows users to group several detections together before raising an alert.
-- Rapid Response - flexible incident response workflows can be built and triggered in real-time via the highly modular and pluggable framework.
+- Response - flexible incident response workflows can be built and triggered in real-time via the highly modular and pluggable framework.
 
 ### Infrastructure dependencies
 
