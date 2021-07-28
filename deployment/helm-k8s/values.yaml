@@ -125,7 +125,7 @@ ui:
 
 manager:
   appName: "storm-topology-manager"
-  serviceAccountName: "storm-topology-controller"
+  serviceAccountName: "storm-topology-manager"
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
     tag: "latest"

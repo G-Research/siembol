@@ -59,9 +59,13 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
-Create a fully qualified App fullname for the Topology Manager.
+Create a fully qualified Service Account and App fullname for the Topology Manager.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
+{{- define "siembol.manager.serviceaccount.fullname" -}}
+{{- $name := default .Chart.Name .Values.manager.serviceAccountName -}}
+{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{- define "siembol.manager.appname.fullname" -}}
 {{- $name := default .Chart.Name .Values.manager.appName -}}
