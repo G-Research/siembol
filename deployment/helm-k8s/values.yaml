@@ -168,10 +168,10 @@ response:
     fqdn: response.siembol.local
 
   service:
-    port: 8083
+    port: 8080
 
   health:
     path: /health
-    port: 8083
+    port: 8080
 
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
