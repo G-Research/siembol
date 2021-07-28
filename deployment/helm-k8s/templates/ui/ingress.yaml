@@ -14,11 +14,11 @@ spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
-    - {{ .Values.ui.ingress.hostname }}
+    - {{ .Values.ui.ingress.fqdn }}
     secretName: {{ include "siembol.ui.fullname" $ }}-tls
   {{ end }}
   rules:
-  - host: {{ .Values.ui.ingress.hostname }}
+  - host: {{ .Values.ui.ingress.fqdn }}
     http:
       paths:
       - path: /

@@ -4,17 +4,19 @@ kind: Ingress
 metadata:
   name: {{ include "siembol.manager.appname.fullname" $ }}
   namespace: {{ .Values.namespace }}
+  {{- if .Values.certmanager.enabled -}}
   annotations:
     cert-manager.io/issuer: ca-issuer
+  {{ end }}
 spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
-    - {{ .Values.manager.ingress.hostname }}
+    - {{ .Values.manager.ingress.fqdn }}
     secretName: {{ include "siembol.manager.appname.fullname" $ }}-tls
   {{ end }}
   rules:
-  - host: {{ .Values.manager.ingress.hostname }}
+  - host: {{ .Values.manager.ingress.fqdn }}
     http:
       paths:
       - path: /
