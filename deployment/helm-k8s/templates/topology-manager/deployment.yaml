@@ -54,18 +54,5 @@ spec:
         env:
         - name: JAVA_OPTS
           value: {{ .Values.manager.javaOpts }}
-        volumeMounts:
-        {{ if .Values.tls.enabled -}}
-        - name: cacerts
-          mountPath: /etc/ssl/certs/java/cacerts
-          subPath: cacerts
-          readOnly: true        
-        {{ end -}}
-      volumes:
-      {{ if .Values.tls.enabled -}}
-      - name: cacerts
-        secret:
-          secretName: cacerts
-      {{- end }}
       restartPolicy: Always
       terminationGracePeriodSeconds: 300
