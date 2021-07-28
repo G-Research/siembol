@@ -63,7 +63,7 @@ storm:
   service:
     ui:
       name: storm-ui
-      port: 8080
+      port: 8085
   ingress:
     enabled: true
     fqdn: storm.local
@@ -107,10 +107,10 @@ ui:
     pullPolicy: Always
 
   appName: "config-editor-ui"
-  containerPort: 8083
+  containerPort: 8080
 
   service:
-    port: 8083
+    port: 8080
     intport: 80
 
   # Run with an ingress
