@@ -60,7 +60,7 @@ spec:
           mountPath: /etc/ssl/certs/java/cacerts
           subPath: cacerts
           readOnly: true        
-        {{ end -}}
+        {{- end }}
       restartPolicy: Always
       volumes:
       {{ if .Values.tls.enabled -}}
