@@ -7,21 +7,21 @@ Local Install
 ### 1. Run minikube.sh
 
 ```bash
-deployment/helm-k8s/quickstart_install/sh-scripts/minikube.sh
+deployment/quickstart_install/sh-scripts/minikube.sh
 ```
 or
 ```bash
-deployment/helm-k8s/quickstart_install/ps-scripts/minikube.ps1
+deployment/quickstart_install/ps-scripts/minikube.ps1
 ```
 
 ### 2. Install dependencies
 #### 1. Run dependencies.sh
 ```bash
-deployment/helm-k8s/quickstart_install/sh-scripts/dependencies.sh
+deployment/quickstart_install/sh-scripts/dependencies.sh
 ```
 or
 ```bash
-deployment/helm-k8s/quickstart_install/ps-scripts/dependencies.ps1
+deployment/quickstart_install/ps-scripts/dependencies.ps1
 ```
 
 ### 3. Prepare GitHub
@@ -44,11 +44,11 @@ deployment/helm-k8s/quickstart_install/ps-scripts/dependencies.ps1
 2. This will also initialise Zookeeper nodes.
 
 ```bash
-deployment/helm-k8s/quickstart_install/sh-scripts/demoInstall.sh
+deployment/quickstart_install/sh-scripts/demoInstall.sh
 ```
 or
 ```bash
-deployment/helm-k8s/quickstart_install/ps-scripts/demoInstall.ps1
+deployment/quickstart_install/ps-scripts/demoInstall.ps1
 ```
 
 ### 4. Siembol install
@@ -77,11 +77,11 @@ We are using Kafdrop UI to view topics and messages.  You can send messages to p
 
 1. To install this and create a kafka client pod:
 ```bash
-deployment/helm-k8s/quickstart_install/sh-scripts/kafkaExtra.sh
+deployment/quickstart_install/sh-scripts/kafkaExtra.sh
 ```
 or 
 ```bash
-deployment/helm-k8s/quickstart_install/ps-scripts/kafkaExtra.ps1
+deployment/quickstart_install/ps-scripts/kafkaExtra.ps1
 ```
 
 2. Exec into the kafka client pod:
@@ -102,11 +102,11 @@ If you're done poking about on a local instance, you can clean up with:
 
 1. For cleaning up siembol resources and dependencies:
 ```bash 
-deployment/helm-k8s/quickstart_install/sh-scripts/cleanUp.sh
+deployment/quickstart_install/sh-scripts/cleanUp.sh
 ```
 or 
 ```bash 
-deployment/helm-k8s/quickstart_install/ps-scripts/cleanUp.ps1
+deployment/quickstart_install/ps-scripts/cleanUp.ps1
 ```
 2. For deleting everything; delete the siembol minikube profile:
 ```bash
