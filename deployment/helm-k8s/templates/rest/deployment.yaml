@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ include "siembol.rest.fullname" $}}
+        app: {{ include "siembol.rest.fullname" $ }}
       name: {{ include "siembol.rest.fullname" $ }}
     spec:
       containers:
@@ -33,8 +33,8 @@ spec:
             memory: "512Mi"
             cpu: "500m"
           limits:
-            memory: "1024Mi"
-            cpu: "1500m"
+            memory: "2048Mi"
+            cpu: "1000m"
         securityContext:
           runAsUser: 101
         readinessProbe:
@@ -57,33 +57,27 @@ spec:
         env:
         - name: XDG_CONFIG_HOME
           value: /config/jgit/.config
-        {{ if .Values.tls.enabled -}}
         - name: JAVA_OPTS
-          value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
-        {{ end }}
+          value: {{ .Values.rest.javaOpts }}
         - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
               name: {{ include "siembol.rest.fullname" $ }}-secrets
               key: git
         volumeMounts:
-        {{ if .Values.tls.enabled -}}
         - name: cacerts
           mountPath: /etc/ssl/certs/java/cacerts
           subPath: cacerts
           readOnly: true        
-        {{ end -}}
         - name: rules-dir
-          mountPath: /tmp/siembol-config
+          mountPath: {{ .Values.rest.rulesDir }}
         - name: config-dir
           mountPath: /config
       restartPolicy: Always
       volumes:
-      {{ if .Values.tls.enabled -}}
       - name: cacerts
         secret:
           secretName: cacerts
-      {{- end }}
       - name: rules-dir
         emptyDir: {}
       - name: config-dir

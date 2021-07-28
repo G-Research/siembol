@@ -5,16 +5,20 @@ metadata:
   name: {{ include "siembol.ui.fullname" $ }}
   namespace: {{ .Values.namespace }}
   annotations:
+    {{ if .Values.certmanager.enabled -}}
     cert-manager.io/issuer: ca-issuer
+    {{ end }}
+    ingress.kubernetes.io/ssl-passthrough: "false"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
 spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
-    - {{ .Values.ui.ingress.hostname }}
+    - {{ .Values.ui.ingress.fqdn }}
     secretName: {{ include "siembol.ui.fullname" $ }}-tls
   {{ end }}
   rules:
-  - host: {{ .Values.ui.ingress.hostname }}
+  - host: {{ .Values.ui.ingress.fqdn }}
     http:
       paths:
       - path: /

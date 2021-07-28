@@ -5,6 +5,10 @@
 namespace: "siembol"
 environment: "dev"
 
+# Enable certmanager 
+certmanager:
+  enabled: true
+
 # Enable TLS via certmanager
 tls:
   enabled: true
@@ -62,7 +66,7 @@ storm:
       port: 8080
   ingress:
     enabled: true
-    hostname: storm.local
+    fqdn: storm.local
 
 
 # -----------------------------------------------------------------------------
@@ -79,6 +83,7 @@ rest:
   containerPort: 8081
   
   mountPath: "/opt/config-editor-rest"
+  rulesDir: "/tmp/siembol-config"
 
   configmap:
     name: "github-details"
@@ -87,7 +92,9 @@ rest:
     port: 8081
   ingress:
     enabled: true
-    hostname: rest.siembol.local
+    fqdn: rest.siembol.local
+  
+  javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
 
 # -----------------------------------------------------------------------------
 # config-editor-ui parameters
@@ -109,7 +116,7 @@ ui:
   # Run with an ingress
   ingress:
     enabled: true
-    hostname: siembol.local
+    fqdn: siembol.local
 
 
 # -----------------------------------------------------------------------------
@@ -118,7 +125,7 @@ ui:
 
 manager:
   appName: "storm-topology-manager"
-  serviceAccount: "storm-topology-manager"
+  serviceAccountName: "storm-topology-controller"
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
     tag: "latest"
@@ -126,6 +133,7 @@ manager:
   containerPort: 8082
 
   mountPath: "/opt/storm-topology-manager"
+  javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
 
   service:
     port: 8082
@@ -133,7 +141,7 @@ manager:
   # Run with an ingress
   ingress:
     enabled: true
-    hostname: topology-manager.siembol.local
+    fqdn: topology-manager.siembol.local
   
   cleanupjob:
     name: clean-lingering-siembol-jobs
@@ -157,7 +165,7 @@ response:
     pullPolicy: Always
 
   ingress:
-    hostname: response.siembol.local
+    fqdn: response.siembol.local
 
   service:
     port: 8080

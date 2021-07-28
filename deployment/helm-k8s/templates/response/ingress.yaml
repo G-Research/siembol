@@ -4,17 +4,19 @@ kind: Ingress
 metadata:
   name: {{ include "siembol.response.fullname" $ }}
   namespace: {{ .Values.namespace }}
+  {{ if .Values.certmanager.enabled -}}
   annotations:
     cert-manager.io/issuer: ca-issuer
+  {{ end }}
 spec:
   {{ if .Values.tls.enabled -}}
   tls:
     - hosts:
-      - {{ .Values.response.ingress.hostname }}
+      - {{ .Values.response.ingress.fqdn }}
       secretName: {{ .Values.response.appName }}-tls
   {{ end }}
   rules:
-    - host: {{ .Values.response.ingress.hostname }}
+    - host: {{ .Values.response.ingress.fqdn }}
       http:
         paths:
         - path: /health

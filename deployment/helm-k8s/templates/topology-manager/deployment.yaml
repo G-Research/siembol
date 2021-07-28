@@ -20,7 +20,7 @@ spec:
         app: {{ include "siembol.manager.appname.fullname" $ }}
       name: {{ include "siembol.manager.appname.fullname" $ }}
     spec:
-      serviceAccountName: {{ include "siembol.manager.serviceaccount.fullname" $ }}
+      serviceAccountName: {{ .Values.manager.serviceAccountName }}
       containers:
       - image: {{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}
         workingDir: {{ .Values.manager.mountPath }}
@@ -33,7 +33,7 @@ spec:
             memory: "128Mi"
             cpu: "500m"
           limits:
-            memory: "256Mi"
+            memory: "512Mi"
             cpu: "1000m"
         securityContext:
           runAsUser: 101
@@ -51,4 +51,17 @@ spec:
             scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
+        env:
+        - name: JAVA_OPTS
+          value: {{ .Values.manager.javaOpts }}
+        volumeMounts:
+        - name: cacerts
+          mountPath: /etc/ssl/certs/java/cacerts
+          subPath: cacerts
+          readOnly: true        
+      restartPolicy: Always
+      volumes:
+      - name: cacerts
+        secret:
+          secretName: cacerts
       terminationGracePeriodSeconds: 300
