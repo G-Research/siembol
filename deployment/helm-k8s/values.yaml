@@ -5,6 +5,9 @@
 namespace: "siembol"
 environment: "dev"
 
+certmanager:
+  enabled: true
+
 # Enable TLS via certmanager
 tls:
   enabled: true
