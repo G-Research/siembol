@@ -5,7 +5,7 @@ metadata:
   name: {{ include "siembol.ui.fullname" $ }}
   namespace: {{ .Values.namespace }}
   annotations:
-    {{- if .Values.certmanager.enabled -}}
+    {{ if .Values.certmanager.enabled -}}
     cert-manager.io/issuer: ca-issuer
     {{ end }}
     ingress.kubernetes.io/ssl-passthrough: "false"

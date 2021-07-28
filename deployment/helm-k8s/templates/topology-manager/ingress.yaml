@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "siembol.manager.appname.fullname" $ }}
   namespace: {{ .Values.namespace }}
-  {{- if .Values.certmanager.enabled -}}
+  {{ if .Values.certmanager.enabled -}}
   annotations:
     cert-manager.io/issuer: ca-issuer
   {{ end }}
