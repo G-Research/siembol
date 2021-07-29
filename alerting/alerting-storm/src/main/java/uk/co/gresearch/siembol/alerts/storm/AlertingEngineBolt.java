@@ -33,6 +33,7 @@ import static java.lang.Integer.min;
 
 public class AlertingEngineBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
+    private static final int MAX_RULES_LOG_SIZE = 500;
     private static final String EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during evaluating event: %s";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during initialising alerts engine";
     private static final String UPDATE_EXCEPTION_LOG = "Exception during alerts rules update: {}";
@@ -106,7 +107,7 @@ public class AlertingEngineBolt extends BaseRichBolt {
 
     private String getRulesListInfo(List<String> rulesList) {
         StringBuilder builder = new StringBuilder();
-        rulesList.forEach(x -> builder.append(x,0, min(100, x.length())));
+        rulesList.forEach(x -> builder.append(x,0, min(MAX_RULES_LOG_SIZE, x.length())));
         return builder.toString();
     }
 
