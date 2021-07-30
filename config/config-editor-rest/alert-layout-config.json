@@ -313,6 +313,13 @@
                     }
                 }
             }
+        },
+        "$..['zk.path']": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "textarea"
+                }
+            }
         }
     },
     "importers_layout": {
