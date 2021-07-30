@@ -314,7 +314,7 @@
                 }
             }
         },
-        "$..['zk.url']": {
+        "$..['zk.path']": {
             "widget": {
                 "formlyConfig": {
                     "type": "textarea"
