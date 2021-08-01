@@ -37,7 +37,7 @@
     "json-schema": "^0.3.0",
     "lodash": "^4.17.21",
     "material-design-icons": "^3.0.1",
-    "monaco-editor": "^0.24.0",
+    "monaco-editor": "^0.26.1",
     "ng-block-ui": "^3.0.2",
     "ngx-monaco-editor": "^9.0.0",
     "ngx-popper": "^7.0.0",
