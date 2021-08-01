@@ -39,7 +39,7 @@
     "material-design-icons": "^3.0.1",
     "monaco-editor": "^0.24.0",
     "ng-block-ui": "^3.0.2",
-    "ngx-monaco-editor": "^9.0.0",
+    "ngx-monaco-editor": "^12.0.0",
     "ngx-popper": "^7.0.0",
     "ngx-scrollbar": "^7.5.6",
     "ngx-text-diff": "^0.6.0",
