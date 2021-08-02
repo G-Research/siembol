@@ -152,7 +152,7 @@ export class SchemaService {
       this.modelOrder[path] = props;
       for (const property of props) {
         const thingy = obj.properties[property];
-        const isOptional =  thingy.widget? thingy.widget.optional: false;
+        const isOptional =  thingy.widget?.optional;
         const isObject = thingy.type === 'object';
         if (isOptional && isObject) {
           this.optionalObjects.push(property);
