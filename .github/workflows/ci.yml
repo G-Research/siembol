@@ -114,11 +114,11 @@ jobs:
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ !endsWith(steps.info.outputs.version, 'SNAPSHOT') }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, 'SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
-            type=raw,value=SNAPSHOT,enable=${{ endsWith(steps.info.outputs.version, 'SNAPSHOT') }}
+            type=raw,value=snapshot ,enable=${{ endsWith(steps.info.outputs.version, 'SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -186,7 +186,7 @@ jobs:
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
-            type=raw,value=SNAPSHOT,enable=${{ endsWith(steps.info.outputs.version, 'SNAPSHOT') }}
+            type=raw,value=snapshot ,enable=${{ endsWith(steps.info.outputs.version, 'SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -278,10 +278,9 @@ jobs:
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
-            type=raw,value=SNAPSHOT,enable=${{ endsWith(steps.info.outputs.version, 'dev') }}
+            type=raw,value=snapshot ,enable=${{ endsWith(steps.info.outputs.version, 'dev') }}
           labels: |
             org.opencontainers.image.title=siembol-config-editor-ui
-
       - name: Build and export Docker image
         uses: docker/build-push-action@v2
         with:
