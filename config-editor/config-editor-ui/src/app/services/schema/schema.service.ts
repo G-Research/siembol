@@ -148,7 +148,6 @@ export class SchemaService {
     }
     if (obj.type === 'object' && typeof obj.properties === typeof {}) {
       path = path.endsWith('/') ? path + propKey : path + '/' + propKey;
-      // const requiredProperties = obj.required || [];
       const props = Object.keys(obj.properties);
       this.modelOrder[path] = props;
       for (const property of props) {
