@@ -11,6 +11,7 @@ import { TestStoreService } from './test-store.service';
 import { AdminConfig, ConfigToImport, Importers, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
+import { AppConfigService } from '../app-config.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -82,7 +83,12 @@ export class ConfigStoreService {
     return this.clipboardStoreService;
   }
 
-  constructor(private user: string, private metaDataMap: UiMetadata, private configLoaderService: ConfigLoaderService) {
+  constructor(
+    private user: string, 
+    private metaDataMap: UiMetadata, 
+    private configLoaderService: ConfigLoaderService, 
+    private configService: AppConfigService
+  ) {
     this.clipboardStoreService = new ClipboardStoreService(this.configLoaderService, this.store);
     this.testStoreService = new TestStoreService(
       this.user,
@@ -108,7 +114,9 @@ export class ConfigStoreService {
 
     this.store.next(newState);
     this.loadPullRequestStatus();
-    this.loadImporters();
+    if (this.configService.useImporters) {
+      this.loadImporters();
+    }
   }
 
   updateAdmin(config: AdminConfig) {

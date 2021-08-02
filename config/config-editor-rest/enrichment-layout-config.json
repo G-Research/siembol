@@ -32,6 +32,15 @@
         }
       }
     },
+    "$..table_mapping": {
+      "widget": {
+        "formlyConfig": {
+          "validators": {
+            "validation": ["enrichmentTableMapping"]
+          }
+        }
+      }
+    },
     "$..enriching_fields.items": {
       "widget": {
         "formlyConfig": {

@@ -3,7 +3,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule, ErrorHandler } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -79,6 +79,12 @@ export function configServiceFactory(config: AppConfigService) {
 
 export function buildInfoServiceFactory(config: AppConfigService) {
   return () => config.loadBuildInfo();
+}
+
+export function enrichmentMappingValidator(control: FormControl): ValidationErrors {
+  return (control.value.tags && control.value.tags.length > 0) 
+    || (control.value.enriching_fields && control.value.enriching_fields.length > 0) 
+    ? null : {'enrichmentTableMapping': true};
 }
 
 const PROD_PROVIDERS = [
@@ -205,6 +211,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { component: AdminTabTypeComponent, name: 'admin-tabs' },
         { component: UnionTypeComponent, name: 'multischema' },
         { component: TabArrayTypeComponent, name: 'tab-array' },
+      ],
+      validators: [
+        { name: 'enrichmentTableMapping', validation: enrichmentMappingValidator},
       ],
       validationMessages: [
         { message: 'This field is required', name: 'required' },

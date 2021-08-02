@@ -148,14 +148,14 @@ export class SchemaService {
     }
     if (obj.type === 'object' && typeof obj.properties === typeof {}) {
       path = path.endsWith('/') ? path + propKey : path + '/' + propKey;
-      const requiredProperties = obj.required || [];
+      // const requiredProperties = obj.required || [];
       const props = Object.keys(obj.properties);
       this.modelOrder[path] = props;
       for (const property of props) {
         const thingy = obj.properties[property];
-        const isRequired = requiredProperties.includes(property);
+        const isOptional =  thingy.widget? thingy.widget.optional: false;
         const isObject = thingy.type === 'object';
-        if (!isRequired && isObject) {
+        if (isOptional && isObject) {
           this.optionalObjects.push(property);
           if (thingy.default) {
             delete thingy.default;
