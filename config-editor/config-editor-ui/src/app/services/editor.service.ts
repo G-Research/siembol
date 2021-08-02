@@ -136,7 +136,7 @@ export class EditorService {
     const metaDataMap = this.appService.getUiMetadataMap(serviceName);
     const user = this.appService.user;
     const configLoader = new ConfigLoaderService(this.http, this.config, serviceName, metaDataMap);
-    const configStore = new ConfigStoreService(user, metaDataMap, configLoader);
+    const configStore = new ConfigStoreService(user, metaDataMap, configLoader, this.config);
     const repositoryLinks$ = this.appService.getRepositoryLinks(serviceName);
     return [metaDataMap, user, configLoader, configStore, repositoryLinks$];
   }

@@ -22,6 +22,7 @@ export interface AppConfig {
   homeHelpLinks?: HomeHelpLink[];
   historyMaxSize?: number;
   blockingTimeout?: number;
+  useImporters?: boolean;
 }
 
 export interface HomeHelpLink {
