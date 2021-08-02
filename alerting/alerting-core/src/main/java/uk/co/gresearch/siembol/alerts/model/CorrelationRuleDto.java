@@ -24,7 +24,7 @@ public class CorrelationRuleDto {
     private String ruleDescription;
 
     @JsonProperty("correlation_attributes")
-    @Attributes(description = "The attributes that specify the alert correlation evaluation")
+    @Attributes(required = true, description = "The attributes that specify the alert correlation evaluation")
     private CorrelationAttributesDto correlationAttributes;
 
     @JsonProperty("tags")
