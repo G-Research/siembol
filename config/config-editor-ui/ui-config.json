@@ -5,6 +5,7 @@
     "authType": "disabled",
     "historyMaxSize": 5,
     "blockingTimeout": "30000",
+    "useImporters": true,
     "homeLinks": [
         {
             "icon": "library_books",
