@@ -70,7 +70,7 @@ public class PatternExtractor extends ParserExtractor {
             }
 
             //NOTE: we rename variables since java does not support '_', ':'
-            sb.append(VARIABLE_NAME + names.size());
+            sb.append(VARIABLE_NAME).append(names.size());
             names.add(name);
         }
 
@@ -82,9 +82,7 @@ public class PatternExtractor extends ParserExtractor {
         sb.append(strPattern, lastIndex, strPattern.length());
         Pattern pattern = Pattern.compile(sb.toString(), flags);
 
-        return new SimpleEntry<Pattern, List<String>>(
-                pattern,
-                names);
+        return new SimpleEntry<>(pattern, names);
     }
 
     public static Builder<PatternExtractor> builder() {
