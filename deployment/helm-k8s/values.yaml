@@ -87,6 +87,7 @@ rest:
   rulesDir: "/tmp/siembol-config"
 
   configmap:
+    enabled: true
     name: "github-details"
 
   service:

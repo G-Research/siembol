@@ -52,9 +52,11 @@ spec:
             scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
+        {{ if .Values.rest.configmap.enabled -}}
         envFrom:
         - configMapRef:
             name: {{ .Values.rest.configmap.name }}
+        {{ end }}
         env:
         - name: XDG_CONFIG_HOME
           value: /config/jgit/.config
