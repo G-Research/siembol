@@ -74,6 +74,7 @@ storm:
 # -----------------------------------------------------------------------------
 
 rest:
+  enabled: true
   image: 
     repository: "gresearchdev/siembol-config-editor-rest"
     tag: "latest"
@@ -101,6 +102,7 @@ rest:
 # -----------------------------------------------------------------------------
 
 ui:
+  enabled: true
   image: 
     repository: "gresearchdev/siembol-config-editor-ui"
     tag: "latest"
@@ -124,6 +126,7 @@ ui:
 # -----------------------------------------------------------------------------
 
 manager:
+  enabled: true
   appName: "storm-topology-manager"
   serviceAccountName: "storm-topology-controller"
   image: 

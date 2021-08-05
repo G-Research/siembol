@@ -1,3 +1,4 @@
+{{- if .Values.rest.enabled -}}
 kind: Service
 apiVersion: v1
 metadata:
@@ -12,4 +13,5 @@ spec:
   - protocol: TCP
     port: {{ .Values.rest.service.port }}
     name: web
+{{- end -}}
   
