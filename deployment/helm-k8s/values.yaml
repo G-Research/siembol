@@ -68,7 +68,18 @@ storm:
     enabled: true
     fqdn: storm.local
 
-
+siembol:
+  rest:
+    enabled: false
+    ingress:
+      enabled: false
+  manager:
+    enabled: false
+    ingress:
+      enabled: false
+  ui:
+    image:
+      tag: "1.1.0"
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
 # -----------------------------------------------------------------------------
@@ -169,6 +180,7 @@ response:
     pullPolicy: Always
 
   ingress:
+    enabled: false
     fqdn: response.siembol.local
 
   service:
