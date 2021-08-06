@@ -47,6 +47,11 @@
           "hideExpression": "model.time_computation_type !== 'event_time'"
         }
       }
+    },
+    "$..rules..rule_protection": {
+      "widget": {
+        "optional": true
+      }
     }
   },
   "admin_config_layout": {

@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>1.3.3-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.3.1-SNAPSHOT</version>
+            <version>1.3.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -65,12 +65,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.31</version>
+            <version>1.7.32</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.31</version>
+            <version>1.7.32</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

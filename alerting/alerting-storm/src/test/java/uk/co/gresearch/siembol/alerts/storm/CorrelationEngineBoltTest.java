@@ -15,8 +15,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.common.AlertingTags;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
@@ -24,10 +24,7 @@ import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -123,8 +120,8 @@ public class CorrelationEngineBoltTest {
     AlertingStormAttributesDto stormAttributes;
     ZooKeeperAttributesDto zookeperAttributes;
 
-    ZooKeeperConnector zooKeeperConnector;
-    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    ZooKeeperCompositeConnector zooKeeperConnector;
+    ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
@@ -137,11 +134,11 @@ public class CorrelationEngineBoltTest {
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperCompositeConnectorFactory.class);
 
-        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
+        zooKeeperConnector = Mockito.mock(ZooKeeperCompositeConnector.class);
         when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
-        when(zooKeeperConnector.getData()).thenReturn(simpleCorrelationRules);
+        when(zooKeeperConnector.getData()).thenReturn(Arrays.asList(simpleCorrelationRules));
 
         when(tuple.getStringByField(eq(TupleFieldNames.EVENT.toString()))).thenReturn(alert1, alert2, alert1);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());

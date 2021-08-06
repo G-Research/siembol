@@ -218,6 +218,11 @@
                     ]
                 }
             }
+        },
+        "$..rules..rule_protection": {
+            "widget": {
+                "optional": true
+            }
         }
     },
     "admin_config_layout": {
@@ -311,6 +316,13 @@
                     "templateOptions": {
                         "link": "https://kafka.apache.org/0102/documentation.html#producerconfigs"
                     }
+                }
+            }
+        },
+        "$..['zk.path']": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "textarea"
                 }
             }
         }

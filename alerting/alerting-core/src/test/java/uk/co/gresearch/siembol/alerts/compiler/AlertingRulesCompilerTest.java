@@ -4,14 +4,18 @@ import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.co.gresearch.siembol.alerts.common.CompositeAlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
+import uk.co.gresearch.siembol.alerts.engine.AlertingEngineImpl;
+
+import java.util.Arrays;
 
 public class AlertingRulesCompilerTest {
     /**
      *{
      *  "rules_version" :1,
-     *  "tags" : [ { "tag_name" : "detection:source", "tag_value" : "alerts" } ],
+     *  "tags" : [ { "tag_name" : "detection_source", "tag_value" : "alerts" } ],
      *  "rules" : [ {
      *      "rule_name" : "siembol_alert_generic",
      *      "rule_version" : 1,
@@ -297,6 +301,28 @@ public class AlertingRulesCompilerTest {
         Assert.assertEquals(EvaluationResult.MATCH, matchResult2.getAttributes().getEvaluationResult());
         Assert.assertEquals(1, matchResult2.getAttributes().getOutputEvents().size());
         Assert.assertEquals("secret", matchResult2.getAttributes().getOutputEvents().get(0).get("sensor"));
+    }
+
+    @Test
+    public void compileRulesListSizeOne() {
+        AlertingResult compileResult = compiler.compile(Arrays.asList(alertRules));
+        Assert.assertEquals(AlertingResult.StatusCode.OK, compileResult.getStatusCode());
+        Assert.assertNotNull(compileResult.getAttributes().getEngine());
+        Assert.assertTrue(compileResult.getAttributes().getEngine() instanceof AlertingEngineImpl);
+    }
+
+    @Test
+    public void compileRulesListSizeTwo() {
+        AlertingResult compileResult = compiler.compile(Arrays.asList(alertRules, alertRules));
+        Assert.assertEquals(AlertingResult.StatusCode.OK, compileResult.getStatusCode());
+        Assert.assertNotNull(compileResult.getAttributes().getEngine());
+        Assert.assertTrue(compileResult.getAttributes().getEngine() instanceof CompositeAlertingEngine);
+    }
+
+    @Test
+    public void compileRulesListInvalid() {
+        AlertingResult compileResult = compiler.compile(Arrays.asList(alertRules, "INVALID"));
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, compileResult.getStatusCode());
     }
 }
 

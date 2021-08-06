@@ -64,6 +64,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   disableEditingFeatures: boolean;
   importers$: Observable<Importers>;
   importers: Importers;
+  useImporters: boolean;
 
   private ngUnsubscribe = new Subject();
   private filteredConfigs: Config[];
@@ -95,6 +96,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
     this.deploymentHistory$ = this.configStore.deploymentHistory$;
     this.importers$ = this.configStore.importers$;
+    this.useImporters = this.configService.useImporters;
   }
 
   ngOnInit() {

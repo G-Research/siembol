@@ -49,7 +49,6 @@ public class CorrelationRule extends AbstractRule {
             }
 
             Map<String, Object> outAlert = createOutputAlert(alert);
-            addOutputFieldsToEvent(outAlert);
             alertCounters.remove(key);
             return AlertingResult.fromEvaluationResult(EvaluationResult.MATCH, outAlert);
         } catch (Exception e) {
