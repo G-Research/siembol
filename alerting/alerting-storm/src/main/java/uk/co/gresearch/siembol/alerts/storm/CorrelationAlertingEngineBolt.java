@@ -4,13 +4,14 @@ import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Map;
 import static org.apache.storm.utils.TupleUtils.isTick;
 import static org.apache.storm.utils.TupleUtils.putTickFrequencyIntoComponentConfig;
@@ -21,16 +22,17 @@ public class CorrelationAlertingEngineBolt extends AlertingEngineBolt {
     private final int cleanIntervalSec;
 
     public CorrelationAlertingEngineBolt(AlertingStormAttributesDto attributes,
-                                         ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
+                                         ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory) {
         super(attributes, zooKeeperConnectorFactory);
         cleanIntervalSec = attributes.getAlertingEngineCleanIntervalSec();
     }
 
-    protected AlertingEngine getAlertingEngine(String rules) {
+    @Override
+    protected AlertingEngine getAlertingEngine(List<String> rulesList) {
         try {
             AlertingResult engineResult =  AlertingCorrelationRulesCompiler
                     .createAlertingCorrelationRulesCompiler()
-                    .compile(rules);
+                    .compile(rulesList);
             if (engineResult.getStatusCode() != AlertingResult.StatusCode.OK) {
                 String errorMsg = String.format(COMPILER_EXCEPTION_MSG_FORMAT,
                         engineResult.getAttributes().getException());

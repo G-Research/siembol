@@ -15,8 +15,7 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.*;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
@@ -25,14 +24,16 @@ import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static java.lang.Integer.min;
+
 public class AlertingEngineBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
+    private static final int MAX_RULES_LOG_SIZE = 500;
     private static final String EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during evaluating event: %s";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during initialising alerts engine";
     private static final String UPDATE_EXCEPTION_LOG = "Exception during alerts rules update: {}";
@@ -51,17 +52,18 @@ public class AlertingEngineBolt extends BaseRichBolt {
     protected final AtomicReference<AlertingEngine> AlertingEngine = new AtomicReference<>();
 
     private OutputCollector collector;
-    private ZooKeeperConnector zooKeeperConnector;
-    private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private ZooKeeperCompositeConnector zooKeeperConnector;
+    private final ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
     private final ZooKeeperAttributesDto zookeperAttributes;
 
-    AlertingEngineBolt(AlertingStormAttributesDto attributes, ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
+    AlertingEngineBolt(AlertingStormAttributesDto attributes,
+                       ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory) {
         this.zookeperAttributes = attributes.getZookeperAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
     }
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes) {
-        this(attributes, new ZooKeeperConnectorFactoryImpl());
+        this(attributes, new ZooKeeperCompositeConnectorFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")
@@ -90,10 +92,10 @@ public class AlertingEngineBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_UPDATE_START);
 
-            String rules = zooKeeperConnector.getData();
-            LOG.info(String.format(ENGINE_UPDATE_TRY_MSG_FORMAT, rules));
+            List<String> rulesList = zooKeeperConnector.getData();
+            LOG.info(String.format(ENGINE_UPDATE_TRY_MSG_FORMAT, getRulesListInfo(rulesList)));
 
-            AlertingEngine engine = getAlertingEngine(rules);
+            AlertingEngine engine = getAlertingEngine(rulesList);
             AlertingEngine.set(engine);
 
             LOG.info(ENGINE_UPDATE_COMPLETED);
@@ -103,9 +105,15 @@ public class AlertingEngineBolt extends BaseRichBolt {
         }
     }
 
-    protected AlertingEngine getAlertingEngine(String rules) {
+    private String getRulesListInfo(List<String> rulesList) {
+        StringBuilder builder = new StringBuilder();
+        rulesList.forEach(x -> builder.append(x,0, min(MAX_RULES_LOG_SIZE, x.length())));
+        return builder.toString();
+    }
+
+    protected AlertingEngine getAlertingEngine(List<String> rulesList) {
         try {
-            AlertingResult engineResult =  AlertingRulesCompiler.createAlertingRulesCompiler().compile(rules);
+            AlertingResult engineResult =  AlertingRulesCompiler.createAlertingRulesCompiler().compile(rulesList);
             if (engineResult.getStatusCode() != AlertingResult.StatusCode.OK) {
                 String errorMsg = String.format(COMPILER_EXCEPTION_MSG_FORMAT,
                         engineResult.getAttributes().getException());

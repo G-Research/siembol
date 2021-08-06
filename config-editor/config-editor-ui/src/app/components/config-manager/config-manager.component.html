@@ -23,7 +23,7 @@
                     </div>
                     <div class="add-button">
                         <a 
-                          *ngIf="(importers$ | async)?.config_importers.length == 1" 
+                          *ngIf="useImporters && (importers$ | async)?.config_importers.length == 1" 
                           mat-button 
                           color="primary" 
                           title="Import Config from Clipboard" 
@@ -31,7 +31,7 @@
                             <mat-icon>file_upload</mat-icon>
                         </a>
                         <a 
-                          *ngIf="(importers$ | async)?.config_importers.length > 1"
+                          *ngIf="useImporters && (importers$ | async)?.config_importers.length > 1"
                           mat-button 
                           [matMenuTriggerFor]="menu" 
                           color="primary" 

@@ -15,18 +15,15 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnector;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -35,7 +32,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class AlertingEngineBoltTest {
-    private static ObjectReader JSON_READER = new ObjectMapper()
+    private static final ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
 
     /**
@@ -127,8 +124,8 @@ public class AlertingEngineBoltTest {
     AlertingStormAttributesDto stormAttributes;
     ZooKeeperAttributesDto zookeperAttributes;
 
-    ZooKeeperConnector zooKeeperConnector;
-    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    ZooKeeperCompositeConnector zooKeeperConnector;
+    ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
     ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
@@ -140,11 +137,11 @@ public class AlertingEngineBoltTest {
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
+        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperCompositeConnectorFactory.class);
 
-        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
+        zooKeeperConnector = Mockito.mock(ZooKeeperCompositeConnector.class);
         when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
-        when(zooKeeperConnector.getData()).thenReturn(simpleTestRules);
+        when(zooKeeperConnector.getData()).thenReturn(Collections.singletonList(simpleTestRules));
 
         when(tuple.getStringByField(eq(TupleFieldNames.EVENT.toString()))).thenReturn(event.trim());
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
@@ -188,13 +185,13 @@ public class AlertingEngineBoltTest {
                 .thenReturn(event.replaceAll("is_alert", "unknown"));
 
         AlertingEngineBolt.execute(tuple);
-        verify(collector, never()).emit(ArgumentMatchers.<List<Object>>any());
+        verify(collector, never()).emit(ArgumentMatchers.any());
         verify(collector, times(1)).ack(eq(tuple));
     }
 
     @Test
     public void testMatchRuleCorrelation() throws IOException {
-        when(zooKeeperConnector.getData()).thenReturn(rulesForCorrelation);
+        when(zooKeeperConnector.getData()).thenReturn(Collections.singletonList(rulesForCorrelation));
         AlertingEngineBolt.prepare(null, null, collector);
 
         AlertingEngineBolt.execute(tuple);
@@ -210,6 +207,7 @@ public class AlertingEngineBoltTest {
         Assert.assertFalse(alerts.get(0).isVisibleAlert());
 
         Assert.assertEquals("siembol_alert_generic_v1", alerts.get(0).getFullRuleName());
+        Assert.assertTrue(alerts.get(0).getCorrelationKey().isPresent());
         Assert.assertEquals("1", alerts.get(0).getCorrelationKey().get());
         Assert.assertEquals(100, alerts.get(0).getMaxDayMatches());
         Assert.assertEquals(30, alerts.get(0).getMaxHourMatches());

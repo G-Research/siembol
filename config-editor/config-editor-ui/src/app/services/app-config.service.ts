@@ -102,6 +102,10 @@ export class AppConfigService {
     return this._config.blockingTimeout ? this._config.blockingTimeout : 30000;
   }
 
+  get useImporters(): boolean {
+    return this._config.useImporters ? true : false;
+  }
+
   private loadConfig(): Promise<any> {
     return this.http
       .get('config/ui-config.json')

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.co.gresearch.siembol.alerts.common.*;
+import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 
 import java.util.*;
 
@@ -89,7 +90,7 @@ public class AlertingEngineImpl implements AlertingEngine {
 
     public static class Builder {
         private static final String MISSING_ARGUMENTS = "Missing required alerting engine properties";
-        private String sourceField = "source_type";
+        private String sourceField = SiembolMessageFields.SENSOR_TYPE.toString();
         private String wildcardSource = "*";
         private List<Pair<String, Rule>> rules;
         private Map<String, List<Rule>> sourceToRulesTable = new HashMap<>();
