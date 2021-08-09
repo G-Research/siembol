@@ -5,6 +5,17 @@
 namespace: "siembol"
 environment: "dev"
 
+# -----------------------------------------------------------------------------
+# Choose apps to deploy - default is 'all', you can choose a subset of 
+# apps to deploy by replacing 'all' with the names of the chosen apps, e.g.
+# enabled_apps: 
+# - ui
+# - rest
+# - manager
+# -----------------------------------------------------------------------------
+enabled_apps: 
+- all
+
 # Enable certmanager 
 certmanager:
   enabled: true
@@ -68,12 +79,12 @@ storm:
     enabled: true
     fqdn: storm.local
 
+
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
 # -----------------------------------------------------------------------------
 
 rest:
-  enabled: true
   image: 
     repository: "gresearchdev/siembol-config-editor-rest"
     tag: "latest"
@@ -102,7 +113,6 @@ rest:
 # -----------------------------------------------------------------------------
 
 ui:
-  enabled: true
   image: 
     repository: "gresearchdev/siembol-config-editor-ui"
     tag: "latest"
@@ -126,7 +136,6 @@ ui:
 # -----------------------------------------------------------------------------
 
 manager:
-  enabled: true
   appName: "storm-topology-manager"
   serviceAccountName: "storm-topology-controller"
   serviceAccountEnabled: true
@@ -161,7 +170,6 @@ manager:
 # siembol response parameters
 # -----------------------------------------------------------------------------
 response:
-  enabled: false # flag to deploy siembol-response, false by default
   appName: "response"
   image:
     name: "gresearchdev/siembol-responding-stream"

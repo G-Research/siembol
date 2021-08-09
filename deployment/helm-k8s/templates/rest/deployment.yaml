@@ -1,4 +1,4 @@
-{{- if .Values.rest.enabled -}}
+{{- if or (has "rest" .Values.enabled_apps) (has "all" .Values.enabled_apps) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
