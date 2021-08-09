@@ -4,9 +4,6 @@ kind: Service
 metadata:
   name: {{ include "siembol.ui.fullname" $ }}
   namespace: {{ .Values.namespace }}
-  {{ range .Values.enabled_apps -}}
-  {{ . }}: "true"
-  {{- end }}
 spec:
   selector:
     app: {{ include "siembol.ui.fullname" $ }}
