@@ -17,6 +17,10 @@ sources:
 - https://github.com/G-Research/charts/src/storm
 - https://github.com/G-Research/siembol/deployment/helm-k8s
 
+dependencies:
+  - name: siembol
+    version: ~0.1.5
+    repository: https://g-research.github.io/charts/
 
 replicaCount: 1
 
