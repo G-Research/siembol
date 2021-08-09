@@ -15,7 +15,7 @@ public class AlertingRulesCompilerTest {
     /**
      *{
      *  "rules_version" :1,
-     *  "tags" : [ { "tag_name" : "detection:source", "tag_value" : "alerts" } ],
+     *  "tags" : [ { "tag_name" : "detection_source", "tag_value" : "alerts" } ],
      *  "rules" : [ {
      *      "rule_name" : "siembol_alert_generic",
      *      "rule_version" : 1,

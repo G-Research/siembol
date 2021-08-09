@@ -47,7 +47,8 @@ public class CorrelationEngineImpl implements AlertingEngine {
                 exceptionsEvents.add(result.getAttributes().getEvent());
             } else if (result.getAttributes().getEvaluationResult() == EvaluationResult.MATCH) {
                 Map<String, Object> outAlert = result.getAttributes().getEvent();
-                outputFields.forEach(x -> outAlert.putIfAbsent(x.getKey(), x.getValue()));
+                outputFields.forEach(x -> outAlert.put(x.getKey(), x.getValue()));
+                correlationRule.addOutputFieldsToEvent(outAlert);
                 outputCorrelationAlerts.add(outAlert);
             }
         }
