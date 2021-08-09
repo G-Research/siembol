@@ -65,25 +65,18 @@ export function replaceEscaped(s:string): string {
 }
 
 function replaceSquaredBrackets(s: string): string {
-  const re = /(?<!\\)\[.*?(?<!\\)\]/;
-  let match;
-  while((match = re.exec(s)) !== null) {
-    s = s.replace(match, DUMMY_VARIABLE_REGEX);
-  }
-  return s;
+  return replace(s, /(?<!\\)\[.*?(?<!\\)\]/);
 }
 
 function replaceEscapedSequences(s: string): string {
-  const re = /\\Q.*?(?:\\E|$)/;
-  let match;
-  while((match = re.exec(s)) !== null) {
-    s = s.replace(match, DUMMY_VARIABLE_REGEX);
-  } 
-  return s;
+  return replace(s, /\\Q.*?(?:\\E|$)/);
 }
 
 function replaceEscapedCharacters(s: string): string {
-  const re = /\\./;
+  return replace(s, /\\./);
+}
+
+function replace(s: string, re: RegExp): string {
   let match;
   while((match = re.exec(s)) !== null) {
     s = s.replace(match, DUMMY_VARIABLE_REGEX);
