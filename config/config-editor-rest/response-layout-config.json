@@ -17,6 +17,9 @@
         "$..matchers.items.properties.data": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "type": "textarea",
                     "wrappers": ["form-field", "help-link"],
                     "templateOptions": {
@@ -31,6 +34,9 @@
         "$..oneOf[?(@.title == 'array_markdown_table_formatter')]..including_fields": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
@@ -41,6 +47,9 @@
         "$..oneOf[?(@.title == 'array_markdown_table_formatter')]..excluding_fields": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
@@ -51,6 +60,9 @@
         "$..oneOf[?(@.title == 'array_reducer')]..properties.including_fields": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
@@ -61,6 +73,9 @@
         "$..oneOf[?(@.title == 'array_reducer')]..excluding_fields": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
@@ -71,6 +86,9 @@
         "$..oneOf[?(@.title == 'markdown_table_formatter')]..including_fields": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
@@ -81,6 +99,9 @@
         "$..oneOf[?(@.title == 'markdown_table_formatter')]..excluding_fields": {
             "widget": {
                 "formlyConfig": {
+                    "validators": {
+                        "validation": ["regex"]
+                    },
                     "wrappers": ["help-link"],
                     "templateOptions": {
                         "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"

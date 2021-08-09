@@ -58,6 +58,17 @@
         }
       }
     },
+    "$..parser_extractors..regular_expressions.items": {
+      "widget": {
+        "formlyConfig": {
+          "validators": {
+            "validation": [
+              "regex"
+            ]
+          }
+        }
+      }
+    },
     "$..parser_extractors..should_match_pattern": {
       "widget": {
         "formlyConfig": {
@@ -330,6 +341,9 @@
     "$..attributes..validation_regex": {
       "widget": {
         "formlyConfig": {
+          "validators": {
+            "validation": ["regex"]
+          },
           "wrappers": [
             "form-field",
             "help-link"
@@ -343,6 +357,9 @@
     "$..attributes..patterns..pattern": {
       "widget": {
         "formlyConfig": {
+          "validators": {
+            "validation": ["regex"]
+          },
           "wrappers": [
             "form-field",
             "help-link"
@@ -356,6 +373,9 @@
     "$..transformations..including_fields": {
       "widget": {
         "formlyConfig": {
+          "validators": {
+            "validation": ["regex"]
+          },
           "wrappers": [
             "panel",
             "help-link"
@@ -369,6 +389,9 @@
     "$..transformations..excluding_fields": {
       "widget": {
         "formlyConfig": {
+          "validators": {
+            "validation": ["regex"]
+          },
           "wrappers": [
             "panel",
             "help-link"
@@ -382,6 +405,9 @@
     "$..transformations..message_filter..pattern": {
       "widget": {
         "formlyConfig": {
+          "validators": {
+            "validation": ["regex"]
+          },
           "wrappers": [
             "form-field",
             "help-link"

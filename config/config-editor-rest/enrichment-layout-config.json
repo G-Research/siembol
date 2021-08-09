@@ -51,6 +51,9 @@
     "$..data": {
       "widget": {
         "formlyConfig": {
+          "validators": {
+            "validation": ["regexConditional"]
+          },
           "type": "textarea",
           "wrappers": ["form-field", "help-link"],
           "templateOptions": {

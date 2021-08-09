@@ -47,14 +47,27 @@
     "$..json_path": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea"
+          "type": "textarea",
+          "validators": {
+            "validation": ["jsonpath"]
+          }
         }
       }
     },
     "$..expected_pattern": {
       "widget": {
         "formlyConfig": {
-          "type": "textarea"
+          "type": "textarea",
+          "validators": {
+            "validation": ["regex"]
+          },
+          "wrappers": [
+            "form-field",
+            "help-link"
+          ],
+          "templateOptions": {
+            "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
+          }
         }
       }
     },

@@ -72,6 +72,7 @@ import { UrlHistoryService } from './services/url-history.service';
 import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { validateJsonPath, validateRegex, validateRegexConditional } from './commons/validation-functions';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -206,6 +207,11 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { component: UnionTypeComponent, name: 'multischema' },
         { component: TabArrayTypeComponent, name: 'tab-array' },
       ],
+      validators: [
+        {name: 'jsonpath', validation: validateJsonPath},
+        {name: 'regex', validation: validateRegex},
+        {name: 'regexConditional', validation: validateRegexConditional},
+      ],
       validationMessages: [
         { message: 'This field is required', name: 'required' },
         { message: 'should be null', name: 'null' },
@@ -216,6 +222,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { message: 'Min items required', name: 'minItems' },
         { message: 'Max items', name: 'maxItems' },
         { message: 'Json is not valid', name: 'invalidJson' },
+        { message: 'Invalid regex', name: 'regexConditional' },
+        { message: 'Invalid regex', name: 'regex' },
+        { message: 'Invalid json path', name: 'jsonpath' },
       ],
       wrappers: [
         { component: PanelWrapperComponent, name: 'panel' },
