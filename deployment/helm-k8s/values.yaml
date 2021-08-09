@@ -177,7 +177,7 @@ response:
     pullPolicy: Always
 
   ingress:
-    enabled: false
+    enabled: true
     fqdn: response.siembol.local
 
   service:
