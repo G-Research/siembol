@@ -1,4 +1,4 @@
-{{- if or (has "ui" .Values.enabled_apps) (has "all" .Values.enabled_apps) -}}
+{{- if (has "ui" .Values.enabled_apps) -}}
 {{- if .Values.ui.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress

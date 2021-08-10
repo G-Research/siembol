@@ -6,15 +6,12 @@ namespace: "siembol"
 environment: "dev"
 
 # -----------------------------------------------------------------------------
-# Choose apps to deploy - default is 'all', you can choose a subset of 
-# apps to deploy by replacing 'all' with the names of the chosen apps, e.g.
-# enabled_apps: 
-# - ui
-# - rest
-# - manager
+# Default list of apps to deploy
 # -----------------------------------------------------------------------------
 enabled_apps: 
-- all
+- ui
+- rest
+- manager
 
 # Enable certmanager 
 certmanager:
