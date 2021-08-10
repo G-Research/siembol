@@ -8,9 +8,10 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigToImport, Importers, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
+import { AppConfigService } from '../app-config.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -37,10 +38,15 @@ const initialPullRequestState: PullRequestInfo = {
   pull_request_url: undefined,
 };
 
+const importers: Importers = {
+  config_importers: [],
+};
+
 export class ConfigStoreService {
   private readonly store = new BehaviorSubject<ConfigStoreState>(initialConfigStoreState);
   private readonly pullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
   private readonly adminPullRequestInfo = new BehaviorSubject<PullRequestInfo>(initialPullRequestState);
+  private readonly importers = new BehaviorSubject<Importers>(importers);
 
   /*eslint-disable */
   public readonly allConfigs$ = this.store.asObservable().map(x => x.configs);
@@ -61,6 +67,7 @@ export class ConfigStoreService {
   public readonly pullRequestPending$ = this.pullRequestInfo.asObservable();
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
   public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
+  public readonly importers$ = this.importers.asObservable();
 
   /*eslint-enable */
 
@@ -76,7 +83,12 @@ export class ConfigStoreService {
     return this.clipboardStoreService;
   }
 
-  constructor(private user: string, private metaDataMap: UiMetadata, private configLoaderService: ConfigLoaderService) {
+  constructor(
+    private user: string, 
+    private metaDataMap: UiMetadata, 
+    private configLoaderService: ConfigLoaderService, 
+    private configService: AppConfigService
+  ) {
     this.clipboardStoreService = new ClipboardStoreService(this.configLoaderService, this.store);
     this.testStoreService = new TestStoreService(
       this.user,
@@ -102,6 +114,9 @@ export class ConfigStoreService {
 
     this.store.next(newState);
     this.loadPullRequestStatus();
+    if (this.configService.useImporters) {
+      this.loadImporters();
+    }
   }
 
   updateAdmin(config: AdminConfig) {
@@ -396,13 +411,12 @@ export class ConfigStoreService {
     const pasted = {
       author: this.user,
       configData: Object.assign({}, cloneDeep(configData), {
-        [this.metaDataMap.name]: `new_entry_${currentState.configs.length}`,
         [this.metaDataMap.version]: 0,
         [this.metaDataMap.author]: this.user,
       }),
       description: 'no description',
       isNew: true,
-      name: `new_entry_${currentState.configs.length}`,
+      name: configData[this.metaDataMap.name],
       savedInBackend: false,
       testCases: [],
       version: 0,
@@ -416,6 +430,8 @@ export class ConfigStoreService {
       const configData = currentState.pastedConfig;
       const editedConfig = currentState.editedConfig;
       const pastedConfig = cloneDeep(editedConfig);
+      pastedConfig.author = this.user;
+      pastedConfig.description = configData[this.metaDataMap.description];
       pastedConfig.configData = Object.assign({}, cloneDeep(configData), {
         [this.metaDataMap.name]: editedConfig.name,
         [this.metaDataMap.version]: editedConfig.version,
@@ -501,6 +517,24 @@ export class ConfigStoreService {
   clearConfigHistory() {
     this.configHistoryService.clear();
     this.testStoreService.testCaseHistoryService.clear();
+  }
+
+  importConfig(configToImport: ConfigToImport): Observable<boolean> {
+    return this.configLoaderService.importConfig(configToImport).map(result => {
+      if (result.imported_configuration) {
+        this.clipboardService.updatePastedConfig(result.imported_configuration);
+        return true;
+      }
+      return false;
+    });
+  }
+
+  loadImporters() {
+    this.configLoaderService.getImporters().subscribe((i: Importers) => {
+      if (i) {
+        this.importers.next(i);
+      }
+    });
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

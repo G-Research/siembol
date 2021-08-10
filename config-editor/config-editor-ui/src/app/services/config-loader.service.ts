@@ -18,6 +18,9 @@ import {
   DeploymentGitFiles,
   ConfigAndTestCases,
   GitFilesDelete,
+  Importers,
+  ImportedConfig,
+  ConfigToImport,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
@@ -392,6 +395,21 @@ export class ConfigLoaderService {
         null
       )
       .pipe(map(result => this.testCaseFilesToMap(result.files)));
+  }
+
+  getImporters(): Observable<Importers> {
+    return this.http.get<Importers>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/importers`
+    );
+  }
+
+  importConfig(config: ConfigToImport): Observable<ImportedConfig> {
+    return this.http
+      .post<any>(
+        `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/import`,
+        config
+      )
+      .pipe(map(result => result));
   }
 
   private testCaseFilesToMap(files: any[]): TestCaseMap {

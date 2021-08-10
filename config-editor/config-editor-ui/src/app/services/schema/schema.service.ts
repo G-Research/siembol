@@ -78,6 +78,24 @@ export class SchemaService {
     }
   }
 
+  removeEmptyArrays(obj: any): any {
+    obj = cloneDeep(obj);
+    if (obj === undefined || obj === null || typeof obj !== typeof {}) {
+      return obj;
+    }
+
+    for (const key of Object.keys(obj)) {
+      if (Array.isArray(obj[key])) {
+        obj[key] = obj[key].length === 0 ? undefined : obj[key];
+      }  
+    }
+    for (const key of Object.keys(obj)) {
+      this.removeEmptyArrays(obj[key]);
+    }
+    
+    return obj;
+  }
+
   protected returnSubTree(tree, path: string): any {
     let subtree = cloneDeep(tree);
     path.split('.').forEach(node => {
@@ -130,14 +148,13 @@ export class SchemaService {
     }
     if (obj.type === 'object' && typeof obj.properties === typeof {}) {
       path = path.endsWith('/') ? path + propKey : path + '/' + propKey;
-      const requiredProperties = obj.required || [];
       const props = Object.keys(obj.properties);
       this.modelOrder[path] = props;
       for (const property of props) {
         const thingy = obj.properties[property];
-        const isRequired = requiredProperties.includes(property);
+        const isOptional =  thingy.widget?.optional;
         const isObject = thingy.type === 'object';
-        if (!isRequired && isObject) {
+        if (isOptional && isObject) {
           this.optionalObjects.push(property);
           if (thingy.default) {
             delete thingy.default;

@@ -1,0 +1,56 @@
+.button-layout {
+  margin-right: 0px;
+  margin-left: auto;
+}
+
+.container {
+  font-size: 70%;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 10px 10px;
+  padding-right: 30px;
+  width: 60vw;
+  height: 70vh;
+}
+
+.editor {
+  min-width: 49%;
+  min-height: 100%;
+  flex: 1;
+}
+
+.fields {
+  min-width: 49%;
+  flex: 2;
+  margin-right: 10px;
+}
+
+h1 {
+  margin-left: 10px;
+  font-weight: 400;
+  font-size: 20pt;
+}
+
+h2 {
+  margin-bottom: 10px;
+  margin-left: 15px;
+  font-weight: 400;
+  font-size: 1.6em;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.scrollbar {
+  --scrollbar-thumb-color: #868686;
+  --scrollbar-thumb-hover-color: #a1a1a1;
+}
+
+form {
+  margin-left: 10px;
+  margin-top: 10px;
+}

@@ -3,11 +3,12 @@
 Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, which allows security teams to respond to attacks before they become incidents.
 
 - [Introduction](/docs/introduction/introduction.md)
-    - [How to try Siembol](/docs/introduction/how-tos/how_to_try_siembol.md)
+    - [How to try Siembol](/docs/introduction/how-tos/quickstart.md)
     - [How to contribute](/docs/introduction/how-tos/how_to_contribute.md)
 - [Siembol UI](/docs/siembol_ui/siembol_ui.md)
     - [Adding a new configuration](/docs/siembol_ui/how-tos/how_to_add_new_config_in_siembol_ui.md)
     - [Submitting configurations](/docs/siembol_ui/how-tos/how_to_submit_config_in_siembol_ui.md)
+    - [Importing a sigma rule](/docs/siembol_ui/how-tos/how_to_import_sigma_rules.md)
     - [Deploying configurations](/docs/siembol_ui/how-tos/how_to_deploy_configurations_in_siembol_ui.md)
     - [Testing configurations](/docs/siembol_ui/how-tos/how_to_test_config_in_siembol_ui.md)
     - [Testing deployments](/docs/siembol_ui/how-tos/how_to_test_deployment_in_siembol_ui.md)  

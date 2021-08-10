@@ -15,6 +15,7 @@ import {
   DeployDialogComponent,
   SubmitDialogComponent,
   LandingPageComponent,
+  ImporterDialogComponent,
   SearchComponent,
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
@@ -70,6 +71,7 @@ import { HelpLinkWrapperComponent } from './ngx-formly/help-link.wrapper';
 import { UrlHistoryService } from './services/url-history.service';
 import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -106,6 +108,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ConfigManagerComponent,
     DeployDialogComponent,
     SubmitDialogComponent,
+    ImporterDialogComponent,
     LandingPageComponent,
     SearchComponent,
     ConfigTileComponent,
@@ -138,6 +141,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     BuildInfoDialogComponent,
   ],
   imports: [
+    MonacoEditorModule.forRoot(),
     BrowserModule,
     BlockUIModule.forRoot(),
     RouterModule.forRoot(

@@ -6,9 +6,11 @@ import { mockTestCaseMap } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { mockUiMetadataParser } from 'testing/uiMetadataMap';
 import { mockParserConfig, mockParserConfigCloned } from 'testing/configs';
+import { AppConfigService } from '../app-config.service';
 
 describe('ConfigStoreService', () => {
   let configLoader: ConfigLoaderService;
+  let configService: AppConfigService;
   let service: ConfigStoreService;
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,10 +22,17 @@ describe('ConfigStoreService', () => {
             submitTestCase: () => of(mockTestCaseMap),
           },
         },
+        {
+          provide: AppConfigService,
+          useValue:  {
+            useImporters: false,
+          },
+        },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
-    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader);
+    configService = TestBed.inject(AppConfigService);
+    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader, configService);
   });
 
   it('should be created', () => {

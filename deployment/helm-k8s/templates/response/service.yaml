@@ -1,0 +1,16 @@
+{{- if .Values.response.enabled -}}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ include "siembol.response.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    metrics: "true"
+spec:
+  selector:
+    app: {{ include "siembol.response.fullname" $ }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.response.service.port }}
+    name: web
+{{- end -}}

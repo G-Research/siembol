@@ -149,7 +149,7 @@ export interface ConfigTestResult {
   message?: string;
   test_result_output?: string;
   test_result_complete?: boolean;
-  test_result_raw_output?: object;
+  test_result_raw_output?: any;
 }
 
 export interface DeploymentWrapper {
@@ -173,4 +173,23 @@ export interface UrlInfo {
 export interface ConfigAndTestCases {
   configs: Config[];
   testCases?: TestCaseMap;
+}
+
+export interface Importers {
+  config_importers: Importer[];
+}
+
+export interface Importer {
+  importer_name: string;
+  importer_attributes_schema: JSONSchema7;
+}
+
+export interface ConfigToImport {
+  importer_name: string;
+  importer_attributes: JSONSchema7;
+  config_to_import: string;
+}
+
+export interface ImportedConfig {
+  imported_configuration: any;
 }

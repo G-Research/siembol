@@ -72,7 +72,8 @@ export class TestStoreService {
         config_name: editedTestCase.testCase.config_name,
         test_case_name: editedTestCase.testCase.test_case_name,
       });
-      this.testCaseHistoryService.addConfig(pastedTestCase);
+      pastedTestCase.testCaseResult = undefined;
+      this.addToTestCaseHistory(pastedTestCase);
       this.updateEditedTestCase(pastedTestCase);
     });
   }
@@ -83,7 +84,7 @@ export class TestStoreService {
   }
 
   updateEditedTestCaseAndHistory(testCase: TestCaseWrapper) {
-    this.testCaseHistoryService.addConfig(testCase);
+    this.addToTestCaseHistory(testCase);
     this.updateEditedTestCase(testCase);
   }
 
@@ -239,7 +240,13 @@ export class TestStoreService {
 
   private clearAndInitialiseTestCaseHistory(testCaseWrapper: TestCaseWrapper) {
     this.testCaseHistoryService.clear();
-    this.testCaseHistoryService.addConfig(testCaseWrapper);
+    this.addToTestCaseHistory(testCaseWrapper);
+  }
+
+  private addToTestCaseHistory(testCase : TestCaseWrapper) {
+    const historyTestCase = cloneDeep(testCase);
+    historyTestCase.testCaseResult = undefined;
+    this.testCaseHistoryService.addConfig(historyTestCase);
   }
 
   private getTestCaseByName(testCaseName: string): TestCaseWrapper {

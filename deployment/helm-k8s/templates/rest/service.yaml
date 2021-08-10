@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ include "siembol.rest.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    metrics: "true"
+spec:
+  selector:
+    app: {{ include "siembol.rest.fullname" $ }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.rest.service.port }}
+    name: web
+  

@@ -32,7 +32,7 @@ class TopologyManagerConfiguration {
 
     @Bean
     StormProvider stormProvider() {
-        HttpProvider httpProvider = properties.getStorm().getAuthenticationType().equals(KERBEROS) ?
+        HttpProvider httpProvider = KERBEROS.equals(properties.getStorm().getAuthenticationType()) ?
                 new HttpProvider(properties.getStorm().getUrl(), HttpProvider::getKerberosHttpClient) :
                 new HttpProvider(properties.getStorm().getUrl(), HttpProvider::getHttpClient);
 

@@ -1,0 +1,31 @@
+{{- if .Values.ui.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "siembol.ui.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{ if .Values.certmanager.enabled -}}
+    cert-manager.io/issuer: ca-issuer
+    {{ end }}
+    ingress.kubernetes.io/ssl-passthrough: "false"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+spec:
+  {{ if .Values.tls.enabled -}}
+  tls:
+  - hosts: 
+    - {{ .Values.ui.ingress.fqdn }}
+    secretName: {{ include "siembol.ui.fullname" $ }}-tls
+  {{ end }}
+  rules:
+  - host: {{ .Values.ui.ingress.fqdn }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "siembol.ui.fullname" $ }}
+            port: 
+              number: {{ .Values.ui.service.port }}
+{{- end -}}

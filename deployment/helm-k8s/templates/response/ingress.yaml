@@ -1,0 +1,45 @@
+{{- if .Values.response.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "siembol.response.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+  {{ if .Values.certmanager.enabled -}}
+  annotations:
+    cert-manager.io/issuer: ca-issuer
+  {{ end }}
+spec:
+  {{ if .Values.tls.enabled -}}
+  tls:
+    - hosts:
+      - {{ .Values.response.ingress.fqdn }}
+      secretName: {{ .Values.response.appName }}-tls
+  {{ end }}
+  rules:
+    - host: {{ .Values.response.ingress.fqdn }}
+      http:
+        paths:
+        - path: /health
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
+        - path: /info
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
+        {{ if eq .Values.environment "dev" -}}
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "siembol.response.fullname" $ }}
+              port:
+                number: {{ .Values.response.service.port }}
+        {{ end }}
+{{- end -}}

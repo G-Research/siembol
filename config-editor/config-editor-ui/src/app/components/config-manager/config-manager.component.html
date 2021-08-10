@@ -21,6 +21,32 @@
                             <mat-icon>content_paste</mat-icon>
                         </a>
                     </div>
+                    <div class="add-button">
+                        <a 
+                          *ngIf="useImporters && (importers$ | async)?.config_importers.length == 1" 
+                          mat-button 
+                          color="primary" 
+                          title="Import Config from Clipboard" 
+                          (click)="onClickImport(0)">
+                            <mat-icon>file_upload</mat-icon>
+                        </a>
+                        <a 
+                          *ngIf="useImporters && (importers$ | async)?.config_importers.length > 1"
+                          mat-button 
+                          [matMenuTriggerFor]="menu" 
+                          color="primary" 
+                          title="Import Config from Clipboard" >
+                            <mat-icon>file_upload</mat-icon>
+                        </a>
+                        <mat-menu #menu="matMenu">
+                            <button 
+                              *ngFor="let importer of (importers$ | async)?.config_importers; index as i;" 
+                              (click)="onClickImport(i)" 
+                              mat-menu-item>
+                              {{importer.importer_name | titlecase}} Importer
+                            </button>
+                          </mat-menu>
+                    </div>
                 </div>
                 <mat-divider></mat-divider>
                 <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
@@ -54,7 +80,11 @@
                     </span>
                     <ng-template #prMessage>
                         <span>
-                            <a mat-button color="accent" *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" href="{{(pullRequestPending$ | async)?.pull_request_url}}"
+                            <a mat-button 
+                                color="accent" 
+                                *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" 
+                                href="{{(pullRequestPending$ | async)?.pull_request_url}}"
+                                rel="noopener noreferrer"
                                 target="_blank">PR for release pending</a>
                             <button class="button" mat-button color="accent" title="sync with git" (click)="onSyncWithGit()">
                                 <mat-icon>refresh</mat-icon>

@@ -131,6 +131,20 @@
         }
       }
     },
+    "$..parser_extractors..column_names.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
+    },
+    "$..parser_extractors..column_filter": {
+      "widget": {
+        "optional": true
+      }
+    },
     "$..parser_extractors..skipping_column_name": {
       "widget": {
         "formlyConfig": {
