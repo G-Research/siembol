@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>1.3.3-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.3.3-SNAPSHOT</version>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -77,12 +77,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.adrianwalker</groupId>
-            <artifactId>multiline-string</artifactId>
-            <version>${multiline_string_version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

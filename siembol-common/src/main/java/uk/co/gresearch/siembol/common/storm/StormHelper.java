@@ -1,13 +1,11 @@
 package uk.co.gresearch.siembol.common.storm;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.storm.kafka.spout.Func;
-import org.apache.storm.kafka.spout.KafkaSpoutConfig;
-import org.apache.storm.kafka.spout.KafkaSpoutRetryExponentialBackoff;
-import org.apache.storm.kafka.spout.KafkaSpoutRetryService;
+import org.apache.storm.kafka.spout.*;
 import org.apache.storm.tuple.Fields;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,15 +25,13 @@ public class StormHelper {
                 KAFKA_SPOUT_MAX_RETRIES,
                 KafkaSpoutRetryExponentialBackoff.TimeInterval.seconds(KAFKA_SPOUT_MAX_DELAY_SEC));
 
-        KafkaSpoutConfig.FirstPollOffsetStrategy pollStrategy = stormAttributes.getFirstPollOffsetStrategy()
-                .getKafkaSpoutStrategy();
-
+        FirstPollOffsetStrategy pollStrategy = stormAttributes.getFirstPollOffsetStrategy().getKafkaSpoutStrategy();
         Properties props = new Properties();
         props.putAll(stormAttributes.getKafkaSpoutProperties().getRawMap());
 
         KafkaSpoutConfig.Builder<K, V> builder =  new KafkaSpoutConfig.Builder<K, V>(
                 stormAttributes.getBootstrapServers(),
-                stormAttributes.getKafkaTopics())
+                new HashSet<>(stormAttributes.getKafkaTopics()))
                 .setFirstPollOffsetStrategy(pollStrategy)
                 .setProp(props)
                 .setRetry(kafkaSpoutRetryService)
