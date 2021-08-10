@@ -4,8 +4,10 @@ kind: Ingress
 metadata:
   name: {{ .Values.storm.service.ui.name }}
   namespace: {{ .Values.namespace }}
+  {{ if .Values.certmanager.enabled -}}
   annotations:
     cert-manager.io/issuer: ca-issuer
+  {{ end }}
 spec:
   {{ if .Values.tls.enabled -}}
   tls:

@@ -1,3 +1,4 @@
+{{- if (has "ui" .Values.enabled_apps) -}}
 {{- if .Values.ui.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -28,4 +29,5 @@ spec:
             name: {{ include "siembol.ui.fullname" $ }}
             port: 
               number: {{ .Values.ui.service.port }}
+{{- end -}}
 {{- end -}}
