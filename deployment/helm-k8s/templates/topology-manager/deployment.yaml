@@ -1,3 +1,4 @@
+{{- if or (has "manager" .Values.enabled_apps) (has "all" .Values.enabled_apps) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,3 +66,4 @@ spec:
         secret:
           secretName: cacerts
       terminationGracePeriodSeconds: 300
+{{- end -}}

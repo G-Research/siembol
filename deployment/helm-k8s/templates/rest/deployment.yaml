@@ -1,3 +1,4 @@
+{{- if or (has "rest" .Values.enabled_apps) (has "all" .Values.enabled_apps) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,9 +52,11 @@ spec:
             scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
+        {{ if .Values.rest.configmap.enabled -}}
         envFrom:
         - configMapRef:
             name: {{ .Values.rest.configmap.name }}
+        {{ end }}
         env:
         - name: XDG_CONFIG_HOME
           value: /config/jgit/.config
@@ -83,3 +86,4 @@ spec:
       - name: config-dir
         emptyDir: {}
       terminationGracePeriodSeconds: 300
+{{- end -}}

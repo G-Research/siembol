@@ -1,3 +1,4 @@
+{{- if or (has "ui" .Values.enabled_apps) (has "all" .Values.enabled_apps) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,3 +52,4 @@ spec:
           cpu: 0.1
           memory: "128Mi"
       restartPolicy: Always
+{{- end -}}

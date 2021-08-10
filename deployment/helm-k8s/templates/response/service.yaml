@@ -1,4 +1,4 @@
-{{- if .Values.response.enabled -}}
+{{- if or (has "response" .Values.enabled_apps) (has "all" .Values.enabled_apps) -}}
 kind: Service
 apiVersion: v1
 metadata:
