@@ -14,7 +14,6 @@ import { take } from 'rxjs/operators';
       highlight
       matInput
       spellcheck="false"
-      [class.hide-text]="true"
       [id]="id"
       [name]="to.title"
       [readonly]="to.readonly"
@@ -25,7 +24,6 @@ import { take } from 'rxjs/operators';
       [tabindex]="to.tabindex || 0"
     >
     </textarea>
-    <div class="highlighted-overlay" [innerHtml]="value | highlightVariables"></div>
   `,
   styles: [
     `
