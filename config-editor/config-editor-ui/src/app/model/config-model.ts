@@ -193,3 +193,15 @@ export interface ConfigToImport {
 export interface ImportedConfig {
   imported_configuration: any;
 }
+
+export interface Topologies {
+  topologies: Topology[];
+}
+
+export interface Topology {
+  topology_name: string,
+  topology_id: string,
+  attributes: string[],
+  image: string,
+  service_name: string
+}

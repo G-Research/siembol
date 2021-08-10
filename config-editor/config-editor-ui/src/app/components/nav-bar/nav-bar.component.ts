@@ -1,5 +1,4 @@
-import { Component, OnInit} from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
 import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,7 +15,7 @@ import { UserRole, RepositoryLinks, repoNames } from '@app/model/config-model';
     templateUrl: './nav-bar.component.html',
 })
 export class NavBarComponent implements OnInit {
-    user: String;
+    user: string;
     userRoles: string[];
     serviceName$: Observable<string>;
     serviceName: string;
@@ -54,22 +53,26 @@ export class NavBarComponent implements OnInit {
         });
     }
 
-    public showAboutApp() {
+    showAboutApp() {
         this.dialog.open(BuildInfoDialogComponent, { data: this.config.buildInfo }).afterClosed().subscribe();
     }
 
-    public onToggleAdmin() {
-        let path = this.isAdminChecked ? this.config.adminPath : "";
+    onToggleAdmin() {
+        const path = this.isAdminChecked ? this.config.adminPath : "";
         this.router.navigate([this.serviceName + path]);
     }
 
-    public getPath(service: string): string {
+    getPath(service: string): string {
         let path = service;
         const roles = this.appService.getUserServiceRoles(service);
-        let hasMultipleUserRoles = roles.length > 1;
+        const hasMultipleUserRoles = roles.length > 1;
         if ((hasMultipleUserRoles && this.isAdminChecked) || (!hasMultipleUserRoles && roles.includes(UserRole.SERVICE_ADMIN))) {
             path += this.config.adminPath;
         }
         return path;  
+    }
+
+    openApplicationDialog() {
+        // this.dialog.open()
     }
 }
