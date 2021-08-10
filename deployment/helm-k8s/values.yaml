@@ -5,6 +5,14 @@
 namespace: "siembol"
 environment: "dev"
 
+# -----------------------------------------------------------------------------
+# Default list of apps to deploy
+# -----------------------------------------------------------------------------
+enabled_apps: 
+- ui
+- rest
+- manager
+
 # Enable certmanager 
 certmanager:
   enabled: true
@@ -86,6 +94,7 @@ rest:
   rulesDir: "/tmp/siembol-config"
 
   configmap:
+    enabled: true
     name: "github-details"
 
   service:
@@ -126,6 +135,7 @@ ui:
 manager:
   appName: "storm-topology-manager"
   serviceAccountName: "storm-topology-controller"
+  serviceAccountEnabled: true
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
     tag: "latest"
@@ -157,7 +167,6 @@ manager:
 # siembol response parameters
 # -----------------------------------------------------------------------------
 response:
-  enabled: false # flag to deploy siembol-response, false by default
   appName: "response"
   image:
     name: "gresearchdev/siembol-responding-stream"
@@ -165,6 +174,7 @@ response:
     pullPolicy: Always
 
   ingress:
+    enabled: true
     fqdn: response.siembol.local
 
   service:
