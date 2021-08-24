@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Application Manager</h1>
 <div class="container">
-<table mat-table [dataSource]="topologies$ | async" class="mat-elevation-z8 demo-table">
+<table mat-table [dataSource]="topologies$ | async">
   <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
     <th mat-header-cell *matHeaderCellDef>
       {{column.header}}

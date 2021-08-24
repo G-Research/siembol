@@ -31,7 +31,6 @@ export class ApplicationDialogComponent {
     },
   ];
   displayedColumns = ["name", "id", "image", "attributes", "restart"];
-  MAX_HEIGHT = '80vh';
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
