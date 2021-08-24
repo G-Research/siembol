@@ -32,6 +32,7 @@
         <button 
           mat-icon-button
           class="right-element"
+          *ngIf="(topologies$ | async)?.length > 0"
           [matTooltip]="'Manage Applications'"
           (click)="openApplicationDialog()"
         >

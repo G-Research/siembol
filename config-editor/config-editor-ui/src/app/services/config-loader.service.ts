@@ -22,6 +22,7 @@ import {
   ImportedConfig,
   ConfigToImport,
   Topologies,
+  Topology,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
@@ -413,17 +414,17 @@ export class ConfigLoaderService {
       .pipe(map(result => result));
   }
 
-  getTopologies(): Observable<Topologies> {
+  getTopologies(): Observable<Topology[]> {
     return this.http.get<Topologies>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies`
-    );
+    ).pipe(map(result => result.topologies));
   }
 
-  restartTopology(topology: string): Observable<Topologies> {
+  restartTopology(topology: string): Observable<Topology[]> {
     return this.http.post<Topologies>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies/${topology}/restart`,
       null
-    );
+    ).pipe(map(result => result.topologies.filter(t => t.service_name === this.serviceName)));
   }
 
   private testCaseFilesToMap(files: any[]): TestCaseMap {
