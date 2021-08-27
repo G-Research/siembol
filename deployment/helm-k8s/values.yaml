@@ -75,6 +75,16 @@ storm:
   ingress:
     enabled: true
     fqdn: storm.local
+  supervisor:
+    image:
+      tag: 2.2.0
+    replicaCount: 1
+  nimbus:
+    image:
+      tag: 2.2.0
+  ui:
+    image:
+      tag: 2.2.0
 
 
 # -----------------------------------------------------------------------------
@@ -84,7 +94,7 @@ storm:
 rest:
   image: 
     repository: "gresearchdev/siembol-config-editor-rest"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
 
   appName: "config-editor-rest"
@@ -112,7 +122,7 @@ rest:
 ui:
   image: 
     repository: "gresearchdev/siembol-config-editor-ui"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
 
   appName: "config-editor-ui"
@@ -138,7 +148,7 @@ manager:
   serviceAccountEnabled: true
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
   containerPort: 8082
 
@@ -170,7 +180,7 @@ response:
   appName: "response"
   image:
     name: "gresearchdev/siembol-responding-stream"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
 
   ingress:
@@ -185,9 +195,3 @@ response:
     port: 8080
 
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
-
-integrationTests:
-  appName: "siembol-api-tests"
-  image:
-    name: "siembol-api-tests"
-    tag: "latest"

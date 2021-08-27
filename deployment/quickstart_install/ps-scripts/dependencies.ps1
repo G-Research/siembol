@@ -11,9 +11,6 @@ helm install siembol-zookeeper bitnami/zookeeper --namespace $namespace
 
 helm install kafka bitnami/kafka --namespace $namespace
 
-helm install storm gresearch/storm --namespace $namespace --set supervisor.replicaCount=1
-
-
 Write-Output "************************************************************"
 Write-Output "Checking status by running: 'kubectl get pods -n siembol'"
 kubectl get pods --namespace $namespace

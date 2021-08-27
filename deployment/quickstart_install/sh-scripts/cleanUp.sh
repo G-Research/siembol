@@ -1,7 +1,5 @@
 #!/bin/bash
 
-helm delete storm -n=siembol
-
 helm delete kafka -n=siembol
 
 helm delete siembol-zookeeper -n=siembol

@@ -10,9 +10,6 @@ helm install siembol-zookeeper bitnami/zookeeper -n=siembol
 
 helm install kafka bitnami/kafka -n=siembol
 
-helm install storm gresearch/storm -n=siembol --set supervisor.replicaCount=1
-
-
 echo "************************************************************"
 echo "Checking status by running: 'kubectl get pods -n siembol'"
 kubectl get pods -n siembol
