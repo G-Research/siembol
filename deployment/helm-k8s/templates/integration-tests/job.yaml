@@ -2,17 +2,17 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   labels:
-    app: {{ .Values.integrationTests.image.appName }}
-  name: {{ .Values.integrationTests.image.appName }}
+    app: {{ .Values.integrationTests.appName }}
+  name: {{ .Values.integrationTests.appName }}
   namespace: {{ .Values.namespace }}
 spec:
   template:
     metadata:
-      name: {{ .Values.integrationTests.image.appName }}
+      name: {{ .Values.integrationTests.appName }}
     spec:
       containers:
-      - name: {{ .Values.integrationTests.image.appName }}
-        image: {{ .Values.integrationTests.image.name }}:{{ .Values.integrationTests.image.tag}}
+      - name: {{ .Values.integrationTests.appName }}
+        image: {{ .Values.integrationTests.image.name }}:{{ .Values.integrationTests.image.tag }}
         imagePullPolicy: Never # TODO: CHANGE THIS WHEN DOCKER IMAGE HAS BEEN PUSHED
         command:
           - /bin/sh
