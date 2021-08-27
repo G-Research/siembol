@@ -185,3 +185,9 @@ response:
     port: 8080
 
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
+
+integrationTests:
+  appName: "siembol-api-tests"
+  image:
+    name: "siembol-api-tests"
+    tag: "latest"

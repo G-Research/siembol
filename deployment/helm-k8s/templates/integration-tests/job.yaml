@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: {{ .Values.image.appName }}
+  name: {{ .Values.image.appName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  template:
+    metadata:
+      name: {{ .Values.image.appName }}
+    spec:
+      containers:
+      - name: {{ .Values.image.appName }}
+        image: {{ .Values.image.name }}:{{ .Values.image.tag}}
+        imagePullPolicy: Never # TODO: CHANGE THIS WHEN DOCKER IMAGE HAS BEEN PUSHED
+        command:
+          - /bin/sh
+          - -c
+          - "pytest tests" 
+      restartPolicy: Never
+  backoffLimit: 4
