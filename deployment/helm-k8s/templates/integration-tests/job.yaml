@@ -14,10 +14,7 @@ spec:
       - name: {{ .Values.integrationTests.init.name }}
         image: {{ .Values.integrationTests.init.image.name }}:{{ .Values.integrationTests.init.image.tag }}
         imagePullPolicy: {{ .Values.integrationTests.init.image.pullPolicy }}
-        command: 
-          - /bin/sh
-          - -c
-          - while [[ $(kubectl -n siembol get pods -l app=siembol-config-editor-rest -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+        command: ["sh", "-c", "echo 'waiting for config-editor-rest pod'; sleep 75;"]
       containers:
       - name: {{ .Values.integrationTests.appName }}
         image: {{ .Values.integrationTests.image.name }}:{{ .Values.integrationTests.image.tag }}

@@ -194,6 +194,6 @@ integrationTests:
   init:
       name: "siembol-api-tests-init"
       image:
-        name: alpine/k8s
-        tag: "1.18.16"
+        name: busybox
+        tag: "latest"
         pullPolicy: Always  
