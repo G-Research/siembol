@@ -191,3 +191,9 @@ integrationTests:
   image:
     name: "siembol-api-tests"
     tag: "latest"
+  init:
+      name: "siembol-api-tests-init"
+      image:
+        name: alpine/k8s
+        tag: "1.18.16"
+        pullPolicy: Always  
