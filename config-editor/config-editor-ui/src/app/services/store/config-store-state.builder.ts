@@ -132,22 +132,8 @@ export class ConfigStoreStateBuilder {
     }
 
     if (this.state.searchTerm !== undefined && this.state.searchTerm !== '') {
-      const lowerCaseSearchTerm = this.state.searchTerm.toLowerCase();
-      this.state.filteredDeployment.configs = this.state.filteredDeployment.configs.filter(f =>
-        f.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        f.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
-        f.tags === undefined
-          ? true
-          : f.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
-      );
-
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r =>
-        r.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        r.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
-        r.tags === undefined
-          ? true
-          : r.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
-      );
+      this.state.filteredDeployment.configs = this.state.filteredDeployment.configs.filter(c => this.filterSearchTerm(c));
+      this.state.filteredConfigs = this.state.filteredConfigs.filter(c => this.filterSearchTerm(c));
     }
 
     return this;
@@ -243,5 +229,12 @@ export class ConfigStoreStateBuilder {
 
   build(): ConfigStoreState {
     return this.state;
+  }
+
+  private filterSearchTerm(config: any) {
+    const lowerCaseSearchTerm = this.state.searchTerm.toLowerCase();
+    return config.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+           config.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
+           config.tags === undefined ? true : config.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
   }
 }
