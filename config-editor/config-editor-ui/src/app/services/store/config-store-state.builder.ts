@@ -138,7 +138,7 @@ export class ConfigStoreStateBuilder {
         f.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
         f.tags === undefined
           ? true
-          : f.tags.join(' ').includes(lowerCaseSearchTerm)
+          : f.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
       );
 
       this.state.filteredConfigs = this.state.filteredConfigs.filter(r =>
@@ -146,7 +146,7 @@ export class ConfigStoreStateBuilder {
         r.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
         r.tags === undefined
           ? true
-          : r.tags.join(' ').includes(lowerCaseSearchTerm)
+          : r.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
       );
     }
 
