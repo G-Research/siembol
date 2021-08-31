@@ -1,5 +1,7 @@
 ![Siembol](logo.svg)
 
+![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/54ad78bc63b24ce445e8241f179fe1ddeecf8eef/arsenal/usa/2021.svg)
+
 Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, which allows security teams to respond to attacks before they become incidents.
 
 - [Introduction](/docs/introduction/introduction.md)
