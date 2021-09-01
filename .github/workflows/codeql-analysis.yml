@@ -84,7 +84,7 @@ jobs:
 
     # javascript build
     - name: Setup Node.js 12.x
-      uses: actions/setup-node@v2.3.0
+      uses: actions/setup-node@v2.4.0
       if: ${{ matrix.language == 'javascript' }}
       with:
         node-version: 12.x
