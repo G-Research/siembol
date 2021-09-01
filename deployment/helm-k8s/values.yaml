@@ -85,6 +85,8 @@ storm:
   ui:
     image:
       tag: 2.2.0
+  worker:
+    childopts: "-Xmx%HEAP-MEM%m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=artifacts/heapdump"
 
 
 # -----------------------------------------------------------------------------
