@@ -12,6 +12,7 @@ enabled_apps:
 - ui
 - rest
 - manager
+- storm_ingress
 
 # Enable certmanager 
 certmanager:
@@ -68,14 +69,16 @@ storm:
     # This value will be evaluated in the context of the Storm sub-chart
     servers: ["{{ .Release.Name }}-zookeeper"]
   appName: "storm"
-  service:
-    ui:
-      name: storm-ui
-      port: 8080
-  ingress:
-    enabled: true
-    fqdn: storm.local
 
+# -----------------------------------------------------------------------------
+# storm ingress parameters
+# -----------------------------------------------------------------------------
+
+storm_ingress:
+  fqdn: storm.local
+  service:
+    name: storm-ui
+    port: 8080
 
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
