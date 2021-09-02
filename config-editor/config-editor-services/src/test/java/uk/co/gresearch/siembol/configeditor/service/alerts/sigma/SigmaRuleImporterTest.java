@@ -187,6 +187,14 @@ public class SigmaRuleImporterTest {
     }
 
     @Test
+    public void importConfigWithCondition1() throws JsonProcessingException {
+        String rule  = sigmaRuleExample.replace("image_path and cmd_c and (cmd_s or not net_utility)",
+                "(image_path or cmd_c) and (cmd_s or not net_utility)");
+        ConfigEditorResult result = importer.importConfig(userInfo, importerAttributes, rule);
+        Assert.assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
     public void importConfigInvalidAttributes() {
         ConfigEditorResult result = importer.importConfig(userInfo,
                 importerAttributes.replace("rule_metadata_mapping", "unknown"),
