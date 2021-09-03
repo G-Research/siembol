@@ -114,10 +114,11 @@ jobs:
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -181,10 +182,11 @@ jobs:
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -272,10 +274,11 @@ jobs:
         with:
           images: gresearchdev/siembol-config-editor-ui
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-dev') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-dev') }}
           labels: |
             org.opencontainers.image.title=siembol-config-editor-ui
       - name: Build and export Docker image
