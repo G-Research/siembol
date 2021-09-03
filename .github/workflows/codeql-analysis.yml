@@ -87,7 +87,7 @@ jobs:
       uses: actions/setup-node@v2.4.0
       if: ${{ matrix.language == 'javascript' }}
       with:
-        node-version: 12.x
+        node-version: 12.22.5
     - name: Cache NPM packages
       if: ${{ matrix.language == 'javascript' }}
       uses: actions/cache@v2
