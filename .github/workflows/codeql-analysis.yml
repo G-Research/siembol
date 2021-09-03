@@ -88,14 +88,8 @@ jobs:
       if: ${{ matrix.language == 'javascript' }}
       with:
         node-version: 12.22.5
-    - name: Cache NPM packages
-      if: ${{ matrix.language == 'javascript' }}
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: npm-config-editor-ui-${{ hashFiles('config-editor/config-editor-ui/package.json') }}
-        restore-keys: |
-          npm-config-editor-ui-
+        cache: npm
+        cache-dependency-path: config-editor/config-editor-ui/package-lock.json
 
     - name: Build javascript
       if: ${{ matrix.language == 'javascript' }}
