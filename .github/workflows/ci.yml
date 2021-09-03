@@ -198,7 +198,7 @@ jobs:
             APP=${{ matrix.component}}
             VERSION=${{ steps.info.outputs.version }}
           pull: true
-          outputs: type=docker,dest=image.targl
+          outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       # Only run this step for master and hotfix branches.
