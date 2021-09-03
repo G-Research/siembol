@@ -277,7 +277,7 @@ jobs:
             latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-dev') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
-            type=raw,value=${{ steps.info.outputs.version }}q
+            type=raw,value=${{ steps.info.outputs.version }}
             type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-dev') }}
           labels: |
             org.opencontainers.image.title=siembol-config-editor-ui
