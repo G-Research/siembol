@@ -9,7 +9,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>alerting</artifactId>
-        <version>1.3.4-SNAPSHOT</version>
+        <version>1.3.5-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>alerting-core</artifactId>
-            <version>1.3.4-SNAPSHOT</version>
+            <version>1.3.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

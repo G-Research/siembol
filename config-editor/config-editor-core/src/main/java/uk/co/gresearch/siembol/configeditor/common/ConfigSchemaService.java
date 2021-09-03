@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+
 public interface ConfigSchemaService extends HealthCheckable {
     String UNKNOWN_CONFIG_IMPORTER_MSG = "Unknown config importer: %s";
     String NOT_IMPLEMENTED_MSG = "Not implemented";
@@ -34,7 +36,7 @@ public interface ConfigSchemaService extends HealthCheckable {
         }).collect(Collectors.toList());
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
         attributes.setConfigImporters(importers);
-        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attributes);
+        return new ConfigEditorResult(OK, attributes);
     }
 
     default ConfigEditorResult importConfig(UserInfo user, String importerName, String importerAttributes, String configToImport) {
@@ -43,7 +45,19 @@ public interface ConfigSchemaService extends HealthCheckable {
                     String.format(UNKNOWN_CONFIG_IMPORTER_MSG, importerName));
         }
 
-        return getConfigImporters().get(importerName).importConfig(user, importerAttributes, configToImport);
+        ConfigEditorResult importResult =  getConfigImporters().get(importerName)
+                .importConfig(user, importerAttributes, configToImport);
+        if (importResult.getStatusCode() != OK) {
+            return importResult;
+        }
+
+        ConfigEditorResult validationResult = validateConfiguration(
+                importResult.getAttributes().getImportedConfiguration());
+        if (validationResult.getStatusCode() != OK) {
+            return validationResult;
+        }
+
+        return importResult;
     }
 
     default ConfigEditorResult getTestSchema() {
