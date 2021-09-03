@@ -90,12 +90,12 @@ jobs:
         node-version: 12.22.5
         cache: npm
         cache-dependency-path: config-editor/config-editor-ui/package-lock.json
-
     - name: Build javascript
       if: ${{ matrix.language == 'javascript' }}
       run: |
-        npm install typescript@4.1.5
         npm ci
+        jq "{appName: \"Config Editor UI\", appVersion: .version, angularVersion: .dependencies[\"@angular/core\"], buildDate: \"$(date -u +%Y%m%d-%H:%M:%S)\", siembolCompileTimeVersion: .siembolCompileTimeVersion}" package.json > src/assets/build-info.json
+        npm run build-prod
       working-directory: config-editor/config-editor-ui
 
     - name: Perform CodeQL Analysis
