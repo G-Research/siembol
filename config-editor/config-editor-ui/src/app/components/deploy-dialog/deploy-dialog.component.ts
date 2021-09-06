@@ -65,7 +65,7 @@ export class DeployDialogComponent {
       this.field = this.formlyJsonSchema.toFieldConfig(service.configSchema.createDeploymentSchema());
       this.extrasData = this.uiMetadata.deployment.extras.reduce((a, x) => ({ ...a, [x]: this.newDeployment[x] }), {});
       this.form.valueChanges.subscribe(() => {
-        this.isDeploymentValid = false;
+        this.isDeploymentValid = undefined;
       })
     } else {
       this.validating = true;
