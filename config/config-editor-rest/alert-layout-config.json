@@ -223,6 +223,15 @@
             "widget": {
                 "optional": true
             }
+        },
+        "$.properties.tags.items": {
+            "widget": {
+                "formlyConfig": {
+                    "wrappers": [
+                        "panel"
+                    ]
+                }
+            }
         }
     },
     "admin_config_layout": {
