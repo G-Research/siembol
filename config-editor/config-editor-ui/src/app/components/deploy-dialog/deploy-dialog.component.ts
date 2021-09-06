@@ -39,10 +39,10 @@ export class DeployDialogComponent {
   testingType = TestingType.DEPLOYMENT_TESTING;
 
   testEnabled = false;
-  public options: FormlyFormOptions = { formState: {} };
+  options: FormlyFormOptions = { formState: {} };
 
   field: FormlyFieldConfig;
-  public form: FormGroup = new FormGroup({});
+  form: FormGroup = new FormGroup({});
 
   private readonly OUTDATED_DEPLOYMENT_MESSAGE = `Old version detected, latest deployment 
         have now been reloaded. Please prepare your deployment again.`;
@@ -151,10 +151,6 @@ export class DeployDialogComponent {
 
   onClickClose() {
     this.dialogref.close();
-  }
-
-  updateOutput(event) {
-    this.extrasData = event;
   }
 
   onCompareResults(diffResults: DiffResults) {
