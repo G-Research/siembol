@@ -78,9 +78,9 @@ jobs:
         key: maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           maven-
-    - name: Build and test with Maven
+    - name: Build with Maven
       if: ${{ matrix.language == 'java' }} 
-      run: mvn --batch-mode package
+      run: mvn --batch-mode package -DskipTests
 
     # javascript build
     - name: Setup Node.js 12.x
