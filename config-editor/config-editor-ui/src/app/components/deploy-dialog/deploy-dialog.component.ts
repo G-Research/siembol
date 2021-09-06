@@ -26,7 +26,7 @@ export class DeployDialogComponent {
   newContent: ConfigData;
   initContent: ConfigData;
   environment: string;
-  isValid = undefined;
+  isDeploymentValid = undefined;
   message: string;
   validating = false;
   hasChanged = true;
@@ -64,6 +64,9 @@ export class DeployDialogComponent {
     if (this.uiMetadata.deployment.extras !== undefined) {
       this.field = this.formlyJsonSchema.toFieldConfig(service.configSchema.createDeploymentSchema());
       this.extrasData = this.uiMetadata.deployment.extras.reduce((a, x) => ({ ...a, [x]: this.newDeployment[x] }), {});
+      this.form.valueChanges.subscribe(() => {
+        this.isDeploymentValid = false;
+      })
     } else {
       this.validating = true;
       this.service.configLoader
@@ -78,7 +81,7 @@ export class DeployDialogComponent {
         .subscribe(s => {
           this.validating = false;
           if (s) {
-            this.isValid = true;
+            this.isDeploymentValid = true;
           } else {
             this.service.configStore.reloadStoreAndDeployment();
             this.dialogref.close();
@@ -117,7 +120,7 @@ export class DeployDialogComponent {
       .pipe(take(1))
       .pipe(
         catchError(e => {
-          this.isValid = false;
+          this.isDeploymentValid = false;
           this.message = this.INVALID_MESSAGE;
           return throwError(e);
         })
@@ -125,7 +128,7 @@ export class DeployDialogComponent {
       .subscribe(s => {
         this.validating = false;
         if (s) {
-          this.isValid = true;
+          this.isDeploymentValid = true;
         } else {
           this.service.configStore.reloadStoreAndDeployment().subscribe(() => {
             this.dialogref.close();
