@@ -40,7 +40,7 @@ public class StormEnrichingApplicationTest {
      *   "enriching.input.topics" : [ "enrichments" ],
      *   "enriching.output.topic": "output",
      *   "enriching.error.topic": "error",
-     *   "enriching.tables.hdfs.uri": "hdfs://secret",
+     *   "enriching.tables.uri": "hdfs://secret",
      *   "enriching.rules.zookeeper.attributes": {
      *     "zk.path": "/enrichment/rules",
      *     "zk.base.sleep.ms": 1000,
@@ -75,7 +75,7 @@ public class StormEnrichingApplicationTest {
 
     /**
      * {
-     *     "hdfs_tables" : [
+     *     "enrichment_tables" : [
      *     {
      *       "name" : "test_table",
      *        "path": "/siembol/tables/enrichment/test.json"

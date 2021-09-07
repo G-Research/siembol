@@ -70,7 +70,7 @@ public class EnrichmentEvaluatorBoltTest {
     private Tuple tuple;
     private OutputCollector collector;
     EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
-    ZooKeeperAttributesDto zookeperAttributes;
+    ZooKeeperAttributesDto zooKeeperAttributes;
     StormEnrichmentAttributesDto attributes;
     ZooKeeperConnector zooKeeperConnector;
     ZooKeeperConnectorFactory zooKeeperConnectorFactory;
@@ -78,9 +78,9 @@ public class EnrichmentEvaluatorBoltTest {
 
     @Before
     public void setUp() throws Exception {
-        zookeperAttributes = new ZooKeeperAttributesDto();
+        zooKeeperAttributes = new ZooKeeperAttributesDto();
         attributes = new StormEnrichmentAttributesDto();
-        attributes.setEnrichingRulesZookeperAttributes(zookeperAttributes);
+        attributes.setEnrichingRulesZookeperAttributes(zooKeeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
@@ -89,7 +89,7 @@ public class EnrichmentEvaluatorBoltTest {
 
 
         zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
-        when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
+        when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes)).thenReturn(zooKeeperConnector);
         when(zooKeeperConnector.getData()).thenReturn(testRules);
 
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
