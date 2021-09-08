@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, TemplateRef } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, TemplateRef } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Topology } from "@app/model/config-model";
@@ -38,11 +38,13 @@ export class ApplicationDialogComponent {
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: Observable<Topology[]>,
     private service: EditorService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cd: ChangeDetectorRef
   ) {
     this.topologies$ = data;
     this.topologies$.subscribe(t => {
       this.dataSource = new MatTableDataSource(t);
+      this.cd.markForCheck();
     })
   }
 
@@ -54,6 +56,7 @@ export class ApplicationDialogComponent {
     this.topologies$ = this.service.configLoader.restartTopology(topologyName);
     this.topologies$.subscribe(t => {
       this.dataSource = new MatTableDataSource(t);
+      this.cd.markForCheck();
     })
   }
 
