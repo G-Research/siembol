@@ -27,8 +27,10 @@ export class ImporterDialogComponent {
     fontSize: "14px",
   };
   config: string;
+  placeholder: string;
   name: string;
-  
+  editor: any;
+
   constructor(
     public dialogref: MatDialogRef<ImporterDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Importer,
@@ -36,7 +38,7 @@ export class ImporterDialogComponent {
     private formlyJsonschema: FormlyJsonschema
     ) {
       this.name = data.importer_name; 
-      this.config = `<paste ${this.name} config here>`;
+      this.placeholder = `paste ${this.name} config here`;
       const schema = data.importer_attributes_schema;
       this.service.configSchema.formatTitlesInSchema(schema, '');
       this.field = this.formlyJsonschema.toFieldConfig(schema, {
@@ -58,6 +60,15 @@ export class ImporterDialogComponent {
       return this.service.configStore.importConfig(configToImport).subscribe(result => {
         this.dialogref.close(result);
       });
+    }
+
+    hidePlaceholder() {
+      document.getElementById("placeholder").style.display="none";
+      this.editor.focus();
+    }
+
+    onInit(event: any) {
+      this.editor = event;
     }
 
     private validateYaml() {
