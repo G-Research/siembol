@@ -32,15 +32,6 @@
         <button 
           mat-icon-button
           class="right-element"
-          *ngIf="(topologies$ | async)?.length > 0"
-          [matTooltip]="'Manage Applications'"
-          (click)="openApplicationDialog()"
-        >
-          <mat-icon>apps</mat-icon>
-        </button>
-        <button 
-          mat-icon-button
-          class="right-element"
           *ngIf="(repositoryLinks$ | async)" 
           [matMenuTriggerFor]="repoMenu" 
           [matTooltip]="'Repositories'"

@@ -1,6 +1,14 @@
 <mat-card>
   <mat-card-title>
     <div class="rule-title">{{serviceName | titlecase}} Admin Config</div>
+    <button 
+      class="button"
+      mat-raised-button color="accent"
+      *ngIf="(topologies$ | async)?.length > 0"
+      (click)="openApplicationDialog()"
+    >
+      Manage Applications
+    </button>
   </mat-card-title>
   <mat-card-subtitle>
     <p>

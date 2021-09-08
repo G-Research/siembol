@@ -6,8 +6,7 @@ import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog
 import { EditorService } from '../../services/editor.service';
 import { AppService } from '../../services/app.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UserRole, RepositoryLinks, repoNames, Topology } from '@app/model/config-model';
-import { ApplicationDialogComponent } from '../application-dialog/application-dialog.component';
+import { UserRole, RepositoryLinks, repoNames } from '@app/model/config-model';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +24,6 @@ export class NavBarComponent implements OnInit {
     isAdminChecked: boolean;
     isHome: boolean;
     repositoryLinks$: Observable<RepositoryLinks>;
-    topologies$: Observable<Topology[]>;
     readonly repoNames = repoNames;
 
     constructor(private config: AppConfigService, 
@@ -46,7 +44,6 @@ export class NavBarComponent implements OnInit {
         this.serviceName$.subscribe(service => {
             if (service) {
                 this.userRoles = this.appService.getUserServiceRoles(service);
-                this.topologies$ = this.editorService.configLoader.getTopologies();
             }
             this.serviceName = service;
         });
@@ -73,9 +70,5 @@ export class NavBarComponent implements OnInit {
             path += this.config.adminPath;
         }
         return path;  
-    }
-
-    openApplicationDialog() {
-        this.dialog.open(ApplicationDialogComponent, { data: this.topologies$});
     }
 }

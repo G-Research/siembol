@@ -1,6 +1,12 @@
 <h1 mat-dialog-title>Application Manager</h1>
+
 <div class="container">
-<table mat-table [dataSource]="topologies$ | async">
+  <mat-form-field appearance="standard">
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  </mat-form-field>
+  
+<table mat-table [dataSource]="dataSource">
   <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
     <th mat-header-cell *matHeaderCellDef>
       {{column.header}}

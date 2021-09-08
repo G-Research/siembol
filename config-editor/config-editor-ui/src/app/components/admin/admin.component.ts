@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { ConfigData, PullRequestInfo } from '@app/model';
-import { Type, AdminConfig } from '@app/model/config-model';
+import { Type, AdminConfig, Topology } from '@app/model/config-model';
 import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
+import { ApplicationDialogComponent } from '..';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +33,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   config: AdminConfig;
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
+  topologies$: Observable<Topology[]>;
   private markHistoryChange = false;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
 
@@ -61,6 +63,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       }
       this.markHistoryChange = false;
     });
+    this.topologies$ = this.editorService.configLoader.getTopologies();
   }
 
   ngOnDestroy() {
@@ -106,6 +109,10 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.markHistoryChange = true;
     this.form.updateValueAndValidity();
   }
+
+  openApplicationDialog() {
+    this.dialog.open(ApplicationDialogComponent, { data: this.topologies$});
+}
 
   private updateAndWrapConfig(config: AdminConfig) {
     //NOTE: in the form we are using wrapping config to handle optionals, unions

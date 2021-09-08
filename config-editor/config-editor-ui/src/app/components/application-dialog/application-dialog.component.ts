@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, TemplateRef } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatTableDataSource } from "@angular/material/table";
 import { Topology } from "@app/model/config-model";
 import { EditorService } from "@app/services/editor.service";
 import { Observable } from "rxjs";
@@ -31,6 +32,7 @@ export class ApplicationDialogComponent {
     },
   ];
   displayedColumns = ["name", "id", "image", "attributes", "restart"];
+  dataSource: MatTableDataSource<Topology>;
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
@@ -39,6 +41,9 @@ export class ApplicationDialogComponent {
     private dialog: MatDialog
   ) {
     this.topologies$ = data;
+    this.topologies$.subscribe(t => {
+      this.dataSource = new MatTableDataSource(t);
+    })
   }
 
   onClickClose() {
@@ -47,6 +52,9 @@ export class ApplicationDialogComponent {
 
   onRestartTopology(topologyName: string) {
     this.topologies$ = this.service.configLoader.restartTopology(topologyName);
+    this.topologies$.subscribe(t => {
+      this.dataSource = new MatTableDataSource(t);
+    })
   }
 
   onViewAttributes(attributes: string, templateRef: TemplateRef<any>) {
@@ -59,5 +67,10 @@ export class ApplicationDialogComponent {
 
   onClickCloseAttributes() {
     this.dialogrefAttributes.close();
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 }
