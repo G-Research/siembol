@@ -193,3 +193,35 @@ export interface ConfigToImport {
 export interface ImportedConfig {
   imported_configuration: any;
 }
+
+export interface applications {
+  topologies: Application[];
+}
+
+export interface Application {
+  topology_name: string,
+  topology_id: string,
+  attributes: string[],
+  image: string,
+  service_name: string
+}
+
+export const applicationManagerColumns = [
+  {
+    columnDef: 'name',
+    header: 'Name',
+    cell: (t: Application) => `${t.topology_name}`,
+  },
+  {
+    columnDef: 'id',
+    header: 'ID',
+    cell: (t: Application) => `${t.topology_id}`,
+  },
+  {
+    columnDef: 'image',
+    header: 'Image',
+    cell: (t: Application) => `${t.image}`,
+  },
+];
+
+export const displayedApplicationManagerColumns = ["name", "id", "image", "attributes", "restart"];
