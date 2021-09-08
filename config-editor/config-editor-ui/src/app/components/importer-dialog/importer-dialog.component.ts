@@ -15,6 +15,7 @@ import * as yaml from 'js-yaml';
   templateUrl: 'importer-dialog.component.html',
 })
 export class ImporterDialogComponent {
+  readonly placeholder = `paste config here`;
   field: FormlyFieldConfig;
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
@@ -27,7 +28,6 @@ export class ImporterDialogComponent {
     fontSize: "14px",
   };
   config: string;
-  placeholder: string;
   name: string;
   editor: any;
 
@@ -38,7 +38,6 @@ export class ImporterDialogComponent {
     private formlyJsonschema: FormlyJsonschema
     ) {
       this.name = data.importer_name; 
-      this.placeholder = `paste ${this.name} config here`;
       const schema = data.importer_attributes_schema;
       this.service.configSchema.formatTitlesInSchema(schema, '');
       this.field = this.formlyJsonschema.toFieldConfig(schema, {
