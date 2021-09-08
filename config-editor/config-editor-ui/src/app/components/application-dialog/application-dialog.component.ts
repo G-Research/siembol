@@ -26,9 +26,8 @@ export class ApplicationDialogComponent {
     private cd: ChangeDetectorRef
   ) {
     this.applications$ = data;
-    this.applications$.subscribe(t => {
-      this.dataSource = new MatTableDataSource(t);
-      this.cd.markForCheck();
+    this.applications$.subscribe(a => {
+      this.createTable(a);
     })
   }
 
@@ -38,11 +37,8 @@ export class ApplicationDialogComponent {
 
   onRestartApplication(applicationName: string) {
     this.applications$ = this.service.configLoader.restartApplication(applicationName);
-    this.applications$.subscribe(t => {
-      const filter = this.dataSource.filter;
-      this.dataSource = new MatTableDataSource(t);
-      this.dataSource.filter = filter;
-      this.cd.markForCheck();
+    this.applications$.subscribe(a => {
+      this.createTable(a);
     })
   }
 
@@ -61,5 +57,12 @@ export class ApplicationDialogComponent {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  private createTable(a: Application[]) {
+    const filter = this.dataSource?.filter;
+    this.dataSource = new MatTableDataSource(a);
+    this.dataSource.filter = filter;
+    this.cd.markForCheck();
   }
 }
