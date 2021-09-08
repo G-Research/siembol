@@ -10,10 +10,13 @@
   </ng-scrollbar>
   </div>
   <mat-divider [vertical]="true"></mat-divider>
-  <div class="editor">
+  <div class="editor" (click)="hidePlaceholder()">
     <h2>{{name | titlecase}} Rule</h2>
-    <mat-divider></mat-divider>
-    <ngx-monaco-editor style="height: 100%" [options]="editorOptions" [(ngModel)]="config"></ngx-monaco-editor>
+    <mat-divider></mat-divider> 
+    <ngx-monaco-editor id="editor" [options]="editorOptions" [(ngModel)]="config" (onInit)="onInit($event)"></ngx-monaco-editor>
+    <div id="placeholder" class="placeholder">
+      <div> {{placeholder}} </div>
+    </div>
   </div>
 </div>
 <div mat-dialog-actions class="button-row">

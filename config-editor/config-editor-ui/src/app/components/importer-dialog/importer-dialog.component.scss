@@ -18,6 +18,7 @@
   min-width: 49%;
   min-height: 100%;
   flex: 1;
+  position: relative;
 }
 
 .fields {
@@ -53,4 +54,16 @@ h2 {
 form {
   margin-left: 10px;
   margin-top: 10px;
+}
+
+.placeholder {
+  margin-left: 64px;
+  color: #bbb;
+  position: absolute;
+}
+
+ngx-monaco-editor {
+  height: 100%;
+  width: 100%;
+  position: absolute;
 }
