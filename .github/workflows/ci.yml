@@ -110,14 +110,15 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@v3.4.1
+        uses: docker/metadata-action@v3.5.0
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -177,14 +178,15 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@v3.4.1
+        uses: docker/metadata-action@v3.5.0
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -221,20 +223,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup Node.js 12.x
-        uses: actions/setup-node@v2.3.0
+        uses: actions/setup-node@v2.4.0
         with:
-          node-version: 12.x
-      - name: Cache NPM packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: npm-config-editor-ui-${{ hashFiles('config-editor/config-editor-ui/package.json') }}
-          restore-keys: |
-            npm-config-editor-ui-
+          node-version: 12.22.5
+          cache: npm
+          cache-dependency-path: config-editor/config-editor-ui/package-lock.json
       - name: Install NPM packages
-        run: |
-          npm install typescript@4.1.5
-          npm ci
+        run: npm ci
       - name: Testing
         run: npm run test-ci
       - name: Generate build-info.json
@@ -268,14 +263,15 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@v3.4.1
+        uses: docker/metadata-action@v3.5.0
         with:
           images: gresearchdev/siembol-config-editor-ui
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' }}
+            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-dev') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-dev') }}
           labels: |
             org.opencontainers.image.title=siembol-config-editor-ui
       - name: Build and export Docker image

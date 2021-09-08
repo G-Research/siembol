@@ -11,7 +11,7 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>parsing</artifactId>
-        <version>1.3.3-SNAPSHOT</version>
+        <version>1.3.5-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>1.3.3-SNAPSHOT</version>
+            <version>1.3.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
