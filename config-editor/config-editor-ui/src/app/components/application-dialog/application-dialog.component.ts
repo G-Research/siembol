@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, TemplateRef } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
-import { Application } from "@app/model/config-model";
+import { Application, applicationManagerColumns, displayedApplicationManagerColumns } from "@app/model/config-model";
 import { EditorService } from "@app/services/editor.service";
 import { Observable } from "rxjs";
 
@@ -14,25 +14,9 @@ import { Observable } from "rxjs";
 export class ApplicationDialogComponent {
   dialogrefAttributes: MatDialogRef<any>;
   applications$: Observable<Application[]>;
-  columns = [
-    {
-      columnDef: 'name',
-      header: 'Name',
-      cell: (t: Application) => `${t.topology_name}`,
-    },
-    {
-      columnDef: 'id',
-      header: 'ID',
-      cell: (t: Application) => `${t.topology_id}`,
-    },
-    {
-      columnDef: 'image',
-      header: 'Image',
-      cell: (t: Application) => `${t.image}`,
-    },
-  ];
-  displayedColumns = ["name", "id", "image", "attributes", "restart"];
   dataSource: MatTableDataSource<Application>;
+  columns = applicationManagerColumns;
+  displayedColumns = displayedApplicationManagerColumns;
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
