@@ -50,7 +50,7 @@ public class SigmaRuleImporter implements ConfigImporter {
     private static final String ERROR_IMPORT_CONFIG_LOG = "Error during importing sigma rule: {}, " +
             "attributes: {}, user:{}, exception: {}";
     private static final String ERROR_TOKENS_PARSING = "Problem during parsing of condition tokens";
-    private static final String UNKNOWN_RULE_FIELD = "unknown";
+    private static final String RULE_UNKNOWN_FIELD_VALUE = "unknown";
 
     private final String importerAttributesSchema;
     private final SiembolJsonSchemaValidator importerAttributesValidator;
@@ -106,7 +106,7 @@ public class SigmaRuleImporter implements ConfigImporter {
     private RuleDto createRule(SigmaImporterAttributesDto attributes, Map<String, Object> sigmaRuleMap) throws Exception {
         RuleDto ret = new RuleDto();
         BeanUtils.copyProperties(ret, attributes.getRuleMetadataMapping());
-        EvaluationLibrary.substituteBean(ret, sigmaRuleMap, UNKNOWN_RULE_FIELD);
+        EvaluationLibrary.substituteBean(ret, sigmaRuleMap, RULE_UNKNOWN_FIELD_VALUE);
 
         ret.setRuleName(ConfigEditorUtils.getNormalisedConfigName(ret.getRuleName()));
         return ret;

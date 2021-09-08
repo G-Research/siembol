@@ -9,6 +9,7 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
@@ -127,7 +128,8 @@ public class ConfigEditorUtils {
     }
 
     public static String getNormalisedConfigName(String configName) {
-        return configName.trim().replaceAll(INVALID_NAME_SEQUENCE_REGEX, "_");
+        String name = configName.trim().replaceAll(INVALID_NAME_SEQUENCE_REGEX, "_");
+        return StringUtils.stripEnd(name, "_");
     }
 
 }
