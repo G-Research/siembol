@@ -1,5 +1,6 @@
 <h1 mat-dialog-title>Application Manager</h1>
-<mat-form-field *ngIf="(topologies$ | async)?.length > 1" class="filter" appearance="standard">
+<mat-form-field [ngStyle]="{display: (applications$ | async)?.length > 1 ? 'block' : 'none'}"
+  class="filter" appearance="standard">
   <mat-label>Filter</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Ex. siembol" #input>
 </mat-form-field>
@@ -22,7 +23,7 @@
     <ng-container matColumnDef="restart">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onRestartTopology(row.topology_name)">Restart application</button>
+        <button mat-raised-button color="primary" (click)="onRestartApplication(row.topology_name)">Restart application</button>
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

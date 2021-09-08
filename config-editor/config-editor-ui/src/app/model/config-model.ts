@@ -194,11 +194,11 @@ export interface ImportedConfig {
   imported_configuration: any;
 }
 
-export interface Topologies {
-  topologies: Topology[];
+export interface applications {
+  topologies: Application[];
 }
 
-export interface Topology {
+export interface Application {
   topology_name: string,
   topology_id: string,
   attributes: string[],

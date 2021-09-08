@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, TemplateRef } from "@angular/core";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
-import { Topology } from "@app/model/config-model";
+import { Application } from "@app/model/config-model";
 import { EditorService } from "@app/services/editor.service";
 import { Observable } from "rxjs";
 
@@ -13,36 +13,36 @@ import { Observable } from "rxjs";
 })
 export class ApplicationDialogComponent {
   dialogrefAttributes: MatDialogRef<any>;
-  topologies$: Observable<Topology[]>;
+  applications$: Observable<Application[]>;
   columns = [
     {
       columnDef: 'name',
       header: 'Name',
-      cell: (t: Topology) => `${t.topology_name}`,
+      cell: (t: Application) => `${t.topology_name}`,
     },
     {
       columnDef: 'id',
       header: 'ID',
-      cell: (t: Topology) => `${t.topology_id}`,
+      cell: (t: Application) => `${t.topology_id}`,
     },
     {
       columnDef: 'image',
       header: 'Image',
-      cell: (t: Topology) => `${t.image}`,
+      cell: (t: Application) => `${t.image}`,
     },
   ];
   displayedColumns = ["name", "id", "image", "attributes", "restart"];
-  dataSource: MatTableDataSource<Topology>;
+  dataSource: MatTableDataSource<Application>;
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: Observable<Topology[]>,
+    @Inject(MAT_DIALOG_DATA) private data: Observable<Application[]>,
     private service: EditorService,
     private dialog: MatDialog,
     private cd: ChangeDetectorRef
   ) {
-    this.topologies$ = data;
-    this.topologies$.subscribe(t => {
+    this.applications$ = data;
+    this.applications$.subscribe(t => {
       this.dataSource = new MatTableDataSource(t);
       this.cd.markForCheck();
     })
@@ -52,10 +52,12 @@ export class ApplicationDialogComponent {
     this.dialogref.close();
   }
 
-  onRestartTopology(topologyName: string) {
-    this.topologies$ = this.service.configLoader.restartTopology(topologyName);
-    this.topologies$.subscribe(t => {
+  onRestartApplication(applicationName: string) {
+    this.applications$ = this.service.configLoader.restartApplication(applicationName);
+    this.applications$.subscribe(t => {
+      const filter = this.dataSource.filter;
       this.dataSource = new MatTableDataSource(t);
+      this.dataSource.filter = filter;
       this.cd.markForCheck();
     })
   }

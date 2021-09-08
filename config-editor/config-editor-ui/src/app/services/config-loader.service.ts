@@ -21,8 +21,8 @@ import {
   Importers,
   ImportedConfig,
   ConfigToImport,
-  Topologies,
-  Topology,
+  applications,
+  Application,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
@@ -414,15 +414,15 @@ export class ConfigLoaderService {
       .pipe(map(result => result));
   }
 
-  getTopologies(): Observable<Topology[]> {
-    return this.http.get<Topologies>(
+  getApplications(): Observable<Application[]> {
+    return this.http.get<applications>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies`
     ).pipe(map(result => result.topologies));
   }
 
-  restartTopology(topology: string): Observable<Topology[]> {
-    return this.http.post<Topologies>(
-      `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies/${topology}/restart`,
+  restartApplication(application: string): Observable<Application[]> {
+    return this.http.post<applications>(
+      `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies/${application}/restart`,
       null
     ).pipe(map(result => result.topologies.filter(t => t.service_name === this.serviceName)));
   }
