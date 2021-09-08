@@ -130,7 +130,7 @@ public class SigmaRuleImporterTest {
 
         RuleDto rule = ALERTING_RULE_READER.readValue(result.getAttributes().getImportedConfiguration());
         Assert.assertEquals("siembol", rule.getRuleAuthor());
-        Assert.assertEquals("based_on_Sigma_Title_Experimental", rule.getRuleName());
+        Assert.assertEquals("based_on_Sigma_Title_Experimental_", rule.getRuleName());
         Assert.assertEquals("generated from Detects secret and id: d06be400-8045-4200-0067-740a2009db25",
                 rule.getRuleDescription());
         Assert.assertEquals(0, rule.getRuleVersion());
