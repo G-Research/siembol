@@ -57,22 +57,25 @@ public class HttpProvider {
     }
 
     public String get(String path) throws IOException {
+        return readBody(getStream(path));
+    }
+
+    public InputStream getStream(String path) throws IOException {
         try (CloseableHttpClient httpClient = clientFactory.get()) {
             String url = host + path;
             HttpGet httpGet = new HttpGet(url);
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
 
                 if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                    LOG.error(String.format("unsuccessful get request on url: %s return status line: %s",
-                            url, response.getStatusLine().toString()));
+                    LOG.error("Unsuccessful get request on url: {} return status line: {}",
+                            url, response.getStatusLine().toString());
                     throw new IOException("Unsuccessful GET");
                 }
 
-                return readBody(response.getEntity().getContent());
+                return response.getEntity().getContent();
             }
         } catch (Exception e) {
-            LOG.error(String.format("Exception during executing GET request on url: %s%s",
-                    host, path));
+            LOG.error("Exception during executing GET request on url: {}{}", host, path);
             throw e;
         }
     }

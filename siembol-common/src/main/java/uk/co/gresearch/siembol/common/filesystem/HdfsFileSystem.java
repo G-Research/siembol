@@ -25,6 +25,7 @@ public class HdfsFileSystem implements SiembolFileSystem {
         this(uri, new Configuration());
     }
 
+    @Override
     public InputStream openInputStream(String path) throws IOException {
         Path hdfsPath = new Path(path);
         if (fs.exists(hdfsPath)) {

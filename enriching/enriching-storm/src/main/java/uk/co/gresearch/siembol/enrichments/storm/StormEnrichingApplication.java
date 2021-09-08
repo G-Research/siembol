@@ -12,8 +12,8 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.filesystem.HdfsFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
+import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
@@ -101,9 +101,9 @@ public class StormEnrichingApplication {
         config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
         StormTopology topology = createTopology(attributes,
                 new ZooKeeperConnectorFactoryImpl(),
-                new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));
+                SupportedFileSystem.fromUri(attributes.getEnrichingTablesUri()));
 
-        LOG.info(SUBMIT_INFO_MSG, attributesStr);
+        LOG.info(SUBMIT_INFO_MSG, attributes.getTopologyName(), attributesStr);
         StormSubmitter.submitTopology(attributes.getTopologyName(), config, topology);
     }
 }
