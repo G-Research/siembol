@@ -65,18 +65,23 @@ public class EvaluationLibrary {
          return numVariableMatches == numVariableStartMatches && numVariableMatches > 0;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+
     public static Object substituteBean(Object obj, Map<String, Object> event) throws Exception {
+        return substituteBean(obj, event, null);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static Object substituteBean(Object obj, Map<String, Object> event, String defaultValue) throws Exception {
         //NOTE: currently we have beans with primitive types, Bean or List<Beans>
         if (obj instanceof String) {
-            return substitute(event, (String)obj).orElse(null);
+            return substitute(event, (String)obj).orElse(defaultValue);
         } else if (obj instanceof Enum) {
             return obj;
         }
         else if (obj instanceof List) {
             List list = (List)obj;
             for (int i = 0; i < list.size(); i++) {
-                list.set(i, substituteBean(list.get(i), event));
+                list.set(i, substituteBean(list.get(i), event, defaultValue));
             }
             return list;
         } else if (obj != null) {
@@ -92,12 +97,12 @@ public class EvaluationLibrary {
                     PropertyUtils.setNestedProperty(
                             obj,
                             fieldName,
-                            substituteBean(property, event));
+                            substituteBean(property, event, defaultValue));
                 }
             }
             return obj;
         }
-        return null;
+        return defaultValue;
     }
 
     public static Optional<Object> cloneAndSubstituteBean(Object prototype,
