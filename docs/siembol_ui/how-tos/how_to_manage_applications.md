@@ -1,5 +1,5 @@
 # How to manage applications
-Admins can manage applications from the admin panel by clicking on the orange top right `Manage Applications` button (see screenshot below). 
+Admin users can manage applications from the admin panel by clicking on the top right `Manage Applications` button (see screenshot below). 
 
 <img src="../screenshots/admin_editor.png" alt="drawing"/>
 
