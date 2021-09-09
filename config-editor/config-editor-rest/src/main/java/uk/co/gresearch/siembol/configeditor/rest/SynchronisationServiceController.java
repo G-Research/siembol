@@ -69,6 +69,7 @@ public class SynchronisationServiceController {
     }
 
     @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @CrossOrigin
     @GetMapping(value = "/api/v1/{service}/topologies", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTopologies(
             @AuthenticationPrincipal Object principal,
@@ -81,6 +82,7 @@ public class SynchronisationServiceController {
     }
 
     @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @CrossOrigin
     @PostMapping(value = "/api/v1/{service}/topologies/{topology}/restart", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> restartTopology(
             @AuthenticationPrincipal Object principal,
