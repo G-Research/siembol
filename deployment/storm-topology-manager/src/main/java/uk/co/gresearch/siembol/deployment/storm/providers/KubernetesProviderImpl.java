@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.deployment.storm.providers;
 
-import io.fabric8.kubernetes.api.model.batch.Job;
+import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
@@ -69,17 +69,18 @@ public class KubernetesProviderImpl implements KubernetesProvider {
     }
 
     private boolean jobExistsInCluster(String topologyId) {
-        return Optional.ofNullable(
-                client.batch()
-                    .jobs()
-                    .inNamespace(namespace)
-                    .withName(topologyId)
-                    .get()
+        return Optional.ofNullable(client.batch()
+                .v1()
+                .jobs()
+                .inNamespace(namespace)
+                .withName(topologyId)
+                .get()
         ).isPresent();
     }
 
     private boolean jobIsActive(String topologyId) {
         Optional<Job> activeJobs = Optional.ofNullable(client.batch()
+                .v1()
                 .jobs()
                 .inNamespace(namespace)
                 .withName(topologyId)
