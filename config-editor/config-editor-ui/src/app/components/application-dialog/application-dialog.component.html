@@ -23,7 +23,7 @@
     <ng-container matColumnDef="restart">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onRestartApplication(row.topology_name)">Restart</button>
+        <button mat-raised-button color="primary" [disabled]="restartedApplications.includes(row.topology_name)" (click)="onRestartApplication(row.topology_name, restartedApplication)">Restart</button>
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -45,5 +45,12 @@
   </div>
   <div mat-dialog-actions>
     <button mat-raised-button class="button-layout" color="accent" (click)="onClickCloseAttributes()">CLOSE</button>
+  </div>
+</ng-template>
+
+<ng-template #restartedApplication let-data>
+  State of {{data}} has been changed, please wait a few minutes and check storm UI if the new state of {{data}} has been released
+  <div mat-dialog-actions>
+    <button mat-raised-button class="button-layout" color="accent" (click)="onClickCloseAttributes()">OK</button>
   </div>
 </ng-template>

@@ -17,6 +17,7 @@ export class ApplicationDialogComponent {
   dataSource: MatTableDataSource<Application>;
   columns = applicationManagerColumns;
   displayedColumns = displayedApplicationManagerColumns;
+  restartedApplications: string[] = [];
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
@@ -35,11 +36,19 @@ export class ApplicationDialogComponent {
     this.dialogref.close();
   }
 
-  onRestartApplication(applicationName: string) {
+  onRestartApplication(applicationName: string, templateRef: TemplateRef<any>) {
     this.applications$ = this.service.configLoader.restartApplication(applicationName);
+    this.restartedApplications.push(applicationName);
     this.applications$.subscribe(a => {
       this.createTable(a);
     })
+    this.dialogrefAttributes = this.dialog.open(
+      templateRef, 
+      { 
+        data: applicationName,
+        maxWidth: '800px',
+      });
+    
   }
 
   onViewAttributes(attributes: string, templateRef: TemplateRef<any>) {
