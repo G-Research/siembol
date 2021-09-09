@@ -1,6 +1,6 @@
 {
   "name": "rule-editor.ui",
-  "version": "1.3.10-dev",
+  "version": "1.3.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
