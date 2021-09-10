@@ -4,7 +4,6 @@ import { MatTableDataSource } from "@angular/material/table";
 import { Application, applicationManagerColumns, displayedApplicationManagerColumns } from "@app/model/config-model";
 import { EditorService } from "@app/services/editor.service";
 import { Observable } from "rxjs";
-import { shareReplay } from "rxjs/operators";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +13,6 @@ import { shareReplay } from "rxjs/operators";
 })
 export class ApplicationDialogComponent {
   dialogrefAttributes: MatDialogRef<any>;
-  applications$: Observable<Application[]>;
   dataSource: MatTableDataSource<Application>;
   columns = applicationManagerColumns;
   displayedColumns = displayedApplicationManagerColumns;
@@ -27,8 +25,7 @@ export class ApplicationDialogComponent {
     private dialog: MatDialog,
     private cd: ChangeDetectorRef
   ) {
-    this.applications$ = data;
-    this.applications$.subscribe(a => {
+    this.service.configLoader.getApplications().subscribe(a => {
       this.createTable(a);
     })
   }
@@ -38,10 +35,9 @@ export class ApplicationDialogComponent {
   }
 
   onRestartApplication(applicationName: string, templateRef: TemplateRef<any>) {
-    this.applications$ = this.service.configLoader.restartApplication(applicationName).pipe(shareReplay());
-    this.restartedApplications.push(applicationName);
-    this.applications$.subscribe(a => {
+    this.service.configLoader.restartApplication(applicationName).subscribe(a => {
       this.createTable(a);
+      this.restartedApplications.push(applicationName);
     })
     this.dialogrefAttributes = this.dialog.open(
       templateRef, 

@@ -4,7 +4,6 @@
     <button 
       class="button"
       mat-raised-button color="accent"
-      *ngIf="(applications$ | async)?.length > 0"
       (click)="openApplicationDialog()"
     >
       Manage Applications

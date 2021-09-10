@@ -1,5 +1,5 @@
 <h1 mat-dialog-title>Application Manager</h1>
-<mat-form-field [ngStyle]="{display: (applications$ | async)?.length > 1 ? 'block' : 'none'}"
+<mat-form-field [ngStyle]="{display: dataSource?.data?.length > 1 ? 'block' : 'none'}"
   class="filter" appearance="standard">
   <mat-label>Filter</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Ex. siembol" #input>
@@ -53,12 +53,12 @@
   </mat-expansion-panel>
 </mat-accordion>
   <div mat-dialog-actions>
-    <button mat-raised-button class="button-layout" color="accent" (click)="onClickCloseAttributes()">CLOSE</button>
+    <button mat-raised-button class="button-layout" color="mat-color($primary)" (click)="onClickCloseAttributes()">CLOSE</button>
   </div>
 </ng-template>
 
 <ng-template #restartedApplication let-data>
-  State of {{data}} has been changed, please wait a few minutes and check storm UI if the new state of {{data}} has been released
+  State of <b class="bold">{{data}}</b> has been changed, please <b class="bold">wait a few minutes</b> and check storm UI if the new state has been released
   <div mat-dialog-actions>
     <button mat-raised-button class="button-layout" color="accent" (click)="onClickCloseAttributes()">OK</button>
   </div>
