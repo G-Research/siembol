@@ -17,7 +17,7 @@
     <ng-container matColumnDef="attributes">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onViewAttributes(row.attributes[0], attributesViewer)">View attributes</button>
+        <button mat-raised-button color="primary" (click)="onViewAttributes(row.attributes, attributesViewer)">View attributes</button>
       </td>
     </ng-container>
     <ng-container matColumnDef="restart">
@@ -35,14 +35,23 @@
 </div>
 
 <ng-template #attributesViewer let-data>
-  <div class="attributes">
-    <re-json-tree 
-      [json]="data" 
-      [prevKey]="'$'" 
-      [copyOnClick]="false" 
-      >
-    </re-json-tree>
-  </div>
+  <mat-accordion [multi]="false" >
+    <mat-expansion-panel *ngFor="let attributes of data; index as i; first as isFirst;" [expanded]="isFirst">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Attribute {{i + 1}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="attributes">
+        <re-json-tree 
+        [json]="attributes" 
+        [prevKey]="'$'" 
+        [copyOnClick]="false" 
+        >
+      </re-json-tree>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
   <div mat-dialog-actions>
     <button mat-raised-button class="button-layout" color="accent" (click)="onClickCloseAttributes()">CLOSE</button>
   </div>

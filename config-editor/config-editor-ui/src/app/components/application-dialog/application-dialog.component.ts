@@ -51,11 +51,11 @@ export class ApplicationDialogComponent {
     
   }
 
-  onViewAttributes(attributes: string, templateRef: TemplateRef<any>) {
+  onViewAttributes(attributes: string[], templateRef: TemplateRef<any>) {
     this.dialogrefAttributes = this.dialog.open(
       templateRef, 
       { 
-        data: JSON.parse(atob(attributes)),
+        data: attributes.map(a => JSON.parse(atob(a))), 
       });
   }
 
