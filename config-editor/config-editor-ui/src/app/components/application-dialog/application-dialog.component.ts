@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, TemplateRef } from "@angular/core";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef } from "@angular/core";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Application, applicationManagerColumns, displayedApplicationManagerColumns } from "@app/model/config-model";
 import { EditorService } from "@app/services/editor.service";
-import { Observable } from "rxjs";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,7 +19,6 @@ export class ApplicationDialogComponent {
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: Observable<Application[]>,
     private service: EditorService,
     private dialog: MatDialog,
     private cd: ChangeDetectorRef
