@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { ConfigData, PullRequestInfo } from '@app/model';
-import { Type, AdminConfig, Application } from '@app/model/config-model';
+import { Type, AdminConfig } from '@app/model/config-model';
 import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
@@ -33,7 +33,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   config: AdminConfig;
   serviceName: string;
   adminPullRequestPending$: Observable<PullRequestInfo>;
-  applications$: Observable<Application[]>;
   private markHistoryChange = false;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
 
@@ -63,7 +62,6 @@ export class AdminComponent implements OnInit, OnDestroy {
       }
       this.markHistoryChange = false;
     });
-    this.applications$ = this.editorService.configLoader.getApplications();
   }
 
   ngOnDestroy() {
@@ -111,7 +109,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   openApplicationDialog() {
-    this.dialog.open(ApplicationDialogComponent, { data: this.applications$});
+    this.dialog.open(ApplicationDialogComponent);
 }
 
   private updateAndWrapConfig(config: AdminConfig) {

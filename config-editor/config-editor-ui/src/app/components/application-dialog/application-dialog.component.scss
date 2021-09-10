@@ -25,10 +25,14 @@
 }
 
 .attributes {
-  max-height: 60vh;
+  max-height: 65vh;
   overflow-y: auto;
 }
 
 .filter {
   width: 100%;
+}
+
+.bold {
+  color: rgb(62, 216, 255);
 }

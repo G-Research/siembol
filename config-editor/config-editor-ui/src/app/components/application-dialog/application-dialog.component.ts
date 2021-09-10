@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, TemplateRef } from "@angular/core";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef } from "@angular/core";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Application, applicationManagerColumns, displayedApplicationManagerColumns } from "@app/model/config-model";
 import { EditorService } from "@app/services/editor.service";
-import { Observable } from "rxjs";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,20 +12,18 @@ import { Observable } from "rxjs";
 })
 export class ApplicationDialogComponent {
   dialogrefAttributes: MatDialogRef<any>;
-  applications$: Observable<Application[]>;
   dataSource: MatTableDataSource<Application>;
   columns = applicationManagerColumns;
   displayedColumns = displayedApplicationManagerColumns;
+  restartedApplications: string[] = [];
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: Observable<Application[]>,
     private service: EditorService,
     private dialog: MatDialog,
     private cd: ChangeDetectorRef
   ) {
-    this.applications$ = data;
-    this.applications$.subscribe(a => {
+    this.service.configLoader.getApplications().subscribe(a => {
       this.createTable(a);
     })
   }
@@ -35,18 +32,25 @@ export class ApplicationDialogComponent {
     this.dialogref.close();
   }
 
-  onRestartApplication(applicationName: string) {
-    this.applications$ = this.service.configLoader.restartApplication(applicationName);
-    this.applications$.subscribe(a => {
+  onRestartApplication(applicationName: string, templateRef: TemplateRef<any>) {
+    this.service.configLoader.restartApplication(applicationName).subscribe(a => {
       this.createTable(a);
+      this.restartedApplications.push(applicationName);
     })
-  }
-
-  onViewAttributes(attributes: string, templateRef: TemplateRef<any>) {
     this.dialogrefAttributes = this.dialog.open(
       templateRef, 
       { 
-        data: JSON.parse(atob(attributes)),
+        data: applicationName,
+        maxWidth: '800px',
+      });
+    
+  }
+
+  onViewAttributes(attributes: string[], templateRef: TemplateRef<any>) {
+    this.dialogrefAttributes = this.dialog.open(
+      templateRef, 
+      { 
+        data: attributes.map(a => JSON.parse(atob(a))), 
       });
   }
 
