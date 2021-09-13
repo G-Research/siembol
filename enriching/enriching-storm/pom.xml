@@ -116,6 +116,11 @@
             <version>${mockito_version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${http_client_version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

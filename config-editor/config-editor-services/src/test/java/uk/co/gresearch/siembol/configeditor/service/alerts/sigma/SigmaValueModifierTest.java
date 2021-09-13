@@ -1,11 +1,11 @@
 package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
 
-import com.sun.jersey.core.util.Base64;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 public class SigmaValueModifierTest {
@@ -50,7 +50,7 @@ public class SigmaValueModifierTest {
     @Test
     public void testBase64() {
         String value = SigmaValueModifier.BASE_64.transform("A");
-        Assert.assertEquals("A", Base64.base64Decode(value));
+        Assert.assertEquals("A", new String(Base64.getDecoder().decode(value)));
     }
 
     @Test(expected = IllegalStateException.class)
