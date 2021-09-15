@@ -113,7 +113,6 @@ public class CSVExtractorTest {
 
     @Test
     public void testGoodWordDelimiterNoQuotes() {
-
         columnNamesList.add(new ColumnNames(
                 Arrays.asList("c1", "c2", "c3", "c4", "c5")));
         CSVExtractor extractor = CSVExtractor.builder()
@@ -135,7 +134,6 @@ public class CSVExtractorTest {
 
     @Test
     public void testGoodWordDelimiterEndEmptyLastColumn() {
-
         columnNamesList.add(new ColumnNames(
                 Arrays.asList("c1", "c2", "c3", "c4", "c5", "c6")));
         CSVExtractor extractor = CSVExtractor.builder()
