@@ -105,6 +105,18 @@ public class SynchronisationServiceController {
         }
     }
 
+    @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @GetMapping(value = "/api/v1/{service}/enrichment/tables", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getEnrichmentTables(
+            @AuthenticationPrincipal Object principal,
+            @PathVariable("service") String service) {
+        checkAdminAuthorisation(principal, service);
+
+        return stormApplicationProvider
+                .getStormTopologies(service)
+                .toResponseEntity();
+    }
+
     private void checkSignature(String secret, String body, String signature) {
         String digest = new HmacUtils(HmacAlgorithms.HMAC_SHA_1, secret.getBytes()).hmacHex(body.getBytes());
         String computed = String.format(SIGNATURE_FORMAT_MSG, digest);
