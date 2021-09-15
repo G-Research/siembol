@@ -20,6 +20,18 @@ public class CSVExtractorTest {
     public static String simpleNoQuotes;
 
     /**
+     * a,bb,ccc,,ee,
+     **/
+    @Multiline
+    public static String simpleEmptyLastColumn;
+
+    /**
+     * a||bb||ccc||||ee||
+     **/
+    @Multiline
+    public static String stringDelimiterEmptyLastColumn;
+
+    /**
      * a;bb;ccc;;ee
      **/
     @Multiline
@@ -46,6 +58,34 @@ public class CSVExtractorTest {
 
     @Test
     public void testGoodSimpleNoQuotes() {
+        extractorFlags.add(
+                ParserExtractor.ParserExtractorFlags.SHOULD_REMOVE_FIELD);
+        columnNamesList.add(new ColumnNames(
+                Arrays.asList("c1", "c2", "c3", "c4", "c5", "c6")));
+        CSVExtractor extractor = CSVExtractor.builder()
+                .columnNames(columnNamesList)
+                .extractorFlags(extractorFlags)
+                .name(name)
+                .field(field)
+                .build();
+
+        Assert.assertEquals(name, extractor.getName());
+        Assert.assertEquals(field, extractor.getField());
+        Assert.assertTrue(extractor.shouldRemoveField());
+        Assert.assertFalse(extractor.shouldOverwiteFields());
+
+        Map<String, Object> out = extractor.extract(simpleEmptyLastColumn.trim());
+        Assert.assertEquals(6, out.size());
+        Assert.assertEquals("a", out.get("c1"));
+        Assert.assertEquals("bb", out.get("c2"));
+        Assert.assertEquals("ccc", out.get("c3"));
+        Assert.assertEquals("", out.get("c4"));
+        Assert.assertEquals("ee", out.get("c5"));
+        Assert.assertEquals("", out.get("c6"));
+    }
+
+    @Test
+    public void testGoodSimpleNoQuotesEmptyColumnENd() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_REMOVE_FIELD);
         columnNamesList.add(new ColumnNames(
@@ -91,6 +131,29 @@ public class CSVExtractorTest {
         Assert.assertEquals("ccc", out.get("c3"));
         Assert.assertEquals("", out.get("c4"));
         Assert.assertEquals("ee", out.get("c5"));
+    }
+
+    @Test
+    public void testGoodWordDelimiterEndEmptyLastColumn() {
+
+        columnNamesList.add(new ColumnNames(
+                Arrays.asList("c1", "c2", "c3", "c4", "c5", "c6")));
+        CSVExtractor extractor = CSVExtractor.builder()
+                .columnNames(columnNamesList)
+                .wordDelimiter("||")
+                .extractorFlags(extractorFlags)
+                .name(name)
+                .field(field)
+                .build();
+
+        Map<String, Object> out = extractor.extract(stringDelimiterEmptyLastColumn.trim());
+        Assert.assertEquals(6, out.size());
+        Assert.assertEquals("a", out.get("c1"));
+        Assert.assertEquals("bb", out.get("c2"));
+        Assert.assertEquals("ccc", out.get("c3"));
+        Assert.assertEquals("", out.get("c4"));
+        Assert.assertEquals("ee", out.get("c5"));
+        Assert.assertEquals("", out.get("c6"));
     }
 
     @Test
