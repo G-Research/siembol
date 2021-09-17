@@ -100,6 +100,12 @@ public class ConfigEditorResult {
                 ? ConfigEditorResult.StatusCode.OK : StatusCode.BAD_REQUEST, attributes);
     }
 
+    public static ConfigEditorResult fromEnrichmentTables(String enrichmentTables) {
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setEnrichmentTables(enrichmentTables);
+        return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attributes);
+    }
+
     public ResponseEntity<ConfigEditorAttributes> toResponseEntity() {
         return new ResponseEntity<>(this.attributes, this.statusCode.getHttpStatus());
     }

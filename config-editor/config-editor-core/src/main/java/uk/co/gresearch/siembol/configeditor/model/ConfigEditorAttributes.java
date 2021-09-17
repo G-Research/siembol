@@ -81,6 +81,10 @@ public class ConfigEditorAttributes {
     private String importedConfiguration;
     private String configImporterAttributesSchema;
 
+    @JsonProperty("enrichment_tables")
+    @JsonRawValue
+    private String enrichmentTables;
+
     public String getException() {
         return exception;
     }
@@ -305,5 +309,13 @@ public class ConfigEditorAttributes {
 
     public void setConfigImporterAttributesSchema(String configImporterAttributesSchema) {
         this.configImporterAttributesSchema = configImporterAttributesSchema;
+    }
+
+    public String getEnrichmentTables() {
+        return enrichmentTables;
+    }
+
+    public void setEnrichmentTables(String enrichmentTables) {
+        this.enrichmentTables = enrichmentTables;
     }
 }
