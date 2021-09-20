@@ -1,11 +1,13 @@
 package uk.co.gresearch.siembol.common.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnrichmentTablesUpdateDto {
+    @JsonAlias("hdfs_tables")
     @JsonProperty("enrichment_tables")
     private List<EnrichmentTableDto> enrichmentTables = new ArrayList<>();
 
