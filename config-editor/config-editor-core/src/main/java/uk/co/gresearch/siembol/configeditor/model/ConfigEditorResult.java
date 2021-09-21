@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
+
+import java.util.List;
 
 import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
 
@@ -100,9 +103,9 @@ public class ConfigEditorResult {
                 ? ConfigEditorResult.StatusCode.OK : StatusCode.BAD_REQUEST, attributes);
     }
 
-    public static ConfigEditorResult fromEnrichmentTables(String enrichmentTables) {
+    public static ConfigEditorResult fromEnrichmentTables(List<EnrichmentTableDto> tables) {
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
-        attributes.setEnrichmentTables(enrichmentTables);
+        attributes.setEnrichmentTables(tables);
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attributes);
     }
 

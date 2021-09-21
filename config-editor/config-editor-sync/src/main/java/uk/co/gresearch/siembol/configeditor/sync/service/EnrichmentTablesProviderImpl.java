@@ -51,11 +51,20 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
         }
     }
 
+    private EnrichmentTablesUpdateDto getEnrichmentTablesFromMessage(String updateMessageStr) {
+        try {
+            return ENRICHMENT_TABLES_UPDATE_MSG_READER.readValue(updateMessageStr);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(INVALID_TABLES_LOG_MSG, updateMessageStr);
+            throw new IllegalStateException(e);
+        }
+    }
+
     private void updateEnrichmentTablesCache(String serviceName) {
         String updateMessageStr = zooKeeperConnectorMap.get(serviceName).getData();
         try {
-            ENRICHMENT_TABLES_UPDATE_MSG_READER.readValue(updateMessageStr);
-        } catch (JsonProcessingException e) {
+            getEnrichmentTablesFromMessage(updateMessageStr);
+        } catch (Exception e) {
             LOGGER.error(INVALID_TABLES_LOG_MSG, serviceName, updateMessageStr);
             throw new IllegalStateException(e);
         }
@@ -69,7 +78,13 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
             return checkServiceName;
         }
 
-        return ConfigEditorResult.fromEnrichmentTables(enrichmentTablesCache.get(serviceName).get());
+        try {
+            EnrichmentTablesUpdateDto enrichmentTables = getEnrichmentTablesFromMessage(
+                    enrichmentTablesCache.get(serviceName).get());
+            return ConfigEditorResult.fromEnrichmentTables(enrichmentTables.getEnrichmentTables());
+        } catch (Exception e) {
+            return ConfigEditorResult.fromException(e);
+        }
     }
 
     @Override
@@ -134,7 +149,7 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
             String updatedTablesStr = ENRICHMENT_TABLES_UPDATE_MSG_WRITER.writeValueAsString(currentTables);
             zooKeeperConnectorMap.get(serviceName).setData(updatedTablesStr);
             enrichmentTablesCache.get(serviceName).set(updatedTablesStr);
-            return ConfigEditorResult.fromEnrichmentTables(updatedTablesStr);
+            return ConfigEditorResult.fromEnrichmentTables(currentTables.getEnrichmentTables());
         } catch (Exception e) {
             return ConfigEditorResult.fromException(e);
         }

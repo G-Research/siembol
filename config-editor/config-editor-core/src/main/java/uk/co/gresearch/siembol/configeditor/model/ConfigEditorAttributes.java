@@ -2,13 +2,14 @@ package uk.co.gresearch.siembol.configeditor.model;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConfigEditorAttributes {
+public class ConfigEditorAttributes extends EnrichmentTablesUpdateDto {
     private String exception;
     private String message;
     @JsonProperty("rules_schema")
@@ -80,10 +81,6 @@ public class ConfigEditorAttributes {
     @JsonRawValue
     private String importedConfiguration;
     private String configImporterAttributesSchema;
-
-    @JsonProperty("enrichment_tables")
-    @JsonRawValue
-    private String enrichmentTables;
 
     public String getException() {
         return exception;
@@ -311,11 +308,4 @@ public class ConfigEditorAttributes {
         this.configImporterAttributesSchema = configImporterAttributesSchema;
     }
 
-    public String getEnrichmentTables() {
-        return enrichmentTables;
-    }
-
-    public void setEnrichmentTables(String enrichmentTables) {
-        this.enrichmentTables = enrichmentTables;
-    }
 }
