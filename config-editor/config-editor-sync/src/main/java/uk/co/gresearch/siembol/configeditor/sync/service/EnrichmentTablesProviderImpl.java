@@ -133,14 +133,14 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
             if (selected != -1) {
                 if (isNewTable) {
                     return ConfigEditorResult.fromMessage(BAD_REQUEST,
-                            String.format(ADD_NEW_EXISTING_TABLE_MSG, serviceName));
+                            String.format(ADD_NEW_EXISTING_TABLE_MSG, enrichmentTable.getName()));
                 }
 
                 currentTables.getEnrichmentTables().set(selected, enrichmentTable);
             } else {
                 if (!isNewTable) {
                     return ConfigEditorResult.fromMessage(BAD_REQUEST,
-                            String.format(UPDATE_NON_EXISTING_TABLE_MSG, serviceName));
+                            String.format(UPDATE_NON_EXISTING_TABLE_MSG, enrichmentTable.getName()));
                 }
 
                 currentTables.getEnrichmentTables().add(enrichmentTable);
