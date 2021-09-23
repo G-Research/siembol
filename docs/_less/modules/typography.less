@@ -1,0 +1,87 @@
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+// General styles
+// -------------------------
+
+a {
+     cursor: pointer;
+     text-decoration: none !important;
+}
+
+.bold {
+     font-weight: bold;
+}
+
+.text-left {
+     text-align: left;
+}
+
+.text-center {
+     text-align: center;
+}
+
+.text-right {
+     text-align: right;
+}
+
+.text-justify {
+     text-align: justify;
+     text-justify: inter-word;
+}
+
+.wrapword { 
+     white-space: -moz-pre-wrap !important;   
+     white-space: -pre-wrap;      
+     white-space: -o-pre-wrap;     
+     white-space: pre-wrap;       
+     word-wrap: break-word;        
+     word-break: break-all;
+     white-space: normal;
+}
+
+// Headings
+// -------------------------
+
+h1, h2, h3, h4, h5, h6 {
+     font-family: @brand-main-font;
+     font-weight: 300;
+}
+
+h1 {
+     font-size: 40px;
+}
+
+// Paragraphs
+// -------------------------
+
+p {
+     font-size: 15px;
+     font-family: @brand-main-font;
+     font-weight: 300;
+     
+             user-select: text;
+       -moz-user-select : text;
+     -webkit-user-select: text;
+
+}
+
+::selection {
+     background: @brand-main-color;
+}
+::-moz-selection {
+     background: @brand-main-color;
+}
+
+// Colors
+// -------------------------
+
+.text-white {
+     color: @brand-white;
+}
+
+.text-brand-main-color {
+     color: @brand-main-color; 
+}

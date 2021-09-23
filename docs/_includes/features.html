@@ -1,0 +1,45 @@
+	<section id="features" class="section-content main-background-color">
+		<img class="top-diagonal hidden-xs hidden-sm" src="/media/img/top-diagonal.png" alt="">
+
+		<div class="container padding-top-50 padding-bottom-50">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="text-center">Highlights</h1>
+					<hr class="margin-bottom-30">
+					<p class="text-center margin-bottom-50">Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. <br> Siembol normalizes, enriches, and alerts on data from various sources which allows security teams to respond to attacks before they become incidents.</p>
+					
+					<!-- Features -->
+					<div class="margin-top-30 margin-bottom-30">
+						<div class="row">
+							{% for thumbs in site.features_thumbs %}
+							<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+								<!-- Feature Thumb -->
+								<div class="features-thumb">
+									<div class="thumb-header">
+										<h3 class="text-center">{{ thumbs.title }}</h3>
+									</div>
+
+									<div class="thumb-content">
+										<!-- Icon -->
+										<div class="margin-top-20 margin-bottom-20">
+											<p class="text-center">
+												<i class="fa fa-{{ thumbs.icon }} fa-5x text-brand-main-color"></i>
+											</p>
+										</div>
+										<!-- End Icon -->
+
+										<p>{{ thumbs.description }}</p>		
+									</div>
+								</div>
+								<!-- End Feature Thumb -->
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+					<!-- End Features -->
+				</div>
+			</div>
+		</div>
+
+		<img class="bottom-diagonal hidden-xs hidden-sm" src="/media/img/bottom-diagonal.png" alt="">
+	</section>

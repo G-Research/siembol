@@ -1,0 +1,40 @@
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+
+.navbar-default {
+	
+	z-index: 4;
+	border-color: transparent;
+	background-color: transparent;
+
+	.nav {
+		
+		padding-top: 10px;
+
+		li {
+			a {
+				color: @brand-secondary-color !important;
+				font-size: 13px;
+				font-family: @brand-secondary-font;
+				text-transform: uppercase;
+				padding: 15px 7px 10px 7px;
+				color: @brand-main-color;
+				.transition(all, (@transitions-delay / 2), ease);
+
+				&:hover {
+					color: darken(@brand-secondary-color, 50) !important;
+				}
+			}
+		}
+	}
+
+	.navbar-collapse {
+		border: 0px;
+	}
+	
+	.navbar-background {
+		background-color: @caribbean-green;
+	}
+}

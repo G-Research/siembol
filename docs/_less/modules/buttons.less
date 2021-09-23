@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+
+     text-align: center;
+     text-transform: uppercase;
+     font-family: @brand-main-font;
+
+     padding: 15px 30px 15px 30px;
+     margin: 0 5px 0 5px;
+     .border-radius(30px);
+}
+
+.btn-default { 
+
+     color: @brand-main-color;
+     border: 1px solid @brand-main-color;
+     background-color: transparent;
+     .transition(all, (@transitions-delay / 2), ease);
+
+     &:hover, &:active, &:focus {
+          
+          color: @brand-secondary-color;
+          outline: none;
+          outline-width: 0;
+          padding: 15px 60px 15px 60px;
+          border: 1px solid @brand-main-color;
+          background-color: @brand-main-color;  
+     }
+
+}
+
+.btn-inverted { 
+
+     color: @brand-secondary-color;
+     border: 1px solid @brand-secondary-color;
+     background-color: transparent;
+     .transition(all, (@transitions-delay / 2), ease);
+
+     &:hover, &:active, &:focus {
+          
+          color: @brand-main-color;
+          outline: none;
+          outline-width: 0;
+          padding: 15px 60px 15px 60px;
+          border: 1px solid @brand-secondary-color;
+          background-color: @brand-secondary-color;  
+     }
+
+}

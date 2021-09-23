@@ -1,0 +1,39 @@
+name: Deploy GH Pages
+
+on:
+  push:
+    branches: 
+      - ghpages-master 
+    paths:
+      - 'docs/**'
+
+jobs:
+  deploy-gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v2
+        with:
+          ref: 'ghpages-master'
+          path: master
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v2
+        with:
+          ref: 'ghpages-gh-pages'
+          path: gh-pages
+    
+      - name: Copy site files
+        run: |
+          cp -r master/docs/** gh-pages/docs/
+
+      - name: Commit GH Pages
+        run: |
+          cd gh-pages
+          git config user.name ljubo-nikolic
+          git config user.email ljubonikolic@gmail.com
+          git add docs/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Updating Github Pages branch with latest Master changes"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

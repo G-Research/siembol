@@ -1,0 +1,209 @@
+
+/* ==========================================================================
+   General Styles
+   ========================================================================== */
+
+// User Select Cancel
+// -------------------------
+
+body {
+
+	overflow-x: hidden;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+}
+
+// Webkit Custom Scrollbar
+// -------------------------
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+ 
+    -webkit-border-radius: 0px;
+            border-radius: 0px;
+
+    background: fade(@brand-main-color , 10); 
+}
+
+::-webkit-scrollbar-thumb {
+
+    -webkit-border-radius: 0px;
+           border-radius: 0px;
+
+    background: @brand-main-color; 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+	background: fade(@brand-main-color , 50); 
+}
+
+// General Styles
+// -------------------------
+
+.fullscreen-content {
+
+	position: relative;
+	display: block;
+	min-width: 100%;
+	min-height: 100%;
+
+}
+
+.fullscreen-image {
+
+	position: absolute;
+	z-index: 1;
+	display: block;
+	min-width: 100%;
+	min-height: 100%;
+
+}
+
+.container {
+
+	position: relative;
+	z-index: 2;
+	display: block;
+
+}
+
+// Image Backgrounds
+// -------------------------
+
+.hero-image {
+	.cover-image(@hero-background-image);
+}
+
+.background-image-01 {
+	.cover-image(@blockquote-background-image);
+}
+
+// Background Colors
+// -------------------------
+
+.main-background-color {
+	background-color: @brand-main-background-color;
+}
+
+.secondary-background-color {
+	background-color: @brand-secondary-background-color;
+}
+
+// Welcome Text
+// -------------------------
+
+.welcome {
+
+	h1 {
+
+		font-size: 70px;
+		font-family: @brand-secondary-font;
+		text-transform: uppercase;
+		letter-spacing: 10px
+
+	}
+
+	h4 {
+
+		font-family: @brand-main-font;
+		font-weight: 300;
+		letter-spacing: 2px;
+
+	}
+
+}
+
+// Horizontal Ruler
+// -------------------------
+
+hr {
+
+	height: 5px;
+	margin: 20px auto;
+	border-top: 1px solid @brand-secondary-color;
+	border-bottom: 1px solid @brand-secondary-color;
+	border-color: @brand-main-color;
+	max-width: 200px;
+
+}
+
+// Blockquote
+// -------------------------
+
+.blockquote {
+
+	blockquote {
+
+		font-size: 40px;
+		font-family: 'Lato', sans-serif;
+		font-weight: 300;
+		border: 0px;
+		padding: 0 50px 0 50px;
+
+	}
+
+	h3 {
+
+		font-size: 20px;
+		font-family: @brand-secondary-font;
+		text-transform: uppercase;
+
+	}
+}
+
+// Content Section
+// -------------------------
+
+.section-content {
+	min-height: 200px;
+}
+
+// Google Maps Canvas
+// -------------------------
+
+#map-canvas {
+	width:100%; 
+	height: 650px;
+}
+
+// Diagonals
+// -------------------------
+
+.top-diagonal {
+
+	position: absolute;
+	z-index: 3;
+	margin-top: -80px;
+	width: 100%;
+	height: 80px;
+	display: block;
+
+}
+
+.bottom-diagonal {
+
+	position: relative;
+	z-index: 3;
+	bottom: -80px;
+	width: 100%;
+	height: 80px;
+	display: block;
+
+}
+
+.bottom-diagonal-navbar {
+
+	position: relative;
+	width: 100%;
+	height: 80px;
+	display: block;
+
+}
+
