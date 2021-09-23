@@ -4,6 +4,8 @@ on:
   push:
     branches-ignore:
       - "gh-pages"
+      - "ghpages-gh-pages"
+      - "ghpages-master"
 
 jobs:
   build-java:
