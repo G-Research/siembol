@@ -1,0 +1,135 @@
+# Custom vars
+# -------------------------
+
+current_version:  1.1.0
+name: Siembol
+
+# Main Logo
+# -------------------------
+
+logo_regular: "/media/logo/siembol_Logo-small.png"
+logo_small_devices: "/media/logo/siembol_Logo-small.png"
+
+
+# Main Navigation Links
+# -------------------------
+navbar_links:
+
+  - title: "Features"
+    url: "/#features"
+  - title: "News"
+    url: "/news"
+  - title: "GitHub"
+    url: "https://github.com/G-Research/siembol"
+
+# Navigation Background Color. 
+# Options: caribbean-green, summer-sky, golden-poppy, deep-carmine-pink
+navbar_color: "summer-sky"
+
+# Image Hero
+# -------------------------
+
+title: "Open-Source Anti-Malware for the Cloud"
+tagline: ""
+
+# Features Thumbs
+# -------------------------
+
+features_thumbs:
+  - title: "Security Analytics"
+    icon: "shield"
+    description: "Siembol uses a highly scalable streaming architecture to enable cost-effective, sophisticated, real-time analytics on security data."
+  - title: "Detection"
+    icon: "search"
+    description: "Siembol threat discovery uses rule-based alerting, and can consolidate multiple rules for more powerful correlation detections."
+  - title: "Rapid Response"
+    icon: "bolt"
+    description: "Flexible incident response workflows can be built and triggered <b>in real-time</b> via the highly modular and pluggable framework."
+  - title: "Simple Install"
+    icon: "terminal"
+    description: "Supports deployment on an external Hadoop cluster and accommodates easy installation with prepared Docker images and Helm charts."
+
+# Blockquote
+# -------------------------
+
+blockquote: 
+   text: "We develop online marketing solutions that help enterprises accurately identify the consumers that truly need their services."
+   tagline: "Serving the community since 2014"
+   button_text: "Read More"
+   button_url: "#_"
+
+# Services
+# -------------------------
+
+services:
+ - title: "Front-End Development"
+   icon: "desktop"
+   description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni tenetur officiis vel aspernatur. Quidem eligendi sequi veritatis vel recusandae porro maxime corporis id, deleniti harum alias asperiores soluta unde aliquam."
+ - title: "iOS Development"
+   icon: "apple"
+   description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni tenetur officiis vel aspernatur. Quidem eligendi sequi veritatis vel recusandae porro maxime corporis id, deleniti harum alias asperiores soluta unde aliquam."
+ - title: "UI/UX Design"
+   icon: "magic"
+   description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni tenetur officiis vel aspernatur. Quidem eligendi sequi veritatis vel recusandae porro maxime corporis id, deleniti harum alias asperiores soluta unde aliquam."      
+
+# Work Mosaic
+# -------------------------
+
+work_thumbs:
+ - title: "Maxime Corporis Set"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-01.jpg"
+ - title: "Veritatis Vel Recusandae"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-02.jpg"
+ - title: "Consectetur Adipisicing"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-03.jpg"
+ - title: "Asperiores Soluta"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-04.jpg"
+ - title: "Officiis Aspernatur"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-05.jpg"   
+ - title: "Soluta Asperiores"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-06.jpg"
+ - title: "Adipisicing Consectetur"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-07.jpg"
+ - title: "Maxime Corporis Set"
+   description: "Fugit aut earum in sit, placeat quis consequatur."
+   url: "#_"
+   image: "/media/img/work-08.jpg"
+
+# Contact
+# -------------------------
+
+contact:
+   latitude: "37.3321722"
+   longitude: "-122.0305748"
+   marker_title: "Apple Incorporated."
+   marker_address: "1 Infinite Loop Cupertino, CA 95014"
+   phone_number: "(321) 402-1098"
+   email_address: "hello@kunstnerisk.com"
+
+# Configuration
+# -------------------------
+
+# Dependencies
+pygments: false
+
+# Permalinks
+permalink: none
+
+# Server
+destination: ../kunstnerisk
+exclude: [".gitignore", "Gruntfile.js", "node_modules", "package.json"]
+port: 1984

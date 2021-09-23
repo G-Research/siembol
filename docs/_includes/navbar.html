@@ -1,0 +1,36 @@
+	<!-- Navbar -->
+	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="navbar-background">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+
+					<a class="navbar-brand" href="/">
+						<div class="visible-lg visible-md logo">
+							<img src="{{ site.logo_regular }}" alt="{{ site.name }} Logo">
+						</div>
+
+						<div class="visible-sm visible-xs">
+							<img src="{{ site.logo_small_devices }}" alt="{{ site.name }} Logo">
+						</div>
+					</a>
+				</div>
+
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						{% for link in site.navbar_links %}
+						<li><a href="{{ link.url }}">{{ link.title }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<img class="bottom-diagonal-navbar hidden-xs hidden-sm" src="/media/img/navbar-diagonal-{{ site.navbar_color }}.png" alt="">
+	</div>
+	<!-- End Navbar -->
