@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.common.filesystem;
 
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,7 +15,7 @@ public class HttpFileSystem implements SiembolFileSystem {
 
     @Override
     public InputStream openInputStream(String path) throws IOException {
-        return httpProvider.getStream(path);
+        return new ByteArrayInputStream(httpProvider.get(path).getBytes());
     }
 
     @Override
