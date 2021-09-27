@@ -1,7 +1,9 @@
 package uk.co.gresearch.siembol.common.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import com.github.reinert.jjschema.SchemaIgnore;
 
 import java.io.Serializable;
 
@@ -21,6 +23,10 @@ public class ZooKeeperAttributesDto implements Serializable {
     @Attributes(required = true, description = "Maximum number of times to retry in retry policy", minimum = 1,
             maximum = 29)
     private Integer zkMaxRetries = 3;
+
+    @SchemaIgnore
+    @JsonIgnore
+    private String initValueIfNotExists;
 
     public String getZkUrl() {
         return zkUrl;
@@ -52,5 +58,13 @@ public class ZooKeeperAttributesDto implements Serializable {
 
     public void setZkMaxRetries(Integer zkMaxRetries) {
         this.zkMaxRetries = zkMaxRetries;
+    }
+
+    public String getInitValueIfNotExists() {
+        return initValueIfNotExists;
+    }
+
+    public void setInitValueIfNotExists(String initValueIfNotExists) {
+        this.initValueIfNotExists = initValueIfNotExists;
     }
 }
