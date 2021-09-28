@@ -61,7 +61,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         private Integer maxRetries = 3;
         private NodeCache cache;
         private CuratorFramework client;
-        private Optional<String> initValue;
+        private Optional<String> initValue = Optional.empty();
 
         public Builder path(String path) {
             this.path = path;
