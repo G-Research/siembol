@@ -101,14 +101,14 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
             client.start();
 
             cache = new NodeCache(client, path);
-            cache.start(initValue.isPresent());
+            cache.start(true);
 
-            if (initValue.isPresent()) {
-                if (cache.getCurrentData().getData() == null) {
-                    LOG.warn(INIT_NON_EXISTING_LOG_MSG, path, initValue.get());
-                    client.setData().forPath(this.path, initValue.get().getBytes(UTF_8));
-                }
+            if (initValue.isPresent()
+                    && (cache.getCurrentData() == null || cache.getCurrentData().getData() == null)) {
+                LOG.warn(INIT_NON_EXISTING_LOG_MSG, path, initValue.get());
+                client.setData().forPath(this.path, initValue.get().getBytes(UTF_8));
             }
+
             return new ZooKeeperConnectorImpl(this);
         }
     }
