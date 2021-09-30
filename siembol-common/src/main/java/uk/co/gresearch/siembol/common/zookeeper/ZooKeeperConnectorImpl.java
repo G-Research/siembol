@@ -27,7 +27,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     }
 
     public String getData() {
-        ChildData childData =  cache.getCurrentData();
+        ChildData childData = cache.getCurrentData();
         return new String(childData.getData(), UTF_8);
     }
 
@@ -36,7 +36,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         client.setData().forPath(this.path, data.getBytes(UTF_8));
     }
 
-    @SuppressWarnings( "deprecation" )
+    @SuppressWarnings("deprecation")
     public void addCacheListener(NodeCacheListener listener) {
         cache.getListenable().addListener(listener);
     }
@@ -100,15 +100,13 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
                     new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));
             client.start();
 
-            cache = new NodeCache(client, path);
-            cache.start(true);
-
-            if (initValue.isPresent()
-                    && (cache.getCurrentData() == null || cache.getCurrentData().getData() == null)) {
+            if (initValue.isPresent() && client.checkExists().forPath(path) == null) {
                 LOG.warn(INIT_NON_EXISTING_LOG_MSG, path, initValue.get());
-                client.setData().forPath(this.path, initValue.get().getBytes(UTF_8));
+                client.create().creatingParentsIfNeeded().forPath(path, initValue.get().getBytes(UTF_8));
             }
 
+            cache = new NodeCache(client, path);
+            cache.start(true);
             return new ZooKeeperConnectorImpl(this);
         }
     }
