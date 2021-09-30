@@ -32,16 +32,6 @@ jobs:
       - name: Generate unit test reports
         if: failure()
         run: mvn --batch-mode surefire-report:report-only
-      - name: Publish unit test results
-        if: >
-          always() &&
-          github.event.sender.login != 'dependabot[bot]' &&
-          ( github.event_name == 'push' || github.event.pull_request.head.repo.id == github.event.pull_request.base.repo.id )
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        with:
-          check_name: unit-test-results
-          comment_title: Unit Test Results
-          files: "**/target/surefire-reports/TEST-*.xml"
       - name: Upload unit-test-results
         if: >
           always() && (
@@ -369,3 +359,13 @@ jobs:
         run: docker load --input image.tar
       - name: Publish Docker image
         run: docker push --all-tags gresearchdev/siembol-${{ matrix.component }}
+
+  event_file:
+    name: "Event File"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: Event File
+          path: ${{ github.event_path }}

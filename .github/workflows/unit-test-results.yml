@@ -1,4 +1,4 @@
-name: CI (Fork)
+name: Unit Test Results
 
 on:
   workflow_run:
@@ -10,11 +10,7 @@ jobs:
   unit-test-results:
     name: Unit Test Results
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.conclusion != 'skipped' && (
-        github.event.sender.login == 'dependabot[bot]' ||
-        github.event.workflow_run.head_repository.full_name != github.repository
-      )
+    if: github.event.workflow_run.conclusion != 'skipped'
 
     steps:
       # we are not using actions/download-artifact here as
@@ -24,14 +20,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mkdir -p artifacts && cd artifacts
+
           artifacts_url=${{ github.event.workflow_run.artifacts_url }}
-          artifact_url=$(gh api $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results") .archive_download_url')
-          if [[ -n "$artifact_url" ]]
+
+          gh api $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results" or .name=="Event File") | [.name, .archive_download_url] | @tsv' | while read artifact
+          do
+            IFS=$'\t' read name url <<< "$artifact"
+            gh api $url > "$name.zip"
+            unzip -d "$name" "$name.zip"
+          done
+
+          if [ $(ls . | wc -l) -eq 0 ]
           then
-            gh api $artifact_url > unit-test-results.zip
-            unzip unit-test-results.zip
-          else
-            echo "::error::No artifact with name 'unit-test-results' exists"
+            echo "::error::No artifact with name 'unit-test-results' or 'Event File' exists"
             exit 1
           fi
         shell: bash
@@ -41,5 +43,7 @@ jobs:
         with:
           check_name: unit-test-results
           comment_title: Unit Test Results
-          files: "**/target/surefire-reports/TEST-*.xml"
+          files: "artifacts/**/target/surefire-reports/TEST-*.xml"
           commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/Event File/event.json
+          event_name: ${{ github.event.workflow_run.event }}
