@@ -68,7 +68,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsdoc": "^36.0.6",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-sort-keys-fix": "^1.1.2",
     "jasmine": "^3.9.0",
     "jasmine-core": "^3.8.0",
