@@ -54,7 +54,7 @@
         <hadoop_version>3.3.1</hadoop_version>
         <json_schema_validator_version>2.2.14</json_schema_validator_version>
         <json_schema_core_version>1.2.14</json_schema_core_version>
-        <spring_boot_version>2.5.4</spring_boot_version>
+        <spring_boot_version>2.5.5</spring_boot_version>
         <guava_version>30.1.1-jre</guava_version>
         <springdoc_openapi_version>1.5.10</springdoc_openapi_version>
         <commons_beanutils_version>1.9.4</commons_beanutils_version>
