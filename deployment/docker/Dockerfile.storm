@@ -4,6 +4,11 @@ ARG JAR
 ARG CLASS
 ENV TOPOLOGY_JAR=$JAR
 ENV TOPOLOGY_CLASS=$CLASS
+ARG USER="siembol"
+
+RUN adduser --uid 101 --system --no-create-home --disabled-password --home /$USER --shell /sbin/nologin --group $USER
+
+USER $USER
 
 WORKDIR /deploy
 COPY $TOPOLOGY_JAR .
