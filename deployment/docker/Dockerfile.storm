@@ -4,7 +4,7 @@ ARG JAR
 ARG CLASS
 ENV TOPOLOGY_JAR=$JAR
 ENV TOPOLOGY_CLASS=$CLASS
-ARG APP="topology-job"
+ARG APP="siembol"
 
 RUN adduser --uid 101 --system --no-create-home --disabled-password --home /$APP --shell /sbin/nologin --group $APP
 
