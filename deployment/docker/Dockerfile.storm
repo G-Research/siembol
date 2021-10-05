@@ -13,4 +13,4 @@ USER $USER
 
 WORKDIR /$USER/deploy
 COPY $TOPOLOGY_JAR .
-COPY storm-entrypoint.sh /$USER/deploy/docker-entrypoint.sh
+COPY storm-entrypoint.sh /docker-entrypoint.sh
