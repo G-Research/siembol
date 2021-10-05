@@ -53,8 +53,8 @@ export class JsonTreeComponent implements OnChanges {
 
   private parseKeyValue(key: any, value: any): Segment {
     const segment: Segment = {
-      key: key,
-      value: value,
+      key,
+      value,
       type: undefined,
       description: '' + value,
       expanded: this.expanded,
@@ -91,12 +91,12 @@ export class JsonTreeComponent implements OnChanges {
           segment.description = 'null';
         } else if (Array.isArray(segment.value)) {
           segment.type = 'array';
-          segment.description = 'Array[' + segment.value.length + '] ' + JSON.stringify(segment.value);
+          segment.description = 'Array[' + segment.value.length + '] ';
         } else if (segment.value instanceof Date) {
           segment.type = 'date';
         } else {
           segment.type = 'object';
-          segment.description = 'Object ' + JSON.stringify(segment.value);
+          segment.description = 'Object ';
         }
         break;
       }
@@ -124,8 +124,8 @@ export class JsonTreeComponent implements OnChanges {
 
     if (isIndex) {
         return part1 + part2;
-    } else {
+    } 
         return part1 + '.' + part2;
-    }
+    
   }
 }

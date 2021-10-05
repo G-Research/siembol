@@ -50,6 +50,7 @@ public class SigmaRuleImporter implements ConfigImporter {
     private static final String ERROR_IMPORT_CONFIG_LOG = "Error during importing sigma rule: {}, " +
             "attributes: {}, user:{}, exception: {}";
     private static final String ERROR_TOKENS_PARSING = "Problem during parsing of condition tokens";
+    private static final String RULE_UNKNOWN_FIELD_VALUE = "unknown";
 
     private final String importerAttributesSchema;
     private final SiembolJsonSchemaValidator importerAttributesValidator;
@@ -105,7 +106,8 @@ public class SigmaRuleImporter implements ConfigImporter {
     private RuleDto createRule(SigmaImporterAttributesDto attributes, Map<String, Object> sigmaRuleMap) throws Exception {
         RuleDto ret = new RuleDto();
         BeanUtils.copyProperties(ret, attributes.getRuleMetadataMapping());
-        EvaluationLibrary.substituteBean(ret, sigmaRuleMap);
+        EvaluationLibrary.substituteBean(ret, sigmaRuleMap, RULE_UNKNOWN_FIELD_VALUE);
+
         ret.setRuleName(ConfigEditorUtils.getNormalisedConfigName(ret.getRuleName()));
         return ret;
     }
@@ -149,6 +151,30 @@ public class SigmaRuleImporter implements ConfigImporter {
 
         SigmaConditionTokenNode root = generateConditionSyntaxTree(sigmaSearchMap, conditionTokens);
         return root.getToken().getMatchers(root);
+    }
+
+    private boolean isConditionInBrackets(List<Pair<SigmaConditionToken, String>> conditionTokens) {
+        if (!TOKEN_LEFT_BRACKET.equals(conditionTokens.get(0).getLeft())
+                || !TOKEN_RIGHT_BRACKET.equals(conditionTokens.get(conditionTokens.size() - 1).getLeft())) {
+            return false;
+        }
+
+        int numOpenedBrackets = 0;
+        for (int i = 0; i < conditionTokens.size() - 1; i++) {
+            switch (conditionTokens.get(i).getLeft()) {
+                case TOKEN_LEFT_BRACKET:
+                    numOpenedBrackets++;
+                    break;
+                case TOKEN_RIGHT_BRACKET:
+                    if (--numOpenedBrackets == 0) {
+                        return false;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return numOpenedBrackets == 1;
     }
 
     private Optional<Integer> getBinaryOperatorIndex(List<Pair<SigmaConditionToken, String>> conditionTokens) {
@@ -219,8 +245,7 @@ public class SigmaRuleImporter implements ConfigImporter {
             throw new IllegalArgumentException(ERROR_TOKENS_PARSING);
         }
 
-        if (TOKEN_LEFT_BRACKET.equals(conditionTokens.get(0).getLeft())
-                && TOKEN_RIGHT_BRACKET.equals(conditionTokens.get(conditionTokens.size() - 1).getLeft())) {
+        if (isConditionInBrackets(conditionTokens)) {
             return generateConditionSyntaxTree(sigmaSearchMap, conditionTokens.subList(1, conditionTokens.size() - 1));
         }
 

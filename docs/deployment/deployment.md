@@ -10,7 +10,7 @@ Java artifacts are published to Central Maven Repository - [Sonatype OSS Reposit
 ### Docker images
 Docker images are built both from snapshots and releases. 
 - The images are tagged by two tags:
-    - `latest` for tagging the latest image 
+    - `latest` for tagging an image with the latest released stable version or `snapshot` for tagging an image with the latest snapshot development version
     - The version of the application from [POM](/pom.xml) 
 - Springboot applications
     - An application is loaded using  [springboot properties launcher](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html)

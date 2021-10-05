@@ -27,6 +27,7 @@ public class ConfigEditorUtils {
     private static final String CONFIG_NAME_FORMAT = "%s.json";
     private static final String TEST_CASE_NAME_FORMAT = "%s-%s.json";
     private static final String TEST_CASE_NAME_PREFIX = "%s-";
+    private static final String INVALID_NAME_SEQUENCE_REGEX ="[^a-zA-Z0-9_\\-]+";
 
     static {
         Configuration.setDefaults(new Configuration.Defaults() {
@@ -126,7 +127,6 @@ public class ConfigEditorUtils {
     }
 
     public static String getNormalisedConfigName(String configName) {
-        return configName.trim().replaceAll(" ", "_");
+        return configName.trim().replaceAll(INVALID_NAME_SEQUENCE_REGEX, "_");
     }
-
 }
