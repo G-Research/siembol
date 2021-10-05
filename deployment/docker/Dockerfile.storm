@@ -6,10 +6,11 @@ ENV TOPOLOGY_JAR=$JAR
 ENV TOPOLOGY_CLASS=$CLASS
 ARG USER="siembol"
 
+RUN mkdir /$USER
 RUN adduser --uid 101 --system --no-create-home --disabled-password --home /$USER --shell /sbin/nologin --group $USER
 
 USER $USER
 
-WORKDIR /deploy
+WORKDIR /$USER/deploy
 COPY $TOPOLOGY_JAR .
 COPY storm-entrypoint.sh /docker-entrypoint.sh
