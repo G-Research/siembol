@@ -362,6 +362,8 @@ jobs:
 
   event_file:
     name: "Event File"
+    needs: build-java
+    if: always() && needs.build-java.result != 'skipped'
     runs-on: ubuntu-latest
     steps:
       - name: Upload
