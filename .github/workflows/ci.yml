@@ -33,11 +33,7 @@ jobs:
         if: failure()
         run: mvn --batch-mode surefire-report:report-only
       - name: Upload unit-test-results
-        if: >
-          always() && (
-            github.event.sender.login == 'dependabot[bot]' ||
-            github.event_name == 'pull_request' && github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id
-          )
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: unit-test-results
