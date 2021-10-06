@@ -17,7 +17,6 @@ jobs:
       # it does not yet support downloading from a different workflow
       # https://github.com/actions/download-artifact/issues/3
       - name: Download Artifacts
-        id: download
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -32,12 +31,14 @@ jobs:
             unzip -d "$name" "$name.zip"
           done
 
-          echo "Downloaded $(ls . | wc -l) artifacts"
-          echo "::set-output name=artifact-count::$(ls . | wc -l)"
+          if [ $(ls . | wc -l) -eq 0 ]
+          then
+            echo "::error::No artifact with name 'unit-test-results' or 'Event File' exists"
+            exit 1
+          fi
         shell: bash
 
       - name: Publish unit test results
-        if: steps.download.outputs.artifact-count >= 2
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           check_name: unit-test-results
