@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.nginx_store.pvc.name }}
+spec:
+  storageClassName: {{ .Values.nginx_store.pvc.storageclass }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.nginx_store.pvc.storage }}

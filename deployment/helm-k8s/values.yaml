@@ -73,13 +73,38 @@ storm:
 # -----------------------------------------------------------------------------
 # storm ingress parameters
 # -----------------------------------------------------------------------------
+deps_ingress:
 
-storm_ingress:
-  fqdn: storm.local
-  service:
-    name: storm-ui
-    port: 8080
+  storm_ingress:
+    fqdn: storm.siembol.local
+    service:
+      name: storm-ui
+      port: 8080
 
+nginx_store:
+  pvc:
+    name: "files store"
+    storageclass: manual
+    storage: 1Gi
+
+oauth_proxy:
+  enabled: true
+  config:
+    clientID: "CLIENT ID"
+    clientSecret: "CLIENT SECRET"
+    cookieSecret: "COOKIE SECRET"
+  extraArgs:
+    redirect-url: https://oauth2-proxy.siembol.local/oauth2/callback
+    cookie-domain: .siembol.local
+    cookie-expire: 8h
+  ingress:
+    enabled: true
+    hosts:
+      - oauth2-proxy.siembol.local
+    tls:
+    - secretName: oauth2-proxy-tls
+      hosts:
+        - oauth2-proxy.siembol.local
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
 # -----------------------------------------------------------------------------
