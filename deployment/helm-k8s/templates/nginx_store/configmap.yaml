@@ -10,21 +10,25 @@ data:
 
         #access_log  /var/log/nginx/host.access.log  main;
 
+
+        autoindex on;               # enable directory listing output
+        autoindex_exact_size off;   # output file sizes rounded to kilobytes, megabytes, and gigabytes
+        autoindex_localtime on;     # output local times in the directory
+
+
         location / {
             root   /usr/share/nginx/html;
             index  index.html index.htm;
         }
-        location /upload {
-          root /data;
+        location /data {
+          root /;
           limit_except GET POST PUT { deny all; }
           client_max_body_size 50m; # 50 MB limit on file uploads
           client_body_buffer_size 128k;
           proxy_set_body $request_body_file;
-          proxy_pass https://127.0.0.1/upload;
+          proxy_pass https://localhost:8080/data;
           proxy_redirect off;
-          autoindex on;               # enable directory listing output
-          autoindex_exact_size off;   # output file sizes rounded to kilobytes, megabytes, and gigabytes
-          autoindex_localtime on;     # output local times in the directory
+
         }
 
         #error_page  404              /404.html;

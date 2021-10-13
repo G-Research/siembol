@@ -29,18 +29,18 @@ spec:
             name: {{ include "siembol.nginx_store.fullname" $ }}
             port: 
               number: {{ .Values.nginx_store.service.port }}
-      - path: /upload
+      - path: /data
         pathType: Prefix
         backend:
           service:
-            name: upload
+            name: nginx-store-data
             port:
               number: {{ .Values.nginx_store.service.port }}
       - path: /health
         pathType: Prefix
         backend:
           service:
-            name: health
+            name: {{ include "siembol.nginx_store.fullname" $ }}
             port:
               number: {{ .Values.nginx_store.service.port }}
 {{- end -}}
