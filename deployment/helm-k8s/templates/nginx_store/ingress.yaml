@@ -35,7 +35,7 @@ spec:
             service:
               name: upload
               port:
-                number: { { .Values.nginx_store.service.port } }
+                number: {{ .Values.nginx_store.service.port }}
       - path: /health
         pathType: Prefix
         backend:
