@@ -24,11 +24,11 @@ spec:
     spec:
       containers:
         - image: {{ .Values.nginx_store.image.repository }}:{{ .Values.nginx_store.image.tag }}
-          workingDir: {{ .Values.nginx_store.mountPath }}
-          imagePullPolicy: {{ .Values.rest.image.PullPolicy }}
+          imagePullPolicy: {{ .Values.nginx_store.image.pullPolicy }}
           name: {{ include "siembol.nginx_store.fullname" $ }}
           ports:
-            - containerPort: {{ .Values.nginx_store.containerPort }}
+            - name: file-server
+              containerPort: {{ .Values.nginx_store.containerPort }}
           resources:
             requests:
               memory: "256Mi"
@@ -37,31 +37,30 @@ spec:
               memory: "512Mi"
               cpu: "600m"
           securityContext:
-            runAsUser: 101
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: {{ .Values.nginx_store.containerPort }}
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 30
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: {{ .Values.nginx_store.containerPort }}
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-
+            runAsUser: 1000
+#          readinessProbe:
+#            httpGet:
+#              path: /health
+#              port: {{ .Values.nginx_store.containerPort }}
+#              scheme: HTTP
+#            initialDelaySeconds: 30
+#            periodSeconds: 30
+#          livenessProbe:
+#            httpGet:
+#              path: /health
+#              port: {{ .Values.nginx_store.containerPort }}
+#              scheme: HTTP
+#            initialDelaySeconds: 30
+#            periodSeconds: 10
           env:
             - name: TEMP_KEY
               value: nginx-key1
           volumeMounts:
-            - name: {{ .Values.nginx_store.files.name }}
+            - name: files
               mountPath: {{ .Values.nginx_store.files.location }}
       restartPolicy: Always
       volumes:
-        - name: {{ .Values.nginx_store.files.name }}
+        - name: files
           persistentVolumeClaim:
             claimName: {{ .Values.nginx_store.pvc.name }}
   {{- end -}}
