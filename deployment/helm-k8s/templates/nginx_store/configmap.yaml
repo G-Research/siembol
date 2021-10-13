@@ -4,12 +4,14 @@ metadata:
   name: nginx-config
 data:
   nginx.conf: |
-    server {
-      listen        80;
-      server_name   localhost;
+    http {
+      server {
+        listen        80;
+        server_name   localhost;
 
-      location / {
-          root html;
-          index index.html;
+        location / {
+            root html;
+            index index.html;
+        }
       }
     }
