@@ -63,7 +63,6 @@ spec:
       restartPolicy: Always
       securityContext:
         runAsUser: 101
-        fsGroup: 2000
       volumes:
         - name: nginx-conf
           configMap:
