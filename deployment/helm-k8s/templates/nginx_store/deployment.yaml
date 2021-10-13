@@ -37,7 +37,7 @@ spec:
               memory: "512Mi"
               cpu: "600m"
           securityContext:
-            runAsUser: 1000
+            runAsUser: 101
 #          readinessProbe:
 #            httpGet:
 #              path: /health
