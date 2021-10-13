@@ -15,7 +15,7 @@ data:
             index  index.html index.htm;
         }
         location /upload {
-          root /data
+          root /data;
           limit_except GET POST PUT { deny all; }
           client_max_body_size 50m; # 50 MB limit on file uploads
           client_body_buffer_size 128k;
