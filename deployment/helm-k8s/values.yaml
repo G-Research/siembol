@@ -74,13 +74,13 @@ storm:
 # -----------------------------------------------------------------------------
 # storm ingress parameters
 # -----------------------------------------------------------------------------
-deps_ingress:
+#deps_ingress:
 
-  storm_ingress:
-    fqdn: storm.siembol.local
-    service:
-      name: storm-ui
-      port: 8080
+storm_ingress:
+  fqdn: storm.siembol.local
+  service:
+    name: storm-ui
+    port: 8080
 
 nginx_store:
   appName: "nginx-store"
