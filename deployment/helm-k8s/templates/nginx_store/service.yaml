@@ -14,9 +14,7 @@ spec:
     protocol: TCP
     port: {{ .Values.nginx_store.service.port }}
   type: ClusterIP
-{{- end -}}
 ---
-{{- if (has "nginx_store" .Values.enabled_apps) -}}
 apiVersion: v1
 kind: Service
 metadata:
