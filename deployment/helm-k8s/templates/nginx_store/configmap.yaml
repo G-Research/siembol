@@ -21,15 +21,21 @@ data:
             index  index.html index.htm;
         }
         location /data {
-          root /;
-          limit_except GET POST PUT { deny all; }
-          client_max_body_size 50m; # 50 MB limit on file uploads
-          client_body_buffer_size 128k;
-          proxy_set_body $request_body_file;
-          proxy_pass https://localhost:8080/data;
-          proxy_redirect off;
+          root   /usr/share/nginx/html;
+          index  index.html index.htm;
 
         }
+
+        # location /data {
+        #   root /;
+        #   limit_except GET POST PUT { deny all; }
+        #   client_max_body_size 50m; # 50 MB limit on file uploads
+        #   client_body_buffer_size 128k;
+        #   proxy_set_body $request_body_file;
+        #   proxy_pass https://localhost:8080/data;
+        #   proxy_redirect off;
+
+        # }
 
         #error_page  404              /404.html;
 
