@@ -85,12 +85,12 @@ storm_ingress:
 nginx_store:
   appName: "nginx-store"
   image:
-    repository: nginx
-    tag: 1.21
+    repository: nginxinc/nginx-unprivileged
+    tag: 1.21.3-alpine
     pullPolicy: Always
-  containerPort: 80
+  containerPort: 8080
   service:
-    port: 80
+    port: 8080
   files:
     location: /data
   pvc:
