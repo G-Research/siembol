@@ -13,6 +13,7 @@ enabled_apps:
 - rest
 - manager
 - storm_ingress
+- nginx_store
 
 # Enable certmanager 
 certmanager:
