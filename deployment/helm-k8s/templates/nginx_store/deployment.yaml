@@ -36,8 +36,6 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "600m"
-          securityContext:
-            runAsUser: 101
 #          readinessProbe:
 #            httpGet:
 #              path: /health
@@ -58,8 +56,18 @@ spec:
           volumeMounts:
             - name: files
               mountPath: {{ .Values.nginx_store.files.location }}
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
       restartPolicy: Always
+      securityContext:
+        runAsUser: 101
+        fsGroup: 2000
       volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-config
         - name: files
           persistentVolumeClaim:
             claimName: {{ .Values.nginx_store.pvc.name }}
