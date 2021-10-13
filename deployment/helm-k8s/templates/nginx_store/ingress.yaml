@@ -30,12 +30,12 @@ spec:
             port: 
               number: {{ .Values.nginx_store.service.port }}
       - path: /upload
-          pathType: Prefix
-          backend:
-            service:
-              name: upload
-              port:
-                number: {{ .Values.nginx_store.service.port }}
+        pathType: Prefix
+        backend:
+          service:
+            name: upload
+            port:
+              number: {{ .Values.nginx_store.service.port }}
       - path: /health
         pathType: Prefix
         backend:
