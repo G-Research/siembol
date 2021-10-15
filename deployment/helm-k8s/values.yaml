@@ -76,7 +76,7 @@ storm:
 #deps_ingress:
 
 storm_ingress:
-  fqdn: siembol.local
+  fqdn: storm.local
   service:
     name: storm-ui
     port: 8080
