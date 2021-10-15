@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ .Values.enrichment_store.pvc.name }}
+  namespace: {{ .Values.namespace }}
 spec:
   storageClassName: {{ .Values.enrichment_store.pvc.storageclass }}
   accessModes:
