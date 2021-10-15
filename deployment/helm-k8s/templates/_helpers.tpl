@@ -77,8 +77,8 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Create a full nginx config store name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "siembol.nginx_store.fullname" -}}
-{{- $name := default .Chart.Name .Values.nginx_store.appName -}}
+{{- define "siembol.enrichment_store.fullname" -}}
+{{- $name := default .Chart.Name .Values.enrichment_store.appName -}}
 {{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 

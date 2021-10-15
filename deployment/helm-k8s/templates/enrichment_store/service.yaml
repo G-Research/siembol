@@ -1,33 +1,17 @@
-{{- if (has "nginx_store" .Values.enabled_apps) -}}
+{{- if (has "enrichment_store" .Values.enabled_apps) -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "siembol.nginx_store.fullname" $ }}
+  name: {{ include "siembol.enrichment_store.fullname" $ }}
   namespace: {{ .Values.namespace }}
   labels:
-    app: {{ include "siembol.nginx_store.fullname" $ }}
+    app: {{ include "siembol.enrichment_store.fullname" $ }}
 spec:
   selector:
-    app: {{ include "siembol.nginx_store.fullname" $ }}
+    app: {{ include "siembol.enrichment_store.fullname" $ }}
   ports:
   - name: http
     protocol: TCP
-    port: {{ .Values.nginx_store.service.port }}
-  type: ClusterIP
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-store-data
-  namespace: {{ .Values.namespace }}
-  labels:
-    app: nginx-store-data
-spec:
-  selector:
-    app: nginx-store-data
-  ports:
-    - name: http
-      protocol: TCP
-      port: {{ .Values.nginx_store.service.port }}
+    port: {{ .Values.enrichment_store.service.port }}
   type: ClusterIP
 {{- end -}}

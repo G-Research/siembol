@@ -1,16 +1,16 @@
-{{- if (has "nginx_store" .Values.enabled_apps) -}}
+{{- if (haes.enrichment_store" .Values.enabled_apps) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ include "siembol.nginx_store.fullname" $ }}
-  name: {{ include "siembol.nginx_store.fullname" $ }}
+    app: {{ include "siembes.enrichment_store.fullname" $ }}
+  name: {{ include "siembes.enrichment_store.fullname" $ }}
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "siembol.nginx_store.fullname" $ }}
+      app: {{ include "siembes.enrichment_store.fullname" $ }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -19,65 +19,41 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ include "siembol.nginx_store.fullname" $ }}
-      name: {{ include "siembol.nginx_store.fullname" $ }}
+        app: {{ include "siembes.enrichment_store.fullname" $ }}
+      name: {{ include "siembes.enrichment_store.fullname" $ }}
     spec:
       initContainers:
         - name: volume-mount-h
           image: busybox
           command: ["sh", "-c", "date;"]
       containers:
-        - image: {{ .Values.nginx_store.image.repository }}:{{ .Values.nginx_store.image.tag }}
-          imagePullPolicy: {{ .Values.nginx_store.image.pullPolicy }}
-          name: {{ include "siembol.nginx_store.fullname" $ }}
+        - image: {{ .Values.enrichment_store.image.repository }}:{{ .Values.enrichment_store.image.tag }}
+          imagePullPolicy: {{ .Values.enrichment_store.image.pullPolicy }}
+          name: {{ include "siembes.enrichment_store.fullname" $ }}
           ports:
             - name: file-server
-              containerPort: {{ .Values.nginx_store.containerPort }}
+              containerPort: {{ .Values.enrichment_store.containerPort }}
           resources:
             requests:
-              memory: "256Mi"
+              memory: "128Mi"
               cpu: "200m"
             limits:
-              memory: "512Mi"
-              cpu: "600m"
-#          readinessProbe:
-#            httpGet:
-#              path: /health
-#              port: {{ .Values.nginx_store.containerPort }}
-#              scheme: HTTP
-#            initialDelaySeconds: 30
-#            periodSeconds: 30
-#          livenessProbe:
-#            httpGet:
-#              path: /health
-#              port: {{ .Values.nginx_store.containerPort }}
-#              scheme: HTTP
-#            initialDelaySeconds: 30
-#            periodSeconds: 10
-          env:
-            - name: TEMP_KEY
-              value: nginx-key1
+              memory: "256Mi"
+              cpu: "400m"
           volumeMounts:
             - name: files
-              mountPath: {{ .Values.nginx_store.files.location }}
-              #- name: nginx-conf
-              #mountPath: /etc/nginx/conf.d/default.conf
-              #subPath: default.conf
-              #readOnly: true
+              mountPath: /opt/files
             - name: code
               mountPath: /var/www/html
       restartPolicy: Always
       securityContext:
-        runAsUser: 82
-        fsGroup: 82
+        runAsUser: {{ .Values.enrichment_store.security.user }}
+        fsGroup: {{ .Values.enrichment_store.security.fsGroup }}
       volumes:
         - name: code
           hostPath:
-            path: /root/siembol/deployment/helm-k8s/code
-       #- name: nginx-conf
-       #   configMap:
-       #     name: nginx-config
+            path: /siembol/deployment/enrichment
         - name: files
           persistentVolumeClaim:
-            claimName: {{ .Values.nginx_store.pvc.name }}
+            claimName: {{ .Values.enrichment_store.pvc.name }}
   {{- end -}}

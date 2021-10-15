@@ -1,9 +1,9 @@
-{{- if (has "nginx_store" .Values.enabled_apps) -}}
-{{- if .Values.nginx_store.ingress.enabled -}}
+{{- if (has "enrichment_store" .Values.enabled_apps) -}}
+{{- if .Values.enrichment_store.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "siembol.nginx_store.fullname" $ }}
+  name: {{ include "siembol.enrichment_store.fullname" $ }}
   namespace: {{ .Values.namespace }}
   annotations:
           #ingress.kubernetes.io/rewrite-target: /
@@ -15,33 +15,19 @@ spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
-    - {{ .Values.nginx_store.ingress.fqdn }}
-    secretName: {{ include "siembol.nginx_store.fullname" $ }}-tls
+    - {{ .Values.enrichment_store.ingress.fqdn }}
+    secretName: {{ include "siembol.enrichment_store.fullname" $ }}-tls
   {{ end }}
   rules:
-  - host: {{ .Values.nginx_store.ingress.fqdn }}
+  - host: {{ .Values.enrichment_store.ingress.fqdn }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: {{ include "siembol.nginx_store.fullname" $ }}
+            name: {{ include "siembol.enrichment_store.fullname" $ }}
             port: 
-              number: {{ .Values.nginx_store.service.port }}
-              #- path: /data
-              # pathType: Prefix
-              # backend:
-              # service:
-              # name: {{ include "siembol.nginx_store.fullname" $ }}
-              ## port:
-              # number: {{ .Values.nginx_store.service.port }}
-      - path: /health
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ include "siembol.nginx_store.fullname" $ }}
-            port:
-              number: {{ .Values.nginx_store.service.port }}
+              number: {{ .Values.enrichment_store.service.port }}
 {{- end -}}
 {{- end -}}

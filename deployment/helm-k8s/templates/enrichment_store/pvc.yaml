@@ -1,11 +1,13 @@
+{{- if (has "enrichment_store" .Values.enabled_apps) -}}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .Values.nginx_store.pvc.name }}
+  name: {{ .Values.enrichment_store.pvc.name }}
 spec:
-  storageClassName: {{ .Values.nginx_store.pvc.storageclass }}
+  storageClassName: {{ .Values.enrichment_store.pvc.storageclass }}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.nginx_store.pvc.storage }}
+      storage: {{ .Values.enrichment_store.pvc.storage }}
+{{- end -}}
