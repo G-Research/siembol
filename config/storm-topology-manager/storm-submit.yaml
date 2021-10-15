@@ -4,6 +4,7 @@ metadata:
   name: --name--
   namespace: --namespace--
 spec:
+  ttlSecondsAfterFinished: 0
   template:
     spec:
       restartPolicy: Never
