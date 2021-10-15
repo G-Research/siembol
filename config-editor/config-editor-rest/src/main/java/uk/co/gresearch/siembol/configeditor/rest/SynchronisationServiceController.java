@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationException;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
 import uk.co.gresearch.siembol.configeditor.common.ServiceUserRole;
@@ -16,6 +17,7 @@ import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
+import uk.co.gresearch.siembol.configeditor.sync.service.EnrichmentTablesProvider;
 import uk.co.gresearch.siembol.configeditor.sync.service.StormApplicationProvider;
 import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
 import uk.co.gresearch.siembol.configeditor.sync.service.SynchronisationService;
@@ -47,6 +49,8 @@ public class SynchronisationServiceController {
     private StormApplicationProvider stormApplicationProvider;
     @Autowired
     private ConfigEditorConfigurationProperties properties;
+    @Autowired
+    private EnrichmentTablesProvider enrichmentTableProvider;
 
     @PostMapping(value = "/api/v1/sync/webhook", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> synchronise(
@@ -103,6 +107,46 @@ public class SynchronisationServiceController {
                 != authorisationProvider.getUserAuthorisation(user, service)) {
             throw new AuthorisationException(AUTHORISATION_MSG);
         }
+    }
+
+    @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @GetMapping(value = "/api/v1/{service}/enrichment/tables", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getEnrichmentTables(
+            @AuthenticationPrincipal Object principal,
+            @PathVariable("service") String service) {
+        checkAdminAuthorisation(principal, service);
+
+        return enrichmentTableProvider
+                .getEnrichmentTables(service)
+                .toResponseEntity();
+    }
+
+    @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @PostMapping(value = "/api/v1/{service}/enrichment/tables", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> addEnrichmentTable(
+            @AuthenticationPrincipal Object principal,
+            @PathVariable("service") String service,
+            @RequestBody EnrichmentTableDto table) throws ExecutionException, InterruptedException {
+        checkAdminAuthorisation(principal, service);
+
+        Callable<ResponseEntity<ConfigEditorAttributes>> task = () -> enrichmentTableProvider
+                .addEnrichmentTable(service, table)
+                .toResponseEntity();
+        return executorService.submit(task).get();
+    }
+
+    @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @PutMapping(value = "/api/v1/{service}/enrichment/tables", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> updateEnrichmentTable(
+            @AuthenticationPrincipal Object principal,
+            @PathVariable("service") String service,
+            @RequestBody EnrichmentTableDto table) throws ExecutionException, InterruptedException {
+        checkAdminAuthorisation(principal, service);
+
+        Callable<ResponseEntity<ConfigEditorAttributes>> task = () -> enrichmentTableProvider
+                .updateEnrichmentTable(service, table)
+                .toResponseEntity();
+        return executorService.submit(task).get();
     }
 
     private void checkSignature(String secret, String body, String signature) {

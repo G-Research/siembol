@@ -61,7 +61,7 @@ public class KubernetesProviderImpl implements KubernetesProvider {
         } else if (jobExistsInCluster(attr.getTopologyId())) {
             // NOTE: If job exists and is replaced with the same config, it wont trigger a CRUD event and launch
             LOG.info("Deleting existing job {} in K8s", attr.getTopologyId());
-            client.batch().jobs().inNamespace(namespace).withName(attr.getTopologyId()).delete();
+            client.batch().v1().jobs().inNamespace(namespace).withName(attr.getTopologyId()).delete();
         }
 
         LOG.debug("Job template: {}", template);
