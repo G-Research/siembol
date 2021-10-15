@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class CSVExtractor extends ParserExtractor {
     private static final String UNKNOWN_COLUMN_NAME_PREFIX = "unknown";
+    private static final String EMPTY_STRING = "";
     private static final char QUOTA = '"';
 
     private final String wordDelimiter;
@@ -34,11 +35,18 @@ public class CSVExtractor extends ParserExtractor {
 
             Object value = getValue(message.substring(offset, delimiterOffset));
             if (!shouldSkipEmptyValues()
-                    || !"".equals(value)) {
+                    || !EMPTY_STRING.equals(value)) {
                 values.add(value);
             }
 
             offset = delimiterOffset + 1;
+        }
+
+        if (!message.isEmpty()
+                && message.charAt(message.length() - 1) == delimiter
+                && !shouldSkipEmptyValues()) {
+            //NOTE: if the last character is delimiter we would like to add the last empty column
+            values.add(EMPTY_STRING);
         }
         return values;
     }
@@ -49,7 +57,7 @@ public class CSVExtractor extends ParserExtractor {
         for (String strValue : tmp) {
             Object value = getValue(strValue);
             if (!shouldSkipEmptyValues()
-                    || !"".equals(value)) {
+                    || !EMPTY_STRING.equals(value)) {
                 values.add(value);
             }
         }
@@ -93,10 +101,7 @@ public class CSVExtractor extends ParserExtractor {
                 .filter(x -> !skippingColumnName.equals(x))
                 .collect(Collectors.toList());
 
-        Set<String> namesSet = importantNames
-                .stream()
-                .collect(Collectors.toSet());
-
+        Set<String> namesSet = new HashSet<>(importantNames);
         if (namesSet.isEmpty()) {
             throw new IllegalArgumentException("Empty column names");
         }

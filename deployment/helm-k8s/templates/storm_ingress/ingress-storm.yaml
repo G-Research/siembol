@@ -1,27 +1,29 @@
-{{- if .Values.storm.ingress.enabled -}}
+{{- if (has "storm_ingress" .Values.enabled_apps) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.storm.service.ui.name }}
+  name: {{ .Values.storm_ingress.service.name }}
   namespace: {{ .Values.namespace }}
+  {{ if .Values.certmanager.enabled -}}
   annotations:
     cert-manager.io/issuer: ca-issuer
+  {{ end }}
 spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
-    - {{ .Values.storm.ingress.fqdn }}
+    - {{ .Values.storm_ingress.fqdn }}
     secretName: {{ .Values.storm.appName }}-tls
   {{ end }}
   rules:
-  - host: {{ .Values.storm.ingress.fqdn }}
+  - host: {{ .Values.storm_ingress.fqdn }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name:  {{ .Values.storm.service.ui.name }}
+            name:  {{ .Values.storm_ingress.service.name }}
             port: 
-              number:  {{ .Values.storm.service.ui.port }}
+              number:  {{ .Values.storm_ingress.service.port }}
 {{- end -}}

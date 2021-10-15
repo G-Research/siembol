@@ -8,3 +8,4 @@ export { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 export { LandingPageComponent } from './landing-page/landing-page.component';
 export { SearchComponent } from './search/search.component';
 export { ImporterDialogComponent } from './importer-dialog/importer-dialog.component';
+export { ApplicationDialogComponent } from './application-dialog/application-dialog.component';

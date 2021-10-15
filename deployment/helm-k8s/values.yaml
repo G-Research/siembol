@@ -5,6 +5,15 @@
 namespace: "siembol"
 environment: "dev"
 
+# -----------------------------------------------------------------------------
+# Default list of apps to deploy
+# -----------------------------------------------------------------------------
+enabled_apps: 
+- ui
+- rest
+- manager
+- storm_ingress
+
 # Enable certmanager 
 certmanager:
   enabled: true
@@ -60,14 +69,16 @@ storm:
     # This value will be evaluated in the context of the Storm sub-chart
     servers: ["{{ .Release.Name }}-zookeeper"]
   appName: "storm"
-  service:
-    ui:
-      name: storm-ui
-      port: 8080
-  ingress:
-    enabled: true
-    fqdn: storm.local
 
+# -----------------------------------------------------------------------------
+# storm ingress parameters
+# -----------------------------------------------------------------------------
+
+storm_ingress:
+  fqdn: storm.local
+  service:
+    name: storm-ui
+    port: 8080
 
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
@@ -86,6 +97,7 @@ rest:
   rulesDir: "/tmp/siembol-config"
 
   configmap:
+    enabled: true
     name: "github-details"
 
   service:
@@ -126,6 +138,7 @@ ui:
 manager:
   appName: "storm-topology-manager"
   serviceAccountName: "storm-topology-controller"
+  serviceAccountEnabled: true
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
     tag: "latest"
@@ -157,7 +170,6 @@ manager:
 # siembol response parameters
 # -----------------------------------------------------------------------------
 response:
-  enabled: false # flag to deploy siembol-response, false by default
   appName: "response"
   image:
     name: "gresearchdev/siembol-responding-stream"
@@ -165,6 +177,7 @@ response:
     pullPolicy: Always
 
   ingress:
+    enabled: true
     fqdn: response.siembol.local
 
   service:

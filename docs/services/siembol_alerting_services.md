@@ -74,7 +74,7 @@ The correlation alert allows you to group several detections together before rai
 - `kafka.producer.properties` - Defines kafka producer properties, see [https://kafka.apache.org/0102/documentation.html#producerconfigs](https://kafka.apache.org/0102/documentation.html#producerconfigs)
 - `zookeeper.attributes` - The zookeeper attributes for updating the rules
   - `zk.url` - Zookeeper servers url. Multiple servers are separated by comma
-  - `zk.path` - Path to a zookeeper node
+  - `zk.path` - Path to a zookeeper node or multiple nodes delimited by new line. Alerting rules from multiple zookeeper nodes can be loaded in order to save storm resources
 - `storm.attributes` - Storm attributes for the enrichment topology
   - `bootstrap.servers` - Kafka brokers servers url. Multiple servers are separated by comma
   - `first.pool.offset.strategy` - Defines how the kafka spout seeks the offset to be used in the first poll to kafka

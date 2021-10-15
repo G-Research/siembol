@@ -19,24 +19,26 @@
       </div>
     </div>
     <div>
-      <mat-slide-toggle 
-        class="right-element"
-        *ngIf="!isHome && userRoles.length > 1" 
-        [(ngModel)]="isAdminChecked" 
-        (change)="onToggleAdmin()"  
-        labelPosition="before"
-      >
-        <h3>Admin</h3>
-      </mat-slide-toggle>
-      <button 
-        mat-icon-button
-        class="right-element"
-        *ngIf="!isHome && (repositoryLinks$ | async)" 
-        [matMenuTriggerFor]="repoMenu" 
-        [matTooltip]="'Repositories'"
-      >
-        <mat-icon>book</mat-icon>
-      </button>
+      <div *ngIf="!isHome">
+        <mat-slide-toggle 
+          class="right-element"
+          *ngIf="userRoles.length > 1" 
+          [(ngModel)]="isAdminChecked" 
+          (change)="onToggleAdmin()"  
+          labelPosition="before"
+        >
+          <h3>Admin</h3>
+        </mat-slide-toggle>
+        <button 
+          mat-icon-button
+          class="right-element"
+          *ngIf="(repositoryLinks$ | async)" 
+          [matMenuTriggerFor]="repoMenu" 
+          [matTooltip]="'Repositories'"
+        >
+          <mat-icon>book</mat-icon>
+        </button>
+    </div>
       <mat-menu #repoMenu="matMenu" >
         <a mat-menu-item 
           [href]="(repositoryLinks$ | async)?.rule_store_directory_url"

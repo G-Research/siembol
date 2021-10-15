@@ -43,7 +43,7 @@ public class SigmaRuleImporterTest {
     private static String importerAttributes;
 
     /**
-     * title: Sigma Title
+     * title: Sigma Title( Experimental???
      * id: d06be400-8045-4200-0067-740a2009db25
      * status: experimental
      * description: Detects secret
@@ -130,7 +130,7 @@ public class SigmaRuleImporterTest {
 
         RuleDto rule = ALERTING_RULE_READER.readValue(result.getAttributes().getImportedConfiguration());
         Assert.assertEquals("siembol", rule.getRuleAuthor());
-        Assert.assertEquals("based_on_Sigma_Title", rule.getRuleName());
+        Assert.assertEquals("based_on_Sigma_Title_Experimental_", rule.getRuleName());
         Assert.assertEquals("generated from Detects secret and id: d06be400-8045-4200-0067-740a2009db25",
                 rule.getRuleDescription());
         Assert.assertEquals(0, rule.getRuleVersion());
@@ -184,6 +184,24 @@ public class SigmaRuleImporterTest {
         Assert.assertEquals(".*\\Q user \\E.*|.*\\Q use \\E.*|.*\\Q group \\E.*",
                 rule.getMatchers().get(2).getMatchers().get(1).getMatchers().get(1).getData());
 
+    }
+
+    @Test
+    public void importConfigWithCondition1() {
+        String rule  = sigmaRuleExample.replace("image_path and cmd_c and (cmd_s or not net_utility)",
+                "(image_path or cmd_c) and (cmd_s or not net_utility)");
+        ConfigEditorResult result = importer.importConfig(userInfo, importerAttributes, rule);
+        Assert.assertEquals(OK, result.getStatusCode());
+    }
+
+    @Test
+    public void importConfigWithUnknownFields() {
+        String rule  = sigmaRuleExample.replace("description:",
+                "abc:");
+        ConfigEditorResult result = importer.importConfig(userInfo, importerAttributes, rule);
+        Assert.assertTrue(result.getAttributes()
+                .getImportedConfiguration().contains("\"rule_description\" : \"unknown\""));
+        Assert.assertEquals(OK, result.getStatusCode());
     }
 
     @Test
