@@ -17,10 +17,10 @@ sources:
 - https://github.com/G-Research/charts/src/storm
 - https://github.com/G-Research/siembol/deployment/helm-k8s
 
-dependencies:
-  - name: oauth2-proxy
-    version: 4.2.2
-    repository: https://oauth2-proxy.github.io/manifests
+#dependencies:
+#  - name: oauth2-proxy
+#    version: 4.2.2
+#    repository: https://oauth2-proxy.github.io/manifests
 
 
 replicaCount: 1
