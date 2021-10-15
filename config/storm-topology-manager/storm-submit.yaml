@@ -4,6 +4,7 @@ metadata:
   name: --name--
   namespace: --namespace--
 spec:
+  ttlSecondsAfterFinished: 5
   template:
     spec:
       restartPolicy: Never
@@ -14,5 +15,10 @@ spec:
           args: --args--
           image: --image--
           name: --name--
+          resources:
+            requests:
+              memory: "64Mi"
+            limits:
+              memory: "128Mi"
       securityContext:
         runAsUser: 101
