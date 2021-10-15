@@ -102,24 +102,6 @@ enrichment_store:
     user: 82
     fsGroup: 82
 
-oauth_proxy:
-  enabled: true
-  config:
-    clientID: "CLIENT ID"
-    clientSecret: "CLIENT SECRET"
-    cookieSecret: "COOKIE SECRET"
-  extraArgs:
-    redirect-url: https://oauth2-proxy.siembol.local/oauth2/callback
-    cookie-domain: .siembol.local
-    cookie-expire: 8h
-  ingress:
-    enabled: true
-    hosts:
-      - oauth2-proxy.siembol.local
-    tls:
-    - secretName: oauth2-proxy-tls
-      hosts:
-        - oauth2-proxy.siembol.local
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
 # -----------------------------------------------------------------------------

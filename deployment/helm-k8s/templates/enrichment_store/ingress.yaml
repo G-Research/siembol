@@ -6,7 +6,6 @@ metadata:
   name: {{ include "siembol.enrichment_store.fullname" $ }}
   namespace: {{ .Values.namespace }}
   annotations:
-          #ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT"
     {{ if .Values.certmanager.enabled -}}
     cert-manager.io/issuer: ca-issuer

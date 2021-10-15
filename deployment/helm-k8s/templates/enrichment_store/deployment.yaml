@@ -3,14 +3,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ include "siembes.enrichment_store.fullname" $ }}
-  name: {{ include "siembes.enrichment_store.fullname" $ }}
+    app: {{ include "siembol.enrichment_store.fullname" $ }}
+  name: {{ include "siembol.enrichment_store.fullname" $ }}
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "siembes.enrichment_store.fullname" $ }}
+      app: {{ include "siembol.enrichment_store.fullname" $ }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -19,13 +19,13 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ include "siembes.enrichment_store.fullname" $ }}
-      name: {{ include "siembes.enrichment_store.fullname" $ }}
+        app: {{ include "siembol.enrichment_store.fullname" $ }}
+      name: {{ include "siembol.enrichment_store.fullname" $ }}
     spec:
       containers:
         - image: {{ .Values.enrichment_store.image.repository }}:{{ .Values.enrichment_store.image.tag }}
           imagePullPolicy: {{ .Values.enrichment_store.image.pullPolicy }}
-          name: {{ include "siembes.enrichment_store.fullname" $ }}
+          name: {{ include "siembol.enrichment_store.fullname" $ }}
           ports:
             - name: file-server
               containerPort: {{ .Values.enrichment_store.containerPort }}
