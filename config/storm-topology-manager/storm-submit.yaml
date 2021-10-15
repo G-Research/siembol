@@ -14,5 +14,10 @@ spec:
           args: --args--
           image: --image--
           name: --name--
+          resources:
+            requests:
+              memory: "64Mi"
+            limits:
+              memory: "128Mi"
       securityContext:
         runAsUser: 101
