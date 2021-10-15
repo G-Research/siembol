@@ -6,7 +6,7 @@ metadata:
   name: {{ include "siembol.nginx_store.fullname" $ }}
   namespace: {{ .Values.namespace }}
   annotations:
-    ingress.kubernetes.io/rewrite-target: /
+          #ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT"
     {{ if .Values.certmanager.enabled -}}
     cert-manager.io/issuer: ca-issuer
@@ -29,13 +29,13 @@ spec:
             name: {{ include "siembol.nginx_store.fullname" $ }}
             port: 
               number: {{ .Values.nginx_store.service.port }}
-      - path: /data
-        pathType: Prefix
-        backend:
-          service:
-            name: nginx-store-data
-            port:
-              number: {{ .Values.nginx_store.service.port }}
+              #- path: /data
+              # pathType: Prefix
+              # backend:
+              # service:
+              # name: {{ include "siembol.nginx_store.fullname" $ }}
+              ## port:
+              # number: {{ .Values.nginx_store.service.port }}
       - path: /health
         pathType: Prefix
         backend:

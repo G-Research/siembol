@@ -22,6 +22,10 @@ spec:
         app: {{ include "siembol.nginx_store.fullname" $ }}
       name: {{ include "siembol.nginx_store.fullname" $ }}
     spec:
+      initContainers:
+        - name: volume-mount-h
+          image: busybox
+          command: ["sh", "-c", "date;"]
       containers:
         - image: {{ .Values.nginx_store.image.repository }}:{{ .Values.nginx_store.image.tag }}
           imagePullPolicy: {{ .Values.nginx_store.image.pullPolicy }}
@@ -56,17 +60,23 @@ spec:
           volumeMounts:
             - name: files
               mountPath: {{ .Values.nginx_store.files.location }}
-            - name: nginx-conf
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-              readOnly: true
+              #- name: nginx-conf
+              #mountPath: /etc/nginx/conf.d/default.conf
+              #subPath: default.conf
+              #readOnly: true
+            - name: code
+              mountPath: /var/www/html
       restartPolicy: Always
       securityContext:
-        runAsUser: 101
+        runAsUser: 82
+        fsGroup: 82
       volumes:
-        - name: nginx-conf
-          configMap:
-            name: nginx-config
+        - name: code
+          hostPath:
+            path: /root/siembol/deployment/helm-k8s/code
+       #- name: nginx-conf
+       #   configMap:
+       #     name: nginx-config
         - name: files
           persistentVolumeClaim:
             claimName: {{ .Values.nginx_store.pvc.name }}

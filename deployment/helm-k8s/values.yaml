@@ -85,14 +85,21 @@ storm_ingress:
 nginx_store:
   appName: "nginx-store"
   image:
-    repository: nginxinc/nginx-unprivileged
-    tag: 1.21.3-alpine
+    #repository: nginxinc/nginx-unprivileged
+    #repository: mayth/simple-upload-server
+    #repository: httpd
+    repository: php
+    tag: 7.2-apache
+    #tag: latest
     pullPolicy: Always
-  containerPort: 8080
+  containerPort: 80
+  #containerPort: 25478
+  #service:
+    #port: 25478
   service:
-    port: 8080
+    port: 80
   files:
-    location: /data
+    location: /opt/files
   pvc:
     name: "files-store"
     storageclass: ""
@@ -100,7 +107,7 @@ nginx_store:
 
   ingress:
     enabled: true
-    fqdn: store.siembol.local
+    fqdn: store2.siembol.local
 
 oauth_proxy:
   enabled: true
