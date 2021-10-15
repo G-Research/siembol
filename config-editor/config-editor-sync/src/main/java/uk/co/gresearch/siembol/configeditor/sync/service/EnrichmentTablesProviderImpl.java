@@ -28,7 +28,7 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
     private static final ObjectWriter ENRICHMENT_TABLES_UPDATE_MSG_WRITER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(EnrichmentTablesUpdateDto.class);
-    private static final String UNSUPPORTED_ENRICHMENT_SERVICE = "The service %s does not support synchronisation" +
+    private static final String UNSUPPORTED_ENRICHMENT_SERVICE = "The service %s does not support synchronisation " +
             "of enrichment tables";
     private static final String WRONG_TABLE_TO_UPDATE = "Wrong enrichment table to update";
     private static final String INVALID_TABLES_LOG_MSG = "Invalid enrichment tables update message format " +
@@ -40,10 +40,10 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
     private final Map<String, AtomicReference<String>> enrichmentTablesCache;
 
     public EnrichmentTablesProviderImpl(Map<String, ZooKeeperConnector> zooKeeperConnectorMap) {
-        this.zooKeeperConnectorMap = zooKeeperConnectorMap;
+        this.zooKeeperConnectorMap = zooKeeperConnectorMap != null ? zooKeeperConnectorMap : new HashMap<>();
         this.enrichmentTablesCache = new HashMap<>();
 
-        for (Map.Entry<String, ZooKeeperConnector> entry : zooKeeperConnectorMap.entrySet()) {
+        for (Map.Entry<String, ZooKeeperConnector> entry : this.zooKeeperConnectorMap.entrySet()) {
             final String serviceName = entry.getKey();
             enrichmentTablesCache.put(serviceName, new AtomicReference<>());
             entry.getValue().addCacheListener(() -> updateEnrichmentTablesCache(serviceName));

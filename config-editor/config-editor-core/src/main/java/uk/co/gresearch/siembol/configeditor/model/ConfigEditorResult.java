@@ -5,6 +5,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
+import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 
 import java.util.List;
@@ -105,7 +106,10 @@ public class ConfigEditorResult {
 
     public static ConfigEditorResult fromEnrichmentTables(List<EnrichmentTableDto> tables) {
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
-        attributes.setEnrichmentTables(tables);
+        EnrichmentTablesUpdateDto update = new EnrichmentTablesUpdateDto();
+        update.setEnrichmentTables(tables);
+        attributes.setEnrichmentTablesUpdate(update);
+
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attributes);
     }
 
