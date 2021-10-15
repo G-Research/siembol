@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.enrichments.storm.common;
+package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
