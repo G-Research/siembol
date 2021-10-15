@@ -15,9 +15,23 @@ public class ConfigEditorConfigurationProperties {
     private String testCasesUiConfigFileName;
     private SynchronisationType synchronisation;
     @NestedConfigurationProperty
-    private ZooKeeperAttributesDto stormTopologiesZookeeper;
+    private ZooKeeperAttributesDto stormTopologiesZooKeeper;
+    @NestedConfigurationProperty
+    private Map<String, ZooKeeperAttributesDto> enrichmentTablesZooKeeper;
     private Map<String, String> testingZookeeperFiles;
     private String gitWebhookPassword;
+
+    public Map<String, ZooKeeperAttributesDto> getEnrichmentTablesZooKeeper() {
+        return enrichmentTablesZooKeeper;
+    }
+
+    public void setEnrichmentTablesZooKeeper(Map<String, ZooKeeperAttributesDto> enrichmentTablesZooKeeper) {
+        this.enrichmentTablesZooKeeper = enrichmentTablesZooKeeper;
+    }
+
+    public String getGitWebhookPassword() {
+        return gitWebhookPassword;
+    }
 
     public Map<String, ServiceConfigurationProperties> getServices() {
         return services;
@@ -43,12 +57,12 @@ public class ConfigEditorConfigurationProperties {
         this.synchronisation = synchronisation;
     }
 
-    public ZooKeeperAttributesDto getStormTopologiesZookeeper() {
-        return stormTopologiesZookeeper;
+    public ZooKeeperAttributesDto getStormTopologiesZooKeeper() {
+        return stormTopologiesZooKeeper;
     }
 
-    public void setStormTopologiesZookeeper(ZooKeeperAttributesDto stormTopologiesZookeeper) {
-        this.stormTopologiesZookeeper = stormTopologiesZookeeper;
+    public void setStormTopologiesZooKeeper(ZooKeeperAttributesDto stormTopologiesZooKeeper) {
+        this.stormTopologiesZooKeeper = stormTopologiesZooKeeper;
     }
 
     public Map<String, String> getTestingZookeeperFiles() {

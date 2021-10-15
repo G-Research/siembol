@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
+import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
+import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -41,7 +43,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader TABLES_UPDATE_READER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .readerFor(TablesUpdateDto.class);
+            .readerFor(EnrichmentTablesUpdateDto.class);
 
     private static final String TABLES_INIT_START = "Initialisation of enrichment tables started";
     private static final String TABLES_INIT_COMPLETED = "Initialisation of enrichment tables completed";
@@ -107,9 +109,9 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
             String tablesUpdateStr = zooKeeperConnector.getData();
             LOG.info(String.format(TABLES_UPDATE_MESSAGE_FORMAT, tablesUpdateStr));
             Map<String, EnrichmentTable> tables = new HashMap<>();
-            TablesUpdateDto tablesUpdate = TABLES_UPDATE_READER.readValue(tablesUpdateStr);
+            EnrichmentTablesUpdateDto enrichmentTablesUpdateDto = TABLES_UPDATE_READER.readValue(tablesUpdateStr);
             try (SiembolFileSystem fs = fileSystemFactory.create()) {
-                for (EnrichmentTableDto table :  tablesUpdate.getEnrichmentTables()) {
+                for (EnrichmentTableDto table :  enrichmentTablesUpdateDto.getEnrichmentTables()) {
                     LOG.info(TABLE_INIT_START, table.getName(), table.getPath());
                     try (InputStream is = fs.openInputStream(table.getPath())) {
                         tables.put(table.getName(), EnrichmentMemoryTable.fromJsonStream(is));
