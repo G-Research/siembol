@@ -1,4 +1,4 @@
-{{- if (haes.enrichment_store" .Values.enabled_apps) -}}
+{{- if (has.enrichment_store" .Values.enabled_apps) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
