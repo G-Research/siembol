@@ -47,8 +47,8 @@ spec:
         fsGroup: {{ .Values.enrichment_store.security.fsGroup }}
       volumes:
         - name: code
-          hostPath:
-            path: /siembol/deployment/enrichment
+          configMap:
+            name: php-files
         - name: files
           persistentVolumeClaim:
             claimName: {{ .Values.enrichment_store.pvc.name }}

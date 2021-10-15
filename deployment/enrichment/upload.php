@@ -12,6 +12,6 @@ if(!empty($_FILES['uploaded_file'])) {
     }
   }
 } else {
-    echo "Please specify a file with correct key; 'uploaded_file=FILENAME'"
+    echo "Please specify a file with correct key; 'uploaded_file=FILENAME'";
 }
 ?>
