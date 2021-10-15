@@ -22,10 +22,6 @@ spec:
         app: {{ include "siembes.enrichment_store.fullname" $ }}
       name: {{ include "siembes.enrichment_store.fullname" $ }}
     spec:
-      initContainers:
-        - name: volume-mount-h
-          image: busybox
-          command: ["sh", "-c", "date;"]
       containers:
         - image: {{ .Values.enrichment_store.image.repository }}:{{ .Values.enrichment_store.image.tag }}
           imagePullPolicy: {{ .Values.enrichment_store.image.pullPolicy }}
