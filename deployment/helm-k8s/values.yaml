@@ -13,7 +13,6 @@ enabled_apps:
 - rest
 - manager
 - storm_ingress
-- nginx_store
 
 # Enable certmanager 
 certmanager:
@@ -82,24 +81,15 @@ storm_ingress:
     name: storm-ui
     port: 8080
 
-nginx_store:
-  appName: "nginx-store"
+enrichment_store:
+  appName: "enrichment-store"
   image:
-    #repository: nginxinc/nginx-unprivileged
-    #repository: mayth/simple-upload-server
-    #repository: httpd
     repository: php
     tag: 7.2-apache
-    #tag: latest
     pullPolicy: Always
   containerPort: 80
-  #containerPort: 25478
-  #service:
-    #port: 25478
   service:
     port: 80
-  files:
-    location: /opt/files
   pvc:
     name: "files-store"
     storageclass: ""
@@ -107,7 +97,11 @@ nginx_store:
 
   ingress:
     enabled: true
-    fqdn: store2.siembol.local
+    fqdn: enrichment.local
+
+  security:
+    user: 82
+    fsGroup: 82
 
 oauth_proxy:
   enabled: true
