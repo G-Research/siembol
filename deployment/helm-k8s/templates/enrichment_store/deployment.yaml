@@ -1,0 +1,55 @@
+{{- if (has "enrichment_store" .Values.enabled_apps) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "siembol.enrichment_store.fullname" $ }}
+  name: {{ include "siembol.enrichment_store.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "siembol.enrichment_store.fullname" $ }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "siembol.enrichment_store.fullname" $ }}
+      name: {{ include "siembol.enrichment_store.fullname" $ }}
+    spec:
+      containers:
+        - image: {{ .Values.enrichment_store.image.repository }}:{{ .Values.enrichment_store.image.tag }}
+          imagePullPolicy: {{ .Values.enrichment_store.image.pullPolicy }}
+          name: {{ include "siembol.enrichment_store.fullname" $ }}
+          ports:
+            - name: file-server
+              containerPort: {{ .Values.enrichment_store.containerPort }}
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "400m"
+          volumeMounts:
+            - name: files
+              mountPath: /opt/files
+            - name: code
+              mountPath: /var/www/html
+      restartPolicy: Always
+      securityContext:
+        runAsUser: {{ .Values.enrichment_store.security.user }}
+        fsGroup: {{ .Values.enrichment_store.security.fsGroup }}
+      volumes:
+        - name: code
+          configMap:
+            name: php-files
+        - name: files
+          persistentVolumeClaim:
+            claimName: {{ .Values.enrichment_store.pvc.name }}
+  {{- end -}}
