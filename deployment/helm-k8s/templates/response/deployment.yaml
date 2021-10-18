@@ -28,10 +28,10 @@ spec:
           runAsUser: 1000
         resources:
           requests:
-            memory: "256Mi"
+            memory: "64Mi"
             cpu: "0.5"
           limits:
-            memory: "1024Mi"
+            memory: "256Mi"
             cpu: "1"
         readinessProbe:
           httpGet:

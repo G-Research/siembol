@@ -34,7 +34,7 @@ spec:
             memory: "128Mi"
             cpu: "500m"
           limits:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "1000m"
         securityContext:
           runAsUser: 101
@@ -43,14 +43,14 @@ spec:
             path: /health
             port: {{ .Values.manager.service.port }}
             scheme: HTTP
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60
           periodSeconds: 30
         livenessProbe:
           httpGet:
             path: /health
             port: {{ .Values.manager.service.port }}
             scheme: HTTP
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60
           periodSeconds: 10
         env:
         - name: JAVA_OPTS

@@ -8,6 +8,10 @@ helm upgrade -i kafdrop chart --set image.tag=3.27.0 `
     --set server.servlet.contextPath="/" `
     --set jvm.opts="-Xms32M -Xmx64M" --namespace=siembol
 
-kubectl run kafka-client --restart='Never' --image docker.io/bitnami/kafka:2.8.0-debian-10-r43 --namespace siembol --command -- sleep infinity
+kubectl run kafka-client --restart='Never' `
+    --image docker.io/bitnami/kafka:2.8.0-debian-10-r43 `
+    --namespace siembol `
+    --requests "memory=64Mi" `
+    --command -- sleep infinity
 
 Write-Output "************************************************************"

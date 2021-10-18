@@ -24,7 +24,7 @@ EOF
 echo == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io
 kubectl create namespace cert-manager
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.1.0 --set installCRDs=true
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.5.4 --set installCRDs=true
 
 
 printf '== wait for cert-manager to be up'

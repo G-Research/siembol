@@ -31,10 +31,10 @@ spec:
           - containerPort: {{ .Values.rest.containerPort }}
         resources:
           requests:
-            memory: "512Mi"
+            memory: "128Mi"
             cpu: "500m"
           limits:
-            memory: "2048Mi"
+            memory: "512Mi"
             cpu: "1000m"
         securityContext:
           runAsUser: 101
@@ -43,15 +43,15 @@ spec:
             path: /health
             port: {{ .Values.rest.containerPort }}
             scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 30
+          initialDelaySeconds: 200
+          periodSeconds: 40
         livenessProbe:
           httpGet:
             path: /health
             port: {{ .Values.rest.containerPort }}
             scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: 200
+          periodSeconds: 20
         {{ if .Values.rest.configmap.enabled -}}
         envFrom:
         - configMapRef:
