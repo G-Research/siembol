@@ -16,6 +16,7 @@ Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'siembol.local' -Description
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'rest.siembol.local' -Description 'resolver for rest.siembol.local'
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'storm.local' -Description 'resolver for storm.local'
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'topology-manager.siembol.local' -Description 'resolver for topology-manager.siembol.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'enrichment.local' -Description 'resolver for enrichment.local'
 
 Write-Output == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io

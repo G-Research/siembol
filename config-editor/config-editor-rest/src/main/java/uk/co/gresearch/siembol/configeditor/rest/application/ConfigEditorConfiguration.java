@@ -1,4 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.rest.application;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -7,7 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.util.ResourceUtils;
+import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
 import uk.co.gresearch.siembol.configeditor.common.AuthorisationProvider;
@@ -15,9 +18,7 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.common.ServiceType;
 import uk.co.gresearch.siembol.configeditor.sync.common.ConfigServiceHelper;
-import uk.co.gresearch.siembol.configeditor.sync.service.StormApplicationProvider;
-import uk.co.gresearch.siembol.configeditor.sync.service.StormApplicationProviderImpl;
-import uk.co.gresearch.siembol.configeditor.sync.service.SynchronisationService;
+import uk.co.gresearch.siembol.configeditor.sync.service.*;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;
@@ -26,12 +27,12 @@ import uk.co.gresearch.siembol.configeditor.rest.common.ServiceConfigurationProp
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigEditorServiceFactory;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregatorImpl;
-import uk.co.gresearch.siembol.configeditor.sync.service.SynchronisationServiceImpl;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluator;
 import uk.co.gresearch.siembol.configeditor.testcase.TestCaseEvaluatorImpl;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,7 +85,7 @@ public class ConfigEditorConfiguration implements DisposableBean {
     @Bean
     @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
     StormApplicationProvider stormApplicationProvider() throws Exception {
-        return StormApplicationProviderImpl.create(zooKeeperConnectorFactory(), properties.getStormTopologiesZookeeper());
+        return StormApplicationProviderImpl.create(zooKeeperConnectorFactory(), properties.getStormTopologiesZooKeeper());
     }
 
     @Bean
@@ -92,6 +93,15 @@ public class ConfigEditorConfiguration implements DisposableBean {
     SynchronisationService synchronisationService() throws Exception {
         serviceAggregator = serviceAggregator();
         ZooKeeperConnectorFactory zooKeeperConnectorFactory = zooKeeperConnectorFactory();
+        Map<String, ZooKeeperConnector> zooKeeperConnectorMap = new HashMap<>();
+        if (properties.getEnrichmentTablesZooKeeper() != null) {
+            for (Map.Entry<String, ZooKeeperAttributesDto> entry : properties.getEnrichmentTablesZooKeeper().entrySet()) {
+                zooKeeperConnectorMap.put(entry.getKey(),
+                        zooKeeperConnectorFactory.createZookeeperConnector(entry.getValue()));
+            }
+        }
+        enrichmentTablesProvider(zooKeeperConnectorMap);
+
         StormApplicationProvider stormApplicationProvider = stormApplicationProvider();
         List<ConfigServiceHelper> aggregatorServices = serviceAggregator
                 .getAggregatorServices()
@@ -122,6 +132,12 @@ public class ConfigEditorConfiguration implements DisposableBean {
         }
 
         return ret;
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "config-editor", value = "synchronisation")
+    EnrichmentTablesProvider enrichmentTablesProvider(Map<String, ZooKeeperConnector> zooKeeperConnectorMap) {
+        return new EnrichmentTablesProviderImpl(zooKeeperConnectorMap);
     }
 
     @Override

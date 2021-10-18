@@ -75,7 +75,7 @@ public class StormEnrichingApplicationTest {
 
     /**
      * {
-     *     "hdfs_tables" : [
+     *     "enrichment_tables" : [
      *     {
      *       "name" : "test_table",
      *        "path": "/siembol/tables/enrichment/test.json"
