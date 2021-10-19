@@ -1,0 +1,12 @@
+{{- if (has "enrichment_store" .Values.enabled_apps) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: php-files
+  namespace: {{ .Values.namespace }}
+data:
+  upload.php: |- 
+{{ .Files.Get "resources/upload.php" | indent 4 }}
+  download.php: |-
+{{ .Files.Get "resources/download.php" | indent 4 }}
+{{- end -}}

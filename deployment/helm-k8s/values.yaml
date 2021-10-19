@@ -12,7 +12,11 @@ enabled_apps:
 - ui
 - rest
 - manager
+<<<<<<< HEAD
 - storm_ingress
+=======
+- enrichment_store
+>>>>>>> 24cdfd0 (enrichment store deployment)
 
 # Enable certmanager 
 certmanager:
@@ -79,6 +83,32 @@ storm_ingress:
   service:
     name: storm-ui
     port: 8080
+
+# -----------------------------------------------------------------------------
+# enrichment store parameters
+# -----------------------------------------------------------------------------
+
+enrichment_store:
+  appName: "enrichment-store"
+  image:
+    repository: php
+    tag: 7.2-apache
+    pullPolicy: Always
+  containerPort: 80
+  service:
+    port: 80
+  pvc:
+    name: "files-store"
+    storageclass: ""
+    storage: 1Gi
+
+  ingress:
+    enabled: true
+    fqdn: enrichment.local
+
+  security:
+    user: 82
+    fsGroup: 82
 
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
