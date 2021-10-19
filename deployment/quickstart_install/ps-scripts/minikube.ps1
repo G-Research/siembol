@@ -8,7 +8,7 @@ Write-Output == create and install CA ==
 mkcert -install
 
 Write-Output == create k8s cluster ==
-minikube start --profile $namespace --driver hyperv --cpus 4 --memory 4.5g --disk-size 40g --addons ingress
+minikube start --profile $namespace --driver hyperv --cpus 4 --memory 8g --disk-size 40g --addons ingress
 minikube profile $namespace
 
 Write-Output == install dns host entries ==
@@ -23,13 +23,7 @@ helm repo add jetstack https://charts.jetstack.io
 kubectl create namespace cert-manager
 helm install cert-manager jetstack/cert-manager --namespace cert-manager `
   --version v1.5.4 `
-  --set installCRDs=true `
-  --set resources.requests.memory="32Mi" `
-  --set cainjector.resources.requests.memory="32Mi" `
-  --set webhook.resources.requests.memory="32Mi" `
-  --set resources.limits.memory="64Mi" `
-  --set cainjector.limits.requests.memory="64Mi" `
-  --set webhook.limits.requests.memory="64Mi"
+  --set installCRDs=true
 
 Write-Output '== wait for cert-manager to be up'
 kubectl wait --namespace cert-manager --for=condition=available --timeout=90s --all deployments

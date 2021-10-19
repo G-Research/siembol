@@ -11,7 +11,6 @@ helm upgrade -i kafdrop chart --set image.tag=3.27.0 `
 kubectl run kafka-client --restart='Never' `
     --image docker.io/bitnami/kafka:2.8.0-debian-10-r43 `
     --namespace siembol `
-    --requests "memory=64Mi" `
     --command -- sleep infinity
 
 Write-Output "************************************************************"

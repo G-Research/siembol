@@ -9,8 +9,8 @@ helm repo update
 helm install siembol-zookeeper bitnami/zookeeper -n=siembol
 
 helm install kafka bitnami/kafka -n=siembol
-
-helm install storm gresearch/storm -n=siembol --set supervisor.replicaCount=1
+ 
+helm install storm --version="1.0.12" gresearch/storm -n=siembol --set supervisor.replicaCount=1
 
 
 echo "************************************************************"
