@@ -12,11 +12,8 @@ enabled_apps:
 - ui
 - rest
 - manager
-<<<<<<< HEAD
 - storm_ingress
-=======
 - enrichment_store
->>>>>>> 24cdfd0 (enrichment store deployment)
 
 # Enable certmanager 
 certmanager:
