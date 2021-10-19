@@ -15,7 +15,8 @@ helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.replicaCount=1 `
     --set supervisor.image.tag=2.3.0 `
     --set nimbus.image.tag=2.3.0 `
-    --set supervisor.slots=6
+    --set supervisor.slots=6 `
+    --set ui.image.tag=2.3.0
 
 
 Write-Output "************************************************************"
