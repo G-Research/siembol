@@ -76,7 +76,7 @@ You should now see the Siembol UI homepage. You can also try Storm UI to see run
 To add enrichment tables.
 
 ```bash
-deployment/quickstart_install/ps-scripts/enrichmentStore.sh
+deployment/quickstart_install/sh-scripts/enrichmentStore.sh
 ```
 or
 ```bash
