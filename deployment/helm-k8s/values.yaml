@@ -13,6 +13,7 @@ enabled_apps:
 - rest
 - storm_ingress
 - manager
+- enrichment_store
 
 # Enable certmanager 
 certmanager:
@@ -79,6 +80,10 @@ storm_ingress:
   service:
     name: storm-ui
     port: 8080
+
+# -----------------------------------------------------------------------------
+# enrichment store parameters
+# -----------------------------------------------------------------------------
 
 enrichment_store:
   appName: "enrichment-store"

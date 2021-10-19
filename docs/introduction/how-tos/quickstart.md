@@ -71,6 +71,22 @@ You should now see the Siembol UI homepage. You can also try Storm UI to see run
 
   * https://storm.local
 
+### Enrichment tables
+
+Adding enrichment tables.
+
+1. To add enrichment tables to the store
+```
+echo '{"1.2.3.4":{"hostname":"test.com"}}' > dns.json
+curl -F "uploaded_file=@dns.json;" https://enrichment.local/upload.php --insecure
+```
+
+2. Call siembol rest endpoint to sync
+```
+curl -X 'POST' https://rest.siembol.local/api/v1/enrichment/enrichment/tables -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"name\": \"dns\",\"path\": \"/download.php?filename=dns.json\"}' --insecure
+```
+
+
 ### Kafka UI
 
 We are using Kafdrop UI to view topics and messages.  You can send messages to parsing topics and to test siembol configs. 

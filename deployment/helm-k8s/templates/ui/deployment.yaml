@@ -50,6 +50,6 @@ spec:
           memory: "256Mi"
          requests:
           cpu: 0.1
-          memory: "32Mi"
+          memory: "128Mi"
       restartPolicy: Always
 {{- end -}}
