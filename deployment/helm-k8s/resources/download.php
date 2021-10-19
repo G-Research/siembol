@@ -1,5 +1,5 @@
 <?php
-parse_str($_SERVER['QUERY_STRING'], $output); //TODO: Need some input validation
+parse_str($_SERVER['QUERY_STRING'], $output);
 $basepath = '/opt/files';
 $filename = $output['filename'];
 $path=$basepath . '/'. $filename;
