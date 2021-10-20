@@ -13,6 +13,7 @@ enabled_apps:
 - rest
 - manager
 - storm_ingress
+- enrichment_store
 
 # Enable certmanager 
 certmanager:
@@ -80,6 +81,10 @@ storm_ingress:
     name: storm-ui
     port: 8080
 
+# -----------------------------------------------------------------------------
+# enrichment store parameters
+# -----------------------------------------------------------------------------
+
 enrichment_store:
   appName: "enrichment-store"
   image:
@@ -109,7 +114,7 @@ enrichment_store:
 rest:
   image: 
     repository: "gresearchdev/siembol-config-editor-rest"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
 
   appName: "config-editor-rest"
@@ -137,7 +142,7 @@ rest:
 ui:
   image: 
     repository: "gresearchdev/siembol-config-editor-ui"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
 
   appName: "config-editor-ui"
@@ -163,7 +168,7 @@ manager:
   serviceAccountEnabled: true
   image: 
     repository: "gresearchdev/siembol-storm-topology-manager"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
   containerPort: 8082
 
@@ -177,16 +182,6 @@ manager:
   ingress:
     enabled: true
     fqdn: topology-manager.siembol.local
-  
-  cleanupjob:
-    name: clean-lingering-siembol-jobs
-    schedule: "*/15 * * * *"
-    failedjobshistoryLimit: 1
-    successfulJobsHistoryLimit: 1
-    image:
-      repository: alpine/k8s
-      tag: "1.18.16"
-      pullPolicy: Always
 
 # -----------------------------------------------------------------------------
 # siembol response parameters
@@ -195,7 +190,7 @@ response:
   appName: "response"
   image:
     name: "gresearchdev/siembol-responding-stream"
-    tag: "latest"
+    tag: "java11"
     pullPolicy: Always
 
   ingress:
