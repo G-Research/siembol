@@ -21,7 +21,9 @@ Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'enrichment.local' -Descript
 Write-Output == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io
 kubectl create namespace cert-manager
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.1.0 --set installCRDs=true
+helm install cert-manager jetstack/cert-manager --namespace cert-manager `
+  --version v1.5.4 `
+  --set installCRDs=true
 
 Write-Output '== wait for cert-manager to be up'
 kubectl wait --namespace cert-manager --for=condition=available --timeout=90s --all deployments

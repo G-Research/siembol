@@ -1,3 +1,4 @@
+{{- if (has "enrichment_store" .Values.enabled_apps) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -5,27 +6,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   upload.php: |- 
-    <?PHP
-      if(!empty($_FILES['uploaded_file'])) {
-        {
-          $path = "/opt/files";
-          $filename = basename( $_FILES['uploaded_file']['name']);
-
-          if(move_uploaded_file($_FILES['uploaded_file']['tmp_name'], "$path/$filename")) {
-            echo "The file ".  basename( $_FILES['uploaded_file']['name']). 
-            " has been uploaded";
-          } else{
-              echo "There was an error uploading the file, please try again!";
-          }
-        }
-      } else {
-          echo "Please specify a file with correct key; 'uploaded_file=FILENAME'";
-      }
-    ?>
+{{ .Files.Get "resources/upload.php" | indent 4 }}
   download.php: |-
-    <?php
-      parse_str($_SERVER['QUERY_STRING'], $output); //TODO: Need some input validation
-      $filename = $output['filename'];
-      $path='/opt/files/' . $filename;
-      echo file_get_contents($path);
-    ?>
+{{ .Files.Get "resources/download.php" | indent 4 }}
+{{- end -}}
