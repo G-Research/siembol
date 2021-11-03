@@ -11,9 +11,9 @@ Siembol will be presented at <a href="https://www.blackhat.com/eu-21/">Black Hat
 Come hear Marian Novotny discuss Anti-Malware for the Cloud. <!--more-->
 <br><br>
 - 
-    Wednesday, Nov 10 | 7:00 AM ( Virtual )
-    Wednesday, Nov 10 | 9:15 AM ( Business Hall, Arsenal Station 3)
-    Wednesday, Nov 11 | 8:00 AM ( Business Hall, Arsenal Station 1)
+    Wednesday, Nov 10 | 12:00 PM GMT ( Virtual )
+    Wednesday, Nov 10 | 2:15 PM GMT ( Business Hall, Arsenal Station 3)
+    Wednesday, Nov 11 | 1:00 PM GMT ( Business Hall, Arsenal Station 1)
 
 <br><br>
 Join the project on <a href="https://github.com/G-Research/siembol/"> Github </a>.
