@@ -3,7 +3,6 @@ package uk.co.gresearch.siembol.deployment.storm.providers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -18,43 +17,39 @@ public class KubernetesProviderImplTest {
     private static final ObjectReader READER = new ObjectMapper()
             .readerFor(StormTopologyDto.class);
 
-    /**
-     * {
-     *  "topology_name": "parsing-heartbeat",
-     *  "topology_id": "id1234",
-     *  "image": "gr/siembol-parsing-storm:1.72-SNAPSHOT",
-     *  "service_name": "parsing",
-     *  "attributes": [
-     *      "testattributes1",
-     *      "testattributes2"
-     *  ]
-     * }
-     **/
-    @Multiline
-    private static String topologyConfig;
+    private final String topologyConfig = """
+            {
+             "topology_name": "parsing-heartbeat",
+             "topology_id": "id1234",
+             "image": "gr/siembol-parsing-storm:1.72-SNAPSHOT",
+             "service_name": "parsing",
+             "attributes": [
+                 "testattributes1",
+                 "testattributes2"
+             ]
+            }
+            """;
 
-    /**
-     *apiVersion: batch/v1
-     *kind: Job
-     *metadata:
-     *  name: parsing-heartbeat
-     *  namespace: siembol
-     *spec:
-     *  template:
-     *    spec:
-     *      restartPolicy: Never
-     *      containers:
-     *        - env:
-     *            - name: NIMBUS_SEEDS
-     *              value: '["nimbus"]'
-     *          args: ["testattributes1", "testattributes2"]
-     *          image: gr/siembol-parsing-storm:1.72-SNAPSHOT
-     *          name: parsing-heartbeat
-     *      securityContext:
-     *        runAsUser: 1000
-     */
-    @Multiline
-    private static String expectedYaml;
+    private final String expectedYaml = """
+            apiVersion: batch/v1
+            kind: Job
+            metadata:
+              name: parsing-heartbeat
+              namespace: siembol
+            spec:
+              template:
+                spec:
+                  restartPolicy: Never
+                  containers:
+                    - env:
+                        - name: NIMBUS_SEEDS
+                          value: '["nimbus"]'
+                      args: ["testattributes1", "testattributes2"]
+                      image: gr/siembol-parsing-storm:1.72-SNAPSHOT
+                      name: parsing-heartbeat
+                  securityContext:
+                    runAsUser: 1000
+            """;
 
     KubernetesProvider provider;
 

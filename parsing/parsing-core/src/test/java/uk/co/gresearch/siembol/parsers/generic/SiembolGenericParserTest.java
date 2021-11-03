@@ -1,5 +1,4 @@
 package uk.co.gresearch.siembol.parsers.generic;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,77 +13,69 @@ public class SiembolGenericParserTest {
     private SiembolParser genericParser;
     private ParserFactory factory;
 
-    /**
-     * {
-     *  "parser_attributes": {
-     *      "parser_type": "generic"
-     *   },
-     *   "parser_extractors" : [
-     *   {
-     *      "extractor_type": "pattern_extractor",
-     *      "name": "simple_message",
-     *      "field": "original_string",
-     *      "attributes": {
-     *         "regular_expressions": [
-     *           "^msg:\\s(?<secret_msg>.*)$",
-     *           "^msg2:\\s(?<timestamp>.*)$"
-     *         ],
-     *         "should_remove_field" : false
-     *       }
-     *     }],
-     *     "transformations" : [
-     *      {
-     *          "transformation_type": "field_name_string_replace_all",
-     *           "attributes": {
-     *              "string_replace_target": "secret_msg",
-     *              "string_replace_replacement": "dummy"
-     *     }
-     *     }]
-     *  }
-     **/
-    @Multiline
-    public static String simpleGenericParserConfig;
+    private final String simpleGenericParserConfig = """
+     {
+      "parser_attributes": {
+          "parser_type": "generic"
+       },
+       "parser_extractors" : [
+       {
+          "extractor_type": "pattern_extractor",
+          "name": "simple_message",
+          "field": "original_string",
+          "attributes": {
+             "regular_expressions": [
+               "^msg:\\\\s(?<secret_msg>.*)$",
+               "^msg2:\\\\s(?<timestamp>.*)$"
+             ],
+             "should_remove_field" : false
+           }
+         }],
+         "transformations" : [
+          {
+              "transformation_type": "field_name_string_replace_all",
+               "attributes": {
+                  "string_replace_target": "secret_msg",
+                  "string_replace_replacement": "dummy"
+         }
+         }]
+      }
+     """;
 
-    /**
-     * {
-     *  "parser_attributes": {
-     *      "parser_type": "generic"
-     *   },
-     *   "parser_extractors" : [
-     *   {
-     *      "extractor_type": "pattern_extractor",
-     *      "name": "simple_message",
-     *      "field": "original_string",
-     *      "attributes": {
-     *         "regular_expressions": [
-     *           "^msg:\\s(?<secret_msg>.*)$"
-     *         ],
-     *         "should_remove_field" : false
-     *       }
-     *     }],
-     *     "transformations" : [
-     *      {
-     *          "transformation_type": "filter_message",
-     *           "attributes": {
-     *              "message_filter" : {
-     *                  "matchers" : [
-     *                  {
-     *                      "field_name" : "secret_msg",
-     *                      "pattern" : "secret",
-     *                      "negated" : false
-     *                }]
-     *           }}}]
-     *  }
-     **/
-    @Multiline
-    public static String simpleGenericParserFiltered;
+    private final String simpleGenericParserFiltered = """
+     {
+      "parser_attributes": {
+          "parser_type": "generic"
+       },
+       "parser_extractors" : [
+       {
+          "extractor_type": "pattern_extractor",
+          "name": "simple_message",
+          "field": "original_string",
+          "attributes": {
+             "regular_expressions": [
+               "^msg:\\\\s(?<secret_msg>.*)$"
+             ],
+             "should_remove_field" : false
+           }
+         }],
+         "transformations" : [
+          {
+              "transformation_type": "filter_message",
+               "attributes": {
+                  "message_filter" : {
+                      "matchers" : [
+                      {
+                          "field_name" : "secret_msg",
+                          "pattern" : "secret",
+                          "negated" : false
+                    }]
+               }}}]
+      }
+     """;
 
-    /**
-     * msg: secret
-     **/
-    @Multiline
-    public static String simpleMessage;
-
+    private final String simpleMessage = """
+     msg: secret""";
 
     @Before
     public void setUp() throws Exception {

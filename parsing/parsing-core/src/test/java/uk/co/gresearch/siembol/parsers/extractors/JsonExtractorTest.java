@@ -1,30 +1,24 @@
 package uk.co.gresearch.siembol.parsers.extractors;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Test;
 import java.util.EnumSet;
 import java.util.Map;
 
 public class JsonExtractorTest {
-    private String name = "test_name";
-    private String field = "test_field";
-    private EnumSet<ParserExtractor.ParserExtractorFlags> extractorFlags =
+    private final String name = "test_name";
+    private final String field = "test_field";
+    private final EnumSet<ParserExtractor.ParserExtractorFlags> extractorFlags =
             EnumSet.of(ParserExtractor.ParserExtractorFlags.SHOULD_REMOVE_FIELD);
 
 
-    /**
-     * {"key1":"bbb", "key2":2, "key3": true, "key4": {"nested1": { "neste21" : 1, "nested22" : true, "nested23" : {}, "nested24": []} }} {"ignored": "hopefully"}
-     **/
-    @Multiline
-    public static String simpleJson;
+    private final String simpleJson = """
+      {"key1":"bbb", "key2":2, "key3": true, "key4": {"nested1": { "neste21" : 1, "nested22" : true, "nested23" : {}, "nested24": []} }} {"ignored": "hopefully"}
+     """;
 
-
-    /**
-     *  {"key1":"bbb", "key2": {"nested1": [{"order" : 1}, {"order" : 2}]}} {"ignored": "hopefully"}
-     **/
-    @Multiline
-    public static String simpleArrayJson;
+    private final String simpleArrayJson = """
+       {"key1":"bbb", "key2": {"nested1": [{"order" : 1}, {"order" : 2}]}} {"ignored": "hopefully"}
+     """;
 
     @Test
     public void testGoodNested() {

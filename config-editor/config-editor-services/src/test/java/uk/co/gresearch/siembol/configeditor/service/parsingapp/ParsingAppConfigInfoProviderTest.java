@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.service.parsingapp;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,93 +9,85 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 
 public class ParsingAppConfigInfoProviderTest {
 
-    /**
-     *{
-     *   "parsing_app_name": "test",
-     *   "parsing_app_version": 12345,
-     *   "parsing_app_author": "dummy",
-     *   "parsing_app_description": "Description of parser application",
-     *   "parsing_app_settings": {
-     *     "input_topics": [
-     *       "secret"
-     *     ],
-     *     "error_topic": "error",
-     *     "input_parallelism": 1,
-     *     "parsing_parallelism": 2,
-     *     "output_parallelism": 3,
-     *     "parsing_app_type": "single_parser"
-     *   },
-     *   "parsing_settings": {
-     *     "single_parser": {
-     *       "parser_name": "single",
-     *       "output_topic": "output"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    static String simpleSingleApplicationParser;
+    private final String simpleSingleApplicationParser = """
+            {
+               "parsing_app_name": "test",
+               "parsing_app_version": 12345,
+               "parsing_app_author": "dummy",
+               "parsing_app_description": "Description of parser application",
+               "parsing_app_settings": {
+                 "input_topics": [
+                   "secret"
+                 ],
+                 "error_topic": "error",
+                 "input_parallelism": 1,
+                 "parsing_parallelism": 2,
+                 "output_parallelism": 3,
+                 "parsing_app_type": "single_parser"
+               },
+               "parsing_settings": {
+                 "single_parser": {
+                   "parser_name": "single",
+                   "output_topic": "output"
+                 }
+               }
+             }
+             """;
 
-    /**
-     *{
-     *   "parsing_app_name": "test",
-     *   "parsing_app_version": 0,
-     *   "parsing_app_author": "dummy",
-     *   "parsing_app_description": "Description of parser application",
-     *   "parsing_app_settings": {
-     *     "input_topics": [
-     *       "secret"
-     *     ],
-     *     "error_topic": "error",
-     *     "input_parallelism": 1,
-     *     "parsing_parallelism": 2,
-     *     "output_parallelism": 3,
-     *     "parsing_app_type": "single_parser"
-     *   },
-     *   "parsing_settings": {
-     *     "single_parser": {
-     *       "parser_name": "single",
-     *       "output_topic": "output"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    static String simpleSingleApplicationParserNew;
+    private final String simpleSingleApplicationParserNew = """
+            {
+               "parsing_app_name": "test",
+               "parsing_app_version": 0,
+               "parsing_app_author": "dummy",
+               "parsing_app_description": "Description of parser application",
+               "parsing_app_settings": {
+                 "input_topics": [
+                   "secret"
+                 ],
+                 "error_topic": "error",
+                 "input_parallelism": 1,
+                 "parsing_parallelism": 2,
+                 "output_parallelism": 3,
+                 "parsing_app_type": "single_parser"
+               },
+               "parsing_settings": {
+                 "single_parser": {
+                   "parser_name": "single",
+                   "output_topic": "output"
+                 }
+               }
+             }
+            """;
 
-    /**
-     *{
-     * 		"parsing_applications_version" : 1,
-     * 		"parsing_applications" : [
-     *                {
-     * 			"parsing_app_name": "test",
-     * 			"parsing_app_version": 12345,
-     * 			"parsing_app_author": "dummy",
-     * 			"parsing_app_description": "Description of parser application",
-     * 			"parsing_app_settings": {
-     * 			"input_topics": [
-     * 				"secret"
-     * 			],
-     * 			"error_topic": "error",
-     * 			"input_parallelism": 1,
-     * 			"parsing_parallelism": 2,
-     * 			"output_parallelism": 3,
-     * 			"parsing_app_type": "single_parser"
-     *            },
-     * 			"parsing_settings": {
-     * 				"single_parser": {
-     * 				"parser_name": "single",
-     * 				"output_topic": "output"
-     *                }
-     *            }
-     *        }
-     *       ]
-     * }
-     *
-     **/
-    @Multiline
-    static String release;
-
+    private final String release = """
+            {
+             		"parsing_applications_version" : 1,
+             		"parsing_applications" : [
+                            {
+             			"parsing_app_name": "test",
+             			"parsing_app_version": 12345,
+             			"parsing_app_author": "dummy",
+             			"parsing_app_description": "Description of parser application",
+             			"parsing_app_settings": {
+             			"input_topics": [
+             				"secret"
+             			],
+             			"error_topic": "error",
+             			"input_parallelism": 1,
+             			"parsing_parallelism": 2,
+             			"output_parallelism": 3,
+             			"parsing_app_type": "single_parser"
+                        },
+             			"parsing_settings": {
+             				"single_parser": {
+             				"parser_name": "single",
+             				"output_topic": "output"
+                            }
+                        }
+                    }
+                   ]
+             }
+             """;
 
     static String user = "unknown@secret.net";
     private final ConfigInfoProvider infoProvider = ParsingAppConfigInfoProvider.create();
@@ -127,6 +118,7 @@ public class ParsingAppConfigInfoProviderTest {
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test.json"));
+        Assert.assertTrue(info.getFilesContent().get("test.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("test.json").get().indexOf("\"parsing_app_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
@@ -143,6 +135,7 @@ public class ParsingAppConfigInfoProviderTest {
         Assert.assertEquals("dummy@secret.net", info.getCommitterEmail());
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test.json"));
+        Assert.assertTrue(info.getFilesContent().get("test.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("test.json").get().indexOf("\"parsing_app_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
@@ -159,6 +152,7 @@ public class ParsingAppConfigInfoProviderTest {
         Assert.assertEquals(user, info.getCommitterEmail());
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test.json"));
+        Assert.assertTrue(info.getFilesContent().get("test.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("test.json").get().indexOf("\"parsing_app_version\": 1,") > 0);
         Assert.assertTrue(info.getFilesContent()
@@ -195,6 +189,7 @@ public class ParsingAppConfigInfoProviderTest {
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("parsing_applications.json"));
+        Assert.assertTrue(info.getFilesContent().get("parsing_applications.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("parsing_applications.json").get().indexOf("\"parsing_applications_version\": 2,") > 0);
     }

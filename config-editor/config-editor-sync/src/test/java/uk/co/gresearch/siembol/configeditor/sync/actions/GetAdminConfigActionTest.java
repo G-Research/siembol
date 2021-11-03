@@ -17,10 +17,10 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 
 public class GetAdminConfigActionTest {
     private ConfigServiceHelper serviceHelper;
-    private String adminConfig = "ADMIN_CONFIG";
+    private final String adminConfig = "ADMIN_CONFIG";
     private GetAdminConfigAction getAdminConfigAction;
     private ConfigEditorServiceContext context;
-    private int version = 1;
+    private final int version = 1;
 
     @Before
     public void setUp() {

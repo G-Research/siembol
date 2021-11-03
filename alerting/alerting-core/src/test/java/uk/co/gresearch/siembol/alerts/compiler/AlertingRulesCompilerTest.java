@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.alerts.compiler;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,143 +9,135 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.engine.AlertingEngineImpl;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AlertingRulesCompilerTest {
-    /**
-     *{
-     *  "rules_version" :1,
-     *  "tags" : [ { "tag_name" : "detection_source", "tag_value" : "alerts" } ],
-     *  "rules" : [ {
-     *      "rule_name" : "siembol_alert_generic",
-     *      "rule_version" : 1,
-     *      "rule_author" : "dummy",
-     *      "rule_description": "Test rule - is_alert is equal to true",
-     *      "source_type" : "*",
-     *      "matchers" : [ {
-     *          "matcher_type" : "REGEX_MATCH",
-     *          "is_negated" : false,
-     *          "field" : "is_alert",
-     *          "data" : "(?i)true" },
-     *          {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "source_type",
-     *           "data": "(?<sensor>.*)"
-     *         }
-     *          ]
-     *  }]
-     *}
-     **/
-    @Multiline
-    public static String alertRules;
+    private final String alertRules = """
+            {
+              "rules_version" :1,
+              "tags" : [ { "tag_name" : "detection_source", "tag_value" : "alerts" } ],
+              "rules" : [ {
+                  "rule_name" : "siembol_alert_generic",
+                  "rule_version" : 1,
+                  "rule_author" : "dummy",
+                  "rule_description": "Test rule - is_alert is equal to true",
+                  "source_type" : "*",
+                  "matchers" : [ {
+                      "matcher_type" : "REGEX_MATCH",
+                      "is_negated" : false,
+                      "field" : "is_alert",
+                      "data" : "(?i)true" },
+                      {
+                       "matcher_type": "REGEX_MATCH",
+                       "is_negated": false,
+                       "field": "source_type",
+                       "data": "(?<sensor>.*)"
+                     }
+                      ]
+              }]
+            }
+            """;
 
-    /**
-     *{
-     *      "rule_name" : "siembol_alert_generic",
-     *      "rule_version" : 1,
-     *      "rule_author" : "dummy",
-     *      "rule_description": "Test rule - is_alert is equal to true",
-     *      "source_type" : "*",
-     *      "matchers" : [ {
-     *          "matcher_type" : "REGEX_MATCH",
-     *          "is_negated" : false,
-     *          "field" : "is_alert",
-     *          "data" : "(?i)true" },
-     *          {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "source_type",
-     *           "data": "(?<sensor>.*)"
-     *         }]
-     *}
-     **/
-    @Multiline
-    public static String alertRule;
 
-    /**
-     *{
-     *  "source_type" : "secret",
-     *  "is_alert" : "TruE",
-     *  "dummy_field_int" : 1,
-     *  "dummy_field_boolean" : false
-     *}
-     **/
-    @Multiline
-    public static String goodAlert;
+    private final String alertRule = """
+            {
+                  "rule_name" : "siembol_alert_generic",
+                  "rule_version" : 1,
+                  "rule_author" : "dummy",
+                  "rule_description": "Test rule - is_alert is equal to true",
+                  "source_type" : "*",
+                  "matchers" : [ {
+                      "matcher_type" : "REGEX_MATCH",
+                      "is_negated" : false,
+                      "field" : "is_alert",
+                      "data" : "(?i)true" },
+                      {
+                       "matcher_type": "REGEX_MATCH",
+                       "is_negated": false,
+                       "field": "source_type",
+                       "data": "(?<sensor>.*)"
+                     }]
+            }
+            """;
 
-    /**
-     *{
-     *  "source_type" : "secret",
-     *  "is_alert" : "TruE",
-     *  "dummy_field_int" : 1,
-     *  "dummy_field_boolean" : false,
-     *  "is_secret" : "true"
-     *}
-     **/
-    @Multiline
-    public static String goodAlertWithSecret;
+    private final String goodAlert = """
+            {
+              "source_type" : "secret",
+              "is_alert" : "TruE",
+              "dummy_field_int" : 1,
+              "dummy_field_boolean" : false
+            }
+            """;
 
-    /**
-     * {
-     *   "rule_name": "siembol_alert_generic_with_composite_matchers",
-     *   "rule_version": 1,
-     *   "rule_author": "dummy",
-     *   "rule_description": "Test rule with composite matchers",
-     *   "source_type": "*",
-     *   "matchers": [
-     *     {
-     *       "matcher_type": "REGEX_MATCH",
-     *       "is_negated": false,
-     *       "field": "is_alert",
-     *       "data": "(?i)true"
-     *     },
-     *     {
-     *       "matcher_type": "REGEX_MATCH",
-     *       "is_negated": false,
-     *       "field": "source_type",
-     *       "data": "(?<sensor>.*)"
-     *     },
-     *     {
-     *       "matcher_type": "COMPOSITE_OR",
-     *       "is_negated": false,
-     *       "matchers": [
-     *         {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "is_secret",
-     *           "data": "(?i)true"
-     *         },
-     *         {
-     *           "matcher_type": "COMPOSITE_AND",
-     *           "is_negated": false,
-     *           "matchers": [
-     *             {
-     *               "matcher_type": "REGEX_MATCH",
-     *               "is_negated": false,
-     *               "field": "is_public",
-     *               "data": "(?i)true"
-     *             },
-     *             {
-     *               "matcher_type": "REGEX_MATCH",
-     *               "is_negated": false,
-     *               "field": "is_detected",
-     *               "data": "(?i)yes"
-     *             }
-     *           ]
-     *         }
-     *       ]
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String ruleWithCompositeMatchers;
+    private final String goodAlertWithSecret = """
+            {
+              "source_type" : "secret",
+              "is_alert" : "TruE",
+              "dummy_field_int" : 1,
+              "dummy_field_boolean" : false,
+              "is_secret" : "true"
+            }
+            """;
+
+    private final String ruleWithCompositeMatchers = """
+            {
+              "rule_name": "siembol_alert_generic_with_composite_matchers",
+              "rule_version": 1,
+              "rule_author": "dummy",
+              "rule_description": "Test rule with composite matchers",
+              "source_type": "*",
+              "matchers": [
+                {
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "is_alert",
+                  "data": "(?i)true"
+                },
+                {
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "source_type",
+                  "data": "(?<sensor>.*)"
+                },
+                {
+                  "matcher_type": "COMPOSITE_OR",
+                  "is_negated": false,
+                  "matchers": [
+                    {
+                      "matcher_type": "REGEX_MATCH",
+                      "is_negated": false,
+                      "field": "is_secret",
+                      "data": "(?i)true"
+                    },
+                    {
+                      "matcher_type": "COMPOSITE_AND",
+                      "is_negated": false,
+                      "matchers": [
+                        {
+                          "matcher_type": "REGEX_MATCH",
+                          "is_negated": false,
+                          "field": "is_public",
+                          "data": "(?i)true"
+                        },
+                        {
+                          "matcher_type": "REGEX_MATCH",
+                          "is_negated": false,
+                          "field": "is_detected",
+                          "data": "(?i)yes"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+            """;
 
     private AlertingCompiler compiler;
 
     @Before
     public void setUp() throws Exception {
-        compiler  = AlertingRulesCompiler.createAlertingRulesCompiler();
+        compiler = AlertingRulesCompiler.createAlertingRulesCompiler();
     }
 
     @Test
@@ -305,7 +296,7 @@ public class AlertingRulesCompilerTest {
 
     @Test
     public void compileRulesListSizeOne() {
-        AlertingResult compileResult = compiler.compile(Arrays.asList(alertRules));
+        AlertingResult compileResult = compiler.compile(List.of(alertRules));
         Assert.assertEquals(AlertingResult.StatusCode.OK, compileResult.getStatusCode());
         Assert.assertNotNull(compileResult.getAttributes().getEngine());
         Assert.assertTrue(compileResult.getAttributes().getEngine() instanceof AlertingEngineImpl);

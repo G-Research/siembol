@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.parsers.application.parsing;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,26 +16,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SingleApplicationParserTest {
-    /**
-     * {
-     *
-     *     "a": "string",
-     *     "b": 1,
-     *     "c": true
-     * }
-     **/
-    @Multiline
-    public static String metadata;
+    private final String metadata = """
+     {
+    
+         "a": "string",
+         "b": 1,
+         "c": true
+     }
+     """;
 
     private SerializableSiembolParser siembolParser;
-    private String sourceType = "test_type";
+    private final String sourceType = "test_type";
     private SingleApplicationParser appParser;
     private Map<String, Object> message1;
     private Map<String, Object> message2;
     private List<Map<String, Object>> parsed;
-    private String errorTopic = "error";
-    private String outputTopic = "output";
-    private byte[] input = "test".getBytes();
+    private final String errorTopic = "error";
+    private final String outputTopic = "output";
+    private final byte[] input = "test".getBytes();
     private ParserResult parserResult;
     TimeProvider timeProvider;
     long currentTime = 1L;
@@ -65,14 +62,14 @@ public class SingleApplicationParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMissingARguments() {
+    public void testMissingArguments() {
         appParser = SingleApplicationParser.builder()
                 .errorTopic(errorTopic)
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMissingARguments2() throws Exception {
+    public void testMissingArguments2() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -97,16 +94,16 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
     }
 
     @Test
@@ -126,12 +123,12 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertFalse(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
     }
 
     @Test
@@ -152,12 +149,12 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
     }
 
     @Test
@@ -256,22 +253,22 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
     }
 
     @Test
@@ -293,7 +290,7 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_metadata:b" + "\":1"));
@@ -301,15 +298,15 @@ public class SingleApplicationParserTest {
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_metadata:c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("guid" + "\":"));
     }
 
@@ -330,21 +327,21 @@ public class SingleApplicationParserTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(2, result.get(0).getMessages().size());
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
-        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+        Assert.assertTrue(result.get(0).getMessages().get(1).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("test_field" + "\":\"b"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("a" + "\":\"string\""));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"test_type\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
     }
 }

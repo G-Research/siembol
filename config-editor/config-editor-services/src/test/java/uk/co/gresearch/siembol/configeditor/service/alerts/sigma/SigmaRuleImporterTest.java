@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,69 +18,64 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 public class SigmaRuleImporterTest {
     private static final ObjectReader ALERTING_RULE_READER = new ObjectMapper().readerFor(RuleDto.class);
 
-    /**
-     * {
-     *   "field_mapping": [
-     *     {
-     *       "sigma_field": "sigma_user",
-     *       "siembol_field": "siembol_user"
-     *     }
-     *   ],
-     *   "rule_metadata_mapping": {
-     *     "rule_name": "based_on_${title}",
-     *     "rule_description": "generated from ${description} and id: ${id}",
-     *     "source_type": "secret_data",
-     *     "tags": [
-     *       {
-     *         "tag_name": "sigma_tags",
-     *         "tag_value": "${tags}"
-     *       }
-     *     ]
-     *   }
-     * }
-     **/
-    @Multiline
-    private static String importerAttributes;
+    private final String importerAttributes = """
+            {
+              "field_mapping": [
+                {
+                  "sigma_field": "sigma_user",
+                  "siembol_field": "siembol_user"
+                }
+              ],
+              "rule_metadata_mapping": {
+                "rule_name": "based_on_${title}",
+                "rule_description": "generated from ${description} and id: ${id}",
+                "source_type": "secret_data",
+                "tags": [
+                  {
+                    "tag_name": "sigma_tags",
+                    "tag_value": "${tags}"
+                  }
+                ]
+              }
+            }
+            """;
 
-    /**
-     * title: Sigma Title( Experimental???
-     * id: d06be400-8045-4200-0067-740a2009db25
-     * status: experimental
-     * description: Detects secret
-     * references:
-     *     - https://github.com/siembol
-     * author: Joe
-     * date: 2021/10/09
-     * logsource:
-     *     category: process_creation
-     *     product: windows
-     * detection:
-     *     image_path:
-     *         Image|endswith: 'secret.exe'
-     *     cmd_s:
-     *         CommandLine|contains: '/S'
-     *     cmd_c:
-     *          CommandLine|contains: '/C'
-     *     net_utility:
-     *         Image|endswith:
-     *             - '\net.exe'
-     *             - '\net1.exe'
-     *         CommandLine|contains:
-     *             - ' user '
-     *             - ' use '
-     *             - ' group '
-     *     condition: image_path and cmd_c and (cmd_s or not net_utility)
-     * fields:
-     *     - CommandLine
-     * falsepositives:
-     *     - Unknown
-     * level: medium
-     * tags:
-     *     - attack.defense_evasion
-     *     - attack.example
-     */
-    @Multiline
-    private static String sigmaRuleExample;
+    private final String sigmaRuleExample = """
+            title: Sigma Title( Experimental???
+            id: d06be400-8045-4200-0067-740a2009db25
+            status: experimental
+            description: Detects secret
+            references:
+                - https://github.com/siembol
+            author: Joe
+            date: 2021/10/09
+            logsource:
+                category: process_creation
+                product: windows
+            detection:
+                image_path:
+                    Image|endswith: 'secret.exe'
+                cmd_s:
+                    CommandLine|contains: '/S'
+                cmd_c:
+                     CommandLine|contains: '/C'
+                net_utility:
+                    Image|endswith:
+                        - '\\net.exe'
+                        - '\\net1.exe'
+                    CommandLine|contains:
+                        - ' user '
+                        - ' use '
+                        - ' group '
+                condition: image_path and cmd_c and (cmd_s or not net_utility)
+            fields:
+                - CommandLine
+            falsepositives:
+                - Unknown
+            level: medium
+            tags:
+                - attack.defense_evasion
+                - attack.example""";
 
 
     private SigmaRuleImporter importer;
@@ -117,7 +112,7 @@ public class SigmaRuleImporterTest {
     @Test
     public void validateAttributesMissingRequired() {
         ConfigEditorResult result = importer.validateImporterAttributes(
-                importerAttributes.replace("source_type", "uknown"));
+                importerAttributes.replace("source_type", "unknown"));
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getMessage());
     }
@@ -157,7 +152,7 @@ public class SigmaRuleImporterTest {
         Assert.assertNull(rule.getMatchers().get(2).getData());
         Assert.assertEquals(2, rule.getMatchers().get(2).getMatchers().size());
 
-        Assert.assertEquals("CommandLine",  rule.getMatchers().get(2).getMatchers().get(0).getField());
+        Assert.assertEquals("CommandLine", rule.getMatchers().get(2).getMatchers().get(0).getField());
         Assert.assertEquals(MatcherTypeDto.REGEX_MATCH, rule.getMatchers().get(2).getMatchers().get(0).getType());
         Assert.assertFalse(rule.getMatchers().get(2).getMatchers().get(0).getNegated());
         Assert.assertEquals(".*\\Q/S\\E.*", rule.getMatchers().get(2).getMatchers().get(0).getData());
@@ -188,7 +183,7 @@ public class SigmaRuleImporterTest {
 
     @Test
     public void importConfigWithCondition1() {
-        String rule  = sigmaRuleExample.replace("image_path and cmd_c and (cmd_s or not net_utility)",
+        String rule = sigmaRuleExample.replace("image_path and cmd_c and (cmd_s or not net_utility)",
                 "(image_path or cmd_c) and (cmd_s or not net_utility)");
         ConfigEditorResult result = importer.importConfig(userInfo, importerAttributes, rule);
         Assert.assertEquals(OK, result.getStatusCode());
@@ -196,7 +191,7 @@ public class SigmaRuleImporterTest {
 
     @Test
     public void importConfigWithUnknownFields() {
-        String rule  = sigmaRuleExample.replace("description:",
+        String rule = sigmaRuleExample.replace("description:",
                 "abc:");
         ConfigEditorResult result = importer.importConfig(userInfo, importerAttributes, rule);
         Assert.assertTrue(result.getAttributes()

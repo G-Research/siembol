@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.sleep;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,14 +7,12 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 public class SleepEvaluatorFactoryTest {
-    /**
-     * {
-     *   "time_unit_type": "seconds",
-     *   "sleeping_time": 5
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+            {
+              "time_unit_type": "seconds",
+              "sleeping_time": 5
+            }
+            """;
 
     private SleepEvaluatorFactory factory;
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.charithe.kafka.EphemeralKafkaBroker;
 import com.github.charithe.kafka.KafkaJunitRule;
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
@@ -26,88 +25,81 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 public class StormParsingApplicationTest {
-    /**
-     *RAW_LOG
-     **/
-    @Multiline
-    public static String log;
+    public static String log = """
+     RAW_LOG
+     """;
 
-    /**
-     *{
-     *   "parsing_app_name": "test",
-     *   "parsing_app_version": 1,
-     *   "parsing_app_author": "dummy",
-     *   "parsing_app_description": "Description of parser application",
-     *   "parsing_app_settings": {
-     *     "input_topics": [
-     *       "input"
-     *     ],
-     *     "parse_metadata" : false,
-     *     "error_topic": "error",
-     *     "input_parallelism": 1,
-     *     "parsing_parallelism": 1,
-     *     "output_parallelism": 1,
-     *     "parsing_app_type": "single_parser"
-     *   },
-     *   "parsing_settings": {
-     *     "single_parser": {
-     *       "parser_name": "single",
-     *       "output_topic": "output"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
+    public static String simpleSingleApplicationParser = """
+     {
+        "parsing_app_name": "test",
+        "parsing_app_version": 1,
+        "parsing_app_author": "dummy",
+        "parsing_app_description": "Description of parser application",
+        "parsing_app_settings": {
+          "input_topics": [
+            "input"
+          ],
+          "parse_metadata" : false,
+          "error_topic": "error",
+          "input_parallelism": 1,
+          "parsing_parallelism": 1,
+          "output_parallelism": 1,
+          "parsing_app_type": "single_parser"
+        },
+        "parsing_settings": {
+          "single_parser": {
+            "parser_name": "single",
+            "output_topic": "output"
+          }
+        }
+      }
+     """;
 
-    public static String simpleSingleApplicationParser;
 
-    /**
-     * {
-     *   "parsers_version": 1,
-     *   "parsers_configurations": [
-     *     {
-     *       "parser_description": "for testing single app parser",
-     *       "parser_version": 2,
-     *       "parser_name": "single",
-     *       "parser_author": "dummy",
-     *       "parser_attributes": {
-     *         "parser_type": "generic"
-     *       }
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String testParsersConfigs;
+    public static String testParsersConfigs = """
+      {
+        "parsers_version": 1,
+        "parsers_configurations": [
+          {
+            "parser_description": "for testing single app parser",
+            "parser_version": 2,
+            "parser_name": "single",
+            "parser_author": "dummy",
+            "parser_attributes": {
+              "parser_type": "generic"
+            }
+          }
+        ]
+      }
+     """;
 
-    /**
-     * {
-     *   "client.id.prefix": "test_writer",
-     *   "group.id.prefix": "test_reader",
-     *   "zookeeper.attributes": {
-     *     "zk.path": "/parserconfigs",
-     *     "zk.base.sleep.ms": 1000,
-     *     "zk.max.retries": 10
-     *   },
-     *   "kafka.batch.writer.attributes": {
-     *     "batch.size": 1,
-     *     "producer.properties": {
-     *       "security.protocol": "PLAINTEXT"
-     *     }
-     *   },
-     *   "storm.attributes": {
-     *     "first.pool.offset.strategy": "EARLIEST",
-     *     "kafka.spout.properties": {
-     *       "security.protocol": "PLAINTEXT"
-     *     },
-     *     "storm.config": {
-     *       "session.timeout.ms": 100000
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String stormSettings;
+
+    public static String stormSettings = """
+      {
+        "client.id.prefix": "test_writer",
+        "group.id.prefix": "test_reader",
+        "zookeeper.attributes": {
+          "zk.path": "/parserconfigs",
+          "zk.base.sleep.ms": 1000,
+          "zk.max.retries": 10
+        },
+        "kafka.batch.writer.attributes": {
+          "batch.size": 1,
+          "producer.properties": {
+            "security.protocol": "PLAINTEXT"
+          }
+        },
+        "storm.attributes": {
+          "first.pool.offset.strategy": "EARLIEST",
+          "kafka.spout.properties": {
+            "security.protocol": "PLAINTEXT"
+          },
+          "storm.config": {
+            "session.timeout.ms": 100000
+          }
+        }
+      }
+     """;
 
     @ClassRule
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());

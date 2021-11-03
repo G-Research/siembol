@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
 
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,29 +14,17 @@ import java.util.*;
 import static org.mockito.Mockito.when;
 
 public class SigmaConditionTokenTest {
-    /**
-     *   not     1 of filter*
-     **/
-    @Multiline
-    private static String condition1;
+    private final String condition1 = """
+            not     1 of filter*""";
 
-    /**
-     *   (     1 of filter* and not secret) or            long
-     **/
-    @Multiline
-    private static String condition2;
+    private final String condition2 = """
+            (     1 of filter* and not secret) or            long""";
 
-    /**
-     * 1 of A | 1 of B
-     **/
-    @Multiline
-    private static String conditionUnsupported;
+    private final String conditionUnsupported = """
+            1 of A | 1 of B""";
 
-    /**
-     * 1 of A $ 1 of B
-     **/
-    @Multiline
-    private static String conditionUnknownToken;
+    private final String conditionUnknownToken = """
+            1 of A $ 1 of B""";
 
     private SigmaConditionTokenNode node;
     Map<String, SigmaSearch> searches;

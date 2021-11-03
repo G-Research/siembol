@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.service.parserconfig;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,84 +12,77 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParserConfigConfigInfoProviderTest {
-    /**
-     * {
-     *   "parser_name": "test_parser",
-     *   "parser_author": "john",
-     *   "parser_version": 12345,
-     *   "parser_config": {
-     *     "parser_attributes": {
-     *       "parser_type": "syslog",
-     *       "syslog_config": {
-     *         "syslog_version": "RFC_3164",
-     *         "timezone": "UTC"
-     *       }
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String testParser;
-    /**
-     * {
-     *   "parser_name": "test_parser",
-     *   "parser_author": "john",
-     *   "parser_version": 0,
-     *   "parser_config": {
-     *     "parser_attributes": {
-     *       "parser_type": "syslog",
-     *       "syslog_config": {
-     *         "syslog_version": "RFC_3164",
-     *         "timezone": "UTC"
-     *       }
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String testNewParser;
+    private final String testParser = """
+            {
+              "parser_name": "test_parser",
+              "parser_author": "john",
+              "parser_version": 12345,
+              "parser_config": {
+                "parser_attributes": {
+                  "parser_type": "syslog",
+                  "syslog_config": {
+                    "syslog_version": "RFC_3164",
+                    "timezone": "UTC"
+                  }
+                }
+              }
+            }
+            """;
 
-    /**
-     * {
-     *   "parsers_version" : 1,
-     *   "parser_configurations": [
-     *   {
-     *   "parser_name": "test_parser",
-     *   "parser_author": "john",
-     *   "parser_version": 1,
-     *   "parser_config": {
-     *     "parser_attributes": {
-     *       "parser_type": "syslog",
-     *       "syslog_config": {
-     *         "syslog_version": "RFC_3164",
-     *         "timezone": "UTC"
-     *       }
-     *     }
-     *   }
-     *  }]
-     * }
-     **/
-    @Multiline
-    public static String release;
+    private final String testNewParser = """
+            {
+              "parser_name": "test_parser",
+              "parser_author": "john",
+              "parser_version": 0,
+              "parser_config": {
+                "parser_attributes": {
+                  "parser_type": "syslog",
+                  "syslog_config": {
+                    "syslog_version": "RFC_3164",
+                    "timezone": "UTC"
+                  }
+                }
+              }
+            }
+            """;
 
-    /**
-     * {
-     *   "parser_name": "../../../test_parser",
-     *   "parser_author": "john",
-     *   "parser_version": 12345,
-     *   "parser_config": {
-     *     "parser_attributes": {
-     *       "parser_type": "syslog",
-     *       "syslog_config": {
-     *         "syslog_version": "RFC_3164",
-     *         "timezone": "UTC"
-     *       }
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String maliciousConfig;
+    private final String release = """
+            {
+              "parsers_version" : 1,
+              "parser_configurations": [
+              {
+              "parser_name": "test_parser",
+              "parser_author": "john",
+              "parser_version": 1,
+              "parser_config": {
+                "parser_attributes": {
+                  "parser_type": "syslog",
+                  "syslog_config": {
+                    "syslog_version": "RFC_3164",
+                    "timezone": "UTC"
+                  }
+                }
+              }
+             }]
+            }
+            """;
+
+    private final String maliciousConfig = """
+            {
+              "parser_name": "../../../test_parser",
+              "parser_author": "john",
+              "parser_version": 12345,
+              "parser_config": {
+                "parser_attributes": {
+                  "parser_type": "syslog",
+                  "syslog_config": {
+                    "syslog_version": "RFC_3164",
+                    "timezone": "UTC"
+                  }
+                }
+              }
+            }
+            """;
 
     private final ConfigInfoProvider infoProvider = ParserConfigConfigInfoProvider.create();
 
@@ -121,6 +113,7 @@ public class ParserConfigConfigInfoProviderTest {
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
+        Assert.assertTrue(info.getFilesContent().get("test_parser.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("test_parser.json").get().indexOf("\"parser_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
@@ -135,8 +128,9 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals("john", info.getCommitter());
         Assert.assertEquals("Updating configuration: test_parser to version: 12346", info.getCommitMessage());
         Assert.assertEquals("john@secret.net", info.getCommitterEmail());
-        Assert.assertEquals( 1, info.getFilesContent().size());
+        Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
+        Assert.assertTrue(info.getFilesContent().get("test_parser.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("test_parser.json").get().indexOf("\"parser_version\": 12346,") > 0);
         Assert.assertTrue(info.getFilesContent()
@@ -153,6 +147,7 @@ public class ParserConfigConfigInfoProviderTest {
         Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("test_parser.json"));
+        Assert.assertTrue(info.getFilesContent().get("test_parser.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("test_parser.json").get().indexOf("\"parser_version\": 1,") > 0);
         Assert.assertTrue(info.isNewConfig());
@@ -160,7 +155,7 @@ public class ParserConfigConfigInfoProviderTest {
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ConfigInfoWrongJson() {
-        infoProvider.getConfigInfo(steve,"WRONG JSON");
+        infoProvider.getConfigInfo(steve, "WRONG JSON");
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)
@@ -192,6 +187,7 @@ public class ParserConfigConfigInfoProviderTest {
 
         Assert.assertEquals(1, info.getFilesContent().size());
         Assert.assertTrue(info.getFilesContent().containsKey("parsers.json"));
+        Assert.assertTrue(info.getFilesContent().get("parsers.json").isPresent());
         Assert.assertTrue(info.getFilesContent()
                 .get("parsers.json").get().indexOf("\"parsers_version\": 2,") > 0);
 

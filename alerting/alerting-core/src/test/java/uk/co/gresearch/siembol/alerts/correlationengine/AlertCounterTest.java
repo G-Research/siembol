@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.EnumSet;
 
 public class AlertCounterTest {
-    private int threshold = 1000;
+    private final int threshold = 1000;
     private AlertCounterMetadata counterMetadata;
     private AlertCounter alertCounter;
 
@@ -66,5 +66,4 @@ public class AlertCounterTest {
         Assert.assertEquals(0, alertCounter.getSize());
         Assert.assertTrue(alertCounter.isEmpty());
     }
-
 }

@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.stream.ruleservice;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,43 +21,42 @@ import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCod
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.MATCH;
 
 public class ZooKeeperRulesProviderTest {
-    /**
-     * {
-     *   "rules_version": 111,
-     *   "rules": [
-     *     {
-     *       "rule_name": "default_rule",
-     *       "rule_author": "john",
-     *       "rule_version": 1,
-     *       "rule_description": "default rule",
-     *       "evaluators": [
-     *         {
-     *           "evaluator_type": "fixed_result",
-     *           "evaluator_attributes": {
-     *             "evaluation_result": "match"
-     *           }
-     *         }
-     *       ]
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String testingRules;
+    private final String testingRules = """
+            {
+              "rules_version": 111,
+              "rules": [
+                {
+                  "rule_name": "default_rule",
+                  "rule_author": "john",
+                  "rule_version": 1,
+                  "rule_description": "default rule",
+                  "evaluators": [
+                    {
+                      "evaluator_type": "fixed_result",
+                      "evaluator_attributes": {
+                        "evaluation_result": "match"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+               """;
+
     private RespondingCompiler compiler;
     private MetricFactory testMetricFactory;
     private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private ZooKeeperConnector rulesZooKeeperConnector;
     private ZooKeeperRulesProvider rulesProvider;
-    private ZooKeeperAttributesDto zooKeperAttributes;
+    private ZooKeeperAttributesDto zooKeeperAttributes;
 
     @Before
     public void setUp() throws Exception {
         testMetricFactory = new TestMetricFactory();
-        List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>();
-        evaluatorFactories.addAll(ProvidedEvaluators.getRespondingEvaluatorFactories()
-                .getAttributes()
-                .getRespondingEvaluatorFactories());
+        List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>(
+                ProvidedEvaluators.getRespondingEvaluatorFactories()
+                        .getAttributes()
+                        .getRespondingEvaluatorFactories());
 
         compiler = new RespondingCompilerImpl.Builder()
                 .addRespondingEvaluatorFactories(evaluatorFactories)
@@ -66,19 +64,19 @@ public class ZooKeeperRulesProviderTest {
                 .build();
 
 
-        zooKeperAttributes = new ZooKeeperAttributesDto();
+        zooKeeperAttributes = new ZooKeeperAttributesDto();
         zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class, withSettings().serializable());
 
         rulesZooKeeperConnector = Mockito.mock(ZooKeeperConnector.class, withSettings().serializable());
-        when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeperAttributes))
+        when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes))
                 .thenReturn(rulesZooKeeperConnector);
         when(rulesZooKeeperConnector.getData()).thenReturn(testingRules);
-        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeperAttributes, compiler);
+        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeeperAttributes, compiler);
 
     }
 
     @Test
-    public void testMetadataEngineOk()  {
+    public void testMetadataEngineOk() {
         ResponseEngine engine = rulesProvider.getEngine();
         Assert.assertEquals(OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertNotNull(engine.getRulesMetadata().getAttributes().getCompiledTime());
@@ -90,15 +88,14 @@ public class ZooKeeperRulesProviderTest {
     @Test(expected = java.lang.IllegalStateException.class)
     public void testInvalidRulesInit() throws Exception {
         when(rulesZooKeeperConnector.getData()).thenReturn("INVALID");
-        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeperAttributes, compiler);
+        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeeperAttributes, compiler);
     }
 
     @Test
-    public void testEngineEvaluate() throws Exception {
+    public void testEngineEvaluate() {
         ResponseAlert alert = new ResponseAlert();
         RespondingResult result = rulesProvider.getEngine().evaluate(alert);
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
     }
-
 }

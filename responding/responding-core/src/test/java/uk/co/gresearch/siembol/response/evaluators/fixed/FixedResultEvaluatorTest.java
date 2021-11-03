@@ -10,7 +10,7 @@ import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.M
 
 public class FixedResultEvaluatorTest {
     private FixedResultEvaluator evaluator;
-    private ResponseAlert alert = new ResponseAlert();
+    private final ResponseAlert alert = new ResponseAlert();
 
     @Test
     public void testFixedEvaluatorMatch() {

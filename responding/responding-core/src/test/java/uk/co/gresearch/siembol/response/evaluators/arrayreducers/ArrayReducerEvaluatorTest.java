@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.response.evaluators.arrayreducers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,19 +19,16 @@ public class ArrayReducerEvaluatorTest {
     private static final ObjectReader RESPONSE_ALERT_READER = new ObjectMapper()
             .readerFor(ResponseAlert.class);
 
-    /**
-     * {"tmp_array" :[ {"f1" : "v11"}, {"f3": "v23", "f1" : "v21"}, {"f2" : "v31", "f3": "v33"} ] }
-     */
-    @Multiline
-    public static String testAlertWithArray;
-
+    private final String testAlertWithArray = """
+            {"tmp_array" :[ {"f1" : "v11"}, {"f3": "v23", "f1" : "v21"}, {"f2" : "v31", "f3": "v33"} ] }
+            """;
 
     private List<String> includingFields;
     private List<String> excludingFields;
     private ArrayReducerEvaluator.Builder builder;
     private ArrayReducerEvaluator evaluator;
     private ResponseAlert responseAlert;
-    private String prefixName = "result_field";
+    private final String prefixName = "result_field";
 
     @Before
     public void setUp() throws IOException {
@@ -45,7 +41,6 @@ public class ArrayReducerEvaluatorTest {
                 .arrayFieldName("tmp_array")
                 .patternFilter(includingFields, excludingFields);
     }
-
 
     @Test
     public void firstFieldReducerOk() {

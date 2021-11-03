@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.arrayreducers;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,24 +7,23 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 public class ArrayReducerEvaluatorFactoryTest {
-    /**
-     * {
-     *   "array_reducer_type": "first_field",
-     *   "prefix_name": "test",
-     *   "field_name_delimiter": "_",
-     *   "array_field": "test_array_field",
-     *   "field_filter": {
-     *     "including_fields": [
-     *       ".*"
-     *     ],
-     *     "excluding_fields": [
-     *       "secret"
-     *     ]
-     *   }
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+     {
+       "array_reducer_type": "first_field",
+       "prefix_name": "test",
+       "field_name_delimiter": "_",
+       "array_field": "test_array_field",
+       "field_filter": {
+         "including_fields": [
+           ".*"
+         ],
+         "excluding_fields": [
+           "secret"
+         ]
+       }
+     }
+     """;
+
 
     private ArrayReducerEvaluatorFactory factory;
 

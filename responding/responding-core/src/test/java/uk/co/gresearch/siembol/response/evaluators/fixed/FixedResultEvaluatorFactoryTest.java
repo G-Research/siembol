@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.fixed;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,11 +8,9 @@ import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 
 public class FixedResultEvaluatorFactoryTest {
-    /**
-     * {"evaluation_result" : "match"}
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+     {"evaluation_result" : "match"}
+     """;
 
     private FixedResultEvaluatorFactory factory;
 
