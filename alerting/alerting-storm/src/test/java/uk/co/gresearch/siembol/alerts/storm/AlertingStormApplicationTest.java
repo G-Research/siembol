@@ -128,7 +128,6 @@ public class AlertingStormApplicationTest {
         cluster.submitTopology("test", config, topology);
     }
 
-    @Ignore
     @Test(timeout = 200000)
     public void integrationTest() throws Exception {
         kafkaRule.helper().produceStrings("input", goodAlert.trim());

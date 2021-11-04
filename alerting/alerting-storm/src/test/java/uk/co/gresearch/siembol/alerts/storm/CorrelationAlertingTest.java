@@ -166,7 +166,6 @@ public class CorrelationAlertingTest {
         cluster.submitTopology("test", config, topology);
     }
 
-    @Ignore
     @Test
     public void integrationTest() throws Exception {
         kafkaRule.helper().produceStrings("input", alert1.trim());

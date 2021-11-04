@@ -125,7 +125,7 @@
                     <execution>
                         <id>default-testCompile</id>
                         <configuration>
-                            <release>13</release>
+                            <release>${java_test_version}</release>
                             <compilerArgs>--enable-preview</compilerArgs>
                         </configuration>
                     </execution>
