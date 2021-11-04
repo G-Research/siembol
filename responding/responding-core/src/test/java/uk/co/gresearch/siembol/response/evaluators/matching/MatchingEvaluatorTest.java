@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.response.evaluators.matching;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,27 +18,26 @@ import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.N
 public class MatchingEvaluatorTest {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(MatchingEvaluatorAttributesDto.class);
-    /**
-     * {
-     *   "evaluation_result": "match",
-     *   "matchers": [
-     *     {
-     *       "matcher_type": "REGEX_MATCH",
-     *       "is_negated": false,
-     *       "field": "is_alert",
-     *       "data": "(?i)true"
-     *     },
-     *     {
-     *       "matcher_type": "REGEX_MATCH",
-     *       "is_negated": false,
-     *       "field": "to_copy",
-     *       "data": "(?<new_field>.*)"
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+            {
+              "evaluation_result": "match",
+              "matchers": [
+                {
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "is_alert",
+                  "data": "(?i)true"
+                },
+                {
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "to_copy",
+                  "data": "(?<new_field>.*)"
+                }
+              ]
+            }
+            """;
+
     private MatchingEvaluator evaluator;
     private ResponseAlert alert = new ResponseAlert();
     private MatchingEvaluatorAttributesDto attributesDto;

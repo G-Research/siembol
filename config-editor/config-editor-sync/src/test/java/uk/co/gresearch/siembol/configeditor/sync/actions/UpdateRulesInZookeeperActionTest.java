@@ -19,11 +19,11 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 
 public class UpdateRulesInZookeeperActionTest {
     private ConfigServiceHelper serviceHelper;
-    private String release = "RELEASE";
+    private final String release = "RELEASE";
     private UpdateReleaseInZookeeperAction updateReleaseInZookeeperAction;
     private ZooKeeperConnector zooKeeperConnector;
     private ConfigEditorServiceContext context;
-    private String currentRelease = "ZK_RELEASE";
+    private final String currentRelease = "ZK_RELEASE";
 
     @Before
     public void setUp() throws Exception {

@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,16 +8,14 @@ import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 
 public class AdminConfigInfoProviderTest {
-    /**
-     * {
-     *     "config_version": 1,
-     *     "secret": "john",
-     *     "object": { },
-     *     "actions": [ "test" , "siembol"]
-     * }
-     **/
-    @Multiline
-    public static String testConfig;
+    private final String testConfig = """
+            {
+                "config_version": 1,
+                "secret": "john",
+                "object": { },
+                "actions": [ "test" , "siembol"]
+            }
+            """;
 
     private final ConfigInfoProvider infoProvider = new AdminConfigInfoProvider();
     private UserInfo steve;
@@ -54,5 +51,4 @@ public class AdminConfigInfoProviderTest {
         Assert.assertEquals(infoProvider.isReleaseFile("admin_config.json"), true);
         Assert.assertEquals(infoProvider.isReleaseFile("rules.json"), false);
     }
-
 }

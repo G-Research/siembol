@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.parsers.extractors;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,33 +9,27 @@ import java.util.Map;
 
 
 public class KeyValueExtractorTest {
-    private String name = "test_name";
-    private String field = "test_field";
+    private final String name = "test_name";
+    private final String field = "test_field";
     private EnumSet<ParserExtractor.ParserExtractorFlags> extractorFlags;
     private EnumSet<KeyValueExtractor.KeyValueExtractorFlags> keyValueFlags;
-    /**
-     * Level=1 Category=UNKNOWN Type=abc
-     **/
-    @Multiline
-    public static String simpleNoQuotas;
 
-    /**
-     * Threat=Evil Level='A' Category="UN  =KNOWN"
-     **/
-    @Multiline
-    public static String simpleQuotes;
+    private final String simpleNoQuotas = """
+      Level=1 Category=UNKNOWN Type=abc
+     """;
 
-    /**
-     * Threat|Evil,Level|'A',Category|"UN,|KNOWN"
-     **/
-    @Multiline
-    public static String nonStandardDelimiters;
+    private final String simpleQuotes = """
+      Threat=Evil Level='A' Category="UN  =KNOWN"
+     """;
 
-    /**
-     * Threat|Evil,Level|'\'A',Category|"UN,|KN\"OWN"
-     **/
-    @Multiline
-    public static String nonStandartDelimitersEscaping;
+    private final String nonStandardDelimiters = """
+      Threat|Evil,Level|'A',Category|"UN,|KNOWN"
+     """;
+    
+
+    private final String nonStandardDelimitersEscaping = """
+      Threat|Evil,Level|'\\'A',Category|"UN,|KN\\"OWN"
+     """;
 
     @Before
     public void setUp() {
@@ -120,7 +113,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals("'A'", out.get("Level"));
     }
     @Test
-    public void testGoodNonStandartsDelimiter() {
+    public void testGoodNonStandardsDelimiter() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
         keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
@@ -147,7 +140,7 @@ public class KeyValueExtractorTest {
     }
 
     @Test
-    public void testGoodNonStandartsDelimiterEscaping() {
+    public void testGoodNonStandardsDelimiterEscaping() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
         keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
@@ -168,7 +161,7 @@ public class KeyValueExtractorTest {
         Assert.assertFalse(extractor.shouldRemoveField());
         Assert.assertTrue(extractor.shouldOverwiteFields());
 
-        Map<String, Object> out = extractor.extract(nonStandartDelimitersEscaping.trim());
+        Map<String, Object> out = extractor.extract(nonStandardDelimitersEscaping.trim());
         Assert.assertEquals(3, out.size());
         Assert.assertEquals("Evil", out.get("Threat"));
         Assert.assertEquals("\"UN,|KN\\\"OWN\"", out.get("Category"));
@@ -176,7 +169,7 @@ public class KeyValueExtractorTest {
     }
 
     @Test
-    public void testGoodNonStandartsDelimiterEscapingNextKey() {
+    public void testGoodNonStandardsDelimiterEscapingNextKey() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
         keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
@@ -198,7 +191,7 @@ public class KeyValueExtractorTest {
         Assert.assertFalse(extractor.shouldRemoveField());
         Assert.assertTrue(extractor.shouldOverwiteFields());
 
-        Map<String, Object> out = extractor.extract(nonStandartDelimitersEscaping.trim());
+        Map<String, Object> out = extractor.extract(nonStandardDelimitersEscaping.trim());
         Assert.assertEquals(3, out.size());
         Assert.assertEquals("Evil", out.get("Threat"));
         Assert.assertEquals("\"UN,|KN\\\"OWN\"", out.get("Category"));

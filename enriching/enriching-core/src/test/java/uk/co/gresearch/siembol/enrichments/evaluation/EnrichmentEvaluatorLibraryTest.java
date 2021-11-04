@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.enrichments.evaluation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,16 +20,14 @@ import static org.mockito.Mockito.when;
 public class EnrichmentEvaluatorLibraryTest {
     private static final ObjectReader JSON_MAP_READER =
             new ObjectMapper().readerFor(new TypeReference<Map<String, Object>>() {});
-    /**
-     * {
-     *   "timestamp" : 1,
-     *   "dummy_bool" : true,
-     *   "dummy_str" : "test",
-     *   "a" : "conflict"
-     * }
-     **/
-    @Multiline
-    public static String simpleEvent;
+    private final String simpleEvent = """
+     {
+       "timestamp" : 1,
+       "dummy_bool" : true,
+       "dummy_str" : "test",
+       "a" : "conflict"
+     }
+     """;
 
     private List<Pair<String, String>> enrichments;
     private List<EnrichmentCommand> commands;

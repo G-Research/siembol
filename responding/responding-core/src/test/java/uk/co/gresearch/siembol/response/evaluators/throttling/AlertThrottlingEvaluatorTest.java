@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.response.evaluators.throttling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,15 +16,13 @@ import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.M
 public class AlertThrottlingEvaluatorTest {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(AlertThrottlingEvaluatorAttributesDto.class);
-    /**
-     * {
-     *   "suppressing_key": "${host}_${port}",
-     *   "time_unit_type": "seconds",
-     *   "suppression_time": 1
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+            {
+              "suppressing_key": "${host}_${port}",
+              "time_unit_type": "seconds",
+              "suppression_time": 1
+            }
+            """;
 
     private AlertThrottlingEvaluator evaluator;
     private ResponseAlert alert1 = new ResponseAlert();
@@ -38,7 +35,7 @@ public class AlertThrottlingEvaluatorTest {
         alert1.put("host", "secret");
         alert1.put("port", 1234);
 
-        alert2 = (ResponseAlert)alert1.clone();
+        alert2 = (ResponseAlert) alert1.clone();
         alert2.put("host", "different");
         attributesDto = JSON_ATTRIBUTES_READER.readValue(attributes);
         evaluator = new AlertThrottlingEvaluator(attributesDto);
@@ -59,7 +56,7 @@ public class AlertThrottlingEvaluatorTest {
         Assert.assertNotNull(result2.getAttributes());
         Assert.assertNotNull(result2.getAttributes().getAlert());
 
-        for (int i=0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             result1 = evaluator.evaluate(alert1);
             result2 = evaluator.evaluate(alert2);
 

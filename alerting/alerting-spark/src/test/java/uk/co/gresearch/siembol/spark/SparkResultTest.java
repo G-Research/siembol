@@ -7,16 +7,13 @@ import org.junit.Test;
 import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class SparkResultTest {
     private AlertingAttributes attributes;
     private AlertingResult alertingResult;
     private AlertingSparkResult alertingSparkResult;
-    private int maxResult = 100;
+    private final int maxResult = 100;
     private Map<String, Object> event;
 
     @Before
@@ -27,7 +24,7 @@ public class SparkResultTest {
     }
 
     @Test
-    public void wrongStatusCodeTest() throws Exception {
+    public void wrongStatusCodeTest() {
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, attributes);
         alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
         Assert.assertEquals(1, alertingSparkResult.getExceptionsTotal());
@@ -38,9 +35,9 @@ public class SparkResultTest {
     }
 
     @Test
-    public void singleEventTest() throws Exception {
+    public void singleEventTest() {
         event.put("test", "true");
-        attributes.setOutputEvents(Arrays.asList(event));
+        attributes.setOutputEvents(List.of(event));
         alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
         Assert.assertEquals(0, alertingSparkResult.getExceptionsTotal());
         Assert.assertEquals(1, alertingSparkResult.getMatchesTotal());
@@ -50,10 +47,10 @@ public class SparkResultTest {
     }
 
     @Test
-    public void maxResultEventTest() throws Exception {
+    public void maxResultEventTest() {
         event.put("test", "true");
         ArrayList<Map<String, Object>> events = new ArrayList<>();
-        for(int i = 0; i <= maxResult; i++) {
+        for (int i = 0; i <= maxResult; i++) {
             events.add(event);
         }
 
@@ -67,9 +64,9 @@ public class SparkResultTest {
     }
 
     @Test
-    public void singleExceptionTest() throws Exception {
+    public void singleExceptionTest() {
         event.put("test", "true");
-        attributes.setExceptionEvents(Arrays.asList(event));
+        attributes.setExceptionEvents(List.of(event));
         alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
         Assert.assertEquals(1, alertingSparkResult.getExceptionsTotal());
         Assert.assertEquals(0, alertingSparkResult.getMatchesTotal());
@@ -79,10 +76,10 @@ public class SparkResultTest {
     }
 
     @Test
-    public void maxResultExceptionTest() throws Exception {
+    public void maxResultExceptionTest() {
         event.put("test", "true");
         ArrayList<Map<String, Object>> events = new ArrayList<>();
-        for(int i = 0; i <= maxResult; i++) {
+        for (int i = 0; i <= maxResult; i++) {
             events.add(event);
         }
 
@@ -96,10 +93,10 @@ public class SparkResultTest {
     }
 
     @Test
-    public void mergeTest() throws Exception {
+    public void mergeTest() {
         event.put("test", "true");
         ArrayList<Map<String, Object>> events = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             events.add(event);
         }
 
@@ -114,7 +111,7 @@ public class SparkResultTest {
 
         event.put("test", "false");
         ArrayList<Map<String, Object>> eventsOther = new ArrayList<>();
-        for(int i = 0; i < maxResult + 1; i++) {
+        for (int i = 0; i < maxResult + 1; i++) {
             eventsOther.add(event);
         }
 
@@ -122,7 +119,7 @@ public class SparkResultTest {
         attributesOther.setOutputEvents(eventsOther);
         attributesOther.setExceptionEvents(eventsOther);
         AlertingSparkResult alertingSparkResultOther = new AlertingSparkResult(
-                new AlertingResult(AlertingResult.StatusCode.OK, attributesOther),maxResult);
+                new AlertingResult(AlertingResult.StatusCode.OK, attributesOther), maxResult);
 
         Assert.assertEquals(maxResult + 1, alertingSparkResultOther.getMatchesTotal());
         Assert.assertEquals(maxResult + 1, alertingSparkResultOther.getExceptionsTotal());
@@ -137,15 +134,14 @@ public class SparkResultTest {
     }
 
     @Test
-    public void serializableTest() throws Exception {
+    public void serializableTest() {
         event.put("test", "true");
-        attributes.setOutputEvents(Arrays.asList(event));
+        attributes.setOutputEvents(List.of(event));
         alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
 
         byte[] blob = SerializationUtils.serialize(alertingSparkResult);
         Assert.assertTrue(blob.length > 0);
         AlertingSparkResult clone = SerializationUtils.clone(alertingSparkResult);
-
 
         Assert.assertEquals(0, clone.getExceptionsTotal());
         Assert.assertEquals(1, clone.getMatchesTotal());

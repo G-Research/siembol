@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.testcase;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,173 +13,162 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class TestCaseEvaluatorImplTest {
-    /**
-     * {
-     *    "a" : "tmp",
-     *    "b" : true,
-     *    "c" : "test",
-     *    "d" : { "e" : "test"},
-     *    "f" : [ "1", "2"]
-     * }
-     **/
-    @Multiline
-    public static String testResult;
-    /**
-     * {
-     *   "test_case_name": "test",
-     *   "version": 1,
-     *   "author": "john",
-     *   "config_name": "syslog",
-     *   "description": "unitest test case",
-     *   "test_specification": {
-     *     "secret": true
-     *   },
-     *   "assertions": [
-     *     {
-     *       "assertion_type": "path_and_value_matches",
-     *       "json_path": "$.a",
-     *       "expected_pattern": "^.*mp$",
-     *       "negated_pattern": false,
-     *       "description": "match string",
-     *       "active": true
-     *     },
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "s",
-     *       "expected_pattern": "secret",
-     *       "negated_pattern": true,
-     *       "description": "skipped assertion",
-     *       "active": false
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String simpleTestCaseString;
+    private final String testResult = """
+            {
+               "a" : "tmp",
+               "b" : true,
+               "c" : "test",
+               "d" : { "e" : "test"},
+               "f" : [ "1", "2"]
+            }
+            """;
 
-    /**
-     * {
-     *   "test_case_name": "test",
-     *   "version": 1,
-     *   "author": "john",
-     *   "config_name": "syslog",
-     *   "description": "unitest test case",
-     *   "test_specification": {
-     *     "secret": true
-     *   },
-     *   "assertions": [
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "$.b",
-     *       "expected_pattern": "secret",
-     *       "negated_pattern": true,
-     *       "description": "negated match of boolean",
-     *       "active": true
-     *     },
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "s",
-     *       "expected_pattern": "secret",
-     *       "negated_pattern": true,
-     *       "description": "skipped assertion",
-     *       "active": false
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String simpleTestCaseBoolean;
+    private final String simpleTestCaseString = """
+             {
+               "test_case_name": "test",
+               "version": 1,
+               "author": "john",
+               "config_name": "syslog",
+               "description": "unitest test case",
+               "test_specification": {
+                 "secret": true
+               },
+               "assertions": [
+                 {
+                   "assertion_type": "path_and_value_matches",
+                   "json_path": "$.a",
+                   "expected_pattern": "^.*mp$",
+                   "negated_pattern": false,
+                   "description": "match string",
+                   "active": true
+                 },
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "s",
+                   "expected_pattern": "secret",
+                   "negated_pattern": true,
+                   "description": "skipped assertion",
+                   "active": false
+                 }
+               ]
+             }
+            """;
 
-    /**
-     * {
-     *   "test_case_name": "test",
-     *   "version": 1,
-     *   "author": "john",
-     *   "config_name": "syslog",
-     *   "description": "unitest test case",
-     *   "test_specification": {
-     *     "secret": true
-     *   },
-     *   "assertions": [
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "$.d",
-     *       "expected_pattern": ".*ask",
-     *       "negated_pattern": false,
-     *       "description": "fail to match object",
-     *       "active": true
-     *     },
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "s",
-     *       "expected_pattern": "secret",
-     *       "negated_pattern": true,
-     *       "description": "skipped assertion",
-     *       "active": false
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String simpleTestCaseObject;
+    private final String simpleTestCaseBoolean = """
+             {
+               "test_case_name": "test",
+               "version": 1,
+               "author": "john",
+               "config_name": "syslog",
+               "description": "unitest test case",
+               "test_specification": {
+                 "secret": true
+               },
+               "assertions": [
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "$.b",
+                   "expected_pattern": "secret",
+                   "negated_pattern": true,
+                   "description": "negated match of boolean",
+                   "active": true
+                 },
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "s",
+                   "expected_pattern": "secret",
+                   "negated_pattern": true,
+                   "description": "skipped assertion",
+                   "active": false
+                 }
+               ]
+             }
+            """;
 
-    /**
-     * {
-     *   "test_case_name": "test",
-     *   "version": 1,
-     *   "author": "john",
-     *   "config_name": "syslog",
-     *   "description": "unitest test case",
-     *   "test_specification": {
-     *     "secret": true
-     *   },
-     *   "assertions": [
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "$.f",
-     *       "expected_pattern": ".*1.*",
-     *       "negated_pattern": false,
-     *       "description": "match in array",
-     *       "active": true
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String simpleTestCaseArray;
+    private final String simpleTestCaseObject = """
+             {
+               "test_case_name": "test",
+               "version": 1,
+               "author": "john",
+               "config_name": "syslog",
+               "description": "unitest test case",
+               "test_specification": {
+                 "secret": true
+               },
+               "assertions": [
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "$.d",
+                   "expected_pattern": ".*ask",
+                   "negated_pattern": false,
+                   "description": "fail to match object",
+                   "active": true
+                 },
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "s",
+                   "expected_pattern": "secret",
+                   "negated_pattern": true,
+                   "description": "skipped assertion",
+                   "active": false
+                 }
+               ]
+             }
+            """;
 
-    /**
-     * {
-     *   "test_case_name": "test",
-     *   "version": 1,
-     *   "author": "john",
-     *   "config_name": "syslog",
-     *   "description": "unitest test case",
-     *   "test_specification": {
-     *     "secret": true
-     *   },
-     *   "assertions": [
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "$.g",
-     *       "expected_pattern": "secret",
-     *       "negated_pattern": true,
-     *       "description": "only if path exists test",
-     *       "active": true
-     *     },
-     *     {
-     *       "assertion_type": "only_if_path_exists",
-     *       "json_path": "s",
-     *       "expected_pattern": "secret",
-     *       "negated_pattern": true,
-     *       "description": "skipped assertion",
-     *       "active": false
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String simpleTestCaseMissing;
+    private final String simpleTestCaseArray = """
+             {
+               "test_case_name": "test",
+               "version": 1,
+               "author": "john",
+               "config_name": "syslog",
+               "description": "unitest test case",
+               "test_specification": {
+                 "secret": true
+               },
+               "assertions": [
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "$.f",
+                   "expected_pattern": ".*1.*",
+                   "negated_pattern": false,
+                   "description": "match in array",
+                   "active": true
+                 }
+               ]
+             }
+            """;
+
+    private final String simpleTestCaseMissing = """
+             {
+               "test_case_name": "test",
+               "version": 1,
+               "author": "john",
+               "config_name": "syslog",
+               "description": "unitest test case",
+               "test_specification": {
+                 "secret": true
+               },
+               "assertions": [
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "$.g",
+                   "expected_pattern": "secret",
+                   "negated_pattern": true,
+                   "description": "only if path exists test",
+                   "active": true
+                 },
+                 {
+                   "assertion_type": "only_if_path_exists",
+                   "json_path": "s",
+                   "expected_pattern": "secret",
+                   "negated_pattern": true,
+                   "description": "skipped assertion",
+                   "active": false
+                 }
+               ]
+             }
+            """;
 
     private TestCaseEvaluator testCaseEvaluator;
 

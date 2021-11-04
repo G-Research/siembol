@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.service.parserconfig;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,23 +21,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 public class ParserConfigSchemaServiceTest {
-    /**
-     * {
-     *   "encoding" : "utf8_string",
-     *   "log" : "dummy log"
-     * }
-     **/
-    @Multiline
-    public static String logUtf8;
+    private final String logUtf8 = """
+            {
+              "encoding" : "utf8_string",
+              "log" : "dummy log"
+            }
+            """;
 
-    /**
-     * {
-     *   "encoding" : "hex_string",
-     *   "log" : "64756D6D79206C6F67"
-     * }
-     **/
-    @Multiline
-    public static String logHex;
+    private final String logHex = """
+            {
+              "encoding" : "hex_string",
+              "log" : "64756D6D79206C6F67"
+            }
+            """;
 
     private ParserConfigSchemaService parserConfigSchemaService;
     private final String schema = "dummmy schema";
@@ -118,7 +113,7 @@ public class ParserConfigSchemaServiceTest {
     @Test
     public void validateRuleError() {
         parserFactoryAttributes.setMessage("error");
-        
+
         parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
         Mockito.when(parserFactory.validateConfiguration(anyString())).thenReturn(parserFactoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
@@ -201,7 +196,7 @@ public class ParserConfigSchemaServiceTest {
 
     @Test
     public void createSchemaEmptyTestConfigs() throws Exception {
-        ConfigSchemaService service  = ParserConfigSchemaService
+        ConfigSchemaService service = ParserConfigSchemaService
                 .createParserConfigSchemaService(new ConfigEditorUiLayout());
         Assert.assertNotNull(service.getSchema());
         Assert.assertNotNull(service.getTestSchema());
@@ -209,7 +204,7 @@ public class ParserConfigSchemaServiceTest {
 
     @Test
     public void createSchemaConfigs() throws Exception {
-        ConfigSchemaService service  = ParserConfigSchemaService
+        ConfigSchemaService service = ParserConfigSchemaService
                 .createParserConfigSchemaService(new ConfigEditorUiLayout());
         Assert.assertNotNull(service.getSchema());
         Assert.assertNotNull(service.getTestSchema());
@@ -217,7 +212,7 @@ public class ParserConfigSchemaServiceTest {
 
     @Test
     public void getAdminConfigSchemaError() throws Exception {
-        ConfigSchemaService service  = ParserConfigSchemaService
+        ConfigSchemaService service = ParserConfigSchemaService
                 .createParserConfigSchemaService(new ConfigEditorUiLayout());
         ConfigEditorResult ret = service.getAdminConfigurationSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
@@ -225,7 +220,7 @@ public class ParserConfigSchemaServiceTest {
 
     @Test
     public void validateAdminConfigError() throws Exception {
-        ConfigSchemaService service  = ParserConfigSchemaService
+        ConfigSchemaService service = ParserConfigSchemaService
                 .createParserConfigSchemaService(new ConfigEditorUiLayout());
         ConfigEditorResult ret = service.getAdminConfigurationSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());

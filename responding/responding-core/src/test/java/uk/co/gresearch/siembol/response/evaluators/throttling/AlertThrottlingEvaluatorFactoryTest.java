@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.throttling;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,15 +7,13 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 public class AlertThrottlingEvaluatorFactoryTest {
-    /**
-     * {
-     *   "suppressing_key": "${field1}_${field2}",
-     *   "time_unit_type": "seconds",
-     *   "suppression_time": 5
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+            {
+              "suppressing_key": "${field1}_${field2}",
+              "time_unit_type": "seconds",
+              "suppression_time": 5
+            }
+            """;
 
     private AlertThrottlingEvaluatorFactory factory;
 

@@ -49,11 +49,11 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
 
     private OutputCollector collector;
     private ZooKeeperConnector zooKeeperConnector;
-    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zooKeeperAttributes;
     private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
 
     EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
-        this.zookeperAttributes = attributes.getEnrichingRulesZookeperAttributes();
+        this.zooKeeperAttributes = attributes.getEnrichingRulesZookeperAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
     }
 
@@ -61,13 +61,12 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
         this(attributes, new ZooKeeperConnectorFactoryImpl());
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
         try {
             LOG.info(ENGINE_INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes);
 
             updateRules();
             if (enrichmentEvaluator.get() == null) {
@@ -96,7 +95,6 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
             LOG.info(ENGINE_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
-            return;
         }
     }
 

@@ -1,10 +1,9 @@
 package uk.co.gresearch.siembol.enrichments.compiler;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,232 +19,215 @@ import static uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompilerImp
 
 public class EnrichmentCompilerTest {
     private static final ObjectReader JSON_MAP_READER = new ObjectMapper()
-            .readerFor(new TypeReference<Map<String, Object>>() { });
+            .readerFor(new TypeReference<Map<String, Object>>() {
+            });
 
-    /**
-     *{
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "siembol_enrichments_test",
-     *       "rule_version": 1,
-     *       "rule_author": "dummy",
-     *       "rule_description": "Test rule",
-     *       "source_type": "*",
-     *       "matchers": [
-     *         {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "is_alert",
-     *           "data": "(?i)true"
-     *         }
-     *       ],
-     *       "table_mapping": {
-     *         "table_name": "test_table",
-     *         "joining_key": "${ip_src_addr}",
-     *         "tags": [
-     *           {
-     *             "tag_name": "is_test_tag",
-     *             "tag_value": "true"
-     *           }
-     *         ],
-     *         "enriching_fields": [
-     *           {
-     *             "table_field_name": "dns_name",
-     *             "event_field_name": "siembol:enrichments:dns"
-     *           }
-     *         ]
-     *       }
-     *     }
-     *   ]
-     * }
-     *
-    **/
-    @Multiline
-    public static String testRules;
+    private final String testRules = """
+            {
+               "rules_version": 1,
+               "rules": [
+                 {
+                   "rule_name": "siembol_enrichments_test",
+                   "rule_version": 1,
+                   "rule_author": "dummy",
+                   "rule_description": "Test rule",
+                   "source_type": "*",
+                   "matchers": [
+                     {
+                       "matcher_type": "REGEX_MATCH",
+                       "is_negated": false,
+                       "field": "is_alert",
+                       "data": "(?i)true"
+                     }
+                   ],
+                   "table_mapping": {
+                     "table_name": "test_table",
+                     "joining_key": "${ip_src_addr}",
+                     "tags": [
+                       {
+                         "tag_name": "is_test_tag",
+                         "tag_value": "true"
+                       }
+                     ],
+                     "enriching_fields": [
+                       {
+                         "table_field_name": "dns_name",
+                         "event_field_name": "siembol:enrichments:dns"
+                       }
+                     ]
+                   }
+                 }
+               ]
+             }
+            """;
 
-    /**
-     *{
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "siembol_enrichments_test",
-     *       "rule_version": 1,
-     *       "rule_author": "dummy",
-     *       "rule_description": "Test rule",
-     *       "source_type": "*",
-     *       "matchers": [
-     *         {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "is_alert",
-     *           "data": "(?i)true"
-     *         }
-     *       ],
-     *       "table_mapping": {
-     *         "table_name": "test_table",
-     *         "joining_key": "${ip_src_addr}",
-     *         "tags": [
-     *           {
-     *             "tag_name": "is_test_tag",
-     *             "tag_value": "true"
-     *           }
-     *         ]
-     *       }
-     *     }
-     *   ]
-     * }
-     *
-     **/
-    @Multiline
-    public static String testRulesTagsOnly;
+    private final String testRulesTagsOnly = """
+            {
+               "rules_version": 1,
+               "rules": [
+                 {
+                   "rule_name": "siembol_enrichments_test",
+                   "rule_version": 1,
+                   "rule_author": "dummy",
+                   "rule_description": "Test rule",
+                   "source_type": "*",
+                   "matchers": [
+                     {
+                       "matcher_type": "REGEX_MATCH",
+                       "is_negated": false,
+                       "field": "is_alert",
+                       "data": "(?i)true"
+                     }
+                   ],
+                   "table_mapping": {
+                     "table_name": "test_table",
+                     "joining_key": "${ip_src_addr}",
+                     "tags": [
+                       {
+                         "tag_name": "is_test_tag",
+                         "tag_value": "true"
+                       }
+                     ]
+                   }
+                 }
+               ]
+             }
+             """;
 
-    /**
-     *{
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "siembol_enrichments_test",
-     *       "rule_version": 1,
-     *       "rule_author": "dummy",
-     *       "rule_description": "Test rule",
-     *       "source_type": "*",
-     *       "matchers": [
-     *         {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "is_alert",
-     *           "data": "(?i)true"
-     *         }
-     *       ],
-     *       "table_mapping": {
-     *         "table_name": "test_table",
-     *         "joining_key": "${ip_src_addr}",
-     *         "enriching_fields": [
-     *           {
-     *             "table_field_name": "dns_name",
-     *             "event_field_name": "siembol:enrichments:dns"
-     *           }
-     *         ]
-     *       }
-     *     }
-     *   ]
-     * }
-     *
-     **/
-    @Multiline
-    public static String testRulesEnrichingFieldsOnly;
 
-    /**
-     *{
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "siembol_enrichments_test",
-     *       "rule_version": 1,
-     *       "rule_author": "dummy",
-     *       "rule_description": "Test rule",
-     *       "source_type": "*",
-     *       "matchers": [
-     *         {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "is_alert",
-     *           "data": "(?i)true"
-     *         }
-     *       ],
-     *       "table_mapping": {
-     *         "table_name": "test_table",
-     *         "joining_key": "${ip_src_addr}"
-     *       }
-     *     }
-     *   ]
-     * }
-     *
-     **/
-    @Multiline
-    public static String testRulesMissingTagsAndEnrichingFields;
+    private final String testRulesEnrichingFieldsOnly = """
+            {
+               "rules_version": 1,
+               "rules": [
+                 {
+                   "rule_name": "siembol_enrichments_test",
+                   "rule_version": 1,
+                   "rule_author": "dummy",
+                   "rule_description": "Test rule",
+                   "source_type": "*",
+                   "matchers": [
+                     {
+                       "matcher_type": "REGEX_MATCH",
+                       "is_negated": false,
+                       "field": "is_alert",
+                       "data": "(?i)true"
+                     }
+                   ],
+                   "table_mapping": {
+                     "table_name": "test_table",
+                     "joining_key": "${ip_src_addr}",
+                     "enriching_fields": [
+                       {
+                         "table_field_name": "dns_name",
+                         "event_field_name": "siembol:enrichments:dns"
+                       }
+                     ]
+                   }
+                 }
+               ]
+             }
+             """;
 
-    /**
-     *{
-     *   "rule_name": "siembol_enrichments_test",
-     *   "rule_version": 1,
-     *   "rule_author": "dummy",
-     *   "rule_description": "Test rule",
-     *   "source_type": "*",
-     *   "matchers": [
-     *     {
-     *       "matcher_type": "IS_IN_SET",
-     *       "is_negated": false,
-     *       "field": "is_alert",
-     *       "data": "true"
-     *     }
-     *   ],
-     *   "table_mapping": {
-     *     "table_name": "test_table",
-     *     "joining_key": "${ip_src_addr}",
-     *     "tags": [
-     *       {
-     *         "tag_name": "is_test_tag",
-     *         "tag_value": "true"
-     *       }
-     *     ],
-     *     "enriching_fields": [
-     *       {
-     *         "table_field_name": "dns_name",
-     *         "event_field_name": "siembol:enrichments:dns"
-     *       }
-     *     ]
-     *   }
-     * }
-     *
-     *
-     **/
-    @Multiline
-    public static String testRule;
 
-    /**
-     * {
-     *   "event": {
-     *     "source_type": "secret",
-     *     "is_alert": "true",
-     *     "ip_src_addr": "1.2.3.4"
-     *   },
-     *   "testing_table_name": "test_table",
-     *   "testing_table_mapping": {
-     *       "1.2.3.4": {
-     *         "dns_name": "secret.abc"
-     *       }
-     *     }
-     *
-     * }
-     **/
-    @Multiline
-    public static String testSpecification;
+    private final String testRulesMissingTagsAndEnrichingFields = """
+            {
+               "rules_version": 1,
+               "rules": [
+                 {
+                   "rule_name": "siembol_enrichments_test",
+                   "rule_version": 1,
+                   "rule_author": "dummy",
+                   "rule_description": "Test rule",
+                   "source_type": "*",
+                   "matchers": [
+                     {
+                       "matcher_type": "REGEX_MATCH",
+                       "is_negated": false,
+                       "field": "is_alert",
+                       "data": "(?i)true"
+                     }
+                   ],
+                   "table_mapping": {
+                     "table_name": "test_table",
+                     "joining_key": "${ip_src_addr}"
+                   }
+                 }
+               ]
+             }
+                
+             """;
 
-    /**
-     * {
-     *   "event": {
-     *     "source_type": "secret",
-     *     "is_alert": "false",
-     *     "ip_src_addr": "1.2.3.4"
-     *   },
-     *   "testing_table_name": "test_table",
-     *   "testing_table_mapping": {
-     *     "1.2.3.4": {
-     *       "dns_name": "secret.abc"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String testSpecificationNoMatch;
+    private final String testRule = """
+            {
+               "rule_name": "siembol_enrichments_test",
+               "rule_version": 1,
+               "rule_author": "dummy",
+               "rule_description": "Test rule",
+               "source_type": "*",
+               "matchers": [
+                 {
+                   "matcher_type": "IS_IN_SET",
+                   "is_negated": false,
+                   "field": "is_alert",
+                   "data": "true"
+                 }
+               ],
+               "table_mapping": {
+                 "table_name": "test_table",
+                 "joining_key": "${ip_src_addr}",
+                 "tags": [
+                   {
+                     "tag_name": "is_test_tag",
+                     "tag_value": "true"
+                   }
+                 ],
+                 "enriching_fields": [
+                   {
+                     "table_field_name": "dns_name",
+                     "event_field_name": "siembol:enrichments:dns"
+                   }
+                 ]
+               }
+             }
+             """;
+
+    private final String testSpecification = """
+            {
+              "event": {
+                "source_type": "secret",
+                "is_alert": "true",
+                "ip_src_addr": "1.2.3.4"
+              },
+              "testing_table_name": "test_table",
+              "testing_table_mapping": {
+                  "1.2.3.4": {
+                    "dns_name": "secret.abc"
+                  }
+                }
+            }
+            """;
+
+    private final String testSpecificationNoMatch = """
+            {
+              "event": {
+                "source_type": "secret",
+                "is_alert": "false",
+                "ip_src_addr": "1.2.3.4"
+              },
+              "testing_table_name": "test_table",
+              "testing_table_mapping": {
+                "1.2.3.4": {
+                  "dns_name": "secret.abc"
+                }
+              }
+            }
+            """;
 
     private EnrichmentCompiler enrichmentCompiler;
 
     @Before
     public void setUp() throws Exception {
-        enrichmentCompiler =  createEnrichmentsCompiler();
+        enrichmentCompiler = createEnrichmentsCompiler();
     }
 
     @Test
@@ -380,7 +362,7 @@ public class EnrichmentCompilerTest {
     }
 
     @Test
-    public void testRulesMissingTagsAndEnrichingFields() throws IOException {
+    public void testRulesMissingTagsAndEnrichingFields() {
         EnrichmentResult result = enrichmentCompiler.testConfigurations(testRulesMissingTagsAndEnrichingFields,
                 testSpecification);
         Assert.assertEquals(ERROR, result.getStatusCode());

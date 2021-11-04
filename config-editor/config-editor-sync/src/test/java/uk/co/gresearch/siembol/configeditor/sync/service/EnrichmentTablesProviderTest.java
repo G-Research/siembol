@@ -1,67 +1,57 @@
 package uk.co.gresearch.siembol.configeditor.sync.service;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
-import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.mockito.Mockito.when;
 
 public class EnrichmentTablesProviderTest {
-    /**
-     *{
-     *   "enrichment_tables": [
-     *     {
-     *       "name": "test_table",
-     *       "path": "/siembol/tables/enrichment/test.json"
-     *     },
-     *     {
-     *       "name": "dns_table",
-     *       "path": "/siembol/tables/enrichment/dns.json"
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String tablesUpdateServiceA;
+    private final String tablesUpdateServiceA = """
+            {
+               "enrichment_tables": [
+                 {
+                   "name": "test_table",
+                   "path": "/siembol/tables/enrichment/test.json"
+                 },
+                 {
+                   "name": "dns_table",
+                   "path": "/siembol/tables/enrichment/dns.json"
+                 }
+               ]
+             }
+             """;
 
-    /**
-     *{
-     *   "enrichment_tables": [
-     *     {
-     *       "name": "users_table",
-     *       "path": "/siembol/tables/enrichment/users.json"
-     *     },
-     *     {
-     *       "name": "url_table",
-     *       "path": "/siembol/tables/enrichment/url.json"
-     *     },
-     *     {
-     *       "name": "ioc_table",
-     *       "path": "/siembol/tables/enrichment/ioc.json"
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String tablesUpdateServiceB;
+    private final String tablesUpdateServiceB = """
+            {
+               "enrichment_tables": [
+                 {
+                   "name": "users_table",
+                   "path": "/siembol/tables/enrichment/users.json"
+                 },
+                 {
+                   "name": "url_table",
+                   "path": "/siembol/tables/enrichment/url.json"
+                 },
+                 {
+                   "name": "ioc_table",
+                   "path": "/siembol/tables/enrichment/ioc.json"
+                 }
+               ]
+             }
+             """;
 
     private Map<String, ZooKeeperConnector> zooKeeperConnectorMap;
 
     private EnrichmentTablesProviderImpl enrichmentTablesProvider;
-    private Set<String> services;
-    private List<StormTopologyDto> topologiesToUpdate;
     private final String serviceA = "a";
     private final String serviceB = "b";
 
@@ -184,5 +174,4 @@ public class EnrichmentTablesProviderTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getMessage());
     }
-
 }

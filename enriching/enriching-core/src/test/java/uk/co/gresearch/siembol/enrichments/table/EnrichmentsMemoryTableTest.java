@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.enrichments.table;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,53 +12,42 @@ import java.util.*;
 
 public class EnrichmentsMemoryTableTest {
 
-    /**
-     *
-     * {
-     *   "1.2.3.1" : {},
-     *   "1.2.3.2" : {},
-     *   "1.2.3.3" : {},
-     *   "1.2.3.4" : {},
-     *   "1.2.3.5" : {}
-     * }
-     **/
-    @Multiline
-    public static String simpleEmptyFields;
+    private final String simpleEmptyFields = """    
+            {
+              "1.2.3.1" : {},
+              "1.2.3.2" : {},
+              "1.2.3.3" : {},
+              "1.2.3.4" : {},
+              "1.2.3.5" : {}
+            }
+            """;
 
-    /**
-     *
-     * {
-     *   "1.2.3.1" : {"is_ioc" : 1}
-     * }
-     **/
-    @Multiline
-    public static String unsupportedFieldType;
+    private final String unsupportedFieldType = """
+            {
+              "1.2.3.1" : {"is_ioc" : 1}
+            }
+            """;
 
-    /**
-     *
-     * {
-     *   "1.2.3.1" : { "is_malicious" : "true" },
-     *   "1.2.3.2" : { "is_malicious" : "true"},
-     *   "1.2.3.3" : {"is_malicious" : "false"},
-     *   "1.2.3.4" : {"is_malicious" : "true"},
-     *   "1.2.3.5" : {"is_malicious" : "true"}
-     * }
-     **/
-    @Multiline
-    public static String simpleOneField;
+    private final String simpleOneField = """
+            {
+              "1.2.3.1" : { "is_malicious" : "true" },
+              "1.2.3.2" : { "is_malicious" : "true"},
+              "1.2.3.3" : {"is_malicious" : "false"},
+              "1.2.3.4" : {"is_malicious" : "true"},
+              "1.2.3.5" : {"is_malicious" : "true"}
+            }
+            """;
 
-    /**
-     *
-     * {
-     *   "1.2.3.1" : { "is_malicious" : "true", "is_ioc" : "false" },
-     *   "1.2.3.2" : {},
-     *   "1.2.3.3" : {"is_malicious" : "true", "is_ioc" : "false", "is_alert" : "true"},
-     *   "1.2.3.4" : {},
-     *   "1.2.3.5" : {"is_malicious" : "true"}
-     * }
-     **/
-    @Multiline
-    public static String simpleMixedFields;
+    private final String simpleMixedFields = """
+            {
+              "1.2.3.1" : { "is_malicious" : "true", "is_ioc" : "false" },
+              "1.2.3.2" : {},
+              "1.2.3.3" : {"is_malicious" : "true", "is_ioc" : "false", "is_alert" : "true"},
+              "1.2.3.4" : {},
+              "1.2.3.5" : {"is_malicious" : "true"}
+            }
+            """;
+
     private EnrichmentMemoryTable table;
 
     @Test
@@ -186,5 +174,4 @@ public class EnrichmentsMemoryTableTest {
             EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
-
 }

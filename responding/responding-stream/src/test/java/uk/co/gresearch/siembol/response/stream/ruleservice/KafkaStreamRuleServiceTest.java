@@ -3,7 +3,6 @@ package uk.co.gresearch.siembol.response.stream.ruleservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.TestInputTopic;
@@ -24,22 +23,21 @@ import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 import uk.co.gresearch.siembol.response.engine.RulesEngine;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class KafkaStreamRuleServiceTest {
-    /**
-     *{
-     *  "source_type" : "secret",
-     *  "is_alert" : "TruE",
-     *  "dummy_field_int" : 1,
-     *  "dummy_field_boolean" : false
-     *}
-     **/
-    @Multiline
-    private static String alertStr;
+    private final String alertStr = """
+            {
+              "source_type" : "secret",
+              "is_alert" : "TruE",
+              "dummy_field_int" : 1,
+              "dummy_field_boolean" : false
+            }
+            """;
 
     private static final ObjectReader ERROR_READER = new ObjectMapper()
             .readerFor(ErrorMessage.class);
@@ -54,8 +52,8 @@ public class KafkaStreamRuleServiceTest {
     private KafkaStreams kafkaStreams;
     private TestingDriverKafkaStreamsFactory streamsFactory;
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, String>  testInputTopic;
-    private TestOutputTopic<String, String>  testErrorTopic;
+    private TestInputTopic<String, String> testInputTopic;
+    private TestOutputTopic<String, String> testErrorTopic;
 
     @Before
     public void setUp() {
@@ -83,7 +81,7 @@ public class KafkaStreamRuleServiceTest {
     }
 
     @After
-    public void tearDown()  {
+    public void tearDown() {
         streamsFactory.close();
     }
 
@@ -138,27 +136,27 @@ public class KafkaStreamRuleServiceTest {
     public void testHealthUpCreated() {
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.CREATED);
         Mono<Health> health = streamService.checkHealth();
-        Assert.assertEquals(Status.UP, health.block().getStatus());
+        Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
     }
 
     @Test
     public void testHealthUpRunning() {
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.RUNNING);
         Mono<Health> health = streamService.checkHealth();
-        Assert.assertEquals(Status.UP, health.block().getStatus());
+        Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
     }
 
     @Test
     public void testHealthUpRebalancing() {
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.REBALANCING);
         Mono<Health> health = streamService.checkHealth();
-        Assert.assertEquals(Status.UP, health.block().getStatus());
+        Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
     }
 
     @Test
     public void testHealthDownError() {
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.ERROR);
         Mono<Health> health = streamService.checkHealth();
-        Assert.assertEquals(Status.DOWN, health.block().getStatus());
+        Assert.assertEquals(Status.DOWN, Objects.requireNonNull(health.block()).getStatus());
     }
 }

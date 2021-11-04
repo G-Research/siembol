@@ -93,7 +93,7 @@ public class CorrelationEngineTest {
     public void testMatchOneOverwriteRuleProtection() {
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            ((Map<String, Object>)args[0]).put(AlertingFields.MAX_PER_HOUR_FIELD.getCorrelationAlertingName(), 2);
+            ((Map<String, Object>) args[0]).put(AlertingFields.MAX_PER_HOUR_FIELD.getCorrelationAlertingName(), 2);
             return null;
         }).when(rule1).addOutputFieldsToEvent(anyMap());
 

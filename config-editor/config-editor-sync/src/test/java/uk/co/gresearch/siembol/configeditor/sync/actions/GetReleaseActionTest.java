@@ -18,16 +18,18 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 
 public class GetReleaseActionTest {
     private ConfigServiceHelper serviceHelper;
-    private String release = "RELEASE";
+    private final String release = "RELEASE";
     private GetReleaseAction getReleaseAction;
     private ConfigEditorServiceContext context;
-    private int version = 1;
+    private final int version = 1;
+
     @Before
     public void setUp() {
         context = new ConfigEditorServiceContext();
         serviceHelper = Mockito.mock(ConfigServiceHelper.class);
 
         when(serviceHelper.getConfigsRelease()).thenReturn(Optional.of(release));
+
         when(serviceHelper.getReleaseVersion(eq(release))).thenReturn(version);
         when(serviceHelper.validateConfigurations(eq(release))).thenReturn(true);
         getReleaseAction = new GetReleaseAction(serviceHelper);
