@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,100 +33,73 @@ public class TopologyManagerServiceImplTests {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(StormTopologiesDto.class);
 
-    /**
-     * {"topologies":[{"id":"id1","name":"topology1"}]}
-     */
-    @Multiline
-    private static String runningTopologies;
+    private final String runningTopologies = """
+             {"topologies":[{"id":"id1","name":"topology1"}]}
+            """;
 
-    /**
-     * {"topologies":[{"id":"id1","name":"topology1"},{"id":"id2","name":"topology2"},{"id":"id3","name":"topology3"},{"id":"id4","name":"topology4"}]}
-     */
-    @Multiline
-    private static String runningTopologies2;
 
-    /**
-     * {"topologies": []}
-     *
-     **/
-    @Multiline
-    private static String empty;
+    private final String runningTopologies2 = """
+             {"topologies":[{"id":"id1","name":"topology1"},{"id":"id2","name":"topology2"},{"id":"id3","name":"topology3"},{"id":"id4","name":"topology4"}]}
+            """;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies1;
+    private final String empty = """
+            {"topologies": []}
+            """;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t2", "topology_name": "topology1", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies1changed;
+    private final String topologies1 = """
+            {"topologies": [
+            { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies2;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t3", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t4", "topology_name": "topology2", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies2changed;
+    private final String topologies1changed = """
+            {"topologies": [
+            { "topology_id": "t2", "topology_name": "topology1", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t3", "topology_name": "topology3", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies3;
+    private final String topologies2 = """
+            {"topologies": [
+            { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t3", "topology_name": "topology3", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t4", "topology_name": "topology4", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies4;
+    private final String topologies2changed = """
+            {"topologies": [
+            { "topology_id": "t3", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t4", "topology_name": "topology2", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
 
-    /**
-     * {"topologies": [
-     * { "topology_id": "t8", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t3", "topology_name": "topology3", "image": "", "attributes": ["", ""] },
-     * { "topology_id": "t4", "topology_name": "topology4", "image": "", "attributes": ["", ""] }
-     * ]}
-     *
-     **/
-    @Multiline
-    private static String topologies4changed;
+    private final String topologies3 = """
+            {"topologies": [
+            { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t3", "topology_name": "topology3", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
+
+    private final String topologies4 = """
+            {"topologies": [
+            { "topology_id": "t1", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t3", "topology_name": "topology3", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t4", "topology_name": "topology4", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
+
+    private final String topologies4changed = """
+            {"topologies": [
+            { "topology_id": "t8", "topology_name": "topology1", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t2", "topology_name": "topology2", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t3", "topology_name": "topology3", "image": "", "attributes": ["", ""] },
+            { "topology_id": "t4", "topology_name": "topology4", "image": "", "attributes": ["", ""] }
+            ]}
+            """;
 
     StormResponseDto stormTopologies = READER_STORM.readValue(runningTopologies);
-
     TopologyManagerService service;
     KubernetesProvider kubernetesProvider = mock(KubernetesProvider.class);
     StormProvider stormProvider = mock(StormProvider.class);

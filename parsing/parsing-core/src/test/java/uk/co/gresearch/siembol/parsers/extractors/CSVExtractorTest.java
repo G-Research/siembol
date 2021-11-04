@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.parsers.extractors;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,46 +7,34 @@ import org.junit.Test;
 import java.util.*;
 
 public class CSVExtractorTest {
-    private String name = "test_name";
-    private String field = "test_field";
+    private final String name = "test_name";
+    private final String field = "test_field";
     private List<ColumnNames> columnNamesList;
     private EnumSet<ParserExtractor.ParserExtractorFlags> extractorFlags;
 
-    /**
-     * a,bb,ccc,,ee
-     **/
-    @Multiline
-    public static String simpleNoQuotes;
+    private final String simpleNoQuotes = """
+      a,bb,ccc,,ee
+     """;
 
-    /**
-     * a,bb,ccc,,ee,
-     **/
-    @Multiline
-    public static String simpleEmptyLastColumn;
+    private final String simpleEmptyLastColumn = """
+      a,bb,ccc,,ee,
+     """;
 
-    /**
-     * a||bb||ccc||||ee||
-     **/
-    @Multiline
-    public static String stringDelimiterEmptyLastColumn;
+    private final String stringDelimiterEmptyLastColumn = """
+      a||bb||ccc||||ee||
+     """;
 
-    /**
-     * a;bb;ccc;;ee
-     **/
-    @Multiline
-    public static String simpleChangedDelimiter;
+    private final String simpleChangedDelimiter = """
+      a;bb;ccc;;ee
+     """;
 
-    /**
-     * a,"b,,,b",cc""c,"","ee
-     **/
-    @Multiline
-    public static String simpleQuotes;
+    private final String simpleQuotes = """
+      a,"b,,,b",cc""c,"","ee
+     """;
 
-    /**
-     * a||bb||ccc||||ee
-     **/
-    @Multiline
-    public static String noQuotesStringDelimiter;
+    private final String noQuotesStringDelimiter = """
+      a||bb||ccc||||ee
+     """;
 
     @Before
     public void setUp() {

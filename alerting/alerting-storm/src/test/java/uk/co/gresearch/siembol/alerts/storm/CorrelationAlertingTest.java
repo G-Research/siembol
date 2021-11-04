@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.charithe.kafka.EphemeralKafkaBroker;
 import com.github.charithe.kafka.KafkaJunitRule;
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
@@ -27,120 +26,112 @@ import static org.mockito.Mockito.withSettings;
 public class CorrelationAlertingTest {
     private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
             .readerFor(AlertingStormAttributesDto.class);
-    private static ObjectReader JSON_READER = new ObjectMapper()
-            .readerFor(new TypeReference<Map<String, Object>>() {});
+    private static final ObjectReader JSON_READER = new ObjectMapper()
+            .readerFor(new TypeReference<Map<String, Object>>() {
+            });
 
-    /**
-     * {
-     *   "siembol_alerts_full_rule_name": "alert1_v3",
-     *   "siembol_alerts_rule_name": "alert1",
-     *   "correlation_key": "evil",
-     *   "siembol_alerts_max_per_hour": 200,
-     *   "siembol_alerts_test": "true",
-     *   "source_type": "a",
-     *   "siembol_alerts_max_per_day": 10000
-     * }
-     **/
-    @Multiline
-    public static String alert1;
+    private final String alert1 = """
+            {
+              "siembol_alerts_full_rule_name": "alert1_v3",
+              "siembol_alerts_rule_name": "alert1",
+              "correlation_key": "evil",
+              "siembol_alerts_max_per_hour": 200,
+              "siembol_alerts_test": "true",
+              "source_type": "a",
+              "siembol_alerts_max_per_day": 10000
+            }
+            """;
 
-    /**
-     * {
-     *   "siembol_alerts_full_rule_name": "alert1_v3",
-     *   "siembol_alerts_rule_name": "alert2",
-     *   "correlation_key": "evil",
-     *   "sensor": "a",
-     *   "siembol_alerts_max_per_hour": 200,
-     *   "siembol_alerts_test": "true",
-     *   "source_type": "a",
-     *   "siembol_alerts_max_per_day": 10000
-     * }
-     **/
-    @Multiline
-    public static String alert2;
+    private final String alert2 = """
+            {
+              "siembol_alerts_full_rule_name": "alert1_v3",
+              "siembol_alerts_rule_name": "alert2",
+              "correlation_key": "evil",
+              "sensor": "a",
+              "siembol_alerts_max_per_hour": 200,
+              "siembol_alerts_test": "true",
+              "source_type": "a",
+              "siembol_alerts_max_per_day": 10000
+            }
+            """;
 
-
-    /**
-     * {
-     *   "rules_version": 1,
-     *   "tags": [
-     *     {
-     *       "tag_name": "detection_source",
-     *       "tag_value": "siembol_correlation_alerts_instance"
-     *     }
-     *   ],
-     *   "rules": [
-     *     {
-     *       "tags": [
-     *         {
-     *           "tag_name": "test",
-     *           "tag_value": "true"
-     *         }
-     *       ],
-     *       "rule_protection": {
-     *         "max_per_hour": 500,
-     *         "max_per_day": 1000
-     *       },
-     *       "rule_name": "test_rule",
-     *       "rule_version": 1,
-     *       "rule_author": "dummy",
-     *       "rule_description": "Testing rule",
-     *       "correlation_attributes": {
-     *         "time_unit": "seconds",
-     *         "time_window": 500,
-     *         "time_computation_type": "processing_time",
-     *         "alerts": [
-     *           {
-     *             "alert": "alert1",
-     *             "threshold": 2
-     *           },
-     *           {
-     *             "alert": "alert2",
-     *             "threshold": 1
-     *           }
-     *         ]
-     *       }
-     *     }
-     *   ]
-     * }
-     *}
-     **/
-    @Multiline
-    public static String simpleCorrelationRules;
+    private final String simpleCorrelationRules = """
+             {
+               "rules_version": 1,
+               "tags": [
+                 {
+                   "tag_name": "detection_source",
+                   "tag_value": "siembol_correlation_alerts_instance"
+                 }
+               ],
+               "rules": [
+                 {
+                   "tags": [
+                     {
+                       "tag_name": "test",
+                       "tag_value": "true"
+                     }
+                   ],
+                   "rule_protection": {
+                     "max_per_hour": 500,
+                     "max_per_day": 1000
+                   },
+                   "rule_name": "test_rule",
+                   "rule_version": 1,
+                   "rule_author": "dummy",
+                   "rule_description": "Testing rule",
+                   "correlation_attributes": {
+                     "time_unit": "seconds",
+                     "time_window": 500,
+                     "time_computation_type": "processing_time",
+                     "alerts": [
+                       {
+                         "alert": "alert1",
+                         "threshold": 2
+                       },
+                       {
+                         "alert": "alert2",
+                         "threshold": 1
+                       }
+                     ]
+                   }
+                 }
+               ]
+             }
+            }
+            """;
 
 
-    /**
-     * {
-     *   "alerts.engine": "siembol_correlation_alerts",
-     *   "alerts.input.topics": [ "input" ],
-     *   "alerts.correlation.output.topic": "correlation.alerts",
-     *   "kafka.error.topic": "errors",
-     *   "alerts.output.topic": "alerts",
-     *   "alerts.engine.clean.interval.sec" : 2,
-     *   "storm.attributes": {
-     *     "first.pool.offset.strategy": "EARLIEST",
-     *     "kafka.spout.properties": {
-     *       "group.id": "alerts.reader",
-     *       "security.protocol": "PLAINTEXT"
-     *     }
-     *   },
-     *   "kafka.spout.num.executors": 1,
-     *   "alerts.engine.bolt.num.executors": 1,
-     *   "kafka.writer.bolt.num.executors": 1,
-     *   "kafka.producer.properties": {
-     *     "compression.type": "snappy",
-     *     "security.protocol": "PLAINTEXT",
-     *     "client.id": "test_producer"
-     *   },
-     *   "zookeeper.attributes": {
-     *     "zk.path": "rules",
-     *     "zk.base.sleep.ms": 1000,
-     *     "zk.max.retries": 10
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String testConfig;
+    private final String testConfig = """
+            {
+              "alerts.engine": "siembol_correlation_alerts",
+              "alerts.input.topics": [ "input" ],
+              "alerts.correlation.output.topic": "correlation.alerts",
+              "kafka.error.topic": "errors",
+              "alerts.output.topic": "alerts",
+              "alerts.engine.clean.interval.sec" : 2,
+              "storm.attributes": {
+                "first.pool.offset.strategy": "EARLIEST",
+                "kafka.spout.properties": {
+                  "group.id": "alerts.reader",
+                  "security.protocol": "PLAINTEXT"
+                }
+              },
+              "kafka.spout.num.executors": 1,
+              "alerts.engine.bolt.num.executors": 1,
+              "kafka.writer.bolt.num.executors": 1,
+              "kafka.producer.properties": {
+                "compression.type": "snappy",
+                "security.protocol": "PLAINTEXT",
+                "client.id": "test_producer"
+              },
+              "zookeeper.attributes": {
+                "zk.path": "rules",
+                "zk.base.sleep.ms": 1000,
+                "zk.max.retries": 10
+              }
+            }
+            """;
 
     @ClassRule
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());

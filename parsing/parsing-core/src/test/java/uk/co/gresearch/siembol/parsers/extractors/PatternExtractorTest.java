@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.parsers.extractors;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,41 +11,25 @@ import java.util.Map;
 
 
 public class PatternExtractorTest {
-    private String name = "test_name";
-    private String field = "test_field";
+    private final String name = "test_name";
+    private final String field = "test_field";
     private List<String> stringPatterns;
 
-    /**
-     * MID (?<my_mid>\d+)
-     **/
-    @Multiline
-    public static String goodMid;
+    private final String goodMid = """
+     MID (?<my_mid>\\d+)""";
 
+    private final String goodVofDetail = """
+     Threat Level=(?<vof_threat_level>\\d) Category=(?<vof_threat_cat>\\S+) Type=(?<vof_threat_type>.*?)""";
 
-    /**
-     * Threat Level=(?<vof_threat_level>\d) Category=(?<vof_threat_cat>\S+) Type=(?<vof_threat_type>.*?)
-     **/
-    @Multiline
-    public static String goodVofDetail;
+    private final String vofDetailInstance = """
+     Threat Level=1 Category=UNKNOWN Type=a
+     bc""";
 
-    /**
-     * Threat Level=1 Category=UNKNOWN Type=a
-     *bc
-     **/
-    @Multiline
-    public static String vofDetailInstance;
+    private final String vofDetailInstanceWrong1 = """
+     Threat Level=A Category=UNKNOWN Type=abc""";
 
-    /**
-     * Threat Level=A Category=UNKNOWN Type=abc
-     **/
-    @Multiline
-    public static String vofDetailInstanceWrong1;
-
-    /**
-     * Threat Level=1 Category= Type=abc
-     **/
-    @Multiline
-    public static String vofDetailInstanceWrong2;
+    private final String vofDetailInstanceWrong2 = """
+     Threat Level=1 Category= Type=abc""";
 
     @Before
     public void setUp() {
@@ -55,7 +38,6 @@ public class PatternExtractorTest {
 
     @Test
     public void testGoodMid() {
-
         stringPatterns.add(goodMid.trim());
         PatternExtractor extractor = PatternExtractor.builder()
                 .patterns(stringPatterns)
@@ -82,7 +64,6 @@ public class PatternExtractorTest {
 
     @Test
     public void testGoodMid2() {
-
         stringPatterns.add(goodMid.trim());
         stringPatterns.add(".*" + goodMid.trim());
 
@@ -110,7 +91,6 @@ public class PatternExtractorTest {
 
     @Test
     public void testGoodVofDetail() {
-
         stringPatterns.add(goodVofDetail.trim());
         PatternExtractor extractor = PatternExtractor.builder()
                 .patterns(stringPatterns)
@@ -137,7 +117,6 @@ public class PatternExtractorTest {
 
     @Test
     public void testGoodVofDetail2() {
-
         stringPatterns.add(goodVofDetail.trim());
         stringPatterns.add(".*" + goodVofDetail.trim());
         PatternExtractor extractor = PatternExtractor.builder()

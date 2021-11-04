@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.deployment.storm.providers;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +16,9 @@ import static org.mockito.Mockito.when;
 
 public class StormProviderImplTest {
 
-    /**
-     * {"topologies":[{"id":"id1","name":"topology1"}]}
-     */
-    @Multiline
-    private static String runningTopologies;
+    private final String runningTopologies = """
+            {"topologies":[{"id":"id1","name":"topology1"}]}
+            """;
 
     HttpProvider httpProvider = mock(HttpProvider.class);
     StormProvider stormProvider;

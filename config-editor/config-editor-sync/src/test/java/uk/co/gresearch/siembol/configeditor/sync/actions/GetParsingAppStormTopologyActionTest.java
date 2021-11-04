@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.configeditor.sync.actions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,156 +25,150 @@ public class GetParsingAppStormTopologyActionTest {
     private static final ObjectReader ADMIN_CONFIG_READER = new ObjectMapper()
             .readerFor(StormParsingApplicationAttributesDto.class);
 
-    /**
-     *{
-     *   "config_version": 1,
-     *   "client.id.prefix": "siembol.writer",
-     *   "group.id.prefix": "siembol.reader",
-     *   "zookeeper.attributes": {
-     *     "zk.url": "global_url",
-     *     "zk.path": "global_path",
-     *     "zk.base.sleep.ms": 1000,
-     *     "zk.max.retries": 3
-     *   },
-     *   "kafka.batch.writer.attributes": {
-     *     "batch.size": 50,
-     *     "producer.properties": {
-     *       "bootstrap.servers": "global_servers",
-     *       "security.protocol": "SASL_PLAINTEXT"
-     *     }
-     *   },
-     *   "storm.attributes": {
-     *     "bootstrap.servers": "dummy",
-     *     "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
-     *     "kafka.spout.properties": {
-     *       "session.timeout.ms": 300000,
-     *       "security.protocol": "SASL_PLAINTEXT"
-     *     },
-     *     "storm.config": {
-     *       "num.workers": 1
-     *     }
-     *   },
-     *   "overridden.applications": [
-     *     {
-     *       "application.name": "secret",
-     *       "kafka.batch.writer.attributes": {
-     *         "batch.size": 1,
-     *         "producer.properties": {
-     *           "bootstrap.servers": "dummy",
-     *           "security.protocol": "SASL_PLAINTEXT"
-     *         }
-     *       },
-     *       "storm.attributes": {
-     *         "bootstrap.servers": "dummy",
-     *         "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
-     *         "kafka.spout.properties": {
-     *           "session.timeout.ms": 300000,
-     *           "security.protocol": "SASL_PLAINTEXT"
-     *         },
-     *         "storm.config": {
-     *           "num.workers": 2
-     *         }
-     *       }
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String adminConfig;
+    private final String adminConfig = """
+            {
+               "config_version": 1,
+               "client.id.prefix": "siembol.writer",
+               "group.id.prefix": "siembol.reader",
+               "zookeeper.attributes": {
+                 "zk.url": "global_url",
+                 "zk.path": "global_path",
+                 "zk.base.sleep.ms": 1000,
+                 "zk.max.retries": 3
+               },
+               "kafka.batch.writer.attributes": {
+                 "batch.size": 50,
+                 "producer.properties": {
+                   "bootstrap.servers": "global_servers",
+                   "security.protocol": "SASL_PLAINTEXT"
+                 }
+               },
+               "storm.attributes": {
+                 "bootstrap.servers": "dummy",
+                 "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
+                 "kafka.spout.properties": {
+                   "session.timeout.ms": 300000,
+                   "security.protocol": "SASL_PLAINTEXT"
+                 },
+                 "storm.config": {
+                   "num.workers": 1
+                 }
+               },
+               "overridden.applications": [
+                 {
+                   "application.name": "secret",
+                   "kafka.batch.writer.attributes": {
+                     "batch.size": 1,
+                     "producer.properties": {
+                       "bootstrap.servers": "dummy",
+                       "security.protocol": "SASL_PLAINTEXT"
+                     }
+                   },
+                   "storm.attributes": {
+                     "bootstrap.servers": "dummy",
+                     "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
+                     "kafka.spout.properties": {
+                       "session.timeout.ms": 300000,
+                       "security.protocol": "SASL_PLAINTEXT"
+                     },
+                     "storm.config": {
+                       "num.workers": 2
+                     }
+                   }
+                 }
+               ]
+             }
+             """;
 
-    /**
-     *{
-     *   "config_version": 1,
-     *   "client.id.prefix": "siembol.writer",
-     *   "group.id.prefix": "siembol.reader",
-     *   "zookeeper.attributes": {
-     *     "zk.url": "global_url",
-     *     "zk.path": "global_path",
-     *     "zk.base.sleep.ms": 1000,
-     *     "zk.max.retries": 3
-     *   },
-     *   "kafka.batch.writer.attributes": {
-     *     "batch.size": 50,
-     *     "producer.properties": {
-     *       "bootstrap.servers": "global_servers",
-     *       "security.protocol": "SASL_PLAINTEXT"
-     *     }
-     *   },
-     *   "storm.attributes": {
-     *     "bootstrap.servers": "dummy",
-     *     "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
-     *     "kafka.spout.properties": {
-     *       "session.timeout.ms": 300000,
-     *       "security.protocol": "SASL_PLAINTEXT"
-     *     },
-     *     "storm.config": {
-     *       "num.workers": 1
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String adminConfigNoOverriddenApplications;
+    private final String adminConfigNoOverriddenApplications = """
+            {
+               "config_version": 1,
+               "client.id.prefix": "siembol.writer",
+               "group.id.prefix": "siembol.reader",
+               "zookeeper.attributes": {
+                 "zk.url": "global_url",
+                 "zk.path": "global_path",
+                 "zk.base.sleep.ms": 1000,
+                 "zk.max.retries": 3
+               },
+               "kafka.batch.writer.attributes": {
+                 "batch.size": 50,
+                 "producer.properties": {
+                   "bootstrap.servers": "global_servers",
+                   "security.protocol": "SASL_PLAINTEXT"
+                 }
+               },
+               "storm.attributes": {
+                 "bootstrap.servers": "dummy",
+                 "first.pool.offset.strategy": "UNCOMMITTED_LATEST",
+                 "kafka.spout.properties": {
+                   "session.timeout.ms": 300000,
+                   "security.protocol": "SASL_PLAINTEXT"
+                 },
+                 "storm.config": {
+                   "num.workers": 1
+                 }
+               }
+             }
+             """;
 
-    /**
-     *{
-     *   "parsing_applications_version": 0,
-     *   "parsing_applications": [
-     *     {
-     *       "parsing_app_name": "secret",
-     *       "parsing_app_version": 1,
-     *       "parsing_app_author": "siembol",
-     *       "parsing_app_settings": {
-     *         "parsing_app_type": "single_parser",
-     *         "input_topics": [
-     *           "test"
-     *         ],
-     *         "error_topic": "test",
-     *         "input_parallelism": 4,
-     *         "parsing_parallelism": 4,
-     *         "output_parallelism": 4,
-     *         "parse_metadata": false
-     *       },
-     *       "parsing_settings": {
-     *         "single_parser": {
-     *           "output_topic": "test",
-     *           "parser_name": "test"
-     *         }
-     *       }
-     *     },
-     *     {
-     *       "parsing_app_name": "public",
-     *       "parsing_app_version": 1,
-     *       "parsing_app_author": "siembol",
-     *       "parsing_app_settings": {
-     *         "parsing_app_type": "single_parser",
-     *         "input_topics": [
-     *           "test"
-     *         ],
-     *         "error_topic": "test",
-     *         "input_parallelism": 4,
-     *         "parsing_parallelism": 4,
-     *         "output_parallelism": 4,
-     *         "parse_metadata": false
-     *       },
-     *       "parsing_settings": {
-     *         "single_parser": {
-     *           "output_topic": "test",
-     *           "parser_name": "test"
-     *         }
-     *       }
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String release;
+    private final String release = """
+            {
+               "parsing_applications_version": 0,
+               "parsing_applications": [
+                 {
+                   "parsing_app_name": "secret",
+                   "parsing_app_version": 1,
+                   "parsing_app_author": "siembol",
+                   "parsing_app_settings": {
+                     "parsing_app_type": "single_parser",
+                     "input_topics": [
+                       "test"
+                     ],
+                     "error_topic": "test",
+                     "input_parallelism": 4,
+                     "parsing_parallelism": 4,
+                     "output_parallelism": 4,
+                     "parse_metadata": false
+                   },
+                   "parsing_settings": {
+                     "single_parser": {
+                       "output_topic": "test",
+                       "parser_name": "test"
+                     }
+                   }
+                 },
+                 {
+                   "parsing_app_name": "public",
+                   "parsing_app_version": 1,
+                   "parsing_app_author": "siembol",
+                   "parsing_app_settings": {
+                     "parsing_app_type": "single_parser",
+                     "input_topics": [
+                       "test"
+                     ],
+                     "error_topic": "test",
+                     "input_parallelism": 4,
+                     "parsing_parallelism": 4,
+                     "output_parallelism": 4,
+                     "parse_metadata": false
+                   },
+                   "parsing_settings": {
+                     "single_parser": {
+                       "output_topic": "test",
+                       "parser_name": "test"
+                     }
+                   }
+                 }
+               ]
+             }
+             """;
 
     private ConfigServiceHelper serviceHelper;
     private GetParsingAppStormTopologyAction getStormTopologyAction;
     private ConfigEditorServiceContext context;
-    private String topologyImage = "dummyImage";
-    private String serviceName = "dummyService";
+    private final String topologyImage = "dummyImage";
+    private final String serviceName = "dummyService";
 
     @Before
     public void setUp() {
@@ -229,9 +223,9 @@ public class GetParsingAppStormTopologyActionTest {
         Assert.assertEquals(1, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
         Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
 
-        Assert.assertEquals(Integer.valueOf(2),
+        Assert.assertEquals(2,
                 adminConfigSecret.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
-        Assert.assertEquals(Integer.valueOf(1),
+        Assert.assertEquals(1,
                 adminConfigPublic.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
     }
 
@@ -279,9 +273,9 @@ public class GetParsingAppStormTopologyActionTest {
         Assert.assertEquals(50, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
         Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
 
-        Assert.assertEquals(Integer.valueOf(1),
+        Assert.assertEquals(1,
                 adminConfigSecret.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
-        Assert.assertEquals(Integer.valueOf(1),
+        Assert.assertEquals(1,
                 adminConfigPublic.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
     }
 

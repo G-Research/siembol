@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.parsers.syslog;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,163 +25,124 @@ public class BasicSyslogSiembolParserTest {
     private SiembolParser syslogBsdParser;
     private ParserFactory factory;
 
-    /**
-     * {
-     *   "parser_attributes": {
-     *     "parser_type": "syslog",
-     *     "syslog_config": {
-     *     "syslog_version": "RFC_5424",
-     *     "timezone": "UTC"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String syslogConfigRfc_5424;
+    private final String syslogConfigRfc5424 = """
+     {
+       "parser_attributes": {
+         "parser_type": "syslog",
+         "syslog_config": {
+         "syslog_version": "RFC_5424",
+         "timezone": "UTC"
+         }
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "parser_attributes": {
-     *     "parser_type": "syslog",
-     *     "syslog_config": {
-     *     "syslog_version": "RFC_5424",
-     *     "timezone": "UTC",
-     *     "merge_sd_elements" : true
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String syslogConfigRfc_5424MergeSdElements;
+    private final String syslogConfigRfc5424MergeSdElements = """
+     {
+       "parser_attributes": {
+         "parser_type": "syslog",
+         "syslog_config": {
+         "syslog_version": "RFC_5424",
+         "timezone": "UTC",
+         "merge_sd_elements" : true
+         }
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "parser_attributes": {
-     *     "parser_type": "syslog",
-     *     "syslog_config": {
-     *     "syslog_version": "RFC_3164",
-     *     "timezone": "UTC"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String syslogConfigBsd;
+    private final String syslogConfigBsd = """
+     {
+       "parser_attributes": {
+         "parser_type": "syslog",
+         "syslog_config": {
+         "syslog_version": "RFC_3164",
+         "timezone": "UTC"
+         }
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "parser_attributes": {
-     *     "parser_type": "syslog",
-     *     "syslog_config": {
-     *     "syslog_version": "RFC_3164",
-     *     "timezone": "Europe/London"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String syslogConfigBsdLondonTimezone;
+    private final String syslogConfigBsdLondonTimezone = """
+     {
+       "parser_attributes": {
+         "parser_type": "syslog",
+         "syslog_config": {
+         "syslog_version": "RFC_3164",
+         "timezone": "Europe/London"
+         }
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "parser_attributes": {
-     *     "parser_type": "syslog",
-     *     "syslog_config": {
-     *       "syslog_version": "RFC_5424",
-     *       "time_formats": [
-     *       {
-     *         "timezone": "UTC",
-     *         "time_format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
-     *       }]
-     *     }
-     *   },
-     *   "parser_extractors": [
-     *   {
-     *     "extractor_type": "pattern_extractor",
-     *     "name": "dummy",
-     *     "field": "syslog_msg",
-     *     "attributes": {
-     *       "regular_expressions": [
-     *         "^SALscanner INFO TEST:\\s(?<info_msg>.*)$"
-     *         ],
-     *       "should_remove_field": false
-     *     }
-     *   }
-     *   ],
-     *   "transformations" : [
-     *   {
-     *      "transformation_type": "field_name_string_replace_all",
-     *      "attributes": {
-     *        "string_replace_target": "syslog",
-     *        "string_replace_replacement": "dummy"
-     *      }
-     *  }]
-     * }
-     **/
-    @Multiline
-    public static String syslogConfigCustomTimpestamp;
+    private final String syslogConfigCustomTimestamp = """
+     {
+       "parser_attributes": {
+         "parser_type": "syslog",
+         "syslog_config": {
+           "syslog_version": "RFC_5424",
+           "time_formats": [
+           {
+             "timezone": "UTC",
+             "time_format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+           }]
+         }
+       },
+       "parser_extractors": [
+       {
+         "extractor_type": "pattern_extractor",
+         "name": "dummy",
+         "field": "syslog_msg",
+         "attributes": {
+           "regular_expressions": [
+             "^SALscanner INFO TEST:\\\\s(?<info_msg>.*)$"
+             ],
+           "should_remove_field": false
+         }
+       }
+       ],
+       "transformations" : [
+       {
+          "transformation_type": "field_name_string_replace_all",
+          "attributes": {
+            "string_replace_target": "syslog",
+            "string_replace_replacement": "dummy"
+          }
+      }]
+     }
+     """;
 
-    /**
-     * <85>1 2018-05-22T17:07:41+01:00 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 Action="accept" UUid="{0x5b04404c,0x10004,0x651210ac,0xc0000000}" rule="14" rule_uid="{28F2CB68-9017-442B-8C64-6BD43B8082CD}" rule_name="DNS" src="172.16.16.20" dst="172.16.37.100" proto="17" product="VPN-1 & FireWall-1" service="53" s_port="60349" product_family="Network"]
-     **/
-    @Multiline
-    public static String goodSyslogCheckpoint1;
+    private final String goodSyslogCheckpoint1 = """
+     <85>1 2018-05-22T17:07:41+01:00 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 Action="accept" UUid="{0x5b04404c,0x10004,0x651210ac,0xc0000000}" rule="14" rule_uid="{28F2CB68-9017-442B-8C64-6BD43B8082CD}" rule_name="DNS" src="172.16.16.20" dst="172.16.37.100" proto="17" product="VPN-1 & FireWall-1" service="53" s_port="60349" product_family="Network"]""";
 
-    /**
-     * <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert [Fields@1.3.6.1.4.1.2620 Action=" " UUid="{0x0,0x0,0x0,0x0}" Protection Name="Packet Sanity" Severity="2" Confidence Level="5" protection_id="PacketSanity" SmartDefense Profile="Perimeter_Protection" Performance Impact="1" Industry Reference="CAN-2002-1071" Protection Type="anomaly" Attack Info="Invalid TCP flag combination" attack="Malformed Packet" Total logs="24" Suppressed logs="23" proto="6" dst="10.254.101.253" src="10.254.101.12" product="SmartDefense" FollowUp="Not Followed" product_family="Network"]
-     **/
-    @Multiline
-    public static String goodSyslogCheckpoint2;
+    private final String goodSyslogCheckpoint2 = """
+     <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert [Fields@1.3.6.1.4.1.2620 Action=" " UUid="{0x0,0x0,0x0,0x0}" Protection Name="Packet Sanity" Severity="2" Confidence Level="5" protection_id="PacketSanity" SmartDefense Profile="Perimeter_Protection" Performance Impact="1" Industry Reference="CAN-2002-1071" Protection Type="anomaly" Attack Info="Invalid TCP flag combination" attack="Malformed Packet" Total logs="24" Suppressed logs="23" proto="6" dst="10.254.101.253" src="10.254.101.12" product="SmartDefense" FollowUp="Not Followed" product_family="Network"]""";
 
+    private final String goodSyslogEscapedChars = """
+     <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert [Fields@1.3.6.1.4.1.2620 Action=" " UUid="{0x0,0x0,0x0,0x0}" Protection Name="Packet\\" \\] Sanity"]""";
 
-    /**
-     * <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert [Fields@1.3.6.1.4.1.2620 Action=" " UUid="{0x0,0x0,0x0,0x0}" Protection Name="Packet\" \] Sanity"]
-     **/
-    @Multiline
-    public static String goodSyslogEscapedChars;
+    private final String syslogEscapedChars2 = """
+     <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert [Fields@1.3.6.1.4.1.2620 Action=" " Protection Name="Packet" \\] Sanity"][Fields@1.3.6.1.4.1.2620] BOMabcabc""";
 
-    /**
-     * <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert [Fields@1.3.6.1.4.1.2620 Action=" " Protection Name="Packet" \] Sanity"][Fields@1.3.6.1.4.1.2620] BOMabcabc
-     **/
-    @Multiline
-    public static String syslogEscapedChars2;
+    private final String goodNilSD = """
+     <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert - BOMabcabc""";
 
-    /**
-     * <81>1 2018-05-22T03:05:37 172.19.34.31 CP-GW - Alert - BOMabcabc
-     **/
-    @Multiline
-    public static String goodNilSD;
+    private final String goodBSD = """
+     <34>Oct 11 22:14:15 mymachine su: 'su root' failed for dummy on /dev/pts/8""";
 
-    /**
-     * <34>Oct 11 22:14:15 mymachine su: 'su root' failed for dummy on /dev/pts/8
-     **/
-    @Multiline
-    public static String goodBSD;
-
-    /**
-     * <85>1 2018-08-01T09:00:24+01:00 10.254.112.76 CP-GW - Log [Fields@1.3.6.1.4.1.2620 Action=" " UUid="{0x0,0x0,0x0,0x0}" default_device_message="<133>xpand[17978]: admin localhost t +installer:packages:Check_Point_R77_30_JUMBO_HF_1_Bundle_T286_FULL.tgz:has_metadata 0 (+)" facility="local use 0" syslog_severity="Notice" product="Syslog" product_family="Network"]
-     **/
-    @Multiline
-    public static String strangeCheckpoint;
+    private final String strangeCheckpoint = """
+     <85>1 2018-08-01T09:00:24+01:00 10.254.112.76 CP-GW - Log [Fields@1.3.6.1.4.1.2620 Action=" " UUid="{0x0,0x0,0x0,0x0}" default_device_message="<133>xpand[17978]: admin localhost t +installer:packages:Check_Point_R77_30_JUMBO_HF_1_Bundle_T286_FULL.tgz:has_metadata 0 (+)" facility="local use 0" syslog_severity="Notice" product="Syslog" product_family="Network"]""";
 
 
-    /**
-     * <190>1 2019-01-15T12:36:05Z mime1-eqld.uberit.net sal - - - SALscanner INFO TEST: [manlistEmail] applianceupdate.clearswift.com ... [688]
-     */
-    @Multiline
-    public static String customTimeformat;
+    private final String customTimeformat = """
+     <190>1 2019-01-15T12:36:05Z mime1-private.internal.net sal - - - SALscanner INFO TEST: [manlistEmail] applianceupdate.clearswift.com ... [688]""";
 
-    /**
-     * <85>1 2018-05-22T17:07:41+01:00 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 Action1="accept"][Fields@1.3.6.1.4.1.2620 Action2="deny"]
-     **/
-    @Multiline
-    public static String multipleSdElementsDummyCheckpoint1;
+    private final String multipleSdElementsDummyCheckpoint1 = """
+     <85>1 2018-05-22T17:07:41+01:00 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 Action1="accept"][Fields@1.3.6.1.4.1.2620 Action2="deny"]""";
 
-    /**
-     * <85>1 2018-05-22T17:07:41Z 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 syslog1="accept"][Fields@1.3.6.1.4.1.2620 syslog2="deny"]
-     **/
-    @Multiline
-    public static String multipleSdElementsDummyCheckpoint2;
+
+    private final String multipleSdElementsDummyCheckpoint2 = """
+     <85>1 2018-05-22T17:07:41Z 172.16.18.101 CP-GW - Log [Fields@1.3.6.1.4.1.2620 syslog1="accept"][Fields@1.3.6.1.4.1.2620 syslog2="deny"]""";
+
 
     public BasicSyslogSiembolParserTest(Locale locale) {
         Locale.setDefault(locale);
@@ -191,7 +151,7 @@ public class BasicSyslogSiembolParserTest {
     @Before
     public void setUp() throws Exception {
         factory = ParserFactoryImpl.createParserFactory();
-        syslogParser = factory.create(syslogConfigRfc_5424).getAttributes().getSiembolParser();
+        syslogParser = factory.create(syslogConfigRfc5424).getAttributes().getSiembolParser();
         syslogBsdParser = factory.create(syslogConfigBsd).getAttributes().getSiembolParser();
     }
 
@@ -299,7 +259,7 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void goodBSD() throws Exception {
+    public void goodBSD() {
         Map<String, Object> out = syslogBsdParser.parse(goodBSD.trim().getBytes()).get(0);
 
         Assert.assertEquals(0, out.get("syslog_version"));
@@ -312,7 +272,7 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void goodBSDWithBSDTZ() throws Exception {
+    public void goodBSDWithBSDTZ() {
         syslogBsdParser = factory.create(syslogConfigBsdLondonTimezone.trim()).getAttributes().getSiembolParser();
         Map<String, Object> out = syslogBsdParser.parse(goodBSD.trim().getBytes()).get(0);
 
@@ -325,7 +285,7 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void goodBSDWithUTCTZ() throws Exception {
+    public void goodBSDWithUTCTZ() {
         Map<String, Object> out = syslogBsdParser.parse(goodBSD.trim().getBytes()).get(0);
 
         Assert.assertEquals(0, out.get("syslog_version"));
@@ -348,12 +308,12 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void customTimestamp() throws Exception {
-        syslogParser = factory.create(syslogConfigCustomTimpestamp).getAttributes().getSiembolParser();
+    public void customTimestamp() {
+        syslogParser = factory.create(syslogConfigCustomTimestamp).getAttributes().getSiembolParser();
         Map<String, Object> out = syslogParser.parse(customTimeformat.trim().getBytes()).get(0);
 
         Assert.assertEquals(1547555765000L, out.get("timestamp"));
-        Assert.assertEquals("mime1-eqld.uberit.net", out.get("dummy_hostname"));
+        Assert.assertEquals("mime1-private.internal.net", out.get("dummy_hostname"));
         Assert.assertEquals("sal", out.get("dummy_appname"));
         Assert.assertEquals(1, out.get("dummy_version"));
         Assert.assertEquals(23, out.get("dummy_facility"));
@@ -363,8 +323,8 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void customTimestampInvalid() throws Exception {
-        syslogParser = factory.create(syslogConfigCustomTimpestamp).getAttributes().getSiembolParser();
+    public void customTimestampInvalid() {
+        syslogParser = factory.create(syslogConfigCustomTimestamp).getAttributes().getSiembolParser();
         Map<String, Object> out = syslogParser.parse(customTimeformat.trim()
                 .replace("2019-01-15T12:36:05Z", "INVALID")
                 .getBytes())
@@ -372,7 +332,7 @@ public class BasicSyslogSiembolParserTest {
 
         Assert.assertEquals("INVALID", out.get("dummy_timestamp"));
         Assert.assertNotNull(out.get("timestamp"));
-        Assert.assertEquals("mime1-eqld.uberit.net", out.get("dummy_hostname"));
+        Assert.assertEquals("mime1-private.internal.net", out.get("dummy_hostname"));
         Assert.assertEquals("sal", out.get("dummy_appname"));
         Assert.assertEquals(1, out.get("dummy_version"));
         Assert.assertEquals(23, out.get("dummy_facility"));
@@ -382,8 +342,8 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void mergingSdparameters(){
-        syslogParser = factory.create(syslogConfigRfc_5424MergeSdElements).getAttributes().getSiembolParser();
+    public void mergingSdParameters() {
+        syslogParser = factory.create(syslogConfigRfc5424MergeSdElements).getAttributes().getSiembolParser();
         List<Map<String, Object>> out = syslogParser.parse(multipleSdElementsDummyCheckpoint1.trim().getBytes());
         Assert.assertEquals(1, out.size());
         Map<String, Object> current = out.get(0);
@@ -394,7 +354,7 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void noMergeSdparameters(){
+    public void noMergeSdParameters() {
         List<Map<String, Object>> out = syslogParser.parse(multipleSdElementsDummyCheckpoint1.trim().getBytes());
         Assert.assertEquals(2, out.size());
         Map<String, Object> current1 = out.get(0);
@@ -407,8 +367,8 @@ public class BasicSyslogSiembolParserTest {
     }
 
     @Test
-    public void noMergeSdparametersExtractAndTransform(){
-        syslogParser = factory.create(syslogConfigCustomTimpestamp).getAttributes().getSiembolParser();
+    public void noMergeSdParametersExtractAndTransform(){
+        syslogParser = factory.create(syslogConfigCustomTimestamp).getAttributes().getSiembolParser();
         List<Map<String, Object>> out = syslogParser.parse(multipleSdElementsDummyCheckpoint2.trim().getBytes());
         Assert.assertEquals(2, out.size());
         Map<String, Object> current1 = out.get(0);
@@ -420,4 +380,3 @@ public class BasicSyslogSiembolParserTest {
         Assert.assertEquals("Fields@1.3.6.1.4.1.2620", current2.get("dummy_sd_id"));
     }
 }
-

@@ -21,9 +21,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class EnrichingRuleTest {
-    private String name = "test_rule";
-    private Integer version = 1;
-    private String tableName = "test_table";
+    private final String name = "test_rule";
+    private final Integer version = 1;
+    private final String tableName = "test_table";
     private String key = "test_key";
 
     private Map<String, Object> event;
@@ -40,7 +40,7 @@ public class EnrichingRuleTest {
         enrichmentTags.add(Pair.of("is_test", "true"));
         matcher = Mockito.mock(BasicMatcher.class);
         event = new HashMap<>();
-        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.MATCH);
+        when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.MATCH);
     }
 
     @Test

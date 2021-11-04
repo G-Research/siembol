@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.configeditor.sync.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,93 +23,88 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class StormApplicationProviderTest {
-    private static ObjectReader TOPOLOGIES_READER = new ObjectMapper()
+    private static final ObjectReader TOPOLOGIES_READER = new ObjectMapper()
             .readerFor(StormTopologiesDto.class);
 
-    /**
-     * {
-     *   "timestamp": 1,
-     *   "topologies": [
-     *     {
-     *       "topology_name": "a",
-     *       "topology_id": "1",
-     *       "image": "secret",
-     *       "service_name": "alert",
-     *       "attributes": [
-     *         "a1",
-     *         "a2"
-     *       ]
-     *     },
-     *     {
-     *       "topology_name": "b",
-     *       "topology_id": "2",
-     *       "image": "secret",
-     *       "service_name": "parsing",
-     *       "attributes": [
-     *         "a1",
-     *         "a2",
-     *         "a3"
-     *       ]
-     *     },
-     *     {
-     *       "topology_name": "c",
-     *       "topology_id": "3",
-     *       "image": "secret",
-     *       "service_name": "parsing",
-     *       "attributes": [
-     *         "a1",
-     *         "a2",
-     *         "a3"
-     *       ]
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String initTopologies;
+    private final String initTopologies = """
+     {
+       "timestamp": 1,
+       "topologies": [
+         {
+           "topology_name": "a",
+           "topology_id": "1",
+           "image": "secret",
+           "service_name": "alert",
+           "attributes": [
+             "a1",
+             "a2"
+           ]
+         },
+         {
+           "topology_name": "b",
+           "topology_id": "2",
+           "image": "secret",
+           "service_name": "parsing",
+           "attributes": [
+             "a1",
+             "a2",
+             "a3"
+           ]
+         },
+         {
+           "topology_name": "c",
+           "topology_id": "3",
+           "image": "secret",
+           "service_name": "parsing",
+           "attributes": [
+             "a1",
+             "a2",
+             "a3"
+           ]
+         }
+       ]
+     }
+     """;
 
-    /**
-     * {
-     *   "timestamp": 1,
-     *   "topologies": [
-     *     {
-     *       "topology_name": "a",
-     *       "topology_id": "1",
-     *       "image": "secret",
-     *       "service_name": "alert",
-     *       "attributes": [
-     *         "a1",
-     *         "a3"
-     *       ]
-     *     },
-     *     {
-     *       "topology_name": "b",
-     *       "topology_id": "2",
-     *       "image": "secret",
-     *       "service_name": "parsing",
-     *       "attributes": [
-     *         "a1",
-     *         "a2",
-     *         "a3"
-     *       ]
-     *     },
-     *     {
-     *       "topology_name": "c",
-     *       "topology_id": "3",
-     *       "image": "secret",
-     *       "service_name": "parsing",
-     *       "attributes": [
-     *         "a1",
-     *         "a2",
-     *         "a4"
-     *       ]
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String updatedTopologies;
-
+    private final String updatedTopologies = """
+     {
+       "timestamp": 1,
+       "topologies": [
+         {
+           "topology_name": "a",
+           "topology_id": "1",
+           "image": "secret",
+           "service_name": "alert",
+           "attributes": [
+             "a1",
+             "a3"
+           ]
+         },
+         {
+           "topology_name": "b",
+           "topology_id": "2",
+           "image": "secret",
+           "service_name": "parsing",
+           "attributes": [
+             "a1",
+             "a2",
+             "a3"
+           ]
+         },
+         {
+           "topology_name": "c",
+           "topology_id": "3",
+           "image": "secret",
+           "service_name": "parsing",
+           "attributes": [
+             "a1",
+             "a2",
+             "a4"
+           ]
+         }
+       ]
+     }
+     """;
 
     private ZooKeeperConnector zooKeeperConnector;
     private StormApplicationProviderImpl stormApplicationProvider;
@@ -164,13 +159,13 @@ public class StormApplicationProviderTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertEquals(3, result.getAttributes().getTopologies().size());
-        StormTopologyDto restarted = result.getAttributes().getTopologies().stream()
+        Optional<StormTopologyDto> restarted = result.getAttributes().getTopologies().stream()
                 .filter(x -> x.getTopologyName().equals("a"))
-                .findFirst().orElseGet(null);
+                .findFirst();
 
-        Assert.assertNotNull(restarted);
-        Assert.assertNotNull(restarted.getTopologyId());
-        Assert.assertNotEquals("1", restarted.getTopologyId());
+        Assert.assertTrue(restarted.isPresent());
+        Assert.assertNotNull(restarted.get().getTopologyId());
+        Assert.assertNotEquals("1", restarted.get().getTopologyId());
     }
 
     @Test
@@ -203,7 +198,7 @@ public class StormApplicationProviderTest {
 
     @Test
     public void removeTopologiesFromOneService() throws Exception {
-        services.addAll(Arrays.asList("parsing"));
+        services.addAll(List.of("parsing"));
         ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(new ArrayList<>(), services);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getTopologies());
@@ -236,20 +231,20 @@ public class StormApplicationProviderTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void wrongInitTopologies() throws Exception {
+    public void wrongInitTopologies() {
         when(zooKeeperConnector.getData()).thenReturn("INVALID");
         doNothing().when(zooKeeperConnector).addCacheListener(any());
         stormApplicationProvider = new StormApplicationProviderImpl(zooKeeperConnector);
     }
 
     @Test
-    public void testHealth() throws Exception {
+    public void testHealth() {
         Health health = stormApplicationProvider.checkHealth();
         Assert.assertEquals(Status.UP, health.getStatus());
     }
 
     @Test
-    public void updateDuplicatesError() throws Exception {
+    public void updateDuplicatesError() {
         topologiesToUpdate.get(0).setTopologyName("b");
         services.addAll(Arrays.asList("alert", "parsing"));
         ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services);

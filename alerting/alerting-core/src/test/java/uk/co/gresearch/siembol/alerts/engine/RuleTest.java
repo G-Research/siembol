@@ -15,9 +15,9 @@ import java.util.*;
 import static org.mockito.Mockito.when;
 
 public class RuleTest {
-    private String name = "test_rule";
-    private Integer version = 1;
-    private Map<String, Object> event = new HashMap<>();
+    private final String name = "test_rule";
+    private final Integer version = 1;
+    private final Map<String, Object> event = new HashMap<>();
     private List<Pair<String, String>> constants;
     private List<Pair<String, Object>> protections;
     private BasicMatcher matcher;
@@ -25,16 +25,16 @@ public class RuleTest {
 
     @Before
     public void setUp() {
-        constants = Arrays.asList(Pair.of("detection_source", "alerts"));
-        protections = Arrays.asList(Pair.of(AlertingFields.MAX_PER_HOUR_FIELD.toString(), Integer.valueOf(1)));
+        constants = List.of(Pair.of("detection_source", "alerts"));
+        protections = List.of(Pair.of(AlertingFields.MAX_PER_HOUR_FIELD.toString(), 1));
         matcher = Mockito.mock(BasicMatcher.class);
-        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.MATCH);
+        when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.MATCH);
     }
 
     @Test
     public void testGoodMetadata() {
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .version(version)
                 .tags(constants)
@@ -52,7 +52,7 @@ public class RuleTest {
         Assert.assertEquals("alerts", event.get("detection_source"));
 
 
-        Assert.assertEquals(Integer.valueOf(1), event.get(AlertingFields.MAX_PER_HOUR_FIELD.toString()));
+        Assert.assertEquals(1, event.get(AlertingFields.MAX_PER_HOUR_FIELD.toString()));
         Assert.assertFalse(rule.canModifyEvent());
     }
 
@@ -61,7 +61,7 @@ public class RuleTest {
         constants = new ArrayList<>(constants);
         constants.add(Pair.of("malicious_url", "http://${dummy_host}/${dummy_path}"));
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .version(version)
                 .tags(constants)
@@ -82,7 +82,7 @@ public class RuleTest {
         Assert.assertEquals("http://alerts.com/about", event.get("malicious_url"));
 
 
-        Assert.assertEquals(Integer.valueOf(1), event.get(AlertingFields.MAX_PER_HOUR_FIELD.toString()));
+        Assert.assertEquals(1, event.get(AlertingFields.MAX_PER_HOUR_FIELD.toString()));
         Assert.assertFalse(rule.canModifyEvent());
     }
 
@@ -91,7 +91,7 @@ public class RuleTest {
         when(matcher.canModifyEvent()).thenReturn(true);
 
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .version(version)
                 .tags(constants)
@@ -104,7 +104,7 @@ public class RuleTest {
     @Test
     public void testGoodMatch() {
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .version(version)
                 .tags(constants)
@@ -118,9 +118,9 @@ public class RuleTest {
 
     @Test
     public void testGoodNoMatch() {
-        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenReturn(EvaluationResult.NO_MATCH);
+        when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.NO_MATCH);
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .version(version)
                 .tags(constants)
@@ -134,9 +134,9 @@ public class RuleTest {
 
     @Test(expected = RuntimeException.class)
     public void testThrowsException() throws RuntimeException {
-        when(matcher.match(ArgumentMatchers.<Map<String, Object>>any())).thenThrow(new RuntimeException());
+        when(matcher.match(ArgumentMatchers.any())).thenThrow(new RuntimeException());
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .version(version)
                 .tags(constants)
@@ -149,7 +149,7 @@ public class RuleTest {
     @Test(expected = IllegalArgumentException.class)
     public void missingName()  {
         rule = Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .version(version)
                 .tags(constants)
                 .protections(protections)
@@ -159,7 +159,7 @@ public class RuleTest {
     @Test(expected = IllegalArgumentException.class)
     public void missingVersion()  {
         Rule.builder()
-                .matchers(Arrays.asList(matcher))
+                .matchers(List.of(matcher))
                 .name(name)
                 .tags(constants)
                 .protections(protections)

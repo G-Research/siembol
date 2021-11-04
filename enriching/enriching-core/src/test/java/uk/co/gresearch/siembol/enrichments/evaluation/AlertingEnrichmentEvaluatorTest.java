@@ -1,7 +1,5 @@
 package uk.co.gresearch.siembol.enrichments.evaluation;
 
-
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,16 +21,14 @@ import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.Status
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.OK;
 
 public class AlertingEnrichmentEvaluatorTest {
-    /**
-     * {
-     *   "timestamp" : 1,
-     *   "dummy_bool" : true,
-     *   "dummy_str" : "test",
-     *   "a" : "conflict"
-     * }
-     **/
-    @Multiline
-    public static String simpleEvent;
+    private final String simpleEvent = """
+            {
+              "timestamp" : 1,
+              "dummy_bool" : true,
+              "dummy_str" : "test",
+              "a" : "conflict"
+            }
+            """;
 
     private AlertingAttributes alertingAttributes;
     private AlertingResult alertingResult;

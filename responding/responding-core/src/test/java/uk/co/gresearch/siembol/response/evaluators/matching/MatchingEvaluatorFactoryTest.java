@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.matching;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,27 +7,25 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 public class MatchingEvaluatorFactoryTest {
-    /**
-     * {
-     *   "evaluation_result": "match",
-     *   "matchers": [
-     *     {
-     *       "matcher_type": "IS_IN_SET",
-     *       "is_negated": false,
-     *       "field": "is_alert",
-     *       "data": "true"
-     *     },
-     *     {
-     *       "matcher_type": "REGEX_MATCH",
-     *       "is_negated": false,
-     *       "field": "to_copy",
-     *       "data": "(?<new_field>.)"
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+            {
+              "evaluation_result": "match",
+              "matchers": [
+                {
+                  "matcher_type": "IS_IN_SET",
+                  "is_negated": false,
+                  "field": "is_alert",
+                  "data": "true"
+                },
+                {
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "to_copy",
+                  "data": "(?<new_field>.)"
+                }
+              ]
+            }
+            """;
 
     private MatchingEvaluatorFactory factory;
 

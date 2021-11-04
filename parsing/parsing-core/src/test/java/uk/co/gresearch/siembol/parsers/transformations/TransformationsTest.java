@@ -3,7 +3,6 @@ package uk.co.gresearch.siembol.parsers.transformations;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,181 +28,153 @@ public class TransformationsTest {
         log = JSON_LOG_READER.readValue(message);
     }
 
-    /**
-     * {
-     *   "transformation_type": "field_name_string_replace",
-     *   "attributes": {
-     *     "string_replace_target": " ",
-     *     "string_replace_replacement": "_"
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationReplace;
+    private final String transformationReplace = """
+     {
+       "transformation_type": "field_name_string_replace",
+       "attributes": {
+         "string_replace_target": " ",
+         "string_replace_replacement": "_"
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "transformation_type": "filter_message",
-     *   "attributes": {
-     *     "message_filter" : {
-     *         "matchers" : [
-     *          {
-     *              "field_name" : "dummy field",
-     *              "pattern" : "abc",
-     *              "negated" : false
-     *          },
-     *          {
-     *              "field_name" : "secret_field",
-     *              "pattern" : "secret",
-     *              "negated" : true
-     *          }
-     *          ]
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationFilter;
+    private final String transformationFilter = """
+     {
+       "transformation_type": "filter_message",
+       "attributes": {
+         "message_filter" : {
+             "matchers" : [
+              {
+                  "field_name" : "dummy field",
+                  "pattern" : "abc",
+                  "negated" : false
+              },
+              {
+                  "field_name" : "secret_field",
+                  "pattern" : "secret",
+                  "negated" : true
+              }
+              ]
+         }
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "transformation_type": "field_name_string_replace_all",
-     *   "attributes": {
-     *     "string_replace_target": " ",
-     *     "string_replace_replacement": "_"
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationReplaceAll;
+    private final String transformationReplaceAll = """
+     {
+       "transformation_type": "field_name_string_replace_all",
+       "attributes": {
+         "string_replace_target": " ",
+         "string_replace_replacement": "_"
+       }
+     }
+     """;
 
-    /**
-     * {
-     *   "transformation_type": "field_name_string_delete_all",
-     *   "attributes": {
-     *     "string_replace_target": " "
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationDeleteAll;
+    private final String transformationDeleteAll = """
+     {
+       "transformation_type": "field_name_string_delete_all",
+       "attributes": {
+         "string_replace_target": " "
+       }
+     }
+     """;
 
-    /**
-     *{
-     *   "transformation_type": "trim_value",
-     *   "attributes": {
-     *     "fields_filter": {
-     *      "including_fields": ["timestamp", "trim_field"]
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationTrim;
-
-    /**
-     *{
-     *   "transformation_type": "chomp_value",
-     *   "attributes": {
-     *     "fields_filter": {
-     *      "including_fields": ["timestamp", "chomp_field"]
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationChomp;
+    private final String transformationTrim = """
+    {
+       "transformation_type": "trim_value",
+       "attributes": {
+         "fields_filter": {
+          "including_fields": ["timestamp", "trim_field"]
+         }
+       }
+     }
+     """;
 
 
-    /**
-     *{
-     *   "transformation_type": "delete_fields",
-     *   "attributes": {
-     *     "fields_filter": {
-     *       "including_fields": [".*"],
-     *       "excluding_fields": ["timestamp"]
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationDelete;
+    private final String transformationChomp = """
+    {
+       "transformation_type": "chomp_value",
+       "attributes": {
+         "fields_filter": {
+          "including_fields": ["timestamp", "chomp_field"]
+         }
+       }
+     }
+     """;
 
-    /**
-     *{
-     *   "transformation_type": "rename_fields",
-     *   "attributes": {
-     *     "field_rename_map": [
-     *     {
-     *       "field_to_rename": "timestamp",
-     *       "new_name": "timestamp_renamed"
-     *     },
-     *     {
-     *       "field_to_rename": "dummy field",
-     *       "new_name": "dummy_field_renamed"
-     *     }
-     *     ]
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationRename;
+    private final String transformationDelete = """
+    {
+       "transformation_type": "delete_fields",
+       "attributes": {
+         "fields_filter": {
+           "including_fields": [".*"],
+           "excluding_fields": ["timestamp"]
+         }
+       }
+     }
+     """;
 
-    /**
-     *{
-     *   "transformation_type": "field_name_change_case",
-     *   "attributes": {
-     *      "case_type" : "uppercase"
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationFieldNameUpperCase;
+    private final String transformationRename = """
+    {
+       "transformation_type": "rename_fields",
+       "attributes": {
+         "field_rename_map": [
+         {
+           "field_to_rename": "timestamp",
+           "new_name": "timestamp_renamed"
+         },
+         {
+           "field_to_rename": "dummy field",
+           "new_name": "dummy_field_renamed"
+         }
+         ]
+       }
+     }
+     """;
 
-    /**
-     *{
-     *   "transformation_type": "field_name_change_case",
-     *   "attributes": {
-     *      "case_type" : "lowercase"
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationFieldLowerCase;
+    private final String transformationFieldNameUpperCase = """
+    {
+       "transformation_type": "field_name_change_case",
+       "attributes": {
+          "case_type" : "uppercase"
+       }
+     }
+     """;
 
-    /**
-     *{
-     *   "transformation_type": "lowercase_value",
-     *   "attributes": {
-     *     "fields_filter": {
-     *      "including_fields": ["timestamp", "chomp_field"]
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationLowerCase;
+    private final String transformationFieldLowerCase = """
+    {
+       "transformation_type": "field_name_change_case",
+       "attributes": {
+          "case_type" : "lowercase"
+       }
+     }
+     """;
 
-    /**
-     *{
-     *   "transformation_type": "uppercase_value",
-     *   "attributes": {
-     *     "fields_filter": {
-     *      "including_fields": ["timestamp", "chomp_field"]
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String transformationUpperCase;
+    private final String transformationLowerCase = """
+    {
+       "transformation_type": "lowercase_value",
+       "attributes": {
+         "fields_filter": {
+          "including_fields": ["timestamp", "chomp_field"]
+         }
+       }
+     }
+     """;
 
+    private final String transformationUpperCase = """
+    {
+       "transformation_type": "uppercase_value",
+       "attributes": {
+         "fields_filter": {
+          "including_fields": ["timestamp", "chomp_field"]
+         }
+       }
+     }
+     """;
 
-
-    /**
-     * {"timestamp":12345, "test field a" : "true", "trim_field" : "   message     ", "dummy field" : "abc", "chomp_field" : "message\n"}
-     **/
-    @Multiline
-    public static String message;
+    private final String  message = """
+     {"timestamp":12345, "test field a" : "true", "trim_field" : "   message     ", "dummy field" : "abc", "chomp_field" : "message\\n"}
+     """;
 
     @Test
     public void testGoodReplace() throws IOException {

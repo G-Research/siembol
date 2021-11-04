@@ -9,7 +9,7 @@ public interface ZooKeeperConnectorFactory extends ZooKeeperGenericConnectorFact
                 .path(attributes.getZkPath())
                 .baseSleepTimeMs(attributes.getZkBaseSleepMs())
                 .maxRetries(attributes.getZkMaxRetries())
+                .initValueIfNotExists(attributes.getInitValueIfNotExists())
                 .build();
-
     }
 }

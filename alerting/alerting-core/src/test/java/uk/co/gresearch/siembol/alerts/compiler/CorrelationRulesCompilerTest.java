@@ -1,78 +1,73 @@
 package uk.co.gresearch.siembol.alerts.compiler;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 public class CorrelationRulesCompilerTest {
-    /**
-     *{
-     *  "rules_version" :1,
-     *  "tags" : [ { "tag_name" : "detection_source", "tag_value" : "siembol_correlation_alerts" } ],
-     *  "rules" : [ {
-     *      "tags" : [ { "tag_name" : "test", "tag_value" : "true" } ],
-     *      "rule_protection": {
-     *         "max_per_hour": 500,
-     *         "max_per_day": 1000
-     *       },
-     *      "rule_name" : "test_rule",
-     *      "rule_version" : 1,
-     *      "rule_author" : "dummy",
-     *      "rule_description": "Testing rule",
-     *      "correlation_attributes" : {
-     *          "time_unit" : "seconds",
-     *          "time_window" : 500,
-     *          "time_computation_type" : "processing_time",
-     *          "alerts" : [
-     *          {
-     *              "alert" : "alert1",
-     *              "threshold" : 5
-     *          },
-     *          {
-     *              "alert" : "alert2",
-     *              "threshold" : 5
-     *         }]
-     *      }
-     *  }]
-     *}
-     **/
-    @Multiline
-    public static String rulesWithSimpleCorrelationRule;
+    private final String rulesWithSimpleCorrelationRule = """
+            {
+              "rules_version" :1,
+              "tags" : [ { "tag_name" : "detection_source", "tag_value" : "siembol_correlation_alerts" } ],
+              "rules" : [ {
+                  "tags" : [ { "tag_name" : "test", "tag_value" : "true" } ],
+                  "rule_protection": {
+                     "max_per_hour": 500,
+                     "max_per_day": 1000
+                   },
+                  "rule_name" : "test_rule",
+                  "rule_version" : 1,
+                  "rule_author" : "dummy",
+                  "rule_description": "Testing rule",
+                  "correlation_attributes" : {
+                      "time_unit" : "seconds",
+                      "time_window" : 500,
+                      "time_computation_type" : "processing_time",
+                      "alerts" : [
+                      {
+                          "alert" : "alert1",
+                          "threshold" : 5
+                      },
+                      {
+                          "alert" : "alert2",
+                          "threshold" : 5
+                     }]
+                  }
+              }]
+            }
+            """;
 
-    /**{
-     *      "rule_name" : "test_rule_event_time",
-     *      "rule_version" : 1,
-     *      "rule_author" : "dummy",
-     *      "rule_description": "Testing rule",
-     *      "correlation_attributes" : {
-     *          "time_unit" : "seconds",
-     *          "time_window" : 500,
-     *          "time_computation_type" : "event_time",
-     *          "max_time_lag_in_sec": 30,
-     *          "alerts" : [
-     *          {
-     *              "alert" : "alert1",
-     *              "threshold" : 5
-     *          },
-     *          {
-     *              "mandatory": true,
-     *              "alert" : "alert2",
-     *              "threshold" : 5
-     *         }]
-     *      }
-     *  }
-     **/
-    @Multiline
-    public static String simpleCorrelationRule;
-
+    private final String simpleCorrelationRule = """
+            {
+                  "rule_name" : "test_rule_event_time",
+                  "rule_version" : 1,
+                  "rule_author" : "dummy",
+                  "rule_description": "Testing rule",
+                  "correlation_attributes" : {
+                      "time_unit" : "seconds",
+                      "time_window" : 500,
+                      "time_computation_type" : "event_time",
+                      "max_time_lag_in_sec": 30,
+                      "alerts" : [
+                      {
+                          "alert" : "alert1",
+                          "threshold" : 5
+                      },
+                      {
+                          "mandatory": true,
+                          "alert" : "alert2",
+                          "threshold" : 5
+                     }]
+                  }
+            }
+            """;
 
     private AlertingCompiler compiler;
 
     @Before
     public void setUp() throws Exception {
-        compiler  = AlertingCorrelationRulesCompiler.createAlertingCorrelationRulesCompiler();
+        compiler = AlertingCorrelationRulesCompiler.createAlertingCorrelationRulesCompiler();
     }
 
     @Test

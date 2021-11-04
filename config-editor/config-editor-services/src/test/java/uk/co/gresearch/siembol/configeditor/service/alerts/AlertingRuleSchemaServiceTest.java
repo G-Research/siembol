@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.service.alerts;
 
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,27 +29,23 @@ import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
 
 
 public class AlertingRuleSchemaServiceTest {
-    /**
-     * {"test_event":"true"}
-     **/
-    @Multiline
-    public static String testEvent;
-    /**
-     * {
-     *   "event" : {"test_event":"true"}
-     * }
-     **/
-    @Multiline
-    public static String testSpecification;
+    private final String testEvent = """
+            {"test_event":"true"}""";
+
+    private final String testSpecification = """
+            {
+              "event" : {"test_event":"true"}
+            }
+            """;
 
     private AlertingRuleSchemaService alertingRuleSchemaService;
-    private final String ruleSchema = "dummmy schema";
-    private final String testSchema = "dummmy test schema";
-    private final String adminSchema = "dummmy admin config schema";
-    private final String testRule = "dummmy rule";
-    private final String testRules = "dummmy rules";
+    private final String ruleSchema = "dummy schema";
+    private final String testSchema = "dummy test schema";
+    private final String adminSchema = "dummy admin config schema";
+    private final String testRule = "dummy rule";
+    private final String testRules = "dummy rules";
     private final String testResultOutput = "test output";
-    private final String testConfig = "dummmy config";
+    private final String testConfig = "dummy config";
     private AlertingCompiler alertingCompiler;
     private AlertingResult alertingResult;
     private AlertingAttributes alertingAttributes;
@@ -147,7 +143,7 @@ public class AlertingRuleSchemaServiceTest {
     }
 
     @Test
-    public void ValidateRulesError()  {
+    public void ValidateRulesError() {
         alertingAttributes.setMessage("error");
         alertingAttributes.setException("exception");
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);

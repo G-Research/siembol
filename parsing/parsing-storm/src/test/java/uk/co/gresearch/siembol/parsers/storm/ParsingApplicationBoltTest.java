@@ -3,7 +3,6 @@ package uk.co.gresearch.siembol.parsers.storm;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
@@ -30,65 +29,58 @@ import static org.mockito.Mockito.when;
 public class ParsingApplicationBoltTest {
     private static ObjectReader JSON_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
-    /**
-     *RAW_LOG
-     **/
-    @Multiline
-    public static String log;
+    String log = """
+     RAW_LOG
+     """;
 
-    /**
-     * {"is_metadata" : true}
-     **/
-    @Multiline
-    public static String metadata;
+    public static String metadata = """
+      {"is_metadata" : true}
+     """;
 
-    /**
-     *{
-     *   "parsing_app_name": "test",
-     *   "parsing_app_version": 1,
-     *   "parsing_app_author": "dummy",
-     *   "parsing_app_description": "Description of parser application",
-     *   "parsing_app_settings": {
-     *     "input_topics": [
-     *       "secret"
-     *     ],
-     *     "parse_metadata" : false,
-     *     "error_topic": "error",
-     *     "input_parallelism": 1,
-     *     "parsing_parallelism": 2,
-     *     "output_parallelism": 3,
-     *     "parsing_app_type": "single_parser"
-     *   },
-     *   "parsing_settings": {
-     *     "single_parser": {
-     *       "parser_name": "single",
-     *       "output_topic": "output"
-     *     }
-     *   }
-     * }
-     **/
-    @Multiline
-    public static String simpleSingleApplicationParser;
 
-    /**
-     * {
-     *   "parsers_version": 1,
-     *   "parsers_configurations": [
-     *     {
-     *       "parser_description": "for testing single app parser",
-     *       "parser_version": 2,
-     *       "parser_name": "single",
-     *       "parser_author": "dummy",
-     *       "parser_attributes": {
-     *         "parser_type": "generic"
-     *       }
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String testParsersConfigs;
+    public static String simpleSingleApplicationParser = """
+     {
+        "parsing_app_name": "test",
+        "parsing_app_version": 1,
+        "parsing_app_author": "dummy",
+        "parsing_app_description": "Description of parser application",
+        "parsing_app_settings": {
+          "input_topics": [
+            "secret"
+          ],
+          "parse_metadata" : false,
+          "error_topic": "error",
+          "input_parallelism": 1,
+          "parsing_parallelism": 2,
+          "output_parallelism": 3,
+          "parsing_app_type": "single_parser"
+        },
+        "parsing_settings": {
+          "single_parser": {
+            "parser_name": "single",
+            "output_topic": "output"
+          }
+        }
+      }
+     """;
 
+
+    public static String testParsersConfigs = """
+      {
+        "parsers_version": 1,
+        "parsers_configurations": [
+          {
+            "parser_description": "for testing single app parser",
+            "parser_version": 2,
+            "parser_name": "single",
+            "parser_author": "dummy",
+            "parser_attributes": {
+              "parser_type": "generic"
+            }
+          }
+        ]
+      }
+     """;
 
     private Tuple tuple;
     private OutputCollector collector;

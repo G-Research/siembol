@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.alerts.engine;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,22 +9,16 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class RegexMatcherTest {
-    private String field = "test_field";
+    private final String field = "test_field";
     Map<String, Object> event;
     RegexMatcher matcher;
 
-    /**
-     * Threat Level=(?<vof_threat_level>\d) Category=(?<vof_threat_cat>\S+) Type=(?<vof_threat_type>.*?)
-     **/
-    @Multiline
-    public static String goodVofDetail;
+    private final String goodVofDetail = """
+            Threat Level=(?<vof_threat_level>\\d) Category=(?<vof_threat_cat>\\S+) Type=(?<vof_threat_type>.*?)""";
 
-    /**
-     * Threat Level=1 Category=UNKNOWN Type=a
-     *bc
-     **/
-    @Multiline
-    public static String vofDetailInstance;
+    private final String vofDetailInstance = """
+            Threat Level=1 Category=UNKNOWN Type=a
+            bc""";
 
     @Before
     public void setUp() {
@@ -73,7 +66,7 @@ public class RegexMatcherTest {
 
         EvaluationResult rest = matcher.match(event);
         Assert.assertEquals(EvaluationResult.NO_MATCH, rest);
-        Assert.assertEquals(matcher.canModifyEvent(), true);
+        Assert.assertTrue(matcher.canModifyEvent());
     }
 
     @Test
@@ -189,5 +182,4 @@ public class RegexMatcherTest {
                 .pattern("valid")
                 .build();
     }
-
 }

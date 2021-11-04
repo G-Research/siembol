@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.configeditor.service.alerts.sigma;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,40 +16,34 @@ import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.model.SigmaDete
 import java.util.*;
 
 public class SigmaSearchTest {
-    /**
-     * iptables:
-     *   Image|endswith: '/service'
-     *   CommandLine|contains|all:
-     *     - 'iptables'
-     *     - 'stop'
-     *     - 1
-     * keywords:
-     *   - entered promiscuous mode
-     *   - 1
-     *   - test secret word
-     * keyword:
-     *   - single
-     */
-    @Multiline
-    private static String sigmaDetectionExample;
+    private final String sigmaDetectionExample = """
+            iptables:
+                Image|endswith: '/service'
+                CommandLine|contains|all:
+                    - 'iptables'
+                    - 'stop'
+                    - 1
+            keywords:
+                - entered promiscuous mode
+                - 1
+                - test secret word
+            keyword:
+                - single
+            """;
 
-    /**
-     * iptables:
-     *   Image: null
-     *   test: ''
-     */
-    @Multiline
-    private static String sigmaDetectionExampleEmptyValues;
+    private final String sigmaDetectionExampleEmptyValues = """
+            iptables:
+                Image: null
+                test: ''
+            """;
 
-    /**
-     * iptables:
-     *   Image: 'abc'
-     *   CommandLine|contains|all:
-     *     - true
-     *     - 1
-     */
-    @Multiline
-    private static String sigmaDetectionExampleBooleanValue;
+    private final String sigmaDetectionExampleBooleanValue = """
+            iptables:
+                Image: 'abc'
+                CommandLine|contains|all:
+                    - true
+                    - 1
+            """;
 
     private static final ObjectReader SIGMA_DETECTION_READER = new ObjectMapper(new YAMLFactory())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -209,5 +203,4 @@ public class SigmaSearchTest {
                 .fieldNames()
                 .forEachRemaining(x -> builder.addMapEntry(x, searchesMap.get("iptables").get(x)));
     }
-
 }

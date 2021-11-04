@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.compiler;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,119 +12,110 @@ import static org.mockito.Mockito.when;
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
 
 public class RespondingCompilerImplTest {
-    /**
-     * {
-     *   "type" : "object",
-     *   "description" : "Attributes for fixed evaluator",
-     *   "title" : "fixed evaluator attributes",
-     *   "properties" : {
-     *     "evaluation_result" : {
-     *       "enum" : [ "match", "no_match", "filtered" ],
-     *       "type" : "string",
-     *       "description" : "Evaluation result returned by the evaluator"
-     *     }
-     *   },
-     *   "required" : [ "evaluation_result" ]
-     * }
-     */
-    @Multiline
-    public static String evaluatorAttributes;
+    private final String evaluatorAttributes = """
+            {
+              "type" : "object",
+              "description" : "Attributes for fixed evaluator",
+              "title" : "fixed evaluator attributes",
+              "properties" : {
+                "evaluation_result" : {
+                  "enum" : [ "match", "no_match", "filtered" ],
+                  "type" : "string",
+                  "description" : "Evaluation result returned by the evaluator"
+                }
+              },
+              "required" : [ "evaluation_result" ]
+            }
+            """;
 
-    /**
-     * {
-     *   "type" : "object",
-     *   "description" : "json path assignment",
-     *   "title" : "json path assignment",
-     *   "properties" : {
-     *     "assignment_type" : {
-     *       "enum" : [ "match_always", "no_match_when_empty", "error_match_when_empty" ],
-     *       "type" : "string",
-     *       "description" : "The type of the assigment based on json path evaluation"
-     *     },
-     *     "field_name" : {
-     *       "type" : "string",
-     *       "description" : "The name of the field in which the non empty result of the json path will be stored"
-     *     },
-     *     "json_path" : {
-     *       "type" : "string",
-     *       "description" : "Json path ",
-     *       "minItems" : 1
-     *     }
-     *   },
-     *   "required" : [ "assignment_type", "field_name", "json_path" ]
-     * }
-     */
-    @Multiline
-    public static String evaluatorNextAttributes;
+    private final String evaluatorNextAttributes = """
+            {
+              "type" : "object",
+              "description" : "json path assignment",
+              "title" : "json path assignment",
+              "properties" : {
+                "assignment_type" : {
+                  "enum" : [ "match_always", "no_match_when_empty", "error_match_when_empty" ],
+                  "type" : "string",
+                  "description" : "The type of the assignment based on json path evaluation"
+                },
+                "field_name" : {
+                  "type" : "string",
+                  "description" : "The name of the field in which the non empty result of the json path will be stored"
+                },
+                "json_path" : {
+                  "type" : "string",
+                  "description" : "Json path ",
+                  "minItems" : 1
+                }
+              },
+              "required" : [ "assignment_type", "field_name", "json_path" ]
+            }
+            """;
 
-    /**
-     * {
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "test_rule",
-     *       "rule_version": 1,
-     *       "rule_author": "john",
-     *       "rule_description": "Test rule",
-     *       "evaluators": [
-     *         {
-     *           "evaluator_type": "b_first_evaluator",
-     *           "evaluator_attributes": {
-     *             "evaluation_result": "match"
-     *           }
-     *         },
-     *         {
-     *           "evaluator_type": "a_second_evaluator",
-     *           "evaluator_attributes": {
-     *             "assignment_type": "match_always",
-     *             "field_name": "test_field",
-     *             "json_path": "$..a"
-     *           }
-     *         }
-     *       ]
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String testingRules;
 
-    /**
-     * {
-     *   "rule_name": "test_rule",
-     *   "rule_version": 1,
-     *   "rule_author": "john",
-     *   "rule_description": "Test rule",
-     *   "evaluators": [
-     *     {
-     *       "evaluator_type": "b_first_evaluator",
-     *       "evaluator_attributes": {
-     *         "evaluation_result": "match"
-     *       }
-     *     },
-     *     {
-     *       "evaluator_type": "a_second_evaluator",
-     *       "evaluator_attributes": {
-     *         "assignment_type": "match_always",
-     *         "field_name": "test_field",
-     *         "json_path": "$..a"
-     *       }
-     *     }
-     *   ]
-     * }
-     */
-    @Multiline
-    public static String testingRule;
+    private final String testingRules = """
+            {
+              "rules_version": 1,
+              "rules": [
+                {
+                  "rule_name": "test_rule",
+                  "rule_version": 1,
+                  "rule_author": "john",
+                  "rule_description": "Test rule",
+                  "evaluators": [
+                    {
+                      "evaluator_type": "b_first_evaluator",
+                      "evaluator_attributes": {
+                        "evaluation_result": "match"
+                      }
+                    },
+                    {
+                      "evaluator_type": "a_second_evaluator",
+                      "evaluator_attributes": {
+                        "assignment_type": "match_always",
+                        "field_name": "test_field",
+                        "json_path": "$..a"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+            """;
 
-    /**
-     * {
-     *   "event": {
-     *     "is_test": true
-     *   }
-     * }
-     */
-    @Multiline
-    public static String testSpecification;
+    private final String testingRule = """
+            {
+              "rule_name": "test_rule",
+              "rule_version": 1,
+              "rule_author": "john",
+              "rule_description": "Test rule",
+              "evaluators": [
+                {
+                  "evaluator_type": "b_first_evaluator",
+                  "evaluator_attributes": {
+                    "evaluation_result": "match"
+                  }
+                },
+                {
+                  "evaluator_type": "a_second_evaluator",
+                  "evaluator_attributes": {
+                    "assignment_type": "match_always",
+                    "field_name": "test_field",
+                    "json_path": "$..a"
+                  }
+                }
+              ]
+            }
+            """;
+
+    private final String testSpecification = """
+            {
+              "event": {
+                "is_test": true
+              }
+            }
+            """;
 
     private RespondingCompilerImpl compiler;
     private RespondingCompilerImpl.Builder builder;
@@ -171,7 +161,7 @@ public class RespondingCompilerImplTest {
     }
 
     @Test
-    public void testgetSchemaOneEvaluatorFactory() throws Exception {
+    public void testGetSchemaOneEvaluatorFactory() throws Exception {
         builder.addRespondingEvaluatorFactory(evaluatorFactory);
         compiler = builder.build();
         RespondingResult result = compiler.getSchema();
@@ -181,7 +171,7 @@ public class RespondingCompilerImplTest {
     }
 
     @Test
-    public void testgetSchemaTwoEvaluatorFactories() throws Exception {
+    public void testGetSchemaTwoEvaluatorFactories() throws Exception {
         builder.addRespondingEvaluatorFactory(evaluatorFactory);
         builder.addRespondingEvaluatorFactory(evaluatorFactoryNext);
         compiler = builder.build();
@@ -204,7 +194,6 @@ public class RespondingCompilerImplTest {
         Assert.assertNotNull(result.getAttributes().getRespondingEvaluatorFactories());
         Assert.assertEquals(2, result.getAttributes().getRespondingEvaluatorFactories().size());
     }
-
 
     @Test
     public void testCompileRules() throws Exception {

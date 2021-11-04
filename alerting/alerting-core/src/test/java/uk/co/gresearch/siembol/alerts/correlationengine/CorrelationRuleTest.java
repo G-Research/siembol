@@ -6,7 +6,6 @@ import org.junit.Test;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
-
 import java.util.*;
 
 import static uk.co.gresearch.siembol.alerts.common.EvaluationResult.MATCH;
@@ -24,7 +23,7 @@ public class CorrelationRuleTest {
     private final int maxTimeLagInSec = 5;
     private final String ruleName = "test_rule";
     private List<Map<String, Object>> alerts;
-    private String correlationKey = "1.2.3.4";
+    private final String correlationKey = "1.2.3.4";
 
 
     @Before
@@ -176,7 +175,7 @@ public class CorrelationRuleTest {
         rule = builder.flags(ruleFlags).alertsThresholds(1).build();
 
         for (int i = 1; i < 100; i++) {
-            alerts = createAlert(2, correlationKey + String.valueOf(i),
+            alerts = createAlert(2, correlationKey + i,
                     "alert3",
                     30000 + i);
             for (Map<String, Object> alert : alerts) {

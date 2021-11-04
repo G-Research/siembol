@@ -54,8 +54,8 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
     @JsonProperty("enriching.error.topic")
     private String enrichingErrorTopic;
     @Attributes(required = true, description = "the url for hdfs cluster where enriching tables are stored")
-    @JsonProperty("enriching.tables.hdfs.uri")
-    private String enrichingTablesHdfsUri;
+    @JsonProperty("enriching.tables.uri")
+    private String enrichingTablesUri;
 
     public String getTopologyName() {
         return topologyName;
@@ -153,12 +153,12 @@ public class StormEnrichmentAttributesDto extends AdminConfigDto implements Seri
         this.enrichingErrorTopic = enrichingErrorTopic;
     }
 
-    public String getEnrichingTablesHdfsUri() {
-        return enrichingTablesHdfsUri;
+    public String getEnrichingTablesUri() {
+        return enrichingTablesUri;
     }
 
-    public void setEnrichingTablesHdfsUri(String enrichingTablesHdfsUri) {
-        this.enrichingTablesHdfsUri = enrichingTablesHdfsUri;
+    public void setEnrichingTablesUri(String enrichingTablesUri) {
+        this.enrichingTablesUri = enrichingTablesUri;
     }
 
     public List<String> getEnrichingInputTopics() {

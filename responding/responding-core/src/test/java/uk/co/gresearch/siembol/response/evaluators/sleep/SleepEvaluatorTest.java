@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.response.evaluators.sleep;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,14 +15,12 @@ import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.M
 public class SleepEvaluatorTest {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(SleepEvaluatorAttributesDto.class);
-    /**
-     * {
-     *   "time_unit_type": "milli_seconds",
-     *   "sleeping_time": 500
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+            {
+              "time_unit_type": "milli_seconds",
+              "sleeping_time": 500
+            }
+            """;
 
     private SleepEvaluator evaluator;
     private ResponseAlert alert = new ResponseAlert();
@@ -38,7 +35,7 @@ public class SleepEvaluatorTest {
     }
 
     @Test
-    public void testSleepOk() throws IOException {
+    public void testSleepOk() {
         long startTime = System.currentTimeMillis();
 
         RespondingResult result = evaluator.evaluate(alert);

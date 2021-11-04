@@ -15,9 +15,9 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.filesystem.HdfsFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
+import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
 import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
@@ -58,7 +58,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLES = "Invalid type in tuple provided";
 
     private final AtomicReference<Map<String, EnrichmentTable>> enrichmentTables = new AtomicReference<>();
-    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zooKeeeperAttributes;
     private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
 
@@ -68,7 +68,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
                               ZooKeeperConnectorFactory zooKeeperConnectorFactory,
                               SiembolFileSystemFactory fileSystemFactory) {
-        this.zookeperAttributes = attributes.getEnrichingTablesAttributes();
+        this.zooKeeeperAttributes = attributes.getEnrichingTablesAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
         this.fileSystemFactory = fileSystemFactory;
     }
@@ -76,17 +76,16 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     public MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes,
                 new ZooKeeperConnectorFactoryImpl(),
-                new HdfsFileSystemFactory(attributes.getEnrichingTablesHdfsUri()));
+                SupportedFileSystem.fromUri(attributes.getEnrichingTablesUri()));
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
 
         try {
             LOG.info(TABLES_INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeeperAttributes);
 
             updateTables();
             if (enrichmentTables.get() == null) {
@@ -124,7 +123,6 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
             LOG.info(TABLES_UPDATES_COMPLETED);
         } catch (Exception e) {
             LOG.error(TABLES_UPDATE_EXCEPTION_FORMAT, ExceptionUtils.getStackTrace(e));
-            return;
         }
     }
 
@@ -155,10 +153,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
             }
 
             Optional<List<Pair<String, String>>> result = table.getValues(command);
-            if (result.isPresent()) {
-                enrichments.addAll(result.get());
-            }
-
+            result.ifPresent(enrichments::addAll);
         }
         collector.emit(tuple, new Values(event, enrichments, exceptions));
         collector.ack(tuple);

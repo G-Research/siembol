@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.parsers.application.parsing;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,37 +16,33 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class RoutingParsingApplicationParserTest {
-    /**
-     * {
-     *
-     *     "a": "string",
-     *     "b": 1,
-     *     "c": true
-     * }
-     **/
-    @Multiline
-    public static String metadata;
+    private final String metadata = """
+     {
+         "a": "string",
+         "b": 1,
+         "c": true
+     }
+     """;
 
     private SerializableSiembolParser routerParser;
     private SerializableSiembolParser defaultParser;
     private SerializableSiembolParser routedParser1;
     private SerializableSiembolParser routedParser2;
-    private String routingConditionField = "test_field";
-    private String routingMessageField = "original_string";
+    private final String routingConditionField = "test_field";
+    private final String routingMessageField = "original_string";
 
     private RoutingParsingApplicationParser appParser;
     private Map<String, Object> message1;
     private Map<String, Object> message2;
     private List<Map<String, Object>> parsed;
-    private String errorTopic = "error";
-    private String outputTopic = "output";
-    private byte[] input = "test".getBytes();
+    private final String errorTopic = "error";
+    private final String outputTopic = "output";
+    private final byte[] input = "test".getBytes();
     private ParserResult routerParserResult;
     private ParserResult routedParserResult1;
     private ParserResult routedParserResult2;
     TimeProvider timeProvider;
     long currentTime = 1L;
-
 
     @Before
     public void setUp() {
@@ -95,7 +90,7 @@ public class RoutingParsingApplicationParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMissingARguments() {
+    public void testMissingArguments() {
         appParser = RoutingParsingApplicationParser.builder()
                 .errorTopic(errorTopic)
                 .build();
@@ -138,13 +133,13 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"default-parser\""));
     }
 
     @Test
@@ -194,14 +189,14 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"default-parser\""));
     }
 
     @Test
@@ -285,13 +280,13 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(outputTopic, result.get(0).getTopic());
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(1, result.get(0).getMessages().size());
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("output_field" + "\":\"routed"));
-        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME.toString() + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"test"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":3"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"default-parser\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"default-parser\""));
     }
 
     @Test
@@ -320,10 +315,10 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("dummy1", result.get(0).getTopic());
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser1\""));
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser2\""));
     }
 
     @Test
@@ -335,7 +330,7 @@ public class RoutingParsingApplicationParserTest {
                 .routingMessageField(routingMessageField)
                 .addParser("dummy1", routedParser1, "a")
                 .addParser("dummy2", routedParser2, "b")
-                .mergedFields(Arrays.asList("timestamp"))
+                .mergedFields(List.of("timestamp"))
                 .name("test")
                 .errorTopic(errorTopic)
                 .timeProvider(timeProvider)
@@ -356,9 +351,9 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser1\""));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser2\""));
     }
 
     @Test
@@ -370,7 +365,7 @@ public class RoutingParsingApplicationParserTest {
                 .routingMessageField(routingMessageField)
                 .addParser("dummy1", routedParser1, "a")
                 .addParser("dummy2", routedParser2, "b")
-                .mergedFields(Arrays.asList("timestamp"))
+                .mergedFields(List.of("timestamp"))
                 .name("test")
                 .errorTopic(errorTopic)
                 .timeProvider(timeProvider)
@@ -392,9 +387,9 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser1\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser1\""));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser2\""));
         Assert.assertTrue(result.get(0).getMessages().get(0).contains("guid" + "\":"));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("guid" + "\":"));
     }
@@ -408,7 +403,7 @@ public class RoutingParsingApplicationParserTest {
                 .routingMessageField(routingMessageField)
                 .addParser("dummy1", routedParser1, "a")
                 .addParser("dummy2", routedParser2, "b")
-                .mergedFields(Arrays.asList("timestamp"))
+                .mergedFields(List.of("timestamp"))
                 .name("test")
                 .errorTopic(errorTopic)
                 .timeProvider(timeProvider)
@@ -431,6 +426,6 @@ public class RoutingParsingApplicationParserTest {
         Assert.assertEquals("dummy2", result.get(1).getTopic());
         Assert.assertTrue(result.get(1).getMessages().get(0).contains("timestamp" + "\":2"));
         Assert.assertTrue(result.get(1).getMessages().get(0).contains(
-                SiembolMessageFields.SENSOR_TYPE.toString() + "\":\"routed-parser2\""));
+                SiembolMessageFields.SENSOR_TYPE + "\":\"routed-parser2\""));
     }
 }
