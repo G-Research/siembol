@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.response.evaluators.markdowntable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,58 +17,47 @@ import java.util.List;
 public class TableFormatterTest {
     private static final ObjectReader RESPONSE_ALERT_READER = new ObjectMapper()
             .readerFor(ResponseAlert.class);
-    /**
-     * 	{ "is_alert" : true, "siembol:metadat:topic": "metasonport",   "syslog_hostname": "mail_logs_syslog:"}
-     */
-    @Multiline
-    public static String testAlert;
+    private final String testAlert = """
+            	{ "is_alert" : true, "siembol:metadat:topic": "metasonport",   "syslog_hostname": "mail_logs_syslog:"}
+            """;
 
-    /**
-     * 	{"tmp_array" :[ {"f1" : "v11"}, {"f3": "v23", "f1" : "v21"}, {"f2" : "v31", "f3": "v33"} ] }
-     */
-    @Multiline
-    public static String testAlertWithArray;
+    private final String testAlertWithArray = """
+            	{"tmp_array" :[ {"f1" : "v11"}, {"f3": "v23", "f1" : "v21"}, {"f2" : "v31", "f3": "v33"} ] }
+            """;
 
-    /**
-     *#### Test table
-     *|      Field Name       |    Field Value    |
-     *|:---------------------:|:-----------------:|
-     *|    syslog_hostname    | mail_logs_syslog: |
-     *| siembol:metadat:topic |    metasonport    |
-     *|       is_alert        |       true        |
-     */
-    @Multiline
-    public static String resultTable;
+    private final String resultTable = """
+            #### Test table
+            |      Field Name       |    Field Value    |
+            |:---------------------:|:-----------------:|
+            |    syslog_hostname    | mail_logs_syslog: |
+            | siembol:metadat:topic |    metasonport    |
+            |       is_alert        |       true        |
+             """;
 
-    /**
-     *#### Test table
-     *| Field Name | Field Value |
-     *|:----------:|:-----------:|
-     */
-    @Multiline
-    public static String resultEmptyTable;
+    private final String resultEmptyTable = """
+            #### Test table
+            | Field Name | Field Value |
+            |:----------:|:-----------:|
+            """;
 
-    /**
-     *#### Test table
-     *| f1  | f2  | f3  |
-     *|:---:|:---:|:---:|
-     *| v11 |     |     |
-     *| v21 |     | v23 |
-     *|     | v31 | v33 |
-     */
-    @Multiline
-    public static String arrayResultTable;
 
-    /**
-     *#### Test table
-     *| f1  | f2  |
-     *|:---:|:---:|
-     *| v11 |     |
-     *| v21 |     |
-     *|     | v31 |
-     */
-    @Multiline
-    public static String arrayResultTableFiltered;
+    private final String arrayResultTable = """
+            #### Test table
+            | f1  | f2  | f3  |
+            |:---:|:---:|:---:|
+            | v11 |     |     |
+            | v21 |     | v23 |
+            |     | v31 | v33 |
+            """;
+
+    private final String arrayResultTableFiltered = """
+            #### Test table
+            | f1  | f2  |
+            |:---:|:---:|
+            | v11 |     |
+            | v21 |     |
+            |     | v31 |
+            """;
 
     private List<String> includingFields;
     private List<String> excludingFields;
@@ -77,8 +65,8 @@ public class TableFormatterTest {
     private TableFormatter formatter;
     private ResponseAlert responseAlert;
     private ResponseAlert responseAlertWithArray;
-    private String tableName = "Test table";
-    private String fieldName = "test_field";
+    private final String tableName = "Test table";
+    private final String fieldName = "test_field";
 
     @Before
     public void setUp() throws IOException {
@@ -265,5 +253,4 @@ public class TableFormatterTest {
     private String deleteInvisibleChars(String str) {
         return str.replaceAll("\\p{C}", "");
     }
-
 }

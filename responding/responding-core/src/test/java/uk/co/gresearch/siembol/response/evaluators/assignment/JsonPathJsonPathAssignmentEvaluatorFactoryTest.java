@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.assignment;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,15 +7,13 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 public class JsonPathJsonPathAssignmentEvaluatorFactoryTest {
-    /**
-     *{
-     *   "assignment_type": "match_always",
-     *   "field_name": "new_field",
-     *   "json_path": "$..a"
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+    {
+       "assignment_type": "match_always",
+       "field_name": "new_field",
+       "json_path": "$..a"
+     }
+     """;
 
     private JsonPathAssignmentEvaluatorFactory factory;
 

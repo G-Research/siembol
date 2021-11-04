@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.enrichments.storm;
 
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
@@ -28,36 +28,29 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class MemoryTableEnrichmentBoltTest {
-    /**
-     * {"a": "string", "b": 1, "c": true}
-     **/
-    @Multiline
-    public static String event;
+    private final String event = """
+            {"a": "string", "b": 1, "c": true}
+            """;
 
-    /**
-     * {
-     *     "enrichment_tables" : [
-     *     {
-     *       "name" : "test_table",
-     *        "path": "/siembol/tables/enrichment/test.json"
-     *     }]
-     * }
-     **/
-    @Multiline
-    public static String tablesUpdate;
+    private final String tablesUpdate = """
+            {
+                "enrichment_tables" : [
+                {
+                  "name" : "test_table",
+                   "path": "/siembol/tables/enrichment/test.json"
+                }]
+            }
+            """;
 
-    /**
-     *
-     * {
-     *   "1.2.3.1" : { "is_malicious" : "true" },
-     *   "1.2.3.2" : { "is_malicious" : "true"},
-     *   "1.2.3.3" : {"is_malicious" : "false"},
-     *   "1.2.3.4" : {"is_malicious" : "true"},
-     *   "1.2.3.5" : {"is_malicious" : "true"}
-     * }
-     **/
-    @Multiline
-    public static String simpleOneField;
+    private final String simpleOneField = """    
+            {
+              "1.2.3.1" : { "is_malicious" : "true" },
+              "1.2.3.2" : { "is_malicious" : "true"},
+              "1.2.3.3" : { "is_malicious" : "false"},
+              "1.2.3.4" : { "is_malicious" : "true"},
+              "1.2.3.5" : { "is_malicious" : "true"}
+            }
+            """;
 
     private Tuple tuple;
     private OutputCollector collector;
@@ -112,8 +105,8 @@ public class MemoryTableEnrichmentBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
     }
 
     @Test
@@ -128,8 +121,8 @@ public class MemoryTableEnrichmentBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
-        EnrichmentExceptions exceptions = (EnrichmentExceptions)values.get(2);
+        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
+        EnrichmentExceptions exceptions = (EnrichmentExceptions) values.get(2);
         Assert.assertEquals(2, exceptions.size());
         Assert.assertEquals("dummy1", exceptions.get(0));
         Assert.assertEquals("dummy2", exceptions.get(1));
@@ -148,8 +141,8 @@ public class MemoryTableEnrichmentBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
     }
 
     @Test
@@ -167,9 +160,9 @@ public class MemoryTableEnrichmentBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        EnrichmentPairs enrichments = (EnrichmentPairs)values.get(1);
+        EnrichmentPairs enrichments = (EnrichmentPairs) values.get(1);
         Assert.assertEquals(1, enrichments.size());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
     }
 
     @Test
@@ -186,7 +179,7 @@ public class MemoryTableEnrichmentBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
     }
 }

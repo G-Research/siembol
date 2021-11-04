@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.response.evaluators.markdowntable;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,24 +7,22 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 
 public class TableFormatterEvaluatorFactoryTest {
-    /**
-     * {
-     *   "field_name": "output_field",
-     *   "table_name": "test_table",
-     *   "fields_column_name": "json_field",
-     *   "values_column_name": "json_value",
-     *   "field_filter": {
-     *     "including_fields": [
-     *       ".*"
-     *     ],
-     *     "excluding_fields": [
-     *       "secret"
-     *     ]
-     *   }
-     * }
-     */
-    @Multiline
-    public static String attributes;
+    private final String attributes = """
+     {
+       "field_name": "output_field",
+       "table_name": "test_table",
+       "fields_column_name": "json_field",
+       "values_column_name": "json_value",
+       "field_filter": {
+         "including_fields": [
+           ".*"
+         ],
+         "excluding_fields": [
+           "secret"
+         ]
+       }
+     }
+     """;
 
     private TableFormatterEvaluatorFactory factory;
 

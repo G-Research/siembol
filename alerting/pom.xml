@@ -21,25 +21,5 @@
     <dependencies>
     </dependencies>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven_compiler_version}</version>
-                <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <compilerArgs>
-                        <arg>-Xlint:all</arg>
-                        <arg>-Xlint:-processing</arg>
-                    </compilerArgs>
-                    <source>${java_version}</source>
-                    <target>${java_version}</target>
-                    <showWarnings>true</showWarnings>
-                    <annotationProcessors>
-                        <annotationProcessor>org.adrianwalker.multilinestring.MultilineProcessor</annotationProcessor>
-                    </annotationProcessors>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 </project>

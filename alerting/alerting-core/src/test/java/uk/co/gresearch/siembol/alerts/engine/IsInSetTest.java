@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.alerts.engine;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,32 +13,24 @@ public class IsInSetTest {
     private Map<String, Object> event;
     private IsInSetMatcher matcher;
 
-    /**
-     *metron
-     *alerts
-     *response
-     *stoRm
-     *123
-     **/
-    @Multiline
-    private String strings;
+    private final String strings = """
+            metron
+            alerts
+            response
+            stoRm
+            123""";
 
-    /**
-     *${variable_field1}
-     *aa ${variable.field2} ${variable:field1}
-     *http://${host}/${path}
-     **/
-    @Multiline
-    private String variableStrings;
+    private final String variableStrings = """
+            ${variable_field1}
+            aa ${variable.field2} ${variable:field1}
+            http://${host}/${path}""";
 
-    /**
-     *alerts
-     *${variable:field1}
-     *aa ${variable.field2} b
-     *Metron
-     **/
-    @Multiline
-    private String mixedVariablesConstants;
+    private final String mixedVariablesConstants = """
+            alerts
+            ${variable:field1}
+            aa ${variable.field2} b
+            Metron
+            """;
 
     @Before
     public void setUp() {
@@ -163,8 +154,8 @@ public class IsInSetTest {
         event.put(field, "Metron");
         EvaluationResult rest = matcher.match(event);
 
-        Assert.assertEquals(rest, EvaluationResult.MATCH);
-        Assert.assertEquals(matcher.canModifyEvent(), false);
+        Assert.assertEquals(EvaluationResult.MATCH, rest);
+        Assert.assertFalse(matcher.canModifyEvent());
     }
 
     @Test
@@ -275,6 +266,4 @@ public class IsInSetTest {
         ret = matcher.match(event);
         Assert.assertEquals(EvaluationResult.MATCH, ret);
     }
-
-
 }

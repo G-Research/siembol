@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.spark;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -8,58 +7,52 @@ import org.junit.*;
 
 import java.util.ArrayList;
 
-
 public class AlertingSparkJobTest {
-    /**
-     *{
-     *  "rules_version" :1,
-     *  "tags" : [ { "tag_name" : "detection_source", "tag_value" : "siembol_alerts" } ],
-     *  "rules" : [ {
-     *      "rule_name" : "test_rule",
-     *      "rule_version" : 1,
-     *      "rule_author" : "dummy",
-     *      "rule_protection" : {
-     *          "max_per_hour" : 100,
-     *          "max_per_day" : 10000
-     *      },
-     *      "rule_description": "Testing rule",
-     *      "source_type" : "*",
-     *      "matchers" : [ {
-     *          "matcher_type" : "REGEX_MATCH",
-     *          "is_negated" : false,
-     *          "field" : "is_alert",
-     *          "data" : "(?i)true" }
-     *          ]
-     *  }]
-     *}
-     **/
-    @Multiline
-    public static String isAlertRules;
+    private final String isAlertRules = """
+            {
+               "rules_version" :1,
+               "tags" : [ { "tag_name" : "detection_source", "tag_value" : "siembol_alerts" } ],
+               "rules" : [ {
+                   "rule_name" : "test_rule",
+                   "rule_version" : 1,
+                   "rule_author" : "dummy",
+                   "rule_protection" : {
+                       "max_per_hour" : 100,
+                       "max_per_day" : 10000
+                   },
+                   "rule_description": "Testing rule",
+                   "source_type" : "*",
+                   "matchers" : [ {
+                       "matcher_type" : "REGEX_MATCH",
+                       "is_negated" : false,
+                       "field" : "is_alert",
+                       "data" : "(?i)true" }
+                       ]
+               }]
+            }
+            """;
 
-    /**
-     *{
-     *  "source_type" : "secret",
-     *  "is_alert" : "TruE",
-     *  "dummy_field_int" : 1,
-     *  "dummy_field_boolean" : false
-     *}
-     **/
-    @Multiline
-    public static String goodAlert;
+    private final String goodAlert = """
+            {
+               "source_type" : "secret",
+               "is_alert" : "TruE",
+               "dummy_field_int" : 1,
+               "dummy_field_boolean" : false
+            }
+            """;
 
-    /**
-     *{
-     *  "source_type" : "secret",
-     *  "dummy_field_int" : 1,
-     *  "dummy_field_boolean" : false
-     *}
-     **/
-    @Multiline
-    public static String eventWithoutAlert;
+
+    private final String eventWithoutAlert = """
+            {
+               "source_type" : "secret",
+               "dummy_field_int" : 1,
+               "dummy_field_boolean" : false
+            }
+            """;
 
     private JavaSparkContext sc;
     private AlertingSparkJob job;
-    private int maxResult = 100;
+    private final int maxResult = 100;
 
     @Before
     public void setup() {

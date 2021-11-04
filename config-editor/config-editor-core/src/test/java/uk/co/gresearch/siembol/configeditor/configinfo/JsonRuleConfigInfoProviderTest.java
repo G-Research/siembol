@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,102 +13,91 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonRuleConfigInfoProviderTest {
-    /**
-     * {
-     *     "rule_name": "info_provider-test",
-     *     "rule_author": "john",
-     *     "rule_version": 12345,
-     *     "rule_description": "Test rule",
-     *     "enrichments": { },
-     *     "actions": { }
-     * }
-     **/
-    @Multiline
-    public static String testRule;
-    /**
-     * {
-     *     "rule_name": "info_provider_test",
-     *     "rule_author": "john",
-     *     "rule_version": 0,
-     *     "rule_description": "Test rule",
-     *     "enrichments": { },
-     *     "actions": { }
-     * }
-     **/
-    @Multiline
-    public static String testNewRule;
+    private final String testRule = """
+            {
+                "rule_name": "info_provider-test",
+                "rule_author": "john",
+                "rule_version": 12345,
+                "rule_description": "Test rule",
+                "enrichments": { },
+                "actions": { }
+            }
+            """;
 
-    /**
-     * {
-     *   "rules_version" : 1,
-     *   "rules": [{
-     *      "rule_name": "info_provider_test",
-     *      "rule_author": "mark",
-     *      "rule_version": 12,
-     *      "rule_description": "Test rule",
-     *      "enrichments": { },
-     *      "actions": { }
-     *      }]
-     * }
-     **/
-    @Multiline
-    public static String release;
+    private final String testNewRule = """
+            {
+                "rule_name": "info_provider_test",
+                "rule_author": "john",
+                "rule_version": 0,
+                "rule_description": "Test rule",
+                "enrichments": { },
+                "actions": { }
+            }
+            """;
 
-    /**
-     * {
-     *   "rules_version" : 1,
-     *   "rules": []
-     * }
-     **/
-    @Multiline
-    public static String releaseNoRules;
+    private final String release = """
+            {
+              "rules_version" : 1,
+              "rules": [{
+                 "rule_name": "info_provider_test",
+                 "rule_author": "mark",
+                 "rule_version": 12,
+                 "rule_description": "Test rule",
+                 "enrichments": { },
+                 "actions": { }
+                 }]
+            }
+            """;
 
-    /**
-     * {
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "info_provider_test",
-     *       "rule_author": "mark",
-     *       "rule_version": 1,
-     *       "rule_description": "Test rule",
-     *       "enrichments": {},
-     *       "actions": {}
-     *     },
-     *     {
-     *       "rule_name": "info_provider_extra_test",
-     *       "rule_author": "mark",
-     *       "rule_version": 1,
-     *       "rule_description": "Test rule",
-     *       "enrichments": {},
-     *       "actions": {}
-     *     },
-     *     {
-     *       "rule_name": "secret_test",
-     *       "rule_author": "mark",
-     *       "rule_version": 1,
-     *       "rule_description": "Test rule",
-     *       "enrichments": {},
-     *       "actions": {}
-     *     }
-     *   ]
-     * }
-     **/
-    @Multiline
-    public static String releaseThreeRules;
+    private final String releaseNoRules = """
+            {
+              "rules_version" : 1,
+              "rules": []
+            }
+            """;
 
-    /**
-     * {
-     *     "rule_name": "../../../test",
-     *     "rule_author": "steve",
-     *     "rule_version": 12345,
-     *     "rule_description": "Test rule",
-     *     "enrichments": { },
-     *     "actions": { }
-     * }
-     **/
-    @Multiline
-    public static String maliciousRule;
+    private final String releaseThreeRules = """
+            {
+              "rules_version": 1,
+              "rules": [
+                {
+                  "rule_name": "info_provider_test",
+                  "rule_author": "mark",
+                  "rule_version": 1,
+                  "rule_description": "Test rule",
+                  "enrichments": {},
+                  "actions": {}
+                },
+                {
+                  "rule_name": "info_provider_extra_test",
+                  "rule_author": "mark",
+                  "rule_version": 1,
+                  "rule_description": "Test rule",
+                  "enrichments": {},
+                  "actions": {}
+                },
+                {
+                  "rule_name": "secret_test",
+                  "rule_author": "mark",
+                  "rule_version": 1,
+                  "rule_description": "Test rule",
+                  "enrichments": {},
+                  "actions": {}
+                }
+              ]
+            }
+            """;
+
+    private final String maliciousRule = """
+            {
+                "rule_name": "../../../test",
+                "rule_author": "steve",
+                "rule_version": 12345,
+                "rule_description": "Test rule",
+                "enrichments": { },
+                "actions": { }
+            }
+            """;
 
     private final ConfigInfoProvider infoProvider = JsonRuleConfigInfoProvider.create();
 
@@ -181,7 +169,7 @@ public class JsonRuleConfigInfoProviderTest {
 
     @Test(expected = java.lang.IllegalArgumentException.class)
     public void ruleInfoWrongJson() {
-        infoProvider.getConfigInfo(steve,"WRONG JSON");
+        infoProvider.getConfigInfo(steve, "WRONG JSON");
     }
 
     @Test(expected = java.lang.IllegalArgumentException.class)

@@ -6,7 +6,7 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 public class RuleProtectionSystemTest {
     private RuleProtectionSystem protection;
-    private String ruleName = "test";
+    private final String ruleName = "test";
 
     @Before
     public void setUp() {

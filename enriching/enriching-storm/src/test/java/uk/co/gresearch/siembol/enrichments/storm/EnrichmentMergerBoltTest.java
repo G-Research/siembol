@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.enrichments.storm;
 
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
@@ -24,20 +24,16 @@ import static org.mockito.Mockito.when;
 
 
 public class EnrichmentMergerBoltTest {
-    /**
-     * {"a": "string","b": 1,"c": true}
-     **/
-    @Multiline
-    public static String event;
+    private final String event = """
+     {"a": "string","b": 1,"c": true}
+     """;
 
-    /**
-     * {"a":"string","b":1,"c":true,"siembol_enriching_ts":
-     **/
-    @Multiline
-    public static String enrichedEventPrefix;
+    private final String enrichedEventPrefix = """
+     {"a":"string","b":1,"c":true,"siembol_enriching_ts":
+     """;
 
-    private String errorTopic = "error";
-    private String outputTopic = "output";
+    private final String errorTopic = "error";
+    private final String outputTopic = "output";
 
     private Tuple tuple;
     private OutputCollector collector;
@@ -91,7 +87,7 @@ public class EnrichmentMergerBoltTest {
         KafkaBatchWriterMessages messages = (KafkaBatchWriterMessages)values.get(0);
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
-        Assert.assertTrue(messages.get(0).getMessage().contains(""));
+        Assert.assertFalse(messages.get(0).getMessage().isEmpty());
 
         Assert.assertEquals(errorTopic, messages.get(1).getTopic());
         Assert.assertEquals("dummy1", messages.get(1).getMessage());

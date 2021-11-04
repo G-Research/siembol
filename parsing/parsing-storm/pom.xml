@@ -226,18 +226,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <source>${java_version}</source>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
-                    <target>${java_version}</target>
-                    <showWarnings>true</showWarnings>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

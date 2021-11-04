@@ -19,12 +19,12 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 
 public class GetStormTopologyActionTest {
     private ConfigServiceHelper serviceHelper;
-    private String adminConfig = "ADMIN_CONFIG";
+    private final String adminConfig = "ADMIN_CONFIG";
     private GetStormTopologyAction getStormTopologyAction;
     private ConfigEditorServiceContext context;
-    private String topologyName = "dummyTopologyName";
-    private String topologyImage = "dummyImage";
-    private String serviceName = "dummyService";
+    private final String topologyName = "dummyTopologyName";
+    private final String topologyImage = "dummyImage";
+    private final String serviceName = "dummyService";
 
     @Before
     public void setUp() {

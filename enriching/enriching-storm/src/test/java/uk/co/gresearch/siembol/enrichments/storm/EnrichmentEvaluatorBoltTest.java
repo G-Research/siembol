@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.enrichments.storm;
 
-import org.adrianwalker.multilinestring.Multiline;
+
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
@@ -20,52 +20,48 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class EnrichmentEvaluatorBoltTest {
-    /**
-     * {"a" : "tmp_string", "b" : 1, "is_alert" : "true", "source_type" : "test"}
-     **/
-    @Multiline
-    public static String event;
+    private final String event = """
+            {"a" : "tmp_string", "b" : 1, "is_alert" : "true", "source_type" : "test"}
+            """;
 
-    /**
-     * {
-     *   "rules_version": 1,
-     *   "rules": [
-     *     {
-     *       "rule_name": "test_rule",
-     *       "rule_version": 1,
-     *       "rule_author": "john",
-     *       "rule_description": "Test rule",
-     *       "source_type": "*",
-     *       "matchers": [
-     *         {
-     *           "matcher_type": "REGEX_MATCH",
-     *           "is_negated": false,
-     *           "field": "is_alert",
-     *           "data": "(?i)true"
-     *         }
-     *       ],
-     *       "table_mapping": {
-     *         "table_name": "test_table",
-     *         "joining_key": "${a}",
-     *         "tags": [
-     *           {
-     *             "tag_name": "is_test_tag",
-     *             "tag_value": "true"
-     *           }
-     *         ],
-     *         "enriching_fields": [
-     *           {
-     *             "table_field_name": "dns_name",
-     *             "event_field_name": "siembol:enrichments:dns"
-     *           }
-     *         ]
-     *       }
-     *     }
-     *   ]
-     *   }
-     **/
-    @Multiline
-    public static String testRules;
+    private final String testRules = """
+            {
+              "rules_version": 1,
+              "rules": [
+                {
+                  "rule_name": "test_rule",
+                  "rule_version": 1,
+                  "rule_author": "john",
+                  "rule_description": "Test rule",
+                  "source_type": "*",
+                  "matchers": [
+                    {
+                      "matcher_type": "REGEX_MATCH",
+                      "is_negated": false,
+                      "field": "is_alert",
+                      "data": "(?i)true"
+                    }
+                  ],
+                  "table_mapping": {
+                    "table_name": "test_table",
+                    "joining_key": "${a}",
+                    "tags": [
+                      {
+                        "tag_name": "is_test_tag",
+                        "tag_value": "true"
+                      }
+                    ],
+                    "enriching_fields": [
+                      {
+                        "table_field_name": "dns_name",
+                        "event_field_name": "siembol:enrichments:dns"
+                      }
+                    ]
+                  }
+                }
+              ]
+              }
+            """;
 
     private Tuple tuple;
     private OutputCollector collector;
@@ -109,13 +105,13 @@ public class EnrichmentEvaluatorBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentCommands);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        EnrichmentCommands commands = (EnrichmentCommands)values.get(1);
+        EnrichmentCommands commands = (EnrichmentCommands) values.get(1);
         Assert.assertEquals(1, commands.size());
         Assert.assertEquals("tmp_string", commands.get(0).getKey());
         Assert.assertEquals("tmp_string", commands.get(0).getKey());
         Assert.assertEquals(1, commands.get(0).getTags().size());
         Assert.assertEquals(1, commands.get(0).getEnrichmentFields().size());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
     }
 
     @Test
@@ -128,8 +124,8 @@ public class EnrichmentEvaluatorBoltTest {
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentCommands);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
-        Assert.assertTrue(((EnrichmentCommands)values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentCommands) values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
     }
 
     @Test
@@ -142,9 +138,9 @@ public class EnrichmentEvaluatorBoltTest {
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentCommands);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
-        Assert.assertTrue(((EnrichmentCommands)values.get(1)).isEmpty());
-        Assert.assertFalse(((EnrichmentExceptions)values.get(2)).isEmpty());
-        Assert.assertEquals(1, ((EnrichmentExceptions)values.get(2)).size());
-        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).get(0).contains("JsonParseException"));
+        Assert.assertTrue(((EnrichmentCommands) values.get(1)).isEmpty());
+        Assert.assertFalse(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertEquals(1, ((EnrichmentExceptions) values.get(2)).size());
+        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).get(0).contains("JsonParseException"));
     }
 }

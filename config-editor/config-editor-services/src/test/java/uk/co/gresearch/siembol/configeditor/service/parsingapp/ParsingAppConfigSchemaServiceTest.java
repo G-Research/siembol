@@ -129,7 +129,7 @@ public class ParsingAppConfigSchemaServiceTest {
     }
 
     @Test
-    public void getImportersEmpty() throws Exception {
+    public void getImportersEmpty() {
         ConfigEditorResult ret = parsingAppConfigSchemaService.getImporters();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getConfigImporters());

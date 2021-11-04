@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.service.response;
 
-import org.adrianwalker.multilinestring.Multiline;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,187 +17,179 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class ResponseSchemaServiceTest {
-    /**
-     * {
-     *   "statusCode": "OK",
-     *   "attributes": {
-     *     "rules_schema": {
-     *       "type": "object",
-     *       "description": "Incident Response Rules",
-     *       "title": "rules",
-     *       "properties": {
-     *         "rules_version": {
-     *           "type": "integer",
-     *           "description": "Incident response rules version",
-     *           "default": 0
-     *         },
-     *         "rules": {
-     *           "type": "array",
-     *           "items": {
-     *             "type": "object",
-     *             "description": "Response rule that should handle response to a siembol alert",
-     *             "title": "rule",
-     *             "properties": {
-     *               "rule_name": {
-     *                 "type": "string",
-     *                 "description": "ResponseRule name that uniquely identifies the rule"
-     *               },
-     *               "rule_author": {
-     *                 "type": "string",
-     *                 "description": "The owner of the rule"
-     *               },
-     *               "rule_version": {
-     *                 "type": "integer",
-     *                 "description": "The version of the rule",
-     *                 "default": 0
-     *               },
-     *               "rule_description": {
-     *                 "type": "string",
-     *                 "description": "The description of the rule"
-     *               },
-     *               "evaluators": {
-     *                 "type": "array",
-     *                 "items": {
-     *                   "type": "object",
-     *                   "description": "Response evaluator used in response rules",
-     *                   "title": "response evaluator",
-     *                   "oneOf": [
-     *                     {
-     *                       "type": "object",
-     *                       "title": "matching_evaluator",
-     *                       "properties": {
-     *                         "evaluator_type": {
-     *                           "enum": [
-     *                             "matching_evaluator"
-     *                           ],
-     *                           "default": "matching_evaluator"
-     *                         },
-     *                         "evaluator_attributes": {
-     *                           "type": "object",
-     *                           "description": "Attributes for matching evaluator",
-     *                           "title": "matching evaluator attributes",
-     *                           "properties": {
-     *                             "evaluation_result": {
-     *                               "enum": [
-     *                                 "match",
-     *                                 "filtered"
-     *                               ],
-     *                               "type": "string",
-     *                               "description": "Evaluation result returned by the evaluator after matching",
-     *                               "default": "match"
-     *                             },
-     *                             "matchers": {
-     *                               "type": "array",
-     *                               "items": {
-     *                                 "type": "object",
-     *                                 "description": "Matcher for matching fields in response rules",
-     *                                 "title": "matcher",
-     *                                 "properties": {
-     *                                   "matcher_type": {
-     *                                     "enum": [
-     *                                       "REGEX_MATCH",
-     *                                       "IS_IN_SET"
-     *                                     ],
-     *                                     "type": "string",
-     *                                     "description": "Type of matcher, either Regex match or list of strings (newline delimited)"
-     *                                   },
-     *                                   "is_negated": {
-     *                                     "type": "boolean",
-     *                                     "description": "The matcher is negated",
-     *                                     "default": false
-     *                                   },
-     *                                   "field": {
-     *                                     "type": "string",
-     *                                     "description": "Field on which the matcher will be evaluated"
-     *                                   },
-     *                                   "case_insensitive": {
-     *                                     "type": "boolean",
-     *                                     "description": "Use case insensitive string compare",
-     *                                     "default": false
-     *                                   },
-     *                                   "data": {
-     *                                     "type": "string",
-     *                                     "description": "Matcher expression as defined by matcher type"
-     *                                   }
-     *                                 },
-     *                                 "required": [
-     *                                   "data",
-     *                                   "field",
-     *                                   "matcher_type"
-     *                                 ]
-     *                               },
-     *                               "description": "Matchers of the evaluator",
-     *                               "minItems": 1
-     *                             }
-     *                           },
-     *                           "required": [
-     *                             "evaluation_result",
-     *                             "matchers"
-     *                           ]
-     *                         }
-     *                       },
-     *                       "required": [
-     *                         "evaluator_type",
-     *                         "evaluator_attributes"
-     *                       ]
-     *                     }
-     *                   ]
-     *                 },
-     *                 "description": "Evaluators of the rule",
-     *                 "minItems": 1
-     *               }
-     *             },
-     *             "required": [
-     *               "evaluators",
-     *               "rule_author",
-     *               "rule_name",
-     *               "rule_version"
-     *             ]
-     *           },
-     *           "description": "Response rules",
-     *           "minItems": 1
-     *         }
-     *       },
-     *       "required": [
-     *         "rules",
-     *         "rules_version"
-     *       ]
-     *     }
-     *   }
-     * }
-     */
-    @Multiline
-    public static String rulesSchema;
+    private final String rulesSchema = """
+            {
+              "statusCode": "OK",
+              "attributes": {
+                "rules_schema": {
+                  "type": "object",
+                  "description": "Incident Response Rules",
+                  "title": "rules",
+                  "properties": {
+                    "rules_version": {
+                      "type": "integer",
+                      "description": "Incident response rules version",
+                      "default": 0
+                    },
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Response rule that should handle response to a siembol alert",
+                        "title": "rule",
+                        "properties": {
+                          "rule_name": {
+                            "type": "string",
+                            "description": "ResponseRule name that uniquely identifies the rule"
+                          },
+                          "rule_author": {
+                            "type": "string",
+                            "description": "The owner of the rule"
+                          },
+                          "rule_version": {
+                            "type": "integer",
+                            "description": "The version of the rule",
+                            "default": 0
+                          },
+                          "rule_description": {
+                            "type": "string",
+                            "description": "The description of the rule"
+                          },
+                          "evaluators": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "description": "Response evaluator used in response rules",
+                              "title": "response evaluator",
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "title": "matching_evaluator",
+                                  "properties": {
+                                    "evaluator_type": {
+                                      "enum": [
+                                        "matching_evaluator"
+                                      ],
+                                      "default": "matching_evaluator"
+                                    },
+                                    "evaluator_attributes": {
+                                      "type": "object",
+                                      "description": "Attributes for matching evaluator",
+                                      "title": "matching evaluator attributes",
+                                      "properties": {
+                                        "evaluation_result": {
+                                          "enum": [
+                                            "match",
+                                            "filtered"
+                                          ],
+                                          "type": "string",
+                                          "description": "Evaluation result returned by the evaluator after matching",
+                                          "default": "match"
+                                        },
+                                        "matchers": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "description": "Matcher for matching fields in response rules",
+                                            "title": "matcher",
+                                            "properties": {
+                                              "matcher_type": {
+                                                "enum": [
+                                                  "REGEX_MATCH",
+                                                  "IS_IN_SET"
+                                                ],
+                                                "type": "string",
+                                                "description": "Type of matcher, either Regex match or list of strings (newline delimited)"
+                                              },
+                                              "is_negated": {
+                                                "type": "boolean",
+                                                "description": "The matcher is negated",
+                                                "default": false
+                                              },
+                                              "field": {
+                                                "type": "string",
+                                                "description": "Field on which the matcher will be evaluated"
+                                              },
+                                              "case_insensitive": {
+                                                "type": "boolean",
+                                                "description": "Use case insensitive string compare",
+                                                "default": false
+                                              },
+                                              "data": {
+                                                "type": "string",
+                                                "description": "Matcher expression as defined by matcher type"
+                                              }
+                                            },
+                                            "required": [
+                                              "data",
+                                              "field",
+                                              "matcher_type"
+                                            ]
+                                          },
+                                          "description": "Matchers of the evaluator",
+                                          "minItems": 1
+                                        }
+                                      },
+                                      "required": [
+                                        "evaluation_result",
+                                        "matchers"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "evaluator_type",
+                                    "evaluator_attributes"
+                                  ]
+                                }
+                              ]
+                            },
+                            "description": "Evaluators of the rule",
+                            "minItems": 1
+                          }
+                        },
+                        "required": [
+                          "evaluators",
+                          "rule_author",
+                          "rule_name",
+                          "rule_version"
+                        ]
+                      },
+                      "description": "Response rules",
+                      "minItems": 1
+                    }
+                  },
+                  "required": [
+                    "rules",
+                    "rules_version"
+                  ]
+                }
+              }
+            }
+            """;
 
-    /**
-     * {"statusCode":"OK","attributes":{"test_schema":{  "type" : "object",  "description" : "Specification for testing responding rules",  "title" : "response test specification",  "properties" : {    "event" : {      "type" : "object",      "description" : "Alert for response alerts evaluation",      "title" : "json raw string"    }  },  "required" : [ "event" ]}}}
-     */
-    @Multiline
-    public static String testSchema;
+    private final String testSchema = """
+            {"statusCode":"OK","attributes":{"test_schema":{  "type" : "object",  "description" : "Specification for testing responding rules",  "title" : "response test specification",  "properties" : {    "event" : {      "type" : "object",      "description" : "Alert for response alerts evaluation",      "title" : "json raw string"    }  },  "required" : [ "event" ]}}}
+            """;
 
-    /**
-     * {
-     *   "statusCode":"ERROR",
-     *   "attributes":{ "message" : "dummy"}}
-     * }
-     */
-    @Multiline
-    public static String errorMessage;
+    private final String errorMessage = """
+            {
+              "statusCode":"ERROR",
+              "attributes":{ "message" : "dummy"}}
+            }
+            """;
 
-    /**
-     * {
-     *   "statusCode":"OK",
-     *   "attributes":{ "message" : "dummy"}}
-     * }
-     */
-    @Multiline
-    public static String okMessage;
+    private final String okMessage = """
+            {
+              "statusCode":"OK",
+              "attributes":{ "message" : "dummy"}}
+            }
+            """;
 
     private ResponseSchemaService.Builder builder;
     private ResponseSchemaService responseSchemaService;
     private HttpProvider httpProvider;
-    private String dummyJsonObject = "{ \"dummy\" : true }";
-    private String dummyJsonObject2 = "{ \"dummy2\" : true }";
+    private final String dummyJsonObject = "{ \"dummy\" : true }";
+    private final String dummyJsonObject2 = "{ \"dummy2\" : true }";
 
     @Before
     public void setup() throws Exception {
