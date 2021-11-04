@@ -38,7 +38,6 @@ public class AlertingRulesCompilerTest {
             }
             """;
 
-
     private final String alertRule = """
             {
                   "rule_name" : "siembol_alert_generic",

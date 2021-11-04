@@ -70,7 +70,6 @@ public class KafkaWriterBoltTest {
             }
             """;
 
-
     private final String AlertMessageCorrelationStr = """
             {
               "ip_src_addr": "1.2.3.4",
@@ -85,8 +84,7 @@ public class KafkaWriterBoltTest {
               "correlation_key" : "evil"
             }
             """;
-
-
+    
     @ClassRule
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 

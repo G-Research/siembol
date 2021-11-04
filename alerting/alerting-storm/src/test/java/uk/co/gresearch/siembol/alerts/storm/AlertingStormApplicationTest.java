@@ -55,7 +55,6 @@ public class AlertingStormApplicationTest {
             }
              """;
 
-
     private final String goodAlert = """
             {
               "source_type" : "secret",
