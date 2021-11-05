@@ -11,7 +11,13 @@ helm install siembol-zookeeper bitnami/zookeeper --namespace $namespace
 
 helm install kafka bitnami/kafka --namespace $namespace
 
-helm install storm gresearch/storm --version="1.0.12" --namespace $namespace --set supervisor.replicaCount=1
+helm install storm gresearch/storm --namespace $namespace `
+    --set supervisor.replicaCount=1 `
+    --set supervisor.image.tag=2.3.0 `
+    --set supervisor.childopts="-Xmx1g" `
+    --set nimbus.image.tag=2.3.0 `
+    --set supervisor.slots=6 `
+    --set ui.image.tag=2.3.0
 
 
 Write-Output "************************************************************"

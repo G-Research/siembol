@@ -13,6 +13,7 @@ enabled_apps:
 - rest
 - manager
 - storm_ingress
+- enrichment_store
 
 # Enable certmanager 
 certmanager:
@@ -79,6 +80,10 @@ storm_ingress:
   service:
     name: storm-ui
     port: 8080
+
+# -----------------------------------------------------------------------------
+# enrichment store parameters
+# -----------------------------------------------------------------------------
 
 enrichment_store:
   appName: "enrichment-store"
@@ -177,16 +182,6 @@ manager:
   ingress:
     enabled: true
     fqdn: topology-manager.siembol.local
-  
-  cleanupjob:
-    name: clean-lingering-siembol-jobs
-    schedule: "*/15 * * * *"
-    failedjobshistoryLimit: 1
-    successfulJobsHistoryLimit: 1
-    image:
-      repository: alpine/k8s
-      tag: "1.18.16"
-      pullPolicy: Always
 
 # -----------------------------------------------------------------------------
 # siembol response parameters

@@ -71,6 +71,19 @@ You should now see the Siembol UI homepage. You can also try Storm UI to see run
 
   * https://storm.local
 
+### Enrichment tables
+
+To add enrichment tables.
+
+```bash
+deployment/quickstart_install/sh-scripts/enrichmentStore.sh
+```
+or
+```bash
+deployment/quickstart_install/ps-scripts/enrichmentStore.ps1
+```
+
+
 ### Kafka UI
 
 We are using Kafdrop UI to view topics and messages.  You can send messages to parsing topics and to test siembol configs. 
