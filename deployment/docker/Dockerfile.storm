@@ -1,4 +1,4 @@
-FROM storm:2.2.0
+FROM storm:2.3.0
 
 ARG JAR
 ARG CLASS
