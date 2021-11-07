@@ -14,9 +14,12 @@ helm install kafka bitnami/kafka --namespace $namespace
 helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.replicaCount=1 `
     --set supervisor.image.tag=2.3.0 `
-    --set supervisor.childopts="-Xmx1g" `
+    --set supervisor.resources.requests.memory=1024 `
+    --set supervisor.resources.limits.memory=2048 `
+    --set supervisor.resources.requests.cpu=500m `
+    --set supervisor.childopts="-Xmx2g" `
     --set nimbus.image.tag=2.3.0 `
-    --set supervisor.slots=6 `
+    --set supervisor.slots=5 `
     --set ui.image.tag=2.3.0
 
 
