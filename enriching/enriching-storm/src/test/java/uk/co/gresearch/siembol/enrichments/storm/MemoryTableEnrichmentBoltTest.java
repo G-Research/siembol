@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.enrichments.storm;
 
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
@@ -14,17 +13,18 @@ import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
-import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
+import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 public class MemoryTableEnrichmentBoltTest {
@@ -37,7 +37,35 @@ public class MemoryTableEnrichmentBoltTest {
                 "enrichment_tables" : [
                 {
                   "name" : "test_table",
-                   "path": "/siembol/tables/enrichment/test.json"
+                  "path": "/siembol/tables/enrichment/test.json"
+                }]
+            }
+            """;
+
+    private final String tablesUpdateSame = """
+            {
+                "enrichment_tables" : [
+                {
+                  "name" : "test_table",
+                  "path": "/siembol/tables/enrichment/test.json"
+                },
+                {
+                  "name" : "test_table_2",
+                  "path": "/siembol/tables/enrichment/test2.json"
+                }]
+            }
+            """;
+
+    private final String tablesUpdateDifferent = """
+            {
+                "enrichment_tables" : [
+                {
+                  "name" : "test_table",
+                  "path": "/siembol/tables/enrichment/different_test.json"
+                },
+                {
+                  "name" : "test_table_2",
+                  "path": "/siembol/tables/enrichment/test2.json"
                 }]
             }
             """;
@@ -56,40 +84,44 @@ public class MemoryTableEnrichmentBoltTest {
     private OutputCollector collector;
     private EnrichmentExceptions exceptions;
     private EnrichmentCommands commands;
-    MemoryTableEnrichmentBolt memoryTableBolt;
-    ZooKeeperAttributesDto zookeperAttributes;
-    StormEnrichmentAttributesDto attributes;
-    ZooKeeperConnector zooKeeperConnector;
-    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
-    SiembolFileSystemFactory fileSystemFactory;
-    SiembolFileSystem fileSystem;
-    ArgumentCaptor<Values> argumentEmitCaptor;
+    private MemoryTableEnrichmentBolt memoryTableBolt;
+    private final String zooKeeperPath = "path";
+    private ZooKeeperAttributesDto zooKeeperAttributes;
+    private StormEnrichmentAttributesDto attributes;
+    private final TestingZooKeeperConnectorFactory zooKeeperConnectorFactory = new TestingZooKeeperConnectorFactory();
+    private SiembolFileSystemFactory fileSystemFactory;
+    private SiembolFileSystem fileSystem;
+    private ArgumentCaptor<Values> argumentEmitCaptor;
 
     @Before
     public void setUp() throws Exception {
-        zookeperAttributes = new ZooKeeperAttributesDto();
+        zooKeeperAttributes = new ZooKeeperAttributesDto();
+        zooKeeperAttributes.setZkPath(zooKeeperPath);
+        zooKeeperConnectorFactory.setData(zooKeeperPath, tablesUpdate);
         attributes = new StormEnrichmentAttributesDto();
-        attributes.setEnrichingTablesAttributes(zookeperAttributes);
+        attributes.setEnrichingTablesAttributes(zooKeeperAttributes);
 
         exceptions = new EnrichmentExceptions();
         commands = new EnrichmentCommands();
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
-        zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
         fileSystemFactory = Mockito.mock(SiembolFileSystemFactory.class);
         fileSystem = Mockito.mock(SiembolFileSystem.class);
 
-        zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
-        when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
         when(fileSystemFactory.create()).thenReturn(fileSystem);
 
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
         when(tuple.getValueByField(eq(EnrichmentTuples.COMMANDS.toString()))).thenReturn(commands);
         when(tuple.getValueByField(eq(EnrichmentTuples.EXCEPTIONS.toString()))).thenReturn(exceptions);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
-        when(zooKeeperConnector.getData()).thenReturn(tablesUpdate);
-        when(fileSystem.openInputStream(anyString())).thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
+
+        when(fileSystem.openInputStream(eq("/siembol/tables/enrichment/test.json")))
+                .thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
+        when(fileSystem.openInputStream(eq("/siembol/tables/enrichment/test2.json")))
+                .thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
+        when(fileSystem.openInputStream(eq("/siembol/tables/enrichment/different_test.json")))
+                .thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
 
         memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, fileSystemFactory);
         memoryTableBolt.prepare(null, null, collector);
@@ -181,5 +213,68 @@ public class MemoryTableEnrichmentBoltTest {
         Assert.assertEquals(event, values.get(0));
         Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
         Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+    }
+
+    @Test
+    public void updateTablesWithSame() throws Exception {
+        zooKeeperConnectorFactory.getZooKeeperConnector(zooKeeperPath).setData(tablesUpdateSame);
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test.json"));
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
+    }
+
+    @Test
+    public void updateTablesWithDifferent() throws Exception {
+        zooKeeperConnectorFactory.getZooKeeperConnector(zooKeeperPath).setData(tablesUpdateDifferent);
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test.json"));
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/different_test.json"));
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
+    }
+
+    @Test
+    public void updateTablesEmpty() throws IOException {
+        fileSystem = Mockito.mock(SiembolFileSystem.class);
+        when(fileSystemFactory.create()).thenReturn(fileSystem);
+        when(fileSystem.openInputStream(anyString())).thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
+        zooKeeperConnectorFactory.setData(zooKeeperPath, "{}");
+        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, fileSystemFactory);
+        memoryTableBolt.prepare(null, null, collector);
+        Mockito.verify(fileSystem, times(0)).openInputStream(anyString());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void prepareInvalidAttributes() throws IOException {
+        attributes.setEnrichingTablesAttributes(null);
+        fileSystem = Mockito.mock(SiembolFileSystem.class);
+        when(fileSystemFactory.create()).thenReturn(fileSystem);
+        when(fileSystem.openInputStream(anyString())).thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
+        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, fileSystemFactory);
+        memoryTableBolt.prepare(null, null, collector);
+        Mockito.verify(fileSystem, times(0)).openInputStream(anyString());
+    }
+
+    @Test
+    public void updateTablesWithDifferentAndException() throws Exception {
+        when(fileSystem.openInputStream(eq("/siembol/tables/enrichment/different_test.json")))
+                .thenThrow(new IllegalArgumentException());
+        zooKeeperConnectorFactory.getZooKeeperConnector(zooKeeperPath).setData(tablesUpdateDifferent);
+
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test.json"));
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/different_test.json"));
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
+    }
+
+    @Test(expected =RuntimeException.class)
+    public void updateTablesInvalid() throws Exception {
+        Mockito.verify(fileSystem, times(1))
+                .openInputStream(eq("/siembol/tables/enrichment/test.json"));
+        zooKeeperConnectorFactory.getZooKeeperConnector(zooKeeperPath).setData("INVALID");
     }
 }
