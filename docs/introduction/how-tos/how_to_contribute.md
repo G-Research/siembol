@@ -7,7 +7,7 @@ How to contribute to the siembol Java project
 ### Environment
 
 - [Maven](https://maven.apache.org/guides/) - version `3.5+`
-- [Java Development Kit 8](https://jdk.java.net/)
+- [Java Development Kit 13+](https://adoptopenjdk.net/)
 
 ### How to compile and install
 
