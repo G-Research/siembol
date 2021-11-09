@@ -19,5 +19,5 @@ data:
   download.php: |-
 {{ .Files.Get "resources/download.php" | indent 4 }}
   index.php: |-
-  {{ .Files.Get "resources/index.php" | indent 4 }}
+{{ .Files.Get "resources/index.php" | indent 4 }}
 {{- end -}}

@@ -6,7 +6,7 @@
 
     function iterateDirectory($objects, $basepath) 
     {
-        $dom = new Document("1.0");
+        $dom = new DomDocument("1.0");
         $h3 = $dom->createElement("h3", "Index of /opt/files");
         $dom->appendChild($h3);
         $list = $dom->createElement("ul");
@@ -14,7 +14,7 @@
         $node = $list;
         $depth = 0;
         $script = "download.php?filename=";
-        foreach($objects as $name => $objects){
+        foreach($objects as $name => $object){
             if ($objects->getDepth() == $depth){
                //just add another li as the depth hasn't changed
                $file = $object->getFilename();
@@ -46,7 +46,7 @@
                 $li->appendChild($ul);
 
                 if ($object-> isDir()) {
-                   $ul->appendChild($dom->createElement('li', $file));
+                   $ul->appendChild($dom->createElement('li', $object->getFilename());
                 } else {
                    $li = $dom->createElement('li', "");
                    $a = $dom->createElement('a', $file);

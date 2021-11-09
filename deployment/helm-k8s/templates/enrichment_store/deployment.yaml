@@ -28,9 +28,9 @@ spec:
           name: {{ include "siembol.enrichment_store.fullname" $ }}
           env:
           - name: APACHE_RUN_USER
-            value: "#"{{ .Values.enrichment_store.security.user }}
+            value: "#82"
           - name: APACHE_RUN_GROUP
-            value: "#"{{ .Values.enrichment_store.security.fsGroup }}
+            value: "#82"
           ports:
             - name: file-server
               containerPort: {{ .Values.enrichment_store.containerPort }}

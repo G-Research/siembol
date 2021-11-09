@@ -6,8 +6,6 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
-helm install siembol-zookeeper bitnami/zookeeper -n=siembol
-
 helm install kafka bitnami/kafka -n=siembol
 helm install storm gresearch/storm -n=siembol \
     --set supervisor.replicaCount=1  \
@@ -16,8 +14,7 @@ helm install storm gresearch/storm -n=siembol \
     --set supervisor.slots=3 \
     --set nimbus.image.tag=2.3.0 \
     --set ui.image.tag=2.3.0 \
-    --set zookeeper.enabled=false \
-    --set zookeeper.servers=["zookeeper-0.zookeeper-headless.siembol.svc"]
+    --set zookeeper.fullnameOverride="siembol-zookeeper"
 
 
 echo "************************************************************"

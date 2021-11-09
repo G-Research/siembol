@@ -31,11 +31,11 @@ spec:
           - containerPort: {{ .Values.rest.containerPort }}
         resources:
           requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
             memory: "512Mi"
             cpu: "500m"
-          limits:
-            memory: "1048Mi"
-            cpu: "1000m"
         securityContext:
           runAsUser: 101
         readinessProbe:
