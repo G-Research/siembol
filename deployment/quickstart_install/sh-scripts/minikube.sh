@@ -9,7 +9,7 @@ echo == create and install CA ==
 mkcert -install
 
 echo == create k8s cluster ==
-minikube start --profile $profile --driver hyperkit --container-runtime containerd --cni calico --cpus 4 --memory 4g --disk-size 40g --addons ingress,ingress-dns
+minikube start --profile $profile --driver hyperkit --container-runtime containerd --cni calico --cpus 6 --memory 6g --disk-size 40g --addons ingress,ingress-dns
 minikube profile $profile
 
 echo == add DNS resolver ==
