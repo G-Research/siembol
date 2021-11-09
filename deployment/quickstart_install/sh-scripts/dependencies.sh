@@ -9,14 +9,14 @@ helm repo update
 helm install siembol-zookeeper bitnami/zookeeper -n=siembol
 
 helm install kafka bitnami/kafka -n=siembol
-helm install storm gresearch/storm -n=siembol /
-    --set supervisor.replicaCount=1  /
-    --set supervisor.image.tag=2.3.0 /
-    --set supervisor.childopts="-Xmx1g" /
-    --set supervisor.slots=3 /
-    --set nimbus.image.tag=2.3.0 /
-    --set ui.image.tag=2.3.0 /
-    --set zookeeper.enabled=false /
+helm install storm gresearch/storm -n=siembol \
+    --set supervisor.replicaCount=1  \
+    --set supervisor.image.tag=2.3.0 \
+    --set supervisor.childopts="-Xmx1g" \
+    --set supervisor.slots=3 \
+    --set nimbus.image.tag=2.3.0 \
+    --set ui.image.tag=2.3.0 \
+    --set zookeeper.enabled=false \
     --set zookeeper.servers=["zookeeper-0.zookeeper-headless.siembol.svc"]
 
 
