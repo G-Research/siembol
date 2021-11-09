@@ -7,8 +7,6 @@ helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
 
-helm install kafka bitnami/kafka --namespace $namespace
-
 helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.replicaCount=1 `
     --set supervisor.image.tag=2.3.0 `
@@ -17,6 +15,11 @@ helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.slots=6 `
     --set ui.image.tag=2.3.0 `
     --set zookeeper.fullnameOverride="siembol-zookeeper"
+
+
+helm install kafka bitnami/kafka --namespace $namespace `
+    --set zookeeper.enabled=false `
+    --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc}
 
 
 Write-Output "************************************************************"
