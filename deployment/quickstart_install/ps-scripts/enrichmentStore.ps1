@@ -3,8 +3,8 @@ Write-Output "********* Set up demo enrichment table **************"
 Write-Output "*****************************************************"
 
 # Create table file
-$FileName = "dns.json"
-Write-Output '{"1.2.3.4":{"hostname":"test.com"}}' > $FileName
+$FileName = "hostname.json"
+Write-Output '{"1.2.3.4":{"hostname":"test-name"}}' > $FileName
 
 # POST request
 $FilePath = (Get-Location).path + '/' + $FileName
@@ -25,7 +25,7 @@ Invoke-RestMethod -Uri $URL -Method Post -ContentType "multipart/form-data; boun
 # Call siembol rest endpoint to sync
 $header=@{"content-type"="application/json"}
 $restUri="https://rest.siembol.local/api/v1/enrichment/enrichment/tables"
-$body=@{"name"= "dns";"path"= "/download.php?filename=$FileName"}
+$body=@{"name"= "hostname";"path"= "/download.php?filename=$FileName"}
 Invoke-RestMethod -Method 'Post' -Uri $restUri -Headers $header -Body ($body|ConvertTo-Json)
 
 
