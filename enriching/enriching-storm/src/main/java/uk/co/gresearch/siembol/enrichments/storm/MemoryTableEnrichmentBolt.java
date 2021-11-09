@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -34,9 +35,8 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
@@ -51,14 +51,16 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final String TABLES_UPDATES_COMPLETED = "Updating enrichment tables completed";
     private static final String TABLES_UPDATE_MESSAGE_FORMAT = "Updating enrichment tables: %s";
     private static final String TABLES_UPDATE_EXCEPTION_FORMAT = "Exception during update of enrichment tables: {}";
+    private static final String TABLE_UPDATE_EXCEPTION_FORMAT = "Exception during update of an enrichment table: {} " +
+            "path: {}, exception : {}";
     private static final String TABLE_INIT_START = "Trying to initialise enrichment table: {} from the file: {}";
     private static final String TABLE_INIT_COMPLETED = "Initialisation of enrichment table: {} completed";
     private static final String TABLES_UPDATE_EMPTY_TABLES = "No enrichment tables provided";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Exception during loading memory table: %s";
     private static final String INVALID_TYPE_IN_TUPLES = "Invalid type in tuple provided";
 
-    private final AtomicReference<Map<String, EnrichmentTable>> enrichmentTables = new AtomicReference<>();
-    private final ZooKeeperAttributesDto zooKeeeperAttributes;
+    private final ConcurrentHashMap<String, Pair<String, EnrichmentTable>> enrichmentTables = new ConcurrentHashMap<>();
+    private final ZooKeeperAttributesDto zooKeeperAttributesDto;
     private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
 
@@ -68,7 +70,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
                               ZooKeeperConnectorFactory zooKeeperConnectorFactory,
                               SiembolFileSystemFactory fileSystemFactory) {
-        this.zooKeeeperAttributes = attributes.getEnrichingTablesAttributes();
+        this.zooKeeperAttributesDto = attributes.getEnrichingTablesAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
         this.fileSystemFactory = fileSystemFactory;
     }
@@ -85,12 +87,11 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
         try {
             LOG.info(TABLES_INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributesDto);
 
             updateTables();
-            if (enrichmentTables.get() == null) {
-                LOG.error(TABLES_UPDATE_EMPTY_TABLES);
-                throw new IllegalStateException(TABLES_UPDATE_EMPTY_TABLES);
+            if (enrichmentTables.isEmpty()) {
+                LOG.warn(TABLES_UPDATE_EMPTY_TABLES);
             }
 
             zooKeeperConnector.addCacheListener(this::updateTables);
@@ -108,21 +109,32 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
 
             String tablesUpdateStr = zooKeeperConnector.getData();
             LOG.info(String.format(TABLES_UPDATE_MESSAGE_FORMAT, tablesUpdateStr));
-            Map<String, EnrichmentTable> tables = new HashMap<>();
             EnrichmentTablesUpdateDto enrichmentTablesUpdateDto = TABLES_UPDATE_READER.readValue(tablesUpdateStr);
             try (SiembolFileSystem fs = fileSystemFactory.create()) {
-                for (EnrichmentTableDto table :  enrichmentTablesUpdateDto.getEnrichmentTables()) {
+                for (EnrichmentTableDto table : enrichmentTablesUpdateDto.getEnrichmentTables()) {
+                    var currentTablePair = enrichmentTables.get(table.getName());
+                    if (currentTablePair != null && currentTablePair.getLeft().equals(table.getPath())) {
+                        //NOTE: we already have a table loaded from the same path
+                        continue;
+                    }
+
                     LOG.info(TABLE_INIT_START, table.getName(), table.getPath());
                     try (InputStream is = fs.openInputStream(table.getPath())) {
-                        tables.put(table.getName(), EnrichmentMemoryTable.fromJsonStream(is));
+                        var memoryTable = EnrichmentMemoryTable.fromJsonStream(is);
+                        enrichmentTables.put(table.getName(), ImmutablePair.of(table.getPath(), memoryTable));
+                        LOG.info(TABLE_INIT_COMPLETED, table.getName());
+                    } catch (Exception e) {
+                        LOG.error(TABLE_UPDATE_EXCEPTION_FORMAT,
+                                table.getName(),
+                                table.getPath(),
+                                ExceptionUtils.getStackTrace(e));
                     }
-                    LOG.info(TABLE_INIT_COMPLETED, table.getName());
                 }
             }
-            enrichmentTables.set(tables);
             LOG.info(TABLES_UPDATES_COMPLETED);
         } catch (Exception e) {
             LOG.error(TABLES_UPDATE_EXCEPTION_FORMAT, ExceptionUtils.getStackTrace(e));
+            throw new IllegalStateException(e);
         }
     }
 
@@ -145,14 +157,14 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
         EnrichmentExceptions exceptions = (EnrichmentExceptions)exceptionsObj;
 
         EnrichmentPairs enrichments = new EnrichmentPairs();
-        Map<String, EnrichmentTable> currentTables = enrichmentTables.get();
+
         for (EnrichmentCommand command : commands) {
-            EnrichmentTable table = currentTables.get(command.getTableName());
-            if (table == null) {
+            var tablePair = enrichmentTables.get(command.getTableName());
+            if (tablePair == null) {
                 continue;
             }
 
-            Optional<List<Pair<String, String>>> result = table.getValues(command);
+            Optional<List<Pair<String, String>>> result = tablePair.getRight().getValues(command);
             result.ifPresent(enrichments::addAll);
         }
         collector.emit(tuple, new Values(event, enrichments, exceptions));

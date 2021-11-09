@@ -35,6 +35,12 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
             "in the service: {}, enrichment tables value: {}";
     private static final String ADD_NEW_EXISTING_TABLE_MSG = "Table with name %s already exists";
     private static final String UPDATE_NON_EXISTING_TABLE_MSG = "Table with name %s does not exist";
+    private static final String UPDATE_TABLE_INIT_LOG =
+            "Trying to update enrichment table - name: {}, path: {}, service: {}";
+    private static final String UPDATE_TABLE_COMPLETED_LOG =
+            "Updating enrichment table completed - name: {}, path: {}, service: {}";
+    private static final String UPDATE_TABLE_EXCEPTION_LOG =
+            "Exception {} during updating enrichment table - name: {}, path: {}, service: {}";
 
     private final Map<String, ZooKeeperConnector> zooKeeperConnectorMap;
     private final Map<String, AtomicReference<String>> enrichmentTablesCache;
@@ -115,6 +121,7 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
 
     private ConfigEditorResult updateEnrichmentTableInternally(String serviceName, EnrichmentTableDto enrichmentTable,
                                                                boolean isNewTable) {
+        LOGGER.info(UPDATE_TABLE_INIT_LOG, enrichmentTable.getName(), enrichmentTable.getPath(), serviceName);
         if (enrichmentTable.getName() == null || enrichmentTable.getPath() == null) {
             return ConfigEditorResult.fromMessage(BAD_REQUEST, WRONG_TABLE_TO_UPDATE);
         }
@@ -149,8 +156,11 @@ public class EnrichmentTablesProviderImpl implements EnrichmentTablesProvider {
             String updatedTablesStr = ENRICHMENT_TABLES_UPDATE_MSG_WRITER.writeValueAsString(currentTables);
             zooKeeperConnectorMap.get(serviceName).setData(updatedTablesStr);
             enrichmentTablesCache.get(serviceName).set(updatedTablesStr);
+            LOGGER.info(UPDATE_TABLE_COMPLETED_LOG, enrichmentTable.getName(), enrichmentTable.getPath(), serviceName);
             return ConfigEditorResult.fromEnrichmentTables(currentTables.getEnrichmentTables());
         } catch (Exception e) {
+            LOGGER.error(UPDATE_TABLE_EXCEPTION_LOG,
+                    e, enrichmentTable.getName(), enrichmentTable.getPath(), serviceName);
             return ConfigEditorResult.fromException(e);
         }
     }

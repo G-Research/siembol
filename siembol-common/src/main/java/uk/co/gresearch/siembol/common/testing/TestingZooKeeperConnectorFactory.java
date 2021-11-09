@@ -10,19 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFactory {
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Map<String, String> cache = new HashMap<>();
+    private final Map<String, ZooKeeperConnector> connectors = new HashMap<>();
 
     public ZooKeeperConnector createZookeeperConnector(ZooKeeperAttributesDto attributes) {
-        return new TestingZooKeeperConnector(attributes.getZkPath());
+        var ret = new TestingZooKeeperConnector(attributes.getZkPath());
+        connectors.put(attributes.getZkPath(), ret);
+        return ret;
     }
 
     public void setData(String path, String data) {
         cache.put(path, data);
+    }
+
+    public ZooKeeperConnector getZooKeeperConnector(String path) {
+        return connectors.get(path);
     }
 
     public class TestingZooKeeperConnector implements ZooKeeperConnector {
@@ -41,14 +45,12 @@ public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFacto
         @Override
         public void setData(String data) throws Exception {
             cache.put(path, data);
-            for (NodeCacheListener callBack: callBacks) {
-                executorService.submit(() -> {
-                    try {
-                        callBack.nodeChanged();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+            for (NodeCacheListener callBack : callBacks) {
+                try {
+                    callBack.nodeChanged();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
