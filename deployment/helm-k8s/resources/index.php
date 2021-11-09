@@ -13,34 +13,22 @@
         $dom->appendChild($list);
         $node = $list;
         $depth = 0;
-        $script = "download.php?filename=";
         foreach($objects as $name => $object){
+            $file = $object->getFilename();
+            if ($file === '.') continue;
+            if ($file === '..') continue;
+
             if ($objects->getDepth() == $depth){
                //just add another li as the depth hasn't changed
-               $file = $object->getFilename();
-               if ($file === '.') continue;
-               if ($file === '..') continue;
-
                if ($object-> isDir()) {
                   $li = $dom->createElement('li', $file);
                } else {
-                  $li = $dom->createElement('li', "");
-                  $a = $dom->createElement('a', $file);
-                  $path = $object->getPath();
-                  if (str_starts_with($path, $basepath)) {
-                     $path = substr($path, strlen($basepath), strlen($path));
-                  }
-                  $link = $script . $path . "/" . $file;
-                  $a->setAttribute('href', $link);
-                  $li->appendChild($a);
+                  $li = create_href_li($file, $basepath);
                }
                $node->appendChild($li);
             }
             elseif ($objects->getDepth() > $depth){
                 //the depth increased, the last li is a non-empty folder
-                $file = $object->getFilename();
-                if ($file === '.') continue;
-                if ($file === '..') continue;
                 $li = $node->lastChild;
                 $ul = $dom->createElement('ul');
                 $li->appendChild($ul);
@@ -48,15 +36,7 @@
                 if ($object-> isDir()) {
                    $ul->appendChild($dom->createElement('li', $object->getFilename()));
                 } else {
-                   $li = $dom->createElement('li', "");
-                   $a = $dom->createElement('a', $file);
-                   $path = $object->getPath();
-                   if (str_starts_with($path, $basepath)) {
-                      $path = substr($path, strlen($basepath), strlen($path));
-                   }
-                   $link = $script . $path . "/" . $file;
-                   $a->setAttribute('href', $link);
-                   $li->appendChild($a);
+                   $li = create_href_li($file, $basepath);
                    $ul->appendChild($li);
                 }
                 $node = $ul;
@@ -73,5 +53,20 @@
             $depth = $objects->getDepth();
         }
         echo $dom->saveHtml();
+    }
+
+    function create_href_li($file, $basepath)
+    {
+        $script = "download.php?filename=";
+        $li = $dom->createElement('li', "");
+        $a = $dom->createElement('a', $file);
+        $path = $object->getPath();
+        if (str_starts_with($path, $basepath)) {
+           $path = substr($path, strlen($basepath), strlen($path));
+        }
+        $link = $script . $path . "/" . $file;
+        $a->setAttribute('href', $link);
+        $li->appendChild($a);
+        return $li;
     }
 ?>
