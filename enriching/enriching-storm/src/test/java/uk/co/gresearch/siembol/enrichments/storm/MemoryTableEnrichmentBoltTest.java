@@ -271,7 +271,7 @@ public class MemoryTableEnrichmentBoltTest {
                 .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
     }
 
-    @Test(expected =RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void updateTablesInvalid() throws Exception {
         Mockito.verify(fileSystem, times(1))
                 .openInputStream(eq("/siembol/tables/enrichment/test.json"));
