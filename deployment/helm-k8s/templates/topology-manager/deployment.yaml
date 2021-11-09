@@ -5,6 +5,7 @@ metadata:
   labels:
     app: {{ include "siembol.manager.appname.fullname" $ }}
   name: {{ include "siembol.manager.appname.fullname" $ }}
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: 1 
   selector:
