@@ -7,8 +7,6 @@ helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
 
-helm install siembol-zookeeper bitnami/zookeeper --namespace $namespace
-
 helm install kafka bitnami/kafka --namespace $namespace
 
 helm install storm gresearch/storm --namespace $namespace `
@@ -20,7 +18,8 @@ helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.childopts="-Xmx1g" `
     --set nimbus.image.tag=2.3.0 `
     --set supervisor.slots=3 `
-    --set ui.image.tag=2.3.0
+    --set ui.image.tag=2.3.0 `
+    --set zookeeper.fullnameOverride="siembol-zookeeper"
 
 
 Write-Output "************************************************************"

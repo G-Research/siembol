@@ -26,6 +26,11 @@ spec:
         - image: {{ .Values.enrichment_store.image.repository }}:{{ .Values.enrichment_store.image.tag }}
           imagePullPolicy: {{ .Values.enrichment_store.image.pullPolicy }}
           name: {{ include "siembol.enrichment_store.fullname" $ }}
+          env:
+          - name: APACHE_RUN_USER
+            value: "#82"
+          - name: APACHE_RUN_GROUP
+            value: "#82"
           ports:
             - name: file-server
               containerPort: {{ .Values.enrichment_store.containerPort }}
@@ -41,6 +46,9 @@ spec:
               mountPath: /opt/files
             - name: code
               mountPath: /var/www/html
+            - name: config
+              mountPath: "/usr/local/etc/php/conf.d/upload.ini"
+              subPath: "php.ini-local"
       restartPolicy: Always
       securityContext:
         runAsUser: {{ .Values.enrichment_store.security.user }}
@@ -52,4 +60,7 @@ spec:
         - name: files
           persistentVolumeClaim:
             claimName: {{ .Values.enrichment_store.pvc.name }}
+        - name: config
+          configMap:
+            name: apache-conf
   {{- end -}}

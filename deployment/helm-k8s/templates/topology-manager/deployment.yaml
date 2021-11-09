@@ -5,6 +5,7 @@ metadata:
   labels:
     app: {{ include "siembol.manager.appname.fullname" $ }}
   name: {{ include "siembol.manager.appname.fullname" $ }}
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: 1 
   selector:
@@ -32,10 +33,10 @@ spec:
         resources:
           requests:
             memory: "128Mi"
-            cpu: "500m"
+            cpu: "250m"
           limits:
             memory: "512Mi"
-            cpu: "1000m"
+            cpu: "500m"
         securityContext:
           runAsUser: 101
         readinessProbe:

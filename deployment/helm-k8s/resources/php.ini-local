@@ -1,0 +1,2 @@
+upload_max_filesize = 30M
+post_max_size = 40M ; This value must be larger than upload_max_filesize

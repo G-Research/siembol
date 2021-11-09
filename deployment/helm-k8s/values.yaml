@@ -89,7 +89,7 @@ enrichment_store:
   appName: "enrichment-store"
   image:
     repository: php
-    tag: 7.2-apache
+    tag: 8.0-apache
     pullPolicy: Always
   containerPort: 80
   service:
