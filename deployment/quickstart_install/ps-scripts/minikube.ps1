@@ -8,7 +8,7 @@ Write-Output == create and install CA ==
 mkcert -install
 
 Write-Output == create k8s cluster ==
-minikube start --profile $namespace --driver hyperv --cpus 4 --memory 8g --disk-size 40g --addons ingress
+minikube start --profile $namespace --driver hyperv --cpus 6 --memory 6g --disk-size 40g --addons ingress
 minikube profile $namespace
 
 Write-Output == install dns host entries ==
