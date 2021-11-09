@@ -46,7 +46,7 @@
                 $li->appendChild($ul);
 
                 if ($object-> isDir()) {
-                   $ul->appendChild($dom->createElement('li', $object->getFilename());
+                   $ul->appendChild($dom->createElement('li', $object->getFilename()));
                 } else {
                    $li = $dom->createElement('li', "");
                    $a = $dom->createElement('a', $file);
