@@ -43,14 +43,14 @@ spec:
             path: /health
             port: {{ .Values.rest.containerPort }}
             scheme: HTTP
-          initialDelaySeconds: 30
+          initialDelaySeconds: 100
           periodSeconds: 30
         livenessProbe:
           httpGet:
             path: /health
             port: {{ .Values.rest.containerPort }}
             scheme: HTTP
-          initialDelaySeconds: 30
+          initialDelaySeconds: 100
           periodSeconds: 10
         {{ if .Values.rest.configmap.enabled -}}
         envFrom:
