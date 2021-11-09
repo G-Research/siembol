@@ -17,7 +17,9 @@ helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.childopts="-Xmx1g" `
     --set nimbus.image.tag=2.3.0 `
     --set supervisor.slots=6 `
-    --set ui.image.tag=2.3.0
+    --set ui.image.tag=2.3.0 `
+    --set zookeeper.enabled=false `
+    --set zookeeper.servers=["zookeeper-0.zookeeper-headless.siembol.svc"]
 
 
 Write-Output "************************************************************"
