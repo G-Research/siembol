@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2021-11-09
 
-- upgrading Java to 11 (Java 13 in tests)
-- upgrading Storm to 2.3.0
+- Upgrading Java to 11 (Java 13 in tests)
+- Upgrading Storm to 2.3.0
 - Supporting downloading enrichment tables from http store
-- Adding Config editor rest API for updating enrichment tables update message
+- Adding Config editor rest API for updating enrichment tables
 - Fixing extracting csv with last empty column in Siembol parsing
 - Improvements in Manage Applications dialog in Siembol UI
 - Various upgrades of dependencies in java modules and config editor ui
