@@ -37,7 +37,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java_test_version>13</java_test_version>
-        <maven.compiler.release>13</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
         <maven_compiler_version>3.8.1</maven_compiler_version>
         <jackson_version>2.13.0</jackson_version>
         <junit_version>4.13.2</junit_version>
@@ -115,7 +115,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven_compiler_version}</version>
                 <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                         <arg>-Xlint:-processing</arg>
