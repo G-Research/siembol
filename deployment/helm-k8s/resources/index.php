@@ -1,7 +1,7 @@
 <?php
 
     $basepath = '/opt/files';
-    $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($basepath, RecursiveIteratorIterator::SELF_FIRST));
+    $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($basepath), RecursiveIteratorIterator::SELF_FIRST);
     iterateDirectory($objects, $basepath);
 
     function iterateDirectory($objects, $basepath) 
@@ -23,7 +23,7 @@
                if ($object-> isDir()) {
                   $li = $dom->createElement('li', $file);
                } else {
-                  $li = create_href_li($file, $basepath);
+                  $li = create_href_li($dom, $object->getPath(), $file, $basepath);
                }
                $node->appendChild($li);
             }
@@ -34,9 +34,9 @@
                 $li->appendChild($ul);
 
                 if ($object-> isDir()) {
-                   $ul->appendChild($dom->createElement('li', $object->getFilename()));
+                   $ul->appendChild($dom->createElement('li', $file));
                 } else {
-                   $li = create_href_li($file, $basepath);
+                   $li = create_href_li($dom, $object->getPath(), $file, $basepath);
                    $ul->appendChild($li);
                 }
                 $node = $ul;
@@ -46,7 +46,6 @@
                for ($i = 0; $i < $difference; $difference--) {
                   $node = $node->parentNode->parentNode;
                }
-               $file = $object->getFilename();
                $li = $dom->createElement('li', $file);
                $node->appendChild($li);
             }
@@ -55,12 +54,11 @@
         echo $dom->saveHtml();
     }
 
-    function create_href_li($file, $basepath)
+    function create_href_li($dom, $path, $file, $basepath)
     {
         $script = "download.php?filename=";
         $li = $dom->createElement('li', "");
         $a = $dom->createElement('a', $file);
-        $path = $object->getPath();
         if (str_starts_with($path, $basepath)) {
            $path = substr($path, strlen($basepath), strlen($path));
         }
