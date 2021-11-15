@@ -1,7 +1,5 @@
 package uk.co.gresearch.siembol.common.zookeeper;
 
-import org.apache.curator.framework.recipes.cache.NodeCacheListener;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +27,7 @@ public class ZookeeperCompositeConnectorImpl implements ZooKeeperCompositeConnec
     }
 
     @Override
-    public void addCacheListener(NodeCacheListener listener) {
+    public void addCacheListener(Runnable listener) {
         zooKeeperConnectors.forEach(x -> x.addCacheListener(listener));
     }
 

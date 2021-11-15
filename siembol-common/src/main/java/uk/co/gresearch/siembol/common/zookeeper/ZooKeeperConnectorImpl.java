@@ -2,10 +2,10 @@ package uk.co.gresearch.siembol.common.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.NodeCache;
-import org.apache.curator.framework.recipes.cache.NodeCacheListener;
+import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     private final CuratorFramework client;
-    private final NodeCache cache;
+    private final CuratorCache cache;
     private final String path;
 
     ZooKeeperConnectorImpl(Builder builder) {
@@ -27,8 +27,12 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     }
 
     public String getData() {
-        ChildData childData = cache.getCurrentData();
-        return new String(childData.getData(), UTF_8);
+        Optional<ChildData> childData = cache.get(path);
+        if (childData.isPresent()) {
+            return new String(childData.get().getData(), UTF_8);
+        } else {
+            throw new IllegalStateException("Trying to read form empty cache");
+        }
     }
 
     @Override
@@ -36,9 +40,11 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         client.setData().forPath(this.path, data.getBytes(UTF_8));
     }
 
-    @SuppressWarnings("deprecation")
-    public void addCacheListener(NodeCacheListener listener) {
-        cache.getListenable().addListener(listener);
+    @Override
+    public void addCacheListener(Runnable listener) {
+        cache.listenable().addListener((x, y, z) -> {
+            listener.run();
+        });
     }
 
     @Override
@@ -59,7 +65,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         private String path;
         private Integer baseSleepTimeMs = 1000;
         private Integer maxRetries = 3;
-        private NodeCache cache;
+        private CuratorCache cache;
         private CuratorFramework client;
         private Optional<String> initValue = Optional.empty();
 
@@ -102,11 +108,15 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
 
             if (initValue.isPresent() && client.checkExists().forPath(path) == null) {
                 LOG.warn(INIT_NON_EXISTING_LOG_MSG, path, initValue.get());
-                client.create().creatingParentsIfNeeded().forPath(path, initValue.get().getBytes(UTF_8));
+                client.create()
+                        .creatingParentsIfNeeded()
+                        .withMode(CreateMode.PERSISTENT)
+                        .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                        .forPath(path, initValue.get().getBytes(UTF_8));
             }
 
-            cache = new NodeCache(client, path);
-            cache.start(true);
+            cache = CuratorCache.build(client, path, CuratorCache.Options.SINGLE_NODE_CACHE);
+            cache.start();
             return new ZooKeeperConnectorImpl(this);
         }
     }

@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.common.testing;
 
-import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -31,7 +30,7 @@ public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFacto
 
     public class TestingZooKeeperConnector implements ZooKeeperConnector {
         private final String path;
-        private final List<NodeCacheListener> callBacks = new ArrayList<>();
+        private final List<Runnable> callBacks = new ArrayList<>();
 
         public TestingZooKeeperConnector(String path) {
             this.path = path;
@@ -45,9 +44,9 @@ public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFacto
         @Override
         public void setData(String data) throws Exception {
             cache.put(path, data);
-            for (NodeCacheListener callBack : callBacks) {
+            for (var callBack : callBacks) {
                 try {
-                    callBack.nodeChanged();
+                    callBack.run();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -55,7 +54,7 @@ public class TestingZooKeeperConnectorFactory implements ZooKeeperConnectorFacto
         }
 
         @Override
-        public void addCacheListener(NodeCacheListener listener) {
+        public void addCacheListener(Runnable listener) {
             callBacks.add(listener);
         }
 
