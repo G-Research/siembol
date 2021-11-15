@@ -105,6 +105,18 @@
             <version>${curator_version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <version>${curator_test_version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.github.charithe</groupId>
             <artifactId>kafka-junit</artifactId>
             <version>${kafka_junit_version}</version>
