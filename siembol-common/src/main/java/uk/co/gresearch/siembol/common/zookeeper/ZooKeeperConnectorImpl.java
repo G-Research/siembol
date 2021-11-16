@@ -12,18 +12,28 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
+    private static final int SLEEP_TIME_MS = 100;
+    private static final String EMPTY_GET_DATA_MSG = "Trying to read form empty cache from zk path: %s";
+    private static final String INIT_TIMEOUT_MSG = "Initialisation of zk path: %s exceeded timeout ";
+
     private final CuratorFramework client;
     private final CuratorCache cache;
     private final String path;
+    private final AtomicBoolean initialised;
+    private final int initTimeout;
+
 
     ZooKeeperConnectorImpl(Builder builder) {
         this.client = builder.client;
         this.cache = builder.cache;
         this.path = builder.path;
+        this.initialised = builder.initialised;
+        this.initTimeout = builder.initTimeout;
     }
 
     public String getData() {
@@ -31,7 +41,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         if (childData.isPresent()) {
             return new String(childData.get().getData(), UTF_8);
         } else {
-            throw new IllegalStateException("Trying to read form empty cache");
+            throw new IllegalStateException(String.format(EMPTY_GET_DATA_MSG, path));
         }
     }
 
@@ -48,9 +58,21 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     }
 
     @Override
+    public void initialise() throws Exception {
+        int initTime = 0;
+        while (!initialised.get()) {
+            initTime += SLEEP_TIME_MS;
+            if (initTime > initTimeout) {
+                throw new IllegalStateException(String.format(INIT_TIMEOUT_MSG, path));
+            }
+            Thread.sleep(SLEEP_TIME_MS);
+        }
+    }
+
+    @Override
     public void close() throws IOException {
-        client.close();
         cache.close();
+        client.close();
     }
 
     public static class Builder {
@@ -68,6 +90,8 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         private CuratorCache cache;
         private CuratorFramework client;
         private Optional<String> initValue = Optional.empty();
+        private final AtomicBoolean initialised = new AtomicBoolean(false);
+        private int initTimeout = 3000;
 
         public Builder path(String path) {
             this.path = path;
@@ -94,6 +118,11 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
             return this;
         }
 
+        public Builder initTimeout(int initTimeout) {
+            this.initTimeout = initTimeout;
+            return this;
+        }
+
         public ZooKeeperConnectorImpl build() throws Exception {
             if (zkServer == null
                     || path == null
@@ -102,6 +131,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
                 LOG.error(WRONG_ATTRIBUTES_LOG_MSG, zkServer, path, baseSleepTimeMs, maxRetries);
                 throw new IllegalArgumentException(WRONG_ATTRIBUTES_EXCEPTION_MSG);
             }
+
             client = CuratorFrameworkFactory.newClient(zkServer,
                     new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));
             client.start();
@@ -116,7 +146,12 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
             }
 
             cache = CuratorCache.build(client, path, CuratorCache.Options.SINGLE_NODE_CACHE);
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forInitialized(() -> initialised.set(true))
+                    .build();
+            cache.listenable().addListener(listener);
             cache.start();
+
             return new ZooKeeperConnectorImpl(this);
         }
     }

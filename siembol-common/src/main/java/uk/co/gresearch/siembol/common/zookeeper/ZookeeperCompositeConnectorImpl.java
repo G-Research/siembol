@@ -33,8 +33,15 @@ public class ZookeeperCompositeConnectorImpl implements ZooKeeperCompositeConnec
 
     @Override
     public void close() throws IOException {
-        for (ZooKeeperConnector connector : zooKeeperConnectors) {
+        for (var connector : zooKeeperConnectors) {
             connector.close();
+        }
+    }
+
+    @Override
+    public void initialise() throws Exception {
+        for (var connector : zooKeeperConnectors) {
+            connector.initialise();
         }
     }
 }
