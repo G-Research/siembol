@@ -24,6 +24,8 @@ public class ZooKeeperCompositeConnectorFactoryImpl implements ZooKeeperComposit
                     .build());
         }
 
-        return new ZookeeperCompositeConnectorImpl(zooKeeperConnectors);
+        var compositeConnector = new ZookeeperCompositeConnectorImpl(zooKeeperConnectors);
+        compositeConnector.initialise();
+        return compositeConnector;
     }
 }
