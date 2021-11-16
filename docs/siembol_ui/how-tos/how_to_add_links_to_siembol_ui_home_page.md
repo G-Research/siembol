@@ -15,7 +15,7 @@ Below is the default config file provided where the two default links are in "ho
                 {
                     "icon": "library_books",
                     "title": "Documentation",
-                    "link": "https://github.com/G-Research/siembol/tree/master/docs"
+                    "link": "https://github.com/G-Research/siembol/tree/main/docs"
                 },
                 {   
                     "icon": "live_help",

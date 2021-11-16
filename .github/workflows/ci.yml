@@ -101,11 +101,11 @@ jobs:
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
+            latest=${{ github.ref == 'refs/heads/main' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
-            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/main' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -120,9 +120,9 @@ jobs:
           outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      # Only run this step for master and hotfix branches.
+      # Only run this step for main and hotfix branches.
       - name: Upload Docker image
-        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
+        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
         uses: actions/upload-artifact@v2
         with:
           name: docker-${{ matrix.component }}
@@ -169,11 +169,11 @@ jobs:
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
+            latest=${{ github.ref == 'refs/heads/main' && !endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
-            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/main' && endsWith(steps.info.outputs.version, '-SNAPSHOT') }}
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
@@ -188,9 +188,9 @@ jobs:
           outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      # Only run this step for master and hotfix branches.
+      # Only run this step for main and hotfix branches.
       - name: Upload Docker image
-        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
+        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
         uses: actions/upload-artifact@v2
         with:
           name: docker-${{ matrix.component }}
@@ -254,11 +254,11 @@ jobs:
         with:
           images: gresearchdev/siembol-config-editor-ui
           flavor: |
-            latest=${{ github.ref == 'refs/heads/master' && !endsWith(steps.info.outputs.version, '-dev') }}
+            latest=${{ github.ref == 'refs/heads/main' && !endsWith(steps.info.outputs.version, '-dev') }}
           # We use raw because our release process is not done on tag push (yet)
           tags: |
             type=raw,value=${{ steps.info.outputs.version }}
-            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/master' && endsWith(steps.info.outputs.version, '-dev') }}
+            type=raw,value=snapshot,enable=${{ github.ref == 'refs/heads/main' && endsWith(steps.info.outputs.version, '-dev') }}
           labels: |
             org.opencontainers.image.title=siembol-config-editor-ui
       - name: Build and export Docker image
@@ -270,18 +270,18 @@ jobs:
           outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      # Only run this step for master and hotfix branches.
+      # Only run this step for main and hotfix branches.
       - name: Upload Docker image
-        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
+        if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
         uses: actions/upload-artifact@v2
         with:
           name: docker-config-editor-ui
           path: image.tar
 
   release-version:
-    # Only run this job for master and hotfix branches.
+    # Only run this job for main and hotfix branches.
     # Jobs that depend on this one will be skipped too.
-    if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
     runs-on: ubuntu-latest
     needs: build-java
     outputs:
@@ -333,9 +333,9 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSWORD }}
 
   release-docker:
-    # Only run this job for master and hotfix branches.
+    # Only run this job for main and hotfix branches.
     # Jobs that depend on this one will be skipped too.
-    if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/hotfix/') )
+    if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
     runs-on: ubuntu-latest
     needs: [build-docker-storm, build-docker-java, build-docker-config-editor-ui]
     environment: release
