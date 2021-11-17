@@ -19,6 +19,7 @@ helm install kafka bitnami/kafka -n=siembol \
     --set zookeeper.enabled=false \
     --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc}
 
+
 echo "************************************************************"
 echo "Checking status by running: 'kubectl get pods -n siembol'"
 kubectl get pods -n siembol
