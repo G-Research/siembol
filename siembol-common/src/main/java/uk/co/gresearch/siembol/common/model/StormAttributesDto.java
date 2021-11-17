@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
 import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
-import uk.co.gresearch.siembol.common.storm.FirstPoolOffsetStrategy;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class StormAttributesDto {
     private List<String> kafkaTopics;
     @Attributes(required = true, description = "Defines how the kafka spout seeks the offset to be used in the first poll to kafka")
     @JsonProperty("first.pool.offset.strategy")
-    private FirstPoolOffsetStrategy firstPollOffsetStrategy = FirstPoolOffsetStrategy.UNCOMMITTED_LATEST;
+    private FirstPoolOffsetStrategyDto firstPollOffsetStrategy = FirstPoolOffsetStrategyDto.UNCOMMITTED_LATEST;
     @Attributes(required = true, description = "Defines kafka consumer attributes for kafka spout such as group.id, protocol")
     @JsonProperty("kafka.spout.properties")
     private JsonRawStringDto kafkaSpoutProperties;
@@ -84,11 +83,11 @@ public class StormAttributesDto {
         this.stormConfig = stormConfig;
     }
 
-    public FirstPoolOffsetStrategy getFirstPollOffsetStrategy() {
+    public FirstPoolOffsetStrategyDto getFirstPollOffsetStrategy() {
         return firstPollOffsetStrategy;
     }
 
-    public void setFirstPollOffsetStrategy(FirstPoolOffsetStrategy firstPollOffsetStrategy) {
+    public void setFirstPollOffsetStrategy(FirstPoolOffsetStrategyDto firstPollOffsetStrategy) {
         this.firstPollOffsetStrategy = firstPollOffsetStrategy;
     }
 
