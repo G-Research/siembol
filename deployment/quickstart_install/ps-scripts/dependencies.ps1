@@ -24,6 +24,12 @@ helm install kafka bitnami/kafka --namespace $namespace `
     --set zookeeper.enabled=false `
     --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc}
 
+$choice = Read-Host -Prompt "Do you want to deploy oauth2-proxy? (y/n)" 
+Write-Output $choice
+if ($choice -eq 'y') {
+    Write-Output "installing oauth2-proxy"
+    helm install oauth2-proxy bitnami/oauth2-proxy --namespace $namespace -f deployment/helm-k8s/oauth-values.yaml
+}
 
 Write-Output "************************************************************"
 Write-Output "Checking status by running: 'kubectl get pods -n siembol'"

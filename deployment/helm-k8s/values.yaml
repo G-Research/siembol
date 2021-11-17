@@ -80,6 +80,9 @@ storm_ingress:
   service:
     name: storm-ui
     port: 8080
+  oauth2_proxy:
+    enabled: false
+    host: oauth-proxy.siembol.local
 
 # -----------------------------------------------------------------------------
 # enrichment store parameters
@@ -106,6 +109,10 @@ enrichment_store:
   security:
     user: 82
     fsGroup: 82
+  
+  oauth2_proxy:
+    enabled: false
+    host: oauth-proxy.siembol.local
 
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
