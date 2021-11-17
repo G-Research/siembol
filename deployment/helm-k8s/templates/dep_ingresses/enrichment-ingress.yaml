@@ -1,5 +1,4 @@
-{{- if (has "enrichment_store" .Values.enabled_apps) -}}
-{{- if .Values.enrichment_store.ingress.enabled -}}
+{{- if and (has "dep_ingresses" .Values.enabled_apps) (.Values.dep_ingresses.enrichment_store.enabled) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -10,20 +9,20 @@ metadata:
     {{- if .Values.certmanager.enabled }}
     cert-manager.io/issuer: ca-issuer
     {{- end }}
-    {{- if .Values.enrichment_store.oauth2_proxy.enabled }}
-    nginx.ingress.kubernetes.io/auth-signin: https://{{ .Values.enrichment_store.oauth2_proxy.host }}/oauth2/start
-    nginx.ingress.kubernetes.io/auth-url: http://{{ .Values.enrichment_store.oauth2_proxy.host }}/oauth2/auth
+    {{- if .Values.dep_ingresses.enrichment_store.oauth2_proxy.enabled }}
+    nginx.ingress.kubernetes.io/auth-signin: https://{{ .Values.dep_ingresses.enrichment_store.oauth2_proxy.host }}/oauth2/start
+    nginx.ingress.kubernetes.io/auth-url: http://{{ .Values.dep_ingresses.enrichment_store.oauth2_proxy.host }}/oauth2/auth
     nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-User,X-Auth-Request-Email
     {{- end }}
 spec:
   {{ if .Values.tls.enabled -}}
   tls:
   - hosts: 
-    - {{ .Values.enrichment_store.ingress.fqdn }}
+    - {{ .Values.dep_ingresses.enrichment_store.fqdn }}
     secretName: {{ include "siembol.enrichment_store.fullname" $ }}-tls
   {{ end }}
   rules:
-  - host: {{ .Values.enrichment_store.ingress.fqdn }}
+  - host: {{ .Values.dep_ingresses.enrichment_store.fqdn }}
     http:
       paths:
       - path: /
@@ -33,5 +32,4 @@ spec:
             name: {{ include "siembol.enrichment_store.fullname" $ }}
             port: 
               number: {{ .Values.enrichment_store.service.port }}
-{{- end -}}
 {{- end -}}

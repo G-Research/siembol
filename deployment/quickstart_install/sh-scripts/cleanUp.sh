@@ -4,8 +4,6 @@ helm delete storm -n=siembol
 
 helm delete kafka -n=siembol
 
-helm delete oauth2-proxy -n=siembol
-
 helm delete siembol -n=siembol
 
 helm delete kafdrop -n=siembol
