@@ -6,11 +6,11 @@ extraEnvVars:
   - name: OAUTH2_PROXY_REDIRECT_URL
     value: https://oauth-proxy.siembol.local/oauth2/callback
   - name: OAUTH2_PROXY_CLIENT_ID
-    value: "my client ID FROM ENV"
+    value: "My Client ID"
   - name: OAUTH2_PROXY_CLIENT_SECRET
-    value: "my client SECRET ENV"
+    value: "My Client Secret"
   - name: OAUTH2_PROXY_COOKIE_SECRET
-    value: "Q1JFQVRFIFlPVVIgT1dOIFNFQ1JFVAo=" # your secret
+    value: "YOUR SECRET"
   - name: OAUTH2_PROXY_COOKIE_DOMAIN
     value: .siembol.local 
   - name: OAUTH2_PROXY_COOKIE_EXPIRE
