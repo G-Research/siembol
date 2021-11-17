@@ -3,6 +3,7 @@ package uk.co.gresearch.siembol.common.storm;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.storm.kafka.spout.*;
 import org.apache.storm.tuple.Fields;
+import uk.co.gresearch.siembol.common.model.FirstPoolOffsetStrategyDto;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class StormHelper {
     private static final int KAFKA_SPOUT_DELAY_PERIOD_MILLI_SEC = 2;
     private static final int KAFKA_SPOUT_MAX_RETRIES = Integer.MAX_VALUE;
     private static final int KAFKA_SPOUT_MAX_DELAY_SEC = 10;
+    private static final String UNSUPPORTED_SPOUT_STRATEGY = "Unsupported spout strategy";
 
     public static <K, V> KafkaSpoutConfig<K, V> createKafkaSpoutConfig(
             StormAttributesDto stormAttributes,
@@ -25,7 +27,7 @@ public class StormHelper {
                 KAFKA_SPOUT_MAX_RETRIES,
                 KafkaSpoutRetryExponentialBackoff.TimeInterval.seconds(KAFKA_SPOUT_MAX_DELAY_SEC));
 
-        FirstPollOffsetStrategy pollStrategy = stormAttributes.getFirstPollOffsetStrategy().getKafkaSpoutStrategy();
+        FirstPollOffsetStrategy pollStrategy = getKafkaSpoutStrategy(stormAttributes.getFirstPollOffsetStrategy());
         Properties props = new Properties();
         props.putAll(stormAttributes.getKafkaSpoutProperties().getRawMap());
 
@@ -50,5 +52,20 @@ public class StormHelper {
         }
 
         return builder.build();
+    }
+
+    private static FirstPollOffsetStrategy getKafkaSpoutStrategy(FirstPoolOffsetStrategyDto strategy) {
+        switch (strategy) {
+            case EARLIEST:
+                return FirstPollOffsetStrategy.EARLIEST;
+            case LATEST:
+                return FirstPollOffsetStrategy.LATEST;
+            case UNCOMMITTED_LATEST:
+                return FirstPollOffsetStrategy.UNCOMMITTED_LATEST;
+            case UNCOMMITTED_EARLIEST:
+                return FirstPollOffsetStrategy.UNCOMMITTED_EARLIEST;
+            default:
+                throw new IllegalArgumentException(UNSUPPORTED_SPOUT_STRATEGY);
+        }
     }
 }
