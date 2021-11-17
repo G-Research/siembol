@@ -1,0 +1,29 @@
+# -----------------------------------------------------------------------------
+# oauth2 proxy parameters
+# -----------------------------------------------------------------------------
+
+extraEnvVars:
+  - name: OAUTH2_PROXY_REDIRECT_URL
+    value: https://oauth-proxy.siembol.local/oauth2/callback
+  - name: OAUTH2_PROXY_CLIENT_ID
+    value: "Your Client ID"
+  - name: OAUTH2_PROXY_CLIENT_SECRET
+    value: "Your Client Secret"
+  - name: OAUTH2_PROXY_COOKIE_SECRET
+    value: "YOUR SECRET"
+  - name: OAUTH2_PROXY_COOKIE_DOMAIN
+    value: .siembol.local 
+  - name: OAUTH2_PROXY_COOKIE_EXPIRE
+    value: 8h
+  - name: OAUTH2_PROXY_COOKIE_NAME
+    value: _siembol-oauth-proxy
+ingress:
+  enabled: true
+  hosts:
+    - oauth-proxy.siembol.local
+  tls:
+  - secretName: oauth2-proxy-tls
+    hosts:
+      - oauth-proxy.siembol.local
+redis:
+  enabled: false

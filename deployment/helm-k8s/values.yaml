@@ -12,7 +12,7 @@ enabled_apps:
 - ui
 - rest
 - manager
-- storm_ingress
+- dep_ingresses
 - enrichment_store
 
 # Enable certmanager 
@@ -72,14 +72,24 @@ storm:
   appName: "storm"
 
 # -----------------------------------------------------------------------------
-# storm ingress parameters
+# Dependencies ingress parameters
 # -----------------------------------------------------------------------------
-
-storm_ingress:
-  fqdn: storm.local
-  service:
-    name: storm-ui
-    port: 8080
+dep_ingresses:
+  enrichment_store:
+    enabled: true
+    fqdn: enrichment.local
+    oauth2_proxy:
+      enabled: false
+      host: oauth-proxy.siembol.local
+  storm:
+    enabled: true
+    fqdn: storm.local
+    service:
+      name: storm-ui
+      port: 8080
+    oauth2_proxy:
+      enabled: false
+      host: oauth-proxy.siembol.local
 
 # -----------------------------------------------------------------------------
 # enrichment store parameters
@@ -99,13 +109,10 @@ enrichment_store:
     storageclass: ""
     storage: 1Gi
 
-  ingress:
-    enabled: true
-    fqdn: enrichment.local
-
   security:
     user: 82
     fsGroup: 82
+
 
 # -----------------------------------------------------------------------------
 # config-editor-rest parameters
