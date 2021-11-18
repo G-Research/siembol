@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.enrichments.storm;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -10,6 +11,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
@@ -87,8 +89,8 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
             LOG.info(ENGINE_UPDATE_START);
 
             String rules = zooKeeperConnector.getData();
-            LOG.info(ENGINE_UPDATE_TRY_MSG_FORMAT, rules);
-
+            LOG.info(ENGINE_UPDATE_TRY_MSG_FORMAT, StringUtils.left(rules, SiembolConstants.MAX_SIZE_CONFIG_UPDATE_LOG));
+            
             EnrichmentEvaluator engine = getEnrichmentEvaluator(rules);
             enrichmentEvaluator.set(engine);
 

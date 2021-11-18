@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -14,6 +15,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.*;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
@@ -33,7 +35,6 @@ import static java.lang.Integer.min;
 
 public class AlertingEngineBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
-    private static final int MAX_RULES_LOG_SIZE = 500;
     private static final String EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during evaluating event: %s";
     private static final String INIT_EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during initialising alerts engine";
     private static final String UPDATE_EXCEPTION_LOG = "Exception during alerts rules update: {}";
@@ -107,7 +108,7 @@ public class AlertingEngineBolt extends BaseRichBolt {
 
     private String getRulesListInfo(List<String> rulesList) {
         StringBuilder builder = new StringBuilder();
-        rulesList.forEach(x -> builder.append(x,0, min(MAX_RULES_LOG_SIZE, x.length())));
+        rulesList.forEach(x -> builder.append(StringUtils.left(x, SiembolConstants.MAX_SIZE_CONFIG_UPDATE_LOG)));
         return builder.toString();
     }
 

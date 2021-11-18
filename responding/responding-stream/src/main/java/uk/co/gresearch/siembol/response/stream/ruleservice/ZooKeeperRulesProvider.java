@@ -1,8 +1,10 @@
 package uk.co.gresearch.siembol.response.stream.ruleservice;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -16,7 +18,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ZooKeeperRulesProvider implements RulesProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int MAX_CHARS_TO_LOG = 50;
     private static final String UPDATE_TRY_MSG_FORMAT = "Trying to update response rules {}";
     private static final String COMPILE_RULES_ERROR_MSG_FORMAT =
             "Compilation of response rules has failed with error message: {}";
@@ -57,7 +58,7 @@ public class ZooKeeperRulesProvider implements RulesProvider {
         try {
             LOG.info(PARSERS_UPDATE_START);
             String jsonRules = zooKeeperConnector.getData();
-            LOG.info(UPDATE_TRY_MSG_FORMAT, jsonRules.substring(0, Integer.min(jsonRules.length(), MAX_CHARS_TO_LOG)));
+            LOG.info(UPDATE_TRY_MSG_FORMAT, StringUtils.left(jsonRules, SiembolConstants.MAX_SIZE_CONFIG_UPDATE_LOG));
             RespondingResult result = respondingCompiler.compile(jsonRules);
             if (result.getStatusCode() != RespondingResult.StatusCode.OK) {
                 LOG.error(COMPILE_RULES_ERROR_MSG_FORMAT, result.getAttributes().getMessage());
@@ -68,7 +69,6 @@ public class ZooKeeperRulesProvider implements RulesProvider {
             LOG.info(PARSERS_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
-            return;
         }
     }
 
