@@ -50,12 +50,9 @@ $zookeeper_status=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.i
 if ($zookeeper_status -eq 'True')  {
     Git-Details
     Write-Output "************************************************************"
-    Init-Zookeeper-Nodes
+    Write-Output "******  You can now deploy siembol from helm charts   ******"
+    Write-Output "************************************************************"
 } else {
     Write-Output "Zookeeper pod is not running yet, please try again in a few seconds"
     exit 1
 }
-
-Write-Output "************************************************************"
-Write-Output "******  You can now deploy siembol from helm charts   ******"
-Write-Output "************************************************************"
