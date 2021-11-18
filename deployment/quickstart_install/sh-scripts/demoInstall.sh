@@ -32,33 +32,16 @@ git_details () {
     fi
 }
 
-init_zookeeper_nodes () {
-    declare -a ZookeeperNodes=("/siembol/synchronise" "/siembol/alerts" "/siembol/correlation_alerts" "/siembol/parser_configs" "/siembol/cache") 
-    echo "Creating Zookeeper nodes "
-    POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/component=zookeeper,app.kubernetes.io/instance=storm,app.kubernetes.io/name=zookeeper" -o jsonpath="{.items[0].metadata.name}")
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol 1> /dev/null
-    for node in "${ZookeeperNodes[@]}"; do
-        kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create $node 1> /dev/null
-        kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set $node '{}' 1> /dev/null
-        echo "$node node initialised with empty JSON object"
-    done
-
-}
-
 echo "************** Install Script For Demo **************"
 echo "*****************************************************"
 
 zookeeper_status=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/component=zookeeper,app.kubernetes.io/instance=storm,app.kubernetes.io/name=zookeeper" -o jsonpath="{.items[0].status.containerStatuses[0].ready}")
-if [ "$zookeeper_status" = true ]; then 
+if [ "$zookeeper_status" = true ]; then
     git_details
     echo "************************************************************"
-    init_zookeeper_nodes
+    echo "******  You can now deploy siembol from helm charts   ******"
+    echo "************************************************************"
 else
     echo "Zookeeper pod is not running yet, please try again in a few seconds"
     exit 1
 fi
-
-echo "************************************************************"
-echo "******  You can now deploy siembol from helm charts   ******"
-echo "************************************************************"
-

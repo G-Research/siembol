@@ -22,7 +22,7 @@
     if (isset($_POST['directory_path'])) {
       $user_dir  = $_POST['directory_path'];
       //the allowed characters, i.e. we do not accept e.g.: ../ . %2e%2e%2f etc.
-      if (!preg_match("/^(\/[a-zA-Z0-9]{1,}){1,}$/", $user_dir)) {
+      if (!preg_match("/^(\/[a-zA-Z0-9_]{1,}){1,}$/", $user_dir)) {
         logs(LOG_WARNING, "Warning: Not a valid directory path");
         closelog();
         http_response_code(422);
