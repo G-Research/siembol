@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.parsers.storm;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -10,6 +11,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
@@ -91,7 +93,9 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
             LOG.info(PARSERS_UPDATE_START);
             String parserConfigs = zooKeeperConnector.getData();
-            LOG.info(String.format(PARSERCONFIG_UPDATE_TRY_MSG_FORMAT, parsingAppSpecification, parserConfigs));
+            LOG.info(String.format(PARSERCONFIG_UPDATE_TRY_MSG_FORMAT,
+                    parsingAppSpecification,
+                    StringUtils.left(parserConfigs, SiembolConstants.MAX_SIZE_CONFIG_UPDATE_LOG)));
             ParsingApplicationFactoryResult result = factory.create(parsingAppSpecification, parserConfigs);
             if (result.getStatusCode() != ParsingApplicationFactoryResult.StatusCode.OK) {
                 String errorMsg = String.format(FACTORY_EXCEPTION_MSG_FORMAT,
