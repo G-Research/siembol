@@ -55,7 +55,7 @@
         <json_schema_core_version>1.2.14</json_schema_core_version>
         <spring_boot_version>2.5.6</spring_boot_version>
         <guava_version>31.0.1-jre</guava_version>
-        <storm_guava_version>24.1.1-jre</storm_guava_version>
+        <storm_guava_version>31.0.1-jre</storm_guava_version>
         <springdoc_openapi_version>1.5.12</springdoc_openapi_version>
         <commons_beanutils_version>1.9.4</commons_beanutils_version>
         <multiline_string_version>0.1.2</multiline_string_version>
