@@ -30,7 +30,7 @@ Below is the default config file provided. The two default links are in "homeLin
             {
                 "icon": "library_books",
                 "title": "Documentation",
-                "link": "https://github.com/G-Research/siembol/tree/master/docs"
+                "link": "https://github.com/G-Research/siembol/tree/main/docs"
             },
             {   
                 "icon": "live_help",

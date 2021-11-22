@@ -35,4 +35,4 @@ To join the conversation, use this link:
 
 Siembol is licensed with the Apache 2.0 license.  You can find it published here:
 
-* [https://github.com/G-Research/siembol/blob/master/LICENSE](https://github.com/G-Research/siembol/blob/master/LICENSE)
+* [https://github.com/G-Research/siembol/blob/main/LICENSE](https://github.com/G-Research/siembol/blob/main/LICENSE)

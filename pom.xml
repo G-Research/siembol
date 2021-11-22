@@ -21,7 +21,7 @@
         <connection>scm:git:git://github.com/g-research/siembol.git</connection>
         <developerConnection>scm:git:ssh://github.com:g-research/siembol.git</developerConnection>
         <url>https://github.com/g-research/siembol/tree/${project.scm.tag}</url>
-        <tag>master</tag>
+        <tag>main</tag>
     </scm>
     <developers>
         <developer>
