@@ -34,7 +34,7 @@
     "@ngx-formly/material": "^6.0.0-next.1",
     "@types/json-schema": "^7.0.8",
     "js-yaml": "^4.1.0",
-    "json-schema": "^0.3.0",
+    "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
     "material-design-icons": "^3.0.1",
     "monaco-editor": "^0.29.1",
