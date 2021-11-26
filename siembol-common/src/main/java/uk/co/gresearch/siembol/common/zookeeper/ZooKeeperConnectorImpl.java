@@ -4,8 +4,11 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.utils.ZookeeperFactory;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,10 +135,17 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
                 throw new IllegalArgumentException(WRONG_ATTRIBUTES_EXCEPTION_MSG);
             }
 
-            client = CuratorFrameworkFactory.newClient(zkServer,
-                    new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries));
-            client.start();
+            final var connectString = zkServer;
+            ZookeeperFactory zookeeperFactory = (String x, int sessionTimeout, Watcher watcher, boolean canBeReadOnly)
+                    -> new ZooKeeper(connectString, sessionTimeout, watcher, canBeReadOnly);
 
+            client = CuratorFrameworkFactory.builder()
+                    .connectString(connectString)
+                    .zookeeperFactory(zookeeperFactory)
+                    .retryPolicy(new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries))
+                    .build();
+
+            client.start();
             if (initValue.isPresent() && client.checkExists().forPath(path) == null) {
                 LOG.warn(INIT_NON_EXISTING_LOG_MSG, path, initValue.get());
                 client.create()
@@ -155,4 +165,5 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
             return new ZooKeeperConnectorImpl(this);
         }
     }
+
 }
