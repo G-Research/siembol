@@ -136,12 +136,12 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
             }
 
             final var connectString = zkServer;
-            ZookeeperFactory zookeeperFactory = (String x, int sessionTimeout, Watcher watcher, boolean canBeReadOnly)
+            ZookeeperFactory zooKeeperFactory = (String x, int sessionTimeout, Watcher watcher, boolean canBeReadOnly)
                     -> new ZooKeeper(connectString, sessionTimeout, watcher, canBeReadOnly);
 
             client = CuratorFrameworkFactory.builder()
                     .connectString(connectString)
-                    .zookeeperFactory(zookeeperFactory)
+                    .zookeeperFactory(zooKeeperFactory)
                     .retryPolicy(new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries))
                     .build();
 
@@ -165,5 +165,4 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
             return new ZooKeeperConnectorImpl(this);
         }
     }
-
 }
