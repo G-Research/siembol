@@ -38,7 +38,7 @@ echo ' =='
 
 echo == install CA in siembol namespace ==
 kubectl create namespace $profile
-kubectl create -n $profile secret tls cacerts --cert=$HOME/Library/ApplicationSupport/mkcert/rootCA.pem --key=$HOME/Library/ApplicationSupport/mkcert/rootCA-key.pem
+kubectl create -n $profile secret tls cacerts --cert="$(mkcert -CAROOT)/rootCA.pem" --key="$(mkcert -CAROOT)/rootCA-key.pem"
 kubectl apply -f - <<EOF
 apiVersion: cert-manager.io/v1
 kind: Issuer
