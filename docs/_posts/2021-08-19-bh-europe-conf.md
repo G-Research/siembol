@@ -8,11 +8,8 @@ image: BHEurope2021.png
 
 Siembol will be presented at <a href="https://www.blackhat.com/eu-21/">Black Hat Europe in London! </a>
 <br><br>
-Come hear Marian Novotny discuss Anti-Malware for the Cloud. <!--more-->
+Marian Novotny presented "Anti-Malware for the Cloud" on November 10-11. <!--more-->
 <br><br>
-- Wednesday, Nov 10 | 12:00 PM GMT ( Virtual )
-- Wednesday, Nov 10 | 2:15 PM GMT ( Business Hall, Arsenal Station 3)
-- Thursday, Nov 11 | 1:00 PM GMT ( Business Hall, Arsenal Station 1)
-
+The 34 min video presentation can be watched <a href="https://youtu.be/eIMKlV0dGl4"> here </a> on our GR-OSS YouTube channel.
 <br><br>
 Join the project on <a href="https://github.com/G-Research/siembol/"> Github </a>.
