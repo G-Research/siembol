@@ -1,5 +1,5 @@
-@use '~@angular/material' as mat;
-@import '~@angular/material/theming';
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
 @import '~material-design-icons/iconfont/material-icons.css';
 @import 'gr-palette';
 @import 'text-diff-style.scss';
