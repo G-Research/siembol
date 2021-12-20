@@ -11,7 +11,7 @@
     "lint": "ng lint",
     "lint-fix": "ng lint --fix",
     "e2e": "ng e2e",
-    "build-prod": "ng build --prod --progress=false",
+    "build-prod": "ng build --configuration production --progress=false",
     "test-once": "ng test --single-run --code-coverage",
     "test-with-coverage": "ng test --code-coverage",
     "build-test": "webpack --config webpack.test.config.js",
@@ -20,16 +20,16 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^11.2.9",
+    "@angular/animations": "^12.2.15",
     "@angular/cdk": "^11.2.8",
-    "@angular/common": "^11.2.9",
-    "@angular/compiler": "^11.2.9",
-    "@angular/core": "^11.2.9",
-    "@angular/forms": "^11.2.9",
+    "@angular/common": "^12.2.15",
+    "@angular/compiler": "^12.2.15",
+    "@angular/core": "^12.2.15",
+    "@angular/forms": "^12.2.15",
     "@angular/material": "^11.2.8",
-    "@angular/platform-browser": "^11.2.9",
-    "@angular/platform-browser-dynamic": "^11.2.9",
-    "@angular/router": "^11.2.9",
+    "@angular/platform-browser": "^12.2.15",
+    "@angular/platform-browser-dynamic": "^12.2.15",
+    "@angular/router": "^12.2.15",
     "@ngx-formly/core": "^6.0.0-next.1",
     "@ngx-formly/material": "^6.0.0-next.1",
     "@types/json-schema": "^7.0.8",
@@ -49,17 +49,17 @@
     "rxjs": "^6.6.6",
     "rxjs-compat": "^6.6.7",
     "tslib": "^2.3.0",
-    "zone.js": "^0.11.4"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.1102.15",
+    "@angular-devkit/build-angular": "^12.2.14",
     "@angular-eslint/builder": "^2.0.2",
     "@angular-eslint/eslint-plugin": "^2.0.2",
     "@angular-eslint/eslint-plugin-template": "^2.0.2",
     "@angular-eslint/template-parser": "^2.0.2",
-    "@angular/cli": "^11.2.15",
-    "@angular/compiler-cli": "^11.2.9",
-    "@angular/language-service": "^11.2.9",
+    "@angular/cli": "^12.2.14",
+    "@angular/compiler-cli": "^12.2.15",
+    "@angular/language-service": "^12.2.15",
     "@types/jasmine": "^3.10.2",
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
@@ -85,10 +85,8 @@
     "protractor": "^7.0.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.4.0",
-    "typescript": "~4.1.6",
+    "typescript": "~4.3.5",
     "webpack": "^4.46.0"
   },
-  "peerDependencies": {
-    "typescript": "^4.1.6"
-  }
+  "peerDependencies": {}
 }
