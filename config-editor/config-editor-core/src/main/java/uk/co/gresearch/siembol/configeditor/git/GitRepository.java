@@ -144,7 +144,7 @@ public class GitRepository implements Closeable {
         Path path = Paths.get(repoFolder, directory);
         createDirectoryIfNotExists(path);
         Map<String, ConfigEditorFile> files = new HashMap<>();
-        try (Stream<Path> paths = Files.walk(path)) {
+        try (Stream<Path> paths = Files.walk(path, 1)) {
             paths
                     .filter(Files::isRegularFile)
                     .filter(x -> fileNameFilter.apply(x.getFileName().toString()))
