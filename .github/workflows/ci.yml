@@ -210,7 +210,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup Node.js 12.x
-        uses: actions/setup-node@v2.5.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: 12.22.5
           cache: npm
