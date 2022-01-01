@@ -41,7 +41,7 @@
         <maven_compiler_version>3.8.1</maven_compiler_version>
         <jackson_version>2.13.0</jackson_version>
         <junit_version>4.13.2</junit_version>
-        <mockito_version>4.1.0</mockito_version>
+        <mockito_version>4.2.0</mockito_version>
         <shade_version>3.2.4</shade_version>
         <curator_version>5.2.0</curator_version>
         <curator_test_version>2.13.0</curator_test_version>
