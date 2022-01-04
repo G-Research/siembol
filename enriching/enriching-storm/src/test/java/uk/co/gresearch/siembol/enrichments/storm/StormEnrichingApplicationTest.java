@@ -62,6 +62,7 @@ public class StormEnrichingApplicationTest {
               "storm.attributes": {
                 "first.pool.offset.strategy": "EARLIEST",
                 "kafka.spout.properties": {
+                  "group.id": "enrichment.reader",
                   "security.protocol": "PLAINTEXT"
                 },
                 "storm.config": {
