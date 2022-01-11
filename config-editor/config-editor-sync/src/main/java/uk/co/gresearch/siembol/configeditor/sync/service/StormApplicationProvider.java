@@ -7,7 +7,6 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import java.util.List;
 import java.util.Set;
 
-
 public interface StormApplicationProvider {
     ConfigEditorResult getStormTopologies();
 
@@ -16,6 +15,8 @@ public interface StormApplicationProvider {
     ConfigEditorResult updateStormTopologies(List<StormTopologyDto> topologies, Set<String> serviceNames);
 
     ConfigEditorResult restartStormTopology(String serviceName, String topologyName);
+
+    ConfigEditorResult restartStormTopologiesOfServices(List<String> serviceNames);
 
     Health checkHealth();
 }

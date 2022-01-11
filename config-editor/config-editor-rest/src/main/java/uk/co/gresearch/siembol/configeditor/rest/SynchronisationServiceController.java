@@ -17,6 +17,7 @@ import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;
 import uk.co.gresearch.siembol.configeditor.rest.common.UserInfoProvider;
+import uk.co.gresearch.siembol.configeditor.serviceaggregator.ServiceAggregator;
 import uk.co.gresearch.siembol.configeditor.sync.service.EnrichmentTablesProvider;
 import uk.co.gresearch.siembol.configeditor.sync.service.StormApplicationProvider;
 import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
@@ -27,6 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationProperties.SWAGGER_AUTH_SCHEMA;
 
@@ -51,6 +53,8 @@ public class SynchronisationServiceController {
     private ConfigEditorConfigurationProperties properties;
     @Autowired
     private EnrichmentTablesProvider enrichmentTableProvider;
+    @Autowired
+    private ServiceAggregator serviceAggregator;
 
     @PostMapping(value = "/api/v1/sync/webhook", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> synchronise(
@@ -95,6 +99,24 @@ public class SynchronisationServiceController {
         checkAdminAuthorisation(principal, service);
         Callable<ResponseEntity<ConfigEditorAttributes>> task = () -> stormApplicationProvider
                 .restartStormTopology(service, topology)
+                .toResponseEntity();
+
+        return executorService.submit(task).get();
+    }
+
+    @SecurityRequirement(name = SWAGGER_AUTH_SCHEMA)
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/topologies/restart", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> restartTopologies(
+            @AuthenticationPrincipal Object principal) throws ExecutionException, InterruptedException {
+        UserInfo user = userInfoProvider.getUserInfo(principal);
+        var userAdminServices = serviceAggregator.getConfigEditorAdminServices(user)
+                .stream()
+                .map(x -> x.getName())
+                .collect(Collectors.toList());
+
+        Callable<ResponseEntity<ConfigEditorAttributes>> task = () -> stormApplicationProvider
+                .restartStormTopologiesOfServices(userAdminServices)
                 .toResponseEntity();
 
         return executorService.submit(task).get();
