@@ -18,6 +18,7 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -175,6 +176,51 @@ public class StormApplicationProviderTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, result.getStatusCode());
         Assert.assertNull(result.getAttributes().getTopologies());
         Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void restartStormTopologiesNothingRunningForServices() {
+        ConfigEditorResult result = stormApplicationProvider
+                .restartStormTopologiesOfServices(List.of("unknown_1", "unknown_2", "unknown_3"));
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, result.getStatusCode());
+        Assert.assertNull(result.getAttributes().getTopologies());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void restartStormTopologiesOK() {
+        ConfigEditorResult result = stormApplicationProvider
+                .restartStormTopologiesOfServices(List.of("alert", "unknown_2", "unknown_3"));
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTopologies());
+
+        Assert.assertEquals(3, result.getAttributes().getTopologies().size());
+        var restarted = result.getAttributes().getTopologies().stream()
+                .filter(x -> x.getServiceName().equals("alert"))
+                        .collect(Collectors.toList());
+
+        Assert.assertEquals(1, restarted.size());
+        Assert.assertNotEquals("1", restarted.get(0).getTopologyId());
+    }
+
+    @Test
+    public void restartStormTopologiesAllOK() {
+        ConfigEditorResult result = stormApplicationProvider
+                .restartStormTopologiesOfServices(List.of("alert", "parsing", "unknown_3"));
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTopologies());
+
+        Assert.assertEquals(3, result.getAttributes().getTopologies().size());
+        var restarted = result.getAttributes().getTopologies().stream()
+                .filter(x -> x.getServiceName().equals("alert") || x.getServiceName().equals("parsing"))
+                .collect(Collectors.toList());
+
+        Assert.assertEquals(3, restarted.size());
+        restarted.forEach(x -> {
+            Assert.assertTrue(x.getTopologyId() != "1");
+            Assert.assertTrue(x.getTopologyId() != "2");
+            Assert.assertTrue(x.getTopologyId() != "3");
+        });
     }
 
     @Test
