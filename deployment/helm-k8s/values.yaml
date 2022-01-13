@@ -77,13 +77,13 @@ storm:
 dep_ingresses:
   enrichment_store:
     enabled: true
-    fqdn: enrichment.local
+    fqdn: enrichment.siembol.local
     oauth2_proxy:
       enabled: false
       host: oauth-proxy.siembol.local
   storm:
     enabled: true
-    fqdn: storm.local
+    fqdn: storm.siembol.local
     service:
       name: storm-ui
       port: 8080
@@ -162,7 +162,7 @@ ui:
   # Run with an ingress
   ingress:
     enabled: true
-    fqdn: siembol.local
+    fqdn: ui.siembol.local
 
 
 # -----------------------------------------------------------------------------
