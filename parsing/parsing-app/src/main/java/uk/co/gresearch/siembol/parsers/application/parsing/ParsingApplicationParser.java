@@ -122,7 +122,7 @@ public abstract class ParsingApplicationParser implements Serializable {
             }
             return ret;
         } catch (Exception e) {
-            LOG.error(ERROR_MESSAGE, name, new String(message), metadata, ExceptionUtils.getMessage(e));
+            LOG.debug(ERROR_MESSAGE, name, new String(message), metadata, ExceptionUtils.getMessage(e));
             ret.add(new ParsingApplicationResult(errorTopic, getErrorMessage(e, sourceType, message)));
             return ret;
         }
