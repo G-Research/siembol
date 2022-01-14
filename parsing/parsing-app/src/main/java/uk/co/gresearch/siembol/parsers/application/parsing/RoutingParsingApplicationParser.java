@@ -47,7 +47,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
                     || !parsedMsg.containsKey(routingMessageField)) {
                 String errorMsg = String.format(MISSING_ROUTER_FIELDS,
                         routingConditionField, routingMessageField, parsedMsg.toString());
-                LOG.error(errorMsg);
+                LOG.debug(errorMsg);
                 routerResult.setException(new IllegalStateException(errorMsg));
                 ret.add(routerResult);
                 continue; //NOTE: we try the next message that could be valid

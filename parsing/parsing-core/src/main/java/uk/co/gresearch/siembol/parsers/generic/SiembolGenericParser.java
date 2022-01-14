@@ -46,7 +46,7 @@ public class SiembolGenericParser implements SiembolParser {
             return parsed.isEmpty() ? new ArrayList<>() : Arrays.asList(parsed);
         } catch (Exception e) {
             String errorMessage = String.format(PARSING_ERROR_MSG, originalMessage, ExceptionUtils.getStackTrace(e));
-            LOG.error(errorMessage);
+            LOG.debug(errorMessage);
             throw new IllegalStateException(errorMessage, e);
         }
     }
