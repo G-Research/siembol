@@ -65,11 +65,11 @@ This step might take a few minutes depending on the specs of your development ma
 
 In a browser, go to:
 
-  * https://siembol.local/home
+  * https://ui.siembol.local/home
 
 You should now see the Siembol UI homepage. You can also try Storm UI to see running topologies:
 
-  * https://storm.local
+  * https://storm.siembol.local
 
 ### Enrichment tables
 
