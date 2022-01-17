@@ -4,7 +4,7 @@ import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaI
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, shareReplay,share } from 'rxjs/operators';
 import { UiMetadata } from '@app/model/ui-metadata-map';
 import 'rxjs/add/observable/forkJoin';
 
@@ -25,37 +25,37 @@ export class AppService {
   private appContext: AppContext = new AppContext();
   private loadedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  public get loaded() {
+  get loaded() {
     return this.loadedSubject.value;
   }
-  public get loaded$() {
+  get loaded$() {
     return this.loadedSubject.asObservable();
   }
-  public get user() {
+  get user() {
     return this.appContext.user;
   }
-  public get userServices() {
+  get userServices() {
     return this.appContext.userServices;
   }
-  public get userServicesMap() {
+  get userServicesMap() {
     return this.appContext.userServicesMap;
   }
-  public get testCaseSchema() {
+  get testCaseSchema() {
     return this.appContext.testCaseSchema;
   }
-  public get serviceNames() {
+  get serviceNames() {
     return this.appContext.serviceNames;
   }
 
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
-  public setAppContext(appContext: AppContext): boolean {
+  setAppContext(appContext: AppContext): boolean {
     this.appContext = appContext;
     this.loadedSubject.next(true);
     return true;
   }
 
-  public createAppContext(): Observable<AppContext> {
+  createAppContext(): Observable<AppContext> {
     return Observable.forkJoin([this.loadUserInfo(), this.loadTestCaseSchema()]).map(([appContext, testCaseSchema]) => {
       if (appContext && testCaseSchema) {
         appContext.testCaseSchema = testCaseSchema;
@@ -65,7 +65,7 @@ export class AppService {
     });
   }
 
-  public loadTestCaseSchema(): Observable<JSONSchema7> {
+  loadTestCaseSchema(): Observable<JSONSchema7> {
     return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`).map((r: SchemaInfo) => {
       if (r === undefined || r.rules_schema === undefined) {
         throwError('empty test case schema endpoint response');
@@ -74,23 +74,24 @@ export class AppService {
     });
   }
 
-  public getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
+  getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
     return this.http
       .get<RepositoryLinksWrapper>(`${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`)
       .pipe(
         map(result => ({
           ...result.rules_repositories,
           service_name: serviceName,
-        }))
+        })),
+        share()
       );
   }
 
-  public getUiMetadataMap(serviceName: string): UiMetadata {
+  getUiMetadataMap(serviceName: string): UiMetadata {
     const serviceType = this.userServicesMap.get(serviceName).type;
     return this.config.uiMetadata[serviceType];
   }
 
-  public getUserServiceRoles(serviceName: string) {
+  getUserServiceRoles(serviceName: string) {
     return this.appContext.userServicesMap.get(serviceName).user_roles;
   }
 
