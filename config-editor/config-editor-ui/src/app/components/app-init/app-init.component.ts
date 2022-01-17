@@ -6,16 +6,15 @@ import { HomeComponent, PageNotFoundComponent } from '../../containers';
 
 import { TestCaseHelpComponent } from '../testing/test-case-help/test-case-help.component';
 import { AppService } from '../../services/app.service';
-import { EditorServiceGuard } from '@app/guards';
-import { ConfigEditGuard } from '@app/guards';
+import { AdminGuard, AuthGuard, ConfigEditGuard, EditorServiceGuard } from '@app/guards';
 import { AppConfigService } from '@app/services/app-config.service';
 import { EditorViewComponent } from '../editor-view/editor-view.component';
 import { takeUntil } from 'rxjs/operators';
-import { AuthGuard } from '@app/guards';
 import { AdminViewComponent } from '../admin-view/admin-view.component';
-import { AdminGuard } from '@app/guards';
 import { UserRole } from '@app/model/config-model';
 import { cloneDeep } from 'lodash';
+import { HomeViewComponent } from '../home-view/home-view.component';
+import { ManagementViewComponent } from '../management-view/management-view.component';
 
 @Component({
     template: '',
@@ -59,11 +58,15 @@ export class AppInitComponent implements OnInit, OnDestroy {
         {
             path: 'home',
             component: LandingPageComponent,
+            children: [
+                { path: '', component: HomeViewComponent },
+                { path: 'management', component: ManagementViewComponent },
+            ],
         },
         {
             component: TestCaseHelpComponent,
             path: 'help/testcase',
-        }
+        },
     ];
 
     constructor(private router: Router,
@@ -84,7 +87,7 @@ export class AppInitComponent implements OnInit, OnDestroy {
     private loadRoutes() {
         const routes = this.appRoutes;
         this.appService.serviceNames.forEach(s => {
-            let userRoles = this.appService.getUserServiceRoles(s);
+            const userRoles = this.appService.getUserServiceRoles(s);
             let childrenRoutes = [];
             if (userRoles.includes(UserRole.SERVICE_USER)) {
                 childrenRoutes = cloneDeep(this.configRoutes);
@@ -93,13 +96,13 @@ export class AppInitComponent implements OnInit, OnDestroy {
                 childrenRoutes.push(this.adminRoute);
             }
             this.appRoutes.push({
-                path: s, component: HomeComponent, children: childrenRoutes
+                path: s, component: HomeComponent, children: childrenRoutes,
             })
             
         });
         routes.push({
             component: PageNotFoundComponent,
-            path: '**'
+            path: '**',
         });
         this.router.resetConfig(routes);
     }

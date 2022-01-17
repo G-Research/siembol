@@ -1,0 +1,17 @@
+<div class="router-holder" style="height:100vh">
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>Management Links</mat-expansion-panel-header>
+    <mat-grid-list cols="4" rowHeight="2:1">
+          <mat-grid-tile *ngFor="let link of managementLinks">
+                <button class="with-icon" mat-button (click)="openLink(link.link)">
+                <mat-icon>{{link.icon}}</mat-icon>
+                {{link.title}}
+                </button>
+          </mat-grid-tile>
+    </mat-grid-list>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>Actions</mat-expansion-panel-header>
+  </mat-expansion-panel>
+  
+</div>
