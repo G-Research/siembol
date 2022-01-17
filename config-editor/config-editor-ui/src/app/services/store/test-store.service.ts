@@ -50,6 +50,7 @@ export class TestStoreService {
     const testCase = currentState.pastedConfig;
     testCase.version = 0;
     testCase.author = this.user;
+    testCase.config_name = currentState.editedConfig.name
     testCase.test_case_name = `test_${currentState.editedConfig.testCases.length + 1}`;
     const testCaseWrapper = {
       fileHistory: null,
