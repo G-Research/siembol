@@ -25,7 +25,7 @@ echo == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 kubectl create namespace cert-manager
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.1.0 --set installCRDs=true
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
 
 
 printf '== wait for cert-manager to be up'
@@ -38,7 +38,7 @@ echo ' =='
 
 echo == install CA in siembol namespace ==
 kubectl create namespace $profile
-kubectl create -n $profile secret tls cacerts --cert=$HOME/Library/ApplicationSupport/mkcert/rootCA.pem --key=$HOME/Library/ApplicationSupport/mkcert/rootCA-key.pem
+kubectl create -n $profile secret tls cacerts --cert="$(mkcert -CAROOT)/rootCA.pem" --key="$(mkcert -CAROOT)/rootCA-key.pem"
 kubectl apply -f - <<EOF
 apiVersion: cert-manager.io/v1
 kind: Issuer

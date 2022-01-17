@@ -35,7 +35,9 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
     private static final String WRONG_TOPOLOGIES_FORMAT = "Wrong format of storm topologies {}";
     private static final String NOTHING_TO_UPDATE_MSG = "nothing to update";
     private static final String WRONG_TOPOLOGY_NAME_MSG = "Topology with the name %s of the service %s is not released";
-    private static final String REQUESTED_RESTART_TOPOLOGY_WITH_NAME = "Requested restart topology with name {}";
+    private static final String NO_TOPOLOGY_RUNNING_MSG = "No topology of services %s is running";
+    private static final String REQUESTED_RESTART_TOPOLOGY_WITH_NAME_MSG = "Requested restart topology with name {}";
+    private static final String REQUESTED_RESTARTING_TOPOLOGIES_MSG = "Requested restart topologies for services {}";
     private static final String INIT_START_MSG = "Starting initialising storm application provider";
     private static final String INIT_COMPLETED_MSG = "Initialisation of storm application provider completed";
     private static final String DUPLICATE_NAME_MSG = "Duplicate topology name %s in updated topologies";
@@ -158,7 +160,7 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
 
     @Override
     public ConfigEditorResult restartStormTopology(String serviceName, String topologyName) {
-        LOGGER.info(REQUESTED_RESTART_TOPOLOGY_WITH_NAME, topologyName);
+        LOGGER.info(REQUESTED_RESTART_TOPOLOGY_WITH_NAME_MSG, topologyName);
         StormTopologiesDto currentTopologies = getCurrentTopologies();
 
         for (StormTopologyDto topology: currentTopologies.getTopologies()) {
@@ -171,6 +173,29 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
         String msg = String.format(WRONG_TOPOLOGY_NAME_MSG, topologyName, serviceName);
         LOGGER.info(msg);
         return ConfigEditorResult.fromMessage(BAD_REQUEST, msg);
+    }
+
+    @Override
+    public ConfigEditorResult restartStormTopologiesOfServices(List<String> serviceNames) {
+        LOGGER.info(REQUESTED_RESTARTING_TOPOLOGIES_MSG, serviceNames);
+        var serviceNamesSet = new HashSet<>(serviceNames);
+        StormTopologiesDto currentTopologies = getCurrentTopologies();
+        boolean changed = false;
+
+        for (StormTopologyDto topology : currentTopologies.getTopologies()) {
+            if (serviceNamesSet.contains(topology.getServiceName())) {
+                changed = true;
+                LOGGER.info(REQUESTED_RESTART_TOPOLOGY_WITH_NAME_MSG, topology.getTopologyName());
+                topology.setTopologyId(UUID.randomUUID().toString());
+            }
+        }
+        if (changed) {
+            return sendTopologiesToZookeeper(currentTopologies.getTopologies());
+        } else {
+            String msg = String.format(NO_TOPOLOGY_RUNNING_MSG, serviceNames);
+            LOGGER.info(msg);
+            return ConfigEditorResult.fromMessage(BAD_REQUEST, msg);
+        }
     }
 
     @Override

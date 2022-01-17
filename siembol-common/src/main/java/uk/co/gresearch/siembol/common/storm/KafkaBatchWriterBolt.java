@@ -1,10 +1,11 @@
 package uk.co.gresearch.siembol.common.storm;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.storm.task.OutputCollector;
@@ -32,7 +33,7 @@ public class KafkaBatchWriterBolt extends BaseRichBolt {
     private static final String AUTH_EXCEPTION_MESSAGE =
             "Authorization exception {} during writing messages to the kafka";
     private static final String KAFKA_EXCEPTION_MESSAGE =
-            "Kafka exception {} during writing messages to the kafka";
+            "Exception {} during writing messages to the kafka";
     private static final String SENDING_MESSAGE_LOG =
             "Sending message: {} to the topic: {}";
     private static final String MISSING_MESSAGES_MSG =
@@ -41,15 +42,15 @@ public class KafkaBatchWriterBolt extends BaseRichBolt {
     private final Properties props;
     private final int batchSize;
     private final String fieldName;
-    private final ArrayList<Tuple> anchors = new ArrayList<>();
-    private final ArrayList<KafkaBatchWriterMessage> messages = new ArrayList<>();
+    private final ArrayList<Pair<KafkaBatchWriterMessage, KafkaWriterAnchor>> messages = new ArrayList<>();
     private OutputCollector collector;
     private Producer<String, String> producer;
 
     public KafkaBatchWriterBolt(KafkaBatchWriterAttributesDto attributes, String fieldName) {
         this.props = new Properties();
-        attributes.getProducerProperties().getRawMap().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
+        props.putAll(attributes.getProducerProperties().getRawMap());
         this.batchSize = attributes.getBatchSize();
+        this.messages.ensureCapacity(this.batchSize);
         this.fieldName = fieldName;
     }
 
@@ -68,15 +69,18 @@ public class KafkaBatchWriterBolt extends BaseRichBolt {
             throw new IllegalStateException(MISSING_MESSAGES_MSG);
         }
 
-        KafkaBatchWriterMessages current = (KafkaBatchWriterMessages)messagesObject;
-        messages.addAll(current);
-        anchors.add(tuple);
-        if (messages.size() > batchSize) {
+        KafkaBatchWriterMessages currentMessages = (KafkaBatchWriterMessages)messagesObject;
+        var anchor = new KafkaWriterAnchor(tuple);
+        currentMessages.forEach(x -> {
+            anchor.acquire();
+            messages.add(Pair.of(x, anchor));
+        });
+
+        if (messages.size() >= batchSize) {
             writeTuples();
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
@@ -97,26 +101,39 @@ public class KafkaBatchWriterBolt extends BaseRichBolt {
         return putTickFrequencyIntoComponentConfig(null, ACK_INTERVAL_ACK_IN_SEC);
     }
 
+    private Callback createProducerCallback(final KafkaWriterAnchor anchor) {
+        return (x, e) -> {
+            synchronized (collector) {
+                if (e != null) {
+                    LOG.error(KAFKA_EXCEPTION_MESSAGE, ExceptionUtils.getStackTrace(e));
+                    collector.fail(anchor.getTuple());
+                } else {
+                    if (anchor.release()) {
+                        collector.ack(anchor.getTuple());
+                    }
+                }
+            }
+        };
+    }
+
     private void writeTuples() {
         try {
             messages.forEach(x -> {
-                LOG.debug(SENDING_MESSAGE_LOG, x.getMessage(), x.getTopic());
-                producer.send(new ProducerRecord<>(x.getTopic(),
-                        String.valueOf(x.getMessage().hashCode()),
-                        x.getMessage()));
+                var message = x.getLeft();
+                var callBack = createProducerCallback(x.getRight());
+
+                LOG.debug(SENDING_MESSAGE_LOG, message.getMessage(), message.getTopic());
+                producer.send(new ProducerRecord<>(message.getTopic(), message.getMessage()), callBack);
             });
 
-            producer.flush();
-            anchors.forEach(x -> collector.ack(x));
         } catch (AuthorizationException e) {
             LOG.error(AUTH_EXCEPTION_MESSAGE, ExceptionUtils.getStackTrace(e));
             producer.close();
             throw new IllegalStateException(e);
-        } catch (KafkaException e) {
+        } catch (Exception e) {
             LOG.error(KAFKA_EXCEPTION_MESSAGE, ExceptionUtils.getStackTrace(e));
-            anchors.forEach(x -> collector.fail(x));
+            messages.forEach(x -> collector.fail(x.getRight().getTuple()));
         } finally {
-            anchors.clear();
             messages.clear();
         }
     }

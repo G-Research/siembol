@@ -12,11 +12,11 @@ minikube start --profile $namespace --driver hyperv --cpus 6 --memory 6g --disk-
 minikube profile $namespace
 
 Write-Output == install dns host entries ==
-Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'siembol.local' -Description 'resolver for siembol.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'ui.siembol.local' -Description 'resolver for ui.siembol.local'
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'rest.siembol.local' -Description 'resolver for rest.siembol.local'
-Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'storm.local' -Description 'resolver for storm.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'storm.siembol.local' -Description 'resolver for storm.siembol.local'
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'topology-manager.siembol.local' -Description 'resolver for topology-manager.siembol.local'
-Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'enrichment.local' -Description 'resolver for enrichment.local'
+Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'enrichment.siembol.local' -Description 'resolver for enrichment.siembol.local'
 
 Write-Output == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io

@@ -124,7 +124,7 @@ public class SiembolSyslogParser implements SiembolParser {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             String errorMessage = String.format("Unable to parse message: %s", originalMessage);
-            LOG.error(errorMessage, e);
+            LOG.debug(errorMessage, e);
             throw new IllegalStateException(errorMessage, e);
         }
     }
