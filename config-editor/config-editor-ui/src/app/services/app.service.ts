@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo } from '@app/model/config-model';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, UserRole, SchemaInfo, Application, applications } from '@app/model/config-model';
+import { Observable, throwError, BehaviorSubject, forkJoin } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { UiMetadata } from '@app/model/ui-metadata-map';
-import { UserRole } from '@app/model/config-model';
 import 'rxjs/add/observable/forkJoin';
 
 export class AppContext {
@@ -102,6 +101,24 @@ export class AppService {
       }
     }
     return false;
+  }
+
+  restartAllApplications(): Observable<Application[]> { //add test
+    return this.http.post<applications>(
+      `${this.config.serviceRoot}api/v1/topologies/restart`,
+      null
+    ).pipe(map(result => result.topologies));
+  }
+
+  getAllApplications(): Observable<Application[]> { // add test
+    return forkJoin(
+      this.userServices.map(
+        userService => 
+          this.http.get<applications>(
+            `${this.config.serviceRoot}api/v1/${userService.name}/topologies`
+          ).pipe(map(result => result.topologies))
+        )
+      ).pipe(map(([topologies1, topologies2]) => topologies1.concat(topologies2)));
   }
 
   private loadUserInfo(): Observable<AppContext> {

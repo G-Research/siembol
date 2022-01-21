@@ -3,7 +3,7 @@
     <mat-expansion-panel-header>Management Links</mat-expansion-panel-header>
     <mat-grid-list cols="4" rowHeight="2:1">
           <mat-grid-tile *ngFor="let link of managementLinks">
-                <button class="with-icon" mat-button (click)="openLink(link.link)">
+                <button [matTooltip]="link.link" class="with-icon" mat-button (click)="openLink(link.link)">
                 <mat-icon>{{link.icon}}</mat-icon>
                 {{link.title}}
                 </button>
@@ -12,6 +12,27 @@
   </mat-expansion-panel>
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>Actions</mat-expansion-panel-header>
+    <mat-grid-list cols="2" rowHeight="2:1">
+      <mat-grid-tile>
+        <button mat-button (click)="openConfirmRestartAllApplications(confirmRestartAllApplication)">
+          <mat-icon>refresh</mat-icon> Restart all Appplications
+          </button>
+      </mat-grid-tile>
+    </mat-grid-list>
   </mat-expansion-panel>
-  
 </div>
+
+<ng-template #confirmRestartAllApplication let-data>
+  Are you sure you want to restart all of the following applications: {{data}}
+  <div mat-dialog-actions>
+    <button mat-raised-button class="button-layout" color="accent" (click)="restartAllApplications(successRestart)">RESTART ALL</button>
+    <button mat-raised-button class="button-layout" color="accent" (click)="onClickClose()">CANCEL</button>
+  </div>
+</ng-template>
+
+<ng-template #successRestart let-data>
+  Successfully restarted all of the following applications: {{data}}
+  <div mat-dialog-actions>
+    <button mat-raised-button class="button-layout" color="accent" (click)="onClickClose()">OK</button>
+  </div>
+</ng-template>

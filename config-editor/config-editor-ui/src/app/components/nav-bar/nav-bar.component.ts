@@ -23,6 +23,7 @@ export class NavBarComponent implements OnInit {
     environment: string;
     isAdminChecked: boolean;
     isHome: boolean;
+    isManagement: boolean;
     repositoryLinks$: Observable<RepositoryLinks>;
     readonly repoNames = repoNames;
 
@@ -50,6 +51,7 @@ export class NavBarComponent implements OnInit {
 
         this.activeRoute.url.subscribe(url => {
             this.isHome = this.config.isHomePath('/' + url[0].path);
+            this.isManagement = this.config.isManagementPath('/' + url[0].path)
         });
     }
 

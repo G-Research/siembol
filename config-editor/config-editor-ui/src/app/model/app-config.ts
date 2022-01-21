@@ -19,16 +19,23 @@ export interface AppConfig {
   aboutApp: BuildInfo;
   authType: AuthenticationType;
   authAttributes: Oauth2Attributes | any;
-  homeHelpLinks?: HomeHelpLink[];
+  homeHelpLinks?: HelpLink[];
+  managementLinks?: HelpLink[];
   historyMaxSize?: number;
   blockingTimeout?: number;
   useImporters?: boolean;
 }
 
-export interface HomeHelpLink {
+export interface HelpLink {
   title: string;
-  icon: string;
+  icon?: string;
   link: string;
+}
+
+export interface ManagementAction {
+  icon: string;
+  title: string;
+  funct: () => void;
 }
 
 export interface Oauth2Attributes {

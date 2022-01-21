@@ -70,6 +70,14 @@
       <button 
         mat-icon-button
         class="right-element"
+        [routerLink]="['/home/management']"
+        [matTooltip]="'Management'"
+      >
+        <mat-icon>settings_application</mat-icon>
+      </button>
+      <button 
+        mat-icon-button
+        class="right-element"
         [matMenuTriggerFor]="helpMenu" 
         [matTooltip]="'Help'"
       >
