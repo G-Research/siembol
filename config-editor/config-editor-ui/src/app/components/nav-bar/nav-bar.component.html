@@ -32,7 +32,7 @@
         <button 
           mat-icon-button
           class="right-element"
-          *ngIf="(repositoryLinks$ | async)" 
+          *ngIf="repositoryLinks" 
           [matMenuTriggerFor]="repoMenu" 
           [matTooltip]="'Repositories'"
         >
@@ -40,34 +40,32 @@
         </button>
       </div>
       <mat-menu #repoMenu="matMenu" >
-        <div *ngIf="(repositoryLinks$ | async) as links">
-          <a mat-menu-item 
-            [href]="links.rule_store_directory_url"
-            target="_blank"
-          >
-            {{repoNames.store_directory_name}}
-          </a>
-          <a mat-menu-item
-            [href]="links.rules_release_directory_url"
-            target="_blank"
-          >
-            {{repoNames.release_directory_name}}
-          </a>
-          <a mat-menu-item  
-            *ngIf="links.test_case_store_directory_url as url" 
-            [href]="url"
-            target="_blank"
-          >
-            {{repoNames.testcase_store_directory_name}}
-          </a>
-          <a mat-menu-item  
-            *ngIf="links.admin_config_directory_url as url"
-            [href]="url"
-            target="_blank"
-          >
-            {{repoNames.admin_config_store_directory_name}}
-          </a>
-        </div>
+        <a mat-menu-item 
+          [href]="repositoryLinks?.rule_store_directory_url"
+          target="_blank"
+        >
+          {{repoNames.store_directory_name}}
+        </a>
+        <a mat-menu-item
+          [href]="repositoryLinks?.rules_release_directory_url"
+          target="_blank"
+        >
+          {{repoNames.release_directory_name}}
+        </a>
+        <a mat-menu-item  
+          *ngIf="repositoryLinks?.test_case_store_directory_url as url" 
+          [href]="url"
+          target="_blank"
+        >
+          {{repoNames.testcase_store_directory_name}}
+        </a>
+        <a mat-menu-item  
+          *ngIf="repositoryLinks?.admin_config_directory_url as url"
+          [href]="url"
+          target="_blank"
+        >
+          {{repoNames.admin_config_store_directory_name}}
+        </a>
       </mat-menu>
       <button 
         mat-icon-button

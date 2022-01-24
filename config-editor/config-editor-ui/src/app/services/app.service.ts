@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
 import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo } from '@app/model/config-model';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, forkJoin } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
 import { map, share } from 'rxjs/operators';
@@ -23,6 +23,7 @@ export class AppContext {
 })
 export class AppService {
   private appContext: AppContext = new AppContext();
+  private repositoryLinks: { [name: string]: RepositoryLinks } = {}
   private loadedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   get loaded() {
@@ -46,17 +47,23 @@ export class AppService {
   get serviceNames() {
     return this.appContext.serviceNames;
   }
+  get allRepositoryLinks() {
+    return this.repositoryLinks;
+  }
 
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
-  setAppContext(appContext: AppContext): boolean {
+  setAppContext(appContext: AppContext): Observable<boolean> {
     this.appContext = appContext;
-    this.loadedSubject.next(true);
-    return true;
+    return this.getAllRepositoryLinks().map(() => {
+      this.loadedSubject.next(true);
+      return true
+    });
+    ;
   }
 
   createAppContext(): Observable<AppContext> {
-    return Observable.forkJoin([this.loadUserInfo(), this.loadTestCaseSchema()]).map(([appContext, testCaseSchema]) => {
+    return forkJoin([this.loadUserInfo(), this.loadTestCaseSchema()]).map(([appContext, testCaseSchema]) => {
       if (appContext && testCaseSchema) {
         appContext.testCaseSchema = testCaseSchema;
         return appContext;
@@ -74,7 +81,29 @@ export class AppService {
     });
   }
 
-  getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
+  getUiMetadataMap(serviceName: string): UiMetadata {
+    const serviceType = this.userServicesMap.get(serviceName).type;
+    return this.config.uiMetadata[serviceType];
+  }
+
+  getUserServiceRoles(serviceName: string) {
+    return this.appContext.userServicesMap.get(serviceName).user_roles;
+  }
+
+  getServiceRepositoryLink(serviceName: string) {
+    return this.repositoryLinks[serviceName];
+  }
+
+  private getAllRepositoryLinks(): Observable<void> {
+    return forkJoin(this.userServices.map(x => this.getRepositoryLinks(x.name)))
+            .map((links: RepositoryLinks[]) => {
+                if (links) {
+                    this.repositoryLinks = links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
+                }
+            })
+  }
+
+  private getRepositoryLinks(serviceName: string): Observable<RepositoryLinks> {
     return this.http
       .get<RepositoryLinksWrapper>(`${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`)
       .pipe(
@@ -84,15 +113,6 @@ export class AppService {
         })),
         share()
       );
-  }
-
-  getUiMetadataMap(serviceName: string): UiMetadata {
-    const serviceType = this.userServicesMap.get(serviceName).type;
-    return this.config.uiMetadata[serviceType];
-  }
-
-  getUserServiceRoles(serviceName: string) {
-    return this.appContext.userServicesMap.get(serviceName).user_roles;
   }
 
   private loadUserInfo(): Observable<AppContext> {
