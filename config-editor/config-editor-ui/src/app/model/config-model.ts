@@ -83,7 +83,7 @@ export interface RepositoryLinks {
   rule_store_directory_url: string;
   rules_release_directory_url: string;
   test_case_store_directory_url: string;
-  admin_config_directory_url: string;
+  admin_config_directory_url?: string;
   service_name: string;
 }
 

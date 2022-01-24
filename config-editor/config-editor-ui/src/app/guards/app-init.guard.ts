@@ -17,6 +17,6 @@ export class AppInitGuard implements CanActivate {
             return true;
         }
 
-        return this.appService.createAppContext().flatMap(x => this.appService.setAppContext(x));
+        return this.appService.createAppContext().flatMap(x => this.appService.setAppContextandInitialise(x));
     }
 }

@@ -4,7 +4,6 @@ import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaI
 import { Observable, throwError, BehaviorSubject, forkJoin } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
-import { map, share } from 'rxjs/operators';
 import { UiMetadata } from '@app/model/ui-metadata-map';
 import 'rxjs/add/observable/forkJoin';
 
@@ -53,7 +52,7 @@ export class AppService {
 
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
-  setAppContext(appContext: AppContext): Observable<boolean> {
+  setAppContextandInitialise(appContext: AppContext): Observable<boolean> {
     this.appContext = appContext;
     return this.getAllRepositoryLinks().map(() => {
       this.loadedSubject.next(true);
@@ -106,12 +105,10 @@ export class AppService {
   private getRepositoryLinks(serviceName: string): Observable<RepositoryLinks> {
     return this.http
       .get<RepositoryLinksWrapper>(`${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`)
-      .pipe(
-        map(result => ({
+      .map(result => ({
           ...result.rules_repositories,
           service_name: serviceName,
-        })),
-        share()
+        })
       );
   }
 
