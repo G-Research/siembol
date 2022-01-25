@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog.component';
 import { EditorService } from '../../services/editor.service';
 import { AppService } from '../../services/app.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserRole, RepositoryLinks, repoNames } from '@app/model/config-model';
 
 @Component({
@@ -49,9 +49,12 @@ export class NavBarComponent implements OnInit {
             this.serviceName = service;
         });
 
-        this.activeRoute.url.subscribe(url => {
-            this.isHome = this.config.isHomePath('/' + url[0].path);
-            this.isManagement = this.config.isManagementPath('/' + url[0].path)
+        this.router.events.subscribe(event => {
+            if(event instanceof NavigationEnd) {
+                const url = event.urlAfterRedirects;
+                this.isHome = this.config.isHomePath('/' + url);
+                this.isManagement = this.config.isManagementPath('/' + url)
+            }
         });
     }
 

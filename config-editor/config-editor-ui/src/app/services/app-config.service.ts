@@ -57,7 +57,6 @@ export class AppConfigService {
     return false;
   }
 
-
   isNewConfig(path: string): boolean {
     if (
       path.includes('newConfig=true') ||

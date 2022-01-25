@@ -10,6 +10,46 @@ import { mockTestCasesSchema } from 'testing/testCasesSchema';
 import { of } from 'rxjs';
 import { cloneDeep } from 'lodash';
 
+const mockTopology1 = 
+{ 
+  image: "test-image-alert",
+  attributes: ["test"],
+  topology_name: "myalert1",
+  topology_id: "123",
+  service_name: "myalert",
+}
+
+const mockTopology2 =
+{ 
+  image: "test-image-parsers",
+  attributes: ["test"],
+  topology_name: "myparserconfig1",
+  topology_id: "456",
+  service_name: "myparserconfig",
+}
+
+const mockTopology3 =
+{ 
+  image: "test-image-parsers",
+  attributes: ["test"],
+  topology_name: "myparserconfig2",
+  topology_id: "789",
+  service_name: "myparserconfig",
+}
+
+const mockTopologies1 = {
+  topologies: [
+    mockTopology1,
+  ],
+}
+
+const mockTopologies2 = {
+  topologies: [
+    mockTopology2,
+    mockTopology3,
+  ],
+}
+
 describe('AppService', () => {
   let httpTestingController: HttpTestingController;
   let service: AppService;
@@ -53,4 +93,20 @@ describe('AppService', () => {
     spyOn<any>(service, 'loadTestCaseSchema').and.returnValue(of(mockTestCasesSchema));
     service.createAppContext().subscribe(a => expect(a).toEqual(mockAppContextWithTestSchema), fail);
   });
+
+  it('should get all applications', done => {
+    service.setAppContext(mockAppContext);
+    service.getAllApplications().subscribe(apps => {
+      expect(apps).toEqual([mockTopology1, mockTopology2, mockTopology3]);
+      done()
+    })
+
+    const req1 = httpTestingController.expectOne('/api/v1/myalert/topologies');
+    expect(req1.request.method).toEqual('GET');
+    req1.flush(mockTopologies1);
+
+    const req2 = httpTestingController.expectOne('/api/v1/myparserconfig/topologies');
+    expect(req2.request.method).toEqual('GET');
+    req2.flush(mockTopologies2);
+  })
 });

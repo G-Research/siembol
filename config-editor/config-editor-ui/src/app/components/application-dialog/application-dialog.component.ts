@@ -11,6 +11,7 @@ import { AppService } from "@app/services/app.service";
   templateUrl: 'application-dialog.component.html',
 })
 export class ApplicationDialogComponent {
+  MAX_DIALOG_WIDTH = '800px';
   dialogrefInfo: MatDialogRef<any>;
   dataSource: MatTableDataSource<Application>;
   columns = applicationManagerColumns;
@@ -37,22 +38,12 @@ export class ApplicationDialogComponent {
     this.service.restartApplication(serviceName, applicationName).subscribe(a => {
       this.createTable(a);
       this.restartedApplications.push(applicationName);
-    })
-    this.dialogrefInfo = this.dialog.open(
-      templateRef, 
-      { 
-        data: applicationName,
-        maxWidth: '800px',
-      });
-    
+    });
+    this.openInfoDialog(applicationName, templateRef);  
   }
 
   onViewAttributes(attributes: string[], templateRef: TemplateRef<any>) {
-    this.dialogrefInfo = this.dialog.open(
-      templateRef, 
-      { 
-        data: attributes.map(a => JSON.parse(atob(a))), 
-      });
+    this.openInfoDialog(attributes.map(a => JSON.parse(atob(a))), templateRef);
   }
 
   onClickCloseInfo() {
@@ -66,26 +57,17 @@ export class ApplicationDialogComponent {
 
   openConfirmRestartAllApplications(templateRef: TemplateRef<any>) { 
     this.service.getAllApplications().subscribe(applications => {
-      this.dialogrefInfo = this.dialog.open(
-        templateRef, 
-        { 
-          data: applications.map(app => app.topology_name),
-          maxWidth: '800px',
-        });
+      this.openInfoDialog(applications.map(app => app.topology_name), templateRef);
     })
   }
 
   restartAllApplications(templateRef: TemplateRef<any>) {
-    this.service.restartAllApplications().subscribe(() => {
+    this.service.restartAllApplications().subscribe((apps: Application[]) => {
+      this.createTable(apps);
       this.onClickCloseInfo();
       this.disableRestart = true;
       this.cd.markForCheck();
-      this.dialogrefInfo = this.dialog.open(
-        templateRef, 
-        { 
-          data: "all applications",
-          maxWidth: '800px',
-        });
+      this.openInfoDialog("all applications", templateRef);
     })
   }
 
@@ -94,5 +76,14 @@ export class ApplicationDialogComponent {
     this.dataSource = new MatTableDataSource(a);
     this.dataSource.filter = filter;
     this.cd.markForCheck();
+  }
+
+  private openInfoDialog(data: any, templateRef: TemplateRef<any>) {
+    this.dialogrefInfo = this.dialog.open(
+      templateRef, 
+      { 
+        data,
+        maxWidth: this.MAX_DIALOG_WIDTH,
+      });
   }
 }
