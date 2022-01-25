@@ -76,17 +76,15 @@ describe('AppService', () => {
     expect(service.getUserServiceRoles('myalert')).toEqual([UserRole.SERVICE_USER, UserRole.SERVICE_ADMIN]);
   });
 
-  it('should create app context', () => {
+  it('should create app context', done => {
     spyOn<any>(service, 'loadUserInfo').and.returnValue(of(cloneDeep(mockAppContext)));
     spyOn<any>(service, 'loadTestCaseSchema').and.returnValue(of(mockTestCasesSchema));
-    service.createAppContext().subscribe(a => expect(a).toEqual(mockAppContextWithTestSchema), fail);
-  });
 
-  it('should set app context and initialise repositoryLinks variable', done => {
-    service.setAppContextandInitialise(mockAppContext).subscribe(() => {
-      expect(service.allRepositoryLinks).toEqual(expectedAllRepositoriesLinks);
+    service.createAppContext().subscribe(context => {
+      expect(context.repositoryLinks).toEqual(expectedAllRepositoriesLinks);
       done();
     });
+
     const req1 = httpTestingController.expectOne('/api/v1/myalert/configstore/repositories');
     expect(req1.request.method).toEqual('GET');
     req1.flush(mockRepositories1);

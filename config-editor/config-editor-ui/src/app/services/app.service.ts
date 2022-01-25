@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo } from '@app/model/config-model';
-import { Observable, throwError, BehaviorSubject, forkJoin } from 'rxjs';
+import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo, UserRole } from '@app/model/config-model';
+import { Observable, throwError, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
 import { UiMetadata } from '@app/model/ui-metadata-map';
 import 'rxjs/add/observable/forkJoin';
+import { mergeMap } from 'rxjs/operators';
 
 export class AppContext {
   user: string;
   userServices: ServiceInfo[];
   userServicesMap: Map<string, ServiceInfo>;
   testCaseSchema: JSONSchema7;
+  repositoryLinks: { [name: string]: RepositoryLinks };
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -22,7 +24,6 @@ export class AppContext {
 })
 export class AppService {
   private appContext: AppContext = new AppContext();
-  private repositoryLinks: { [name: string]: RepositoryLinks } = {}
   private loadedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   get loaded() {
@@ -46,29 +47,35 @@ export class AppService {
   get serviceNames() {
     return this.appContext.serviceNames;
   }
-  get allRepositoryLinks() {
-    return this.repositoryLinks;
+  get repositoryLinks() {
+    return this.appContext.repositoryLinks;
   }
 
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
-  setAppContextandInitialise(appContext: AppContext): Observable<boolean> {
+  setAppContext(appContext: AppContext): boolean {
     this.appContext = appContext;
-    return this.getAllRepositoryLinks().map(() => {
-      this.loadedSubject.next(true);
-      return true
-    });
-    ;
+    this.loadedSubject.next(true);
+    return true;
   }
 
   createAppContext(): Observable<AppContext> {
-    return forkJoin([this.loadUserInfo(), this.loadTestCaseSchema()]).map(([appContext, testCaseSchema]) => {
-      if (appContext && testCaseSchema) {
-        appContext.testCaseSchema = testCaseSchema;
-        return appContext;
-      }
-      throwError('Can not load application context');
-    });
+    return this.loadUserInfo()
+      .pipe(
+        mergeMap((appContext: AppContext) => 
+          forkJoin(
+            this.loadTestCaseSchema(),
+            this.getAllRepositoryLinks(appContext.userServices),
+            of(appContext)
+            )
+      )).map(([testCaseSchema, repositoryLinks, appContext]) => {
+        if (appContext && testCaseSchema && repositoryLinks) {
+          appContext.testCaseSchema = testCaseSchema;
+          appContext.repositoryLinks = repositoryLinks;
+          return appContext;
+        }
+        throwError('Can not load application context');
+      });
   }
 
   loadTestCaseSchema(): Observable<JSONSchema7> {
@@ -85,19 +92,19 @@ export class AppService {
     return this.config.uiMetadata[serviceType];
   }
 
-  getUserServiceRoles(serviceName: string) {
+  getUserServiceRoles(serviceName: string): UserRole[] {
     return this.appContext.userServicesMap.get(serviceName).user_roles;
   }
 
-  getServiceRepositoryLink(serviceName: string) {
-    return this.repositoryLinks[serviceName];
+  getServiceRepositoryLink(serviceName: string): RepositoryLinks {
+    return this.appContext.repositoryLinks[serviceName];
   }
 
-  private getAllRepositoryLinks(): Observable<void> {
-    return forkJoin(this.userServices.map(x => this.getRepositoryLinks(x.name)))
+  private getAllRepositoryLinks(userServices: ServiceInfo[]): Observable<{ [name: string]: RepositoryLinks }> {
+    return forkJoin(userServices.map(x => this.getRepositoryLinks(x.name)))
             .map((links: RepositoryLinks[]) => {
                 if (links) {
-                    this.repositoryLinks = links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
+                    return links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
                 }
             })
   }

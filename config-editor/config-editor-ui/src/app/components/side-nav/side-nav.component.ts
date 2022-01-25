@@ -31,7 +31,7 @@ export class SideNavComponent implements OnInit {
 
     ngOnInit() {
         this.userServices = this.appService.userServices;
-        this.repositoryLinks = this.appService.allRepositoryLinks;
+        this.repositoryLinks = this.appService.repositoryLinks;
     }
 
     menuEnter() {
