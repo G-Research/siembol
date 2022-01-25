@@ -78,7 +78,7 @@ public class JsonExtractor extends ParserExtractor {
         } catch (Exception e) {
             String errorMessage = String.format("Error during extracting json:%s\n Exception: %s",
                     message, ExceptionUtils.getStackTrace(e));
-            LOG.error(errorMessage);
+            LOG.debug(errorMessage);
             if (shouldThrowExceptionOnError()) {
                 throw new IllegalStateException(errorMessage);
             }

@@ -31,12 +31,7 @@ export class SideNavComponent implements OnInit {
 
     ngOnInit() {
         this.userServices = this.appService.userServices;
-        Observable.forkJoin(this.userServices.map(x => this.appService.getRepositoryLinks(x.name)))
-            .subscribe((links: RepositoryLinks[]) => {
-                if (links) {
-                    this.repositoryLinks = links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
-                }
-            });
+        this.repositoryLinks = this.appService.repositoryLinks;
     }
 
     menuEnter() {
@@ -73,7 +68,7 @@ export class SideNavComponent implements OnInit {
         }, 100)
     }
     
-    public getPath(service: string): string {
+    getPath(service: string): string {
         let path = '/' + service;
         const roles = this.appService.getUserServiceRoles(service);
         if (roles.length < 2 && roles.includes(UserRole.SERVICE_ADMIN)) {

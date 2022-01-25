@@ -24,7 +24,7 @@ export class NavBarComponent implements OnInit {
     isAdminChecked: boolean;
     isHome: boolean;
     isManagement: boolean;
-    repositoryLinks$: Observable<RepositoryLinks>;
+    repositoryLinks: RepositoryLinks;
     readonly repoNames = repoNames;
 
     constructor(private config: AppConfigService, 
@@ -38,13 +38,13 @@ export class NavBarComponent implements OnInit {
         this.serviceNames = this.appService.serviceNames;
         this.environment = this.config.environment;
         this.isAdminChecked = this.editorService.adminMode;
-        this.repositoryLinks$ = this.editorService.repositoryLinks$;
     }
 
     ngOnInit() {
         this.serviceName$.subscribe(service => {
             if (service) {
                 this.userRoles = this.appService.getUserServiceRoles(service);
+                this.repositoryLinks = this.appService.getServiceRepositoryLink(service);
             }
             this.serviceName = service;
         });
