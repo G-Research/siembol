@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo } from '@app/model/config-model';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo, UserRole } from '@app/model/config-model';
+import { Observable, throwError, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 import { UiMetadata } from '@app/model/ui-metadata-map';
 import 'rxjs/add/observable/forkJoin';
+import { mergeMap } from 'rxjs/operators';
 
 export class AppContext {
   user: string;
   userServices: ServiceInfo[];
   userServicesMap: Map<string, ServiceInfo>;
   testCaseSchema: JSONSchema7;
+  repositoryLinks: { [name: string]: RepositoryLinks };
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -25,47 +26,59 @@ export class AppService {
   private appContext: AppContext = new AppContext();
   private loadedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  public get loaded() {
+  get loaded() {
     return this.loadedSubject.value;
   }
-  public get loaded$() {
+  get loaded$() {
     return this.loadedSubject.asObservable();
   }
-  public get user() {
+  get user() {
     return this.appContext.user;
   }
-  public get userServices() {
+  get userServices() {
     return this.appContext.userServices;
   }
-  public get userServicesMap() {
+  get userServicesMap() {
     return this.appContext.userServicesMap;
   }
-  public get testCaseSchema() {
+  get testCaseSchema() {
     return this.appContext.testCaseSchema;
   }
-  public get serviceNames() {
+  get serviceNames() {
     return this.appContext.serviceNames;
+  }
+  get repositoryLinks() {
+    return this.appContext.repositoryLinks;
   }
 
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
-  public setAppContext(appContext: AppContext): boolean {
+  setAppContext(appContext: AppContext): boolean {
     this.appContext = appContext;
     this.loadedSubject.next(true);
     return true;
   }
 
-  public createAppContext(): Observable<AppContext> {
-    return Observable.forkJoin([this.loadUserInfo(), this.loadTestCaseSchema()]).map(([appContext, testCaseSchema]) => {
-      if (appContext && testCaseSchema) {
-        appContext.testCaseSchema = testCaseSchema;
-        return appContext;
-      }
-      throwError('Can not load application context');
-    });
+  createAppContext(): Observable<AppContext> {
+    return this.loadUserInfo()
+      .pipe(
+        mergeMap((appContext: AppContext) => 
+          forkJoin(
+            this.loadTestCaseSchema(),
+            this.getAllRepositoryLinks(appContext.userServices),
+            of(appContext)
+            )
+      )).map(([testCaseSchema, repositoryLinks, appContext]) => {
+        if (appContext && testCaseSchema && repositoryLinks) {
+          appContext.testCaseSchema = testCaseSchema;
+          appContext.repositoryLinks = repositoryLinks;
+          return appContext;
+        }
+        throwError('Can not load application context');
+      });
   }
 
-  public loadTestCaseSchema(): Observable<JSONSchema7> {
+  loadTestCaseSchema(): Observable<JSONSchema7> {
     return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`).map((r: SchemaInfo) => {
       if (r === undefined || r.rules_schema === undefined) {
         throwError('empty test case schema endpoint response');
@@ -74,24 +87,36 @@ export class AppService {
     });
   }
 
-  public getRepositoryLinks(serviceName): Observable<RepositoryLinks> {
-    return this.http
-      .get<RepositoryLinksWrapper>(`${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`)
-      .pipe(
-        map(result => ({
-          ...result.rules_repositories,
-          service_name: serviceName,
-        }))
-      );
-  }
-
-  public getUiMetadataMap(serviceName: string): UiMetadata {
+  getUiMetadataMap(serviceName: string): UiMetadata {
     const serviceType = this.userServicesMap.get(serviceName).type;
     return this.config.uiMetadata[serviceType];
   }
 
-  public getUserServiceRoles(serviceName: string) {
+  getUserServiceRoles(serviceName: string): UserRole[] {
     return this.appContext.userServicesMap.get(serviceName).user_roles;
+  }
+
+  getServiceRepositoryLink(serviceName: string): RepositoryLinks {
+    return this.appContext.repositoryLinks[serviceName];
+  }
+
+  private getAllRepositoryLinks(userServices: ServiceInfo[]): Observable<{ [name: string]: RepositoryLinks }> {
+    return forkJoin(userServices.map(x => this.getRepositoryLinks(x.name)))
+            .map((links: RepositoryLinks[]) => {
+                if (links) {
+                    return links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
+                }
+            })
+  }
+
+  private getRepositoryLinks(serviceName: string): Observable<RepositoryLinks> {
+    return this.http
+      .get<RepositoryLinksWrapper>(`${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`)
+      .map(result => ({
+          ...result.rules_repositories,
+          service_name: serviceName,
+        })
+      );
   }
 
   private loadUserInfo(): Observable<AppContext> {
