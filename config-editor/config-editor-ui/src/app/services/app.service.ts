@@ -103,6 +103,13 @@ export class AppService {
     return false;
   }
 
+  restartApplication(serviceName: string, application: string): Observable<Application[]> {
+    return this.http.post<applications>(
+      `${this.config.serviceRoot}api/v1/${serviceName}/topologies/${application}/restart`,
+      null
+    ).pipe(map(result => result.topologies.filter(t => t.service_name === serviceName)));
+  }
+
   restartAllApplications(): Observable<Application[]> { //add test
     return this.http.post<applications>(
       `${this.config.serviceRoot}api/v1/topologies/restart`,
@@ -114,11 +121,15 @@ export class AppService {
     return forkJoin(
       this.userServices.map(
         userService => 
-          this.http.get<applications>(
-            `${this.config.serviceRoot}api/v1/${userService.name}/topologies`
-          ).pipe(map(result => result.topologies))
+          this.getServiceApplications(userService.name)
         )
-      ).pipe(map(([topologies1, topologies2]) => topologies1.concat(topologies2)));
+      ).pipe(map(topologies => topologies.flat()));
+  }
+
+  private getServiceApplications(serviceName: string): Observable<Application[]> {
+    return this.http.get<applications>(
+      `${this.config.serviceRoot}api/v1/${serviceName}/topologies`
+    ).pipe(map(result => result.topologies));
   }
 
   private loadUserInfo(): Observable<AppContext> {

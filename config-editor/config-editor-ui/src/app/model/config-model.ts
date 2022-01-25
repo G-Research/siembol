@@ -209,8 +209,13 @@ export interface Application {
 export const applicationManagerColumns = [
   {
     columnDef: 'name',
-    header: 'Name',
+    header: 'Application Name',
     cell: (t: Application) => `${t.topology_name}`,
+  },
+  {
+    columnDef: 'service_name',
+    header: 'Service Name',
+    cell: (t: Application) => `${t.service_name}`,
   },
   {
     columnDef: 'id',
@@ -224,4 +229,4 @@ export const applicationManagerColumns = [
   },
 ];
 
-export const displayedApplicationManagerColumns = ["name", "id", "image", "attributes", "restart"];
+export const displayedApplicationManagerColumns = ["name", "service_name", "id", "image", "attributes", "restart"];

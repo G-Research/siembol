@@ -21,8 +21,6 @@ import {
   Importers,
   ImportedConfig,
   ConfigToImport,
-  applications,
-  Application,
 } from '@model/config-model';
 import { TestCase, TestCaseMap, TestCaseResult, TestCaseWrapper } from '@model/test-case';
 import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
@@ -412,19 +410,6 @@ export class ConfigLoaderService {
         config
       )
       .pipe(map(result => result));
-  }
-
-  getApplications(): Observable<Application[]> {
-    return this.http.get<applications>(
-      `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies`
-    ).pipe(map(result => result.topologies));
-  }
-
-  restartApplication(application: string): Observable<Application[]> {
-    return this.http.post<applications>(
-      `${this.config.serviceRoot}api/v1/${this.serviceName}/topologies/${application}/restart`,
-      null
-    ).pipe(map(result => result.topologies.filter(t => t.service_name === this.serviceName)));
   }
 
   private testCaseFilesToMap(files: any[]): TestCaseMap {

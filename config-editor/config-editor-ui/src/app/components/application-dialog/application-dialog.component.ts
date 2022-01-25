@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef } fr
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Application, applicationManagerColumns, displayedApplicationManagerColumns } from "@app/model/config-model";
-import { EditorService } from "@app/services/editor.service";
+import { AppService } from "@app/services/app.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11,19 +11,20 @@ import { EditorService } from "@app/services/editor.service";
   templateUrl: 'application-dialog.component.html',
 })
 export class ApplicationDialogComponent {
-  dialogrefAttributes: MatDialogRef<any>;
+  dialogrefInfo: MatDialogRef<any>;
   dataSource: MatTableDataSource<Application>;
   columns = applicationManagerColumns;
   displayedColumns = displayedApplicationManagerColumns;
   restartedApplications: string[] = [];
+  disableRestart = false;
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
-    private service: EditorService,
+    private service: AppService,
     private dialog: MatDialog,
     private cd: ChangeDetectorRef
   ) {
-    this.service.configLoader.getApplications().subscribe(a => {
+    this.service.getAllApplications().subscribe(a => {
       this.createTable(a);
     })
   }
@@ -32,12 +33,12 @@ export class ApplicationDialogComponent {
     this.dialogref.close();
   }
 
-  onRestartApplication(applicationName: string, templateRef: TemplateRef<any>) {
-    this.service.configLoader.restartApplication(applicationName).subscribe(a => {
+  onRestartApplication(serviceName: string, applicationName: string, templateRef: TemplateRef<any>) {
+    this.service.restartApplication(serviceName, applicationName).subscribe(a => {
       this.createTable(a);
       this.restartedApplications.push(applicationName);
     })
-    this.dialogrefAttributes = this.dialog.open(
+    this.dialogrefInfo = this.dialog.open(
       templateRef, 
       { 
         data: applicationName,
@@ -47,20 +48,45 @@ export class ApplicationDialogComponent {
   }
 
   onViewAttributes(attributes: string[], templateRef: TemplateRef<any>) {
-    this.dialogrefAttributes = this.dialog.open(
+    this.dialogrefInfo = this.dialog.open(
       templateRef, 
       { 
         data: attributes.map(a => JSON.parse(atob(a))), 
       });
   }
 
-  onClickCloseAttributes() {
-    this.dialogrefAttributes.close();
+  onClickCloseInfo() {
+    this.dialogrefInfo.close();
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  openConfirmRestartAllApplications(templateRef: TemplateRef<any>) { 
+    this.service.getAllApplications().subscribe(applications => {
+      this.dialogrefInfo = this.dialog.open(
+        templateRef, 
+        { 
+          data: applications.map(app => app.topology_name),
+          maxWidth: '800px',
+        });
+    })
+  }
+
+  restartAllApplications(templateRef: TemplateRef<any>) {
+    this.service.restartAllApplications().subscribe(() => {
+      this.onClickCloseInfo();
+      this.disableRestart = true;
+      this.cd.markForCheck();
+      this.dialogrefInfo = this.dialog.open(
+        templateRef, 
+        { 
+          data: "all applications",
+          maxWidth: '800px',
+        });
+    })
   }
 
   private createTable(a: Application[]) {

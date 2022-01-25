@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, TemplateRef } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { HelpLink } from "@app/model/app-config";
 import { AppConfigService } from "@app/services/app-config.service";
 import { AppService } from "@app/services/app.service";
+import { ApplicationDialogComponent } from "..";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,26 +29,8 @@ export class ManagementViewComponent  implements OnInit {
     window.open(link, "_blank");
   }
 
-  openConfirmRestartAllApplications(templateRef: TemplateRef<any>) { 
-    this.appService.getAllApplications().subscribe(applications => {
-      this.dialogref = this.dialog.open(
-        templateRef, 
-        { 
-          data: applications.map(app => app.topology_name),
-          maxWidth: '800px',
-        });
-    })
-  }
-
-  restartAllApplications(templateRef: TemplateRef<any>) {
-    this.appService.restartAllApplications().subscribe(applications => {
-      this.dialogref = this.dialog.open(
-        templateRef, 
-        { 
-          data: applications.map(app => app.topology_name),
-          maxWidth: '800px',
-        });
-    })
+  openApplicationDialog() {
+    this.dialog.open(ApplicationDialogComponent);
   }
 
   onClickClose() {
