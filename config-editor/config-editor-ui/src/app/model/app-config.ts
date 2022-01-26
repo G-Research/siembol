@@ -32,12 +32,6 @@ export interface HelpLink {
   link: string;
 }
 
-export interface ManagementAction {
-  icon: string;
-  title: string;
-  funct: () => void;
-}
-
 export interface Oauth2Attributes {
   callbackPath: string;
   expiresIntervalMinimum: number;

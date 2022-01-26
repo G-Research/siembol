@@ -1,16 +1,14 @@
-import { HttpTestingController, HttpClientTestingModule } from "@angular/common/http/testing";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { AppConfigService } from "./app-config.service";
 
 describe('AppConfigService', () => {
-  // let httpTestingController: HttpTestingController;
   let service: AppConfigService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [AppConfigService],
     });
-    // httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(AppConfigService);
   });
 
