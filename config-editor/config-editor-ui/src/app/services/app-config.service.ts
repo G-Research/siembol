@@ -11,7 +11,7 @@ import {
 } from './authentication.service';
 import { Oauth2AuthenticationService } from '@app/services/oauth2-authentication.service';
 import { AppConfig, AuthenticationType, BuildInfo } from '../model';
-import { HelpLink } from '@app/model/app-config';
+import { HelpLink, HOME_REGEX } from '@app/model/app-config';
 
 @Injectable({
   providedIn: 'root',
@@ -44,14 +44,14 @@ export class AppConfigService {
   }
 
   isHomePath(path: string): boolean {
-    if (path === '/home' || path === '/') {
+    if (HOME_REGEX.test(path)) {
       return true;
     }
     return false;
   }
 
   isManagementPath(path: string): boolean {
-    if (path === '/home' || path === '/') {
+    if (path === '/home/management') {
       return true;
     }
     return false;

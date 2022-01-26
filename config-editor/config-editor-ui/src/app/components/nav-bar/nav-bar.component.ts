@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { BuildInfoDialogComponent } from '../build-info-dialog/build-info-dialog.component';
 import { EditorService } from '../../services/editor.service';
 import { AppService } from '../../services/app.service';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { UserRole, RepositoryLinks, repoNames } from '@app/model/config-model';
+import { startWith, takeUntil } from 'rxjs/operators';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +15,8 @@ import { UserRole, RepositoryLinks, repoNames } from '@app/model/config-model';
     styleUrls: ['./nav-bar.component.scss'],
     templateUrl: './nav-bar.component.html',
 })
-export class NavBarComponent implements OnInit {
+export class NavBarComponent implements OnInit, OnDestroy {
+    ngUnsubscribe = new Subject();
     user: string;
     userRoles: string[];
     serviceName$: Observable<string>;
@@ -31,7 +33,6 @@ export class NavBarComponent implements OnInit {
         private appService: AppService, 
         private editorService: EditorService, 
         private dialog: MatDialog,
-        private activeRoute: ActivatedRoute,
         private router: Router) {
         this.user = this.appService.user;
         this.serviceName$ = this.editorService.serviceName$;
@@ -41,7 +42,7 @@ export class NavBarComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.serviceName$.subscribe(service => {
+        this.serviceName$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(service => {
             if (service) {
                 this.userRoles = this.appService.getUserServiceRoles(service);
                 this.repositoryLinks = this.appService.getServiceRepositoryLink(service);
@@ -49,11 +50,14 @@ export class NavBarComponent implements OnInit {
             this.serviceName = service;
         });
 
-        this.router.events.subscribe(event => {
-            if(event instanceof NavigationEnd) {
-                const url = event.urlAfterRedirects;
-                this.isHome = this.config.isHomePath('/' + url);
-                this.isManagement = this.config.isManagementPath('/' + url)
+        this.router.events
+        .pipe(
+            startWith(this.router),
+            takeUntil(this.ngUnsubscribe))
+        .subscribe(event => {
+            if (event instanceof NavigationEnd || event instanceof Router){
+                this.isHome = this.config.isHomePath(event.url);
+                this.isManagement = this.config.isManagementPath(event.url);
             }
         });
     }
@@ -75,5 +79,10 @@ export class NavBarComponent implements OnInit {
             path += this.config.adminPath;
         }
         return path;  
+    }
+
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
     }
 }

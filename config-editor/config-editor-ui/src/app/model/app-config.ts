@@ -43,3 +43,5 @@ export interface Oauth2Attributes {
   expiresIntervalMinimum: number;
   oidcSettings: UserSettings;
 }
+
+export const HOME_REGEX = new RegExp('^\/($|home(\/|$))');

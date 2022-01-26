@@ -17,6 +17,9 @@
           </button>
         </mat-menu>
       </div>
+      <div *ngIf="isManagement">
+        <h1>Management</h1>
+      </div>
     </div>
     <div>
       <div *ngIf="!isHome">
