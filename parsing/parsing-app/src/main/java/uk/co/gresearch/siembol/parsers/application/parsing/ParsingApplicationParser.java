@@ -36,6 +36,7 @@ public abstract class ParsingApplicationParser implements Serializable {
     private static final String ERROR_MESSAGE = "Exception during parsing, parsing_app: {} message: {}, " +
             "metadata: {}, exception: {}";
     private static final String MISSING_ARGUMENTS = "Missing arguments required for Parsing application parser";
+    private static final String UNKNOWN_SOURCE = "unknown";
 
     private final EnumSet<Flags> flags;
     private final String name;
@@ -71,9 +72,13 @@ public abstract class ParsingApplicationParser implements Serializable {
         return msg.toString();
     }
 
-    protected abstract List<ParserResult> parseInternally(String metadata, byte[] message);
+    protected abstract List<ParserResult> parseInternally(String source, String metadata, byte[] message);
 
     public ArrayList<ParsingApplicationResult> parse(String metadata, byte[] message) {
+        return parse(UNKNOWN_SOURCE, metadata, message);
+    }
+
+    public ArrayList<ParsingApplicationResult> parse(String source, String metadata, byte[] message) {
         ArrayList<ParsingApplicationResult> ret = new ArrayList<>();
         try {
             Map<String, Object> metadataObject = flags.contains(Flags.PARSE_METADATA)
@@ -82,7 +87,7 @@ public abstract class ParsingApplicationParser implements Serializable {
 
 
             long timestamp = timeProvider.getCurrentTimeInMs();
-            for (ParserResult parserResult : parseInternally(metadata, message)) {
+            for (ParserResult parserResult : parseInternally(source, metadata, message)) {
                 if (parserResult.getException() != null) {
                     ret.add(new ParsingApplicationResult(
                             errorTopic,
@@ -91,7 +96,7 @@ public abstract class ParsingApplicationParser implements Serializable {
                 }
 
                 List<Map<String, Object>> parsed = parserResult.getParsedMessages();
-                parsed.removeIf(x -> x.isEmpty());
+                parsed.removeIf(Map::isEmpty);
                 if (parsed.isEmpty()) {
                     continue;
                 }

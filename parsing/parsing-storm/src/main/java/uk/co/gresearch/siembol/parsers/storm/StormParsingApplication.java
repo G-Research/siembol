@@ -1,11 +1,13 @@
 package uk.co.gresearch.siembol.parsers.storm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.generated.StormTopology;
+import org.apache.storm.kafka.spout.Func;
 import org.apache.storm.kafka.spout.KafkaSpout;
 import org.apache.storm.kafka.spout.KafkaSpoutConfig;
 import org.apache.storm.topology.TopologyBuilder;
@@ -24,7 +26,9 @@ import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFac
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult;
 
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
@@ -43,9 +47,11 @@ public class StormParsingApplication {
             "Base64 encoded storm attributes and parsing app attributes";
     private static final String SUBMIT_INFO_LOG = "Submitted parsing application storm topology: {} " +
             "with storm attributes: {}\nparsing application attributes: {}";
+    private static final String UNKNOWN_SOURCE = "unknown";
 
     private static KafkaSpoutConfig<String, byte[]> createKafkaSpoutConfig(
-            StormParsingApplicationAttributesDto parsingApplicationAttributes) {
+            StormParsingApplicationAttributesDto parsingApplicationAttributes,
+            ParsingApplicationFactoryAttributes parsingAttributes) {
         StormAttributesDto stormAttributes = parsingApplicationAttributes.getStormAttributes();
         stormAttributes.getKafkaSpoutProperties().getRawMap()
                 .put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -53,8 +59,28 @@ public class StormParsingApplication {
                 .put(VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
 
         return StormHelper.createKafkaSpoutConfig(stormAttributes,
-                r -> new Values(r.key(), r.value()),
-                new Fields(ParsingApplicationTuples.METADATA.toString(), ParsingApplicationTuples.LOG.toString()));
+                createConsumerRecordFunction(parsingAttributes),
+                new Fields(ParsingApplicationTuples.SOURCE.toString(),
+                        ParsingApplicationTuples.METADATA.toString(),
+                        ParsingApplicationTuples.LOG.toString()));
+    }
+
+    private static <K, V> Func<ConsumerRecord<K,V>, List<Object>> createConsumerRecordFunction(
+            ParsingApplicationFactoryAttributes parsingAttributes) {
+        switch (parsingAttributes.getApplicationType()) {
+            case SINGLE_PARSER:
+            case ROUTER_PARSING:
+                return r -> new Values(UNKNOWN_SOURCE, r.key(), r.value());
+            case TOPIC_ROUTING_PARSING:
+                return r -> new Values(r.topic(), r.key(), r.value());
+            case HEADER_ROUTING_PARSING:
+                final String headerName = parsingAttributes.getSourceHeaderName();
+                return r -> new Values(new String(r.headers().lastHeader(headerName).value(), StandardCharsets.UTF_8),
+                        r.key(),
+                        r.value());
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public static StormTopology createTopology(StormParsingApplicationAttributesDto stormAppAttributes,
@@ -68,7 +94,7 @@ public class StormParsingApplication {
 
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout(KAFKA_SPOUT,
-                new KafkaSpout<>(createKafkaSpoutConfig(stormAppAttributes)),
+                new KafkaSpout<>(createKafkaSpoutConfig(stormAppAttributes, parsingAttributes)),
                 parsingAttributes.getInputParallelism());
 
         builder.setBolt(parsingAttributes.getName(),

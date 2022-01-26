@@ -88,7 +88,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -117,7 +117,7 @@ public class SingleApplicationParserTest {
 
         parserResult.getParsedMessages().remove(1);
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -143,7 +143,7 @@ public class SingleApplicationParserTest {
 
         parserResult.getParsedMessages().remove(1);
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -168,7 +168,7 @@ public class SingleApplicationParserTest {
 
         parserResult.getParsedMessages().replaceAll(x-> new HashMap<>());
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         Assert.assertTrue(result.isEmpty());
     }
 
@@ -184,7 +184,7 @@ public class SingleApplicationParserTest {
         parserResult.setParsedMessages(null);
         parserResult.setException(new IllegalStateException("test_exception"));
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -206,7 +206,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenThrow(new RuntimeException("runtime_exception"));
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -229,7 +229,7 @@ public class SingleApplicationParserTest {
 
         parserResult.setParsedMessages(new ArrayList<>());
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(0, result.size());
@@ -247,7 +247,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -284,7 +284,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -321,7 +321,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());

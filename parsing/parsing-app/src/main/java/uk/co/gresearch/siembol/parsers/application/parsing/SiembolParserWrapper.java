@@ -20,6 +20,10 @@ public class SiembolParserWrapper implements SiembolParser, Serializable {
         this.topic = topic;
     }
 
+    public SiembolParserWrapper(SerializableSiembolParser parser, String topic) {
+        this(x -> true, parser, topic);
+    }
+
     boolean checkCondition(String message) {
         return condition.apply(message);
     }

@@ -22,15 +22,16 @@ public class SingleApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(String metadata, byte[] message) {
+    protected List<ParserResult> parseInternally(String source, String metadata, byte[] message) {
         List<ParserResult> ret = new ArrayList<>();
         ret.add(parser.parseToResult(metadata, message));
         return ret;
     }
 
     public static Builder<SingleApplicationParser> builder() {
-        return new Builder<SingleApplicationParser>() {
+        return new Builder<>() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public SingleApplicationParser build() {
                 if (parser == null) {
@@ -49,8 +50,7 @@ public class SingleApplicationParser extends ParsingApplicationParser {
         protected SiembolParserWrapper parser;
 
         public Builder<T> parser(String topic, SerializableSiembolParser siembolParser) throws Exception {
-            final RouterCondition alwaysMatch = x -> true;
-            parser = new SiembolParserWrapper(alwaysMatch, siembolParser, topic);
+            parser = new SiembolParserWrapper(siembolParser, topic);
             return this;
         }
 
