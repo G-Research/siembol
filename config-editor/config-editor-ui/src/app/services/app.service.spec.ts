@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AppConfigService } from '@app/services/app-config.service';
 import { AppService } from './app.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { mockAppContext, mockUserServicesMap } from 'testing/appContext';
+import { mockAppContext, mockAppContextNoAdmin, mockUserServicesMap } from 'testing/appContext';
 import { mockUserInfo } from 'testing/user';
 import { mockUiMetadataMap } from 'testing/uiMetadataMap';
 import { RepositoryLinks, UserRole } from '@app/model/config-model';
@@ -147,5 +147,15 @@ describe('AppService', () => {
     const req2 = httpTestingController.expectOne('/api/v1/myparserconfig/topologies');
     expect(req2.request.method).toEqual('GET');
     req2.flush(mockTopologies2);
+  })
+
+  it('should be admin user', () => {
+    service.setAppContext(mockAppContext);
+    expect(service.isUserAnAdmin()).toBeTrue();
+  })
+
+  it('should not be admin user', () => {
+    service.setAppContext(mockAppContextNoAdmin);
+    expect(service.isUserAnAdmin()).toBeFalse();
   })
 });

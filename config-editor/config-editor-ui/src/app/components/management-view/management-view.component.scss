@@ -6,39 +6,8 @@
   margin-left: auto;
 }
 
-.mat-accordion .mat-expansion-panel {
-  margin: 5px;
-}
-
 ::ng-deep .with-icon .mat-button-wrapper {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-}
-
-.tag-chip {
-  display: inline-block;
-  margin: 0 auto;
-  padding: 2px 5px;
-  min-width: 40px;
-  text-align: center;
-  border-radius: 9999px;
-  color: #eee;
-  background: rgba(255, 255, 255, 0.04);
-  font-family: monospace;
-  margin-left: 10px;
-}
-
-.tag-text {
-  padding-top: 2px;
-  font-size: 10pt;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-::ng-deep .logo .mat-expansion-panel-body{
-  display: block !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  transform: scale(1.5);
 }

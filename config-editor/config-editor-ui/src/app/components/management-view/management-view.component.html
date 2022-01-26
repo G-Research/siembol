@@ -10,7 +10,7 @@
           </mat-grid-tile>
     </mat-grid-list>
   </mat-expansion-panel>
-  <mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel *ngIf="enableActions" [expanded]="true">
     <mat-expansion-panel-header>Actions</mat-expansion-panel-header>
     <mat-grid-list cols="2" rowHeight="2:1">
       <mat-grid-tile>

@@ -92,11 +92,11 @@ export class AppService {
     return this.config.uiMetadata[serviceType];
   }
 
-  getUserServiceRoles(serviceName: string) {
+  getUserServiceRoles(serviceName: string): UserRole[] {
     return this.appContext.userServicesMap.get(serviceName).user_roles;
   }
 
-  isUserAnAdmin() {
+  isUserAnAdmin(): boolean {
     for (const userService of this.appContext.userServicesMap.values()) {
       if (userService.user_roles.includes(UserRole.SERVICE_ADMIN)) {
         return true;

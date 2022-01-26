@@ -66,7 +66,7 @@ export class AppInitComponent implements OnInit, OnDestroy {
         {
             component: TestCaseHelpComponent,
             path: 'help/testcase',
-        },
+        }
     ];
 
     constructor(private router: Router,
@@ -84,6 +84,10 @@ export class AppInitComponent implements OnInit, OnDestroy {
         });
     }
 
+    ngOnDestroy() {
+        this.ngUnsubscribe.complete();
+    }
+
     private loadRoutes() {
         const routes = this.appRoutes;
         this.appService.serviceNames.forEach(s => {
@@ -96,18 +100,14 @@ export class AppInitComponent implements OnInit, OnDestroy {
                 childrenRoutes.push(this.adminRoute);
             }
             this.appRoutes.push({
-                path: s, component: HomeComponent, children: childrenRoutes,
+                path: s, component: HomeComponent, children: childrenRoutes
             })
             
         });
         routes.push({
             component: PageNotFoundComponent,
-            path: '**',
+            path: '**'
         });
         this.router.resetConfig(routes);
-    }
-
-    ngOnDestroy() {
-        this.ngUnsubscribe.complete();
     }
 }

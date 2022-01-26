@@ -14,6 +14,7 @@ import { ApplicationDialogComponent } from "..";
 export class ManagementViewComponent  implements OnInit {
   managementLinks: HelpLink[];
   dialogref: MatDialogRef<any>;
+  enableActions: boolean;
 
   constructor(
     private appConfigService: AppConfigService,
@@ -23,6 +24,7 @@ export class ManagementViewComponent  implements OnInit {
 
   ngOnInit() {
     this.managementLinks = this.appConfigService.managementLinks;
+    this.enableActions = this.appService.isUserAnAdmin();
   }
 
   openLink(link: string) {
@@ -31,9 +33,5 @@ export class ManagementViewComponent  implements OnInit {
 
   openApplicationDialog() {
     this.dialog.open(ApplicationDialogComponent);
-  }
-
-  onClickClose() {
-    this.dialogref.close();
   }
 }

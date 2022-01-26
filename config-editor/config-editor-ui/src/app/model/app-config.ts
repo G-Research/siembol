@@ -28,7 +28,7 @@ export interface AppConfig {
 
 export interface HelpLink {
   title: string;
-  icon?: string;
+  icon: string;
   link: string;
 }
 

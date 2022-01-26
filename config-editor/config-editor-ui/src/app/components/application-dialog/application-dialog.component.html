@@ -31,7 +31,7 @@
   </table>
 </div>
 <div mat-dialog-actions>
-  <button mat-raised-button class="button-layout" color="accent" [disabled]="disableRestart" (click)="openConfirmRestartAllApplications(confirmRestartAllApplication)">RESTART ALL</button>
+  <button mat-raised-button class="button-layout" color="accent" [disabled]="disableRestart" (click)="openInfoDialog('', confirmRestartAll)">RESTART ALL</button>
   <button mat-raised-button class="button-layout" color="accent" (click)="onClickClose()">CLOSE</button>
 </div>
 
@@ -65,7 +65,7 @@
   </div>
 </ng-template>
 
-<ng-template #confirmRestartAllApplication let-data>
+<ng-template #confirmRestartAll let-data>
   Are you sure you want to restart all applications?
   <div mat-dialog-actions>
     <button mat-raised-button class="button-layout" color="accent" (click)="restartAllApplications(restartedApplication)">RESTART ALL</button>

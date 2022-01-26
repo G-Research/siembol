@@ -55,12 +55,6 @@ export class ApplicationDialogComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  openConfirmRestartAllApplications(templateRef: TemplateRef<any>) { 
-    this.service.getAllApplications().subscribe(applications => {
-      this.openInfoDialog(applications.map(app => app.topology_name), templateRef);
-    })
-  }
-
   restartAllApplications(templateRef: TemplateRef<any>) {
     this.service.restartAllApplications().subscribe((apps: Application[]) => {
       this.createTable(apps);
@@ -70,20 +64,20 @@ export class ApplicationDialogComponent {
       this.openInfoDialog("all applications", templateRef);
     })
   }
-
-  private createTable(a: Application[]) {
-    const filter = this.dataSource?.filter;
-    this.dataSource = new MatTableDataSource(a);
-    this.dataSource.filter = filter;
-    this.cd.markForCheck();
-  }
-
-  private openInfoDialog(data: any, templateRef: TemplateRef<any>) {
+  
+  openInfoDialog(data: any, templateRef: TemplateRef<any>) {
     this.dialogrefInfo = this.dialog.open(
       templateRef, 
       { 
         data,
         maxWidth: this.MAX_DIALOG_WIDTH,
       });
+  }
+
+  private createTable(a: Application[]) {
+    const filter = this.dataSource?.filter;
+    this.dataSource = new MatTableDataSource(a);
+    this.dataSource.filter = filter;
+    this.cd.markForCheck();
   }
 }
