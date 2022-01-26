@@ -1,6 +1,7 @@
 package uk.co.gresearch.siembol.parsers.storm;
 
 public enum ParsingApplicationTuples {
+    SOURCE("source"),
     METADATA("metadata"),
     LOG("log"),
     PARSING_MESSAGES("messages");
