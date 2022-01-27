@@ -40,9 +40,13 @@
       }
     },
     "$..routing_parser..default_parser": {
-      "wrappers": [
-        "panel"
-      ]
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
     },
     "$..single_parser": {
       "widget": {
@@ -97,9 +101,13 @@
       }
     },
     "$..topic_routing_parser..default_parser": {
-      "wrappers": [
-        "panel"
-      ]
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
     },
     "$..header_routing_parser": {
       "widget": {
@@ -127,9 +135,13 @@
       }
     },
     "$..header_routing_parser..default_parser": {
-      "wrappers": [
-        "panel"
-      ]
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
     }
   },
   "admin_config_layout": {
