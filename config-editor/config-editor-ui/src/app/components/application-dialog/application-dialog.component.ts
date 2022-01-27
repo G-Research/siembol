@@ -17,7 +17,7 @@ export class ApplicationDialogComponent {
   columns = applicationManagerColumns;
   displayedColumns = displayedApplicationManagerColumns;
   restartedApplications: string[] = [];
-  disableRestart = false;
+  disableAllRestart = false;
   
   constructor(
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
@@ -59,7 +59,7 @@ export class ApplicationDialogComponent {
     this.service.restartAllApplications().subscribe((apps: Application[]) => {
       this.createTable(apps);
       this.onClickCloseInfo();
-      this.disableRestart = true;
+      this.disableAllRestart = true;
       this.cd.markForCheck();
       this.openInfoDialog("all applications", templateRef);
     })

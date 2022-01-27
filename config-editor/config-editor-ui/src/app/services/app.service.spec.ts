@@ -23,18 +23,18 @@ const mockTopology2 =
 { 
   image: "test-image-parsers",
   attributes: ["test"],
-  topology_name: "myparserconfig1",
+  topology_name: "myparsingapp1",
   topology_id: "456",
-  service_name: "myparserconfig",
+  service_name: "myparsingapp",
 }
 
 const mockTopology3 =
 { 
   image: "test-image-parsers",
   attributes: ["test"],
-  topology_name: "myparserconfig2",
+  topology_name: "myparsingapp2",
   topology_id: "789",
-  service_name: "myparserconfig",
+  service_name: "myparsingapp",
 }
 
 const mockTopologies1 = {
@@ -134,8 +134,29 @@ describe('AppService', () => {
     req2.flush(mockRepositories2);
   });
 
-  it('should get all applications', done => {
+  it('should get all applications: admin of one', done => {
     service.setAppContext(mockAppContext);
+    service.getAllApplications().subscribe(apps => {
+      expect(apps).toEqual([mockTopology1]);
+      done()
+    })
+
+    const req1 = httpTestingController.expectOne('/api/v1/myalert/topologies');
+    expect(req1.request.method).toEqual('GET');
+    req1.flush(mockTopologies1);
+  })
+
+  it('should get all applications: admin of both', done => {
+    const mockAppContext2 = cloneDeep(mockAppContext);
+    mockAppContext2.userServices.push({
+      name: 'myparsingapp',
+      type: 'parsingapp',
+      user_roles: [
+          UserRole.SERVICE_USER,
+          UserRole.SERVICE_ADMIN,
+      ],
+    })
+    service.setAppContext(mockAppContext2);
     service.getAllApplications().subscribe(apps => {
       expect(apps).toEqual([mockTopology1, mockTopology2, mockTopology3]);
       done()
@@ -145,7 +166,7 @@ describe('AppService', () => {
     expect(req1.request.method).toEqual('GET');
     req1.flush(mockTopologies1);
 
-    const req2 = httpTestingController.expectOne('/api/v1/myparserconfig/topologies');
+    const req2 = httpTestingController.expectOne('/api/v1/myparsingapp/topologies');
     expect(req2.request.method).toEqual('GET');
     req2.flush(mockTopologies2);
   })

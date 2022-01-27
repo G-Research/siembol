@@ -118,11 +118,10 @@ export class AppService {
 
   getAllApplications(): Observable<Application[]> {
     return forkJoin(
-      this.userServices.map(
-        userService => 
-          this.getServiceApplications(userService.name)
-        )
-      ).pipe(map(topologies => topologies.flat()));
+      this.userServices
+      .filter(userService => userService.user_roles.includes(UserRole.SERVICE_ADMIN))
+      .map(userService => this.getServiceApplications(userService.name))
+    ).pipe(map(topologies => topologies.flat()));
   }
 
   getServiceRepositoryLink(serviceName: string): RepositoryLinks {

@@ -23,7 +23,7 @@
     <ng-container matColumnDef="restart">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" [disabled]="restartedApplications.includes(row.topology_name) || disableRestart === true" (click)="onRestartApplication(row.service_name, row.topology_name, restartedApplication)">Restart</button>
+        <button mat-raised-button color="primary" [disabled]="restartedApplications.includes(row.topology_name) || disableAllRestart === true" (click)="onRestartApplication(row.service_name, row.topology_name, restartedApplication)">Restart</button>
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -31,7 +31,7 @@
   </table>
 </div>
 <div mat-dialog-actions>
-  <button mat-raised-button class="button-layout" color="accent" [disabled]="disableRestart" (click)="openInfoDialog('', confirmRestartAll)">RESTART ALL</button>
+  <button mat-raised-button class="button-layout" color="accent" [disabled]="disableAllRestart" (click)="openInfoDialog('', confirmRestartAll)">RESTART ALL</button>
   <button mat-raised-button class="button-layout" color="accent" (click)="onClickClose()">CLOSE</button>
 </div>
 
