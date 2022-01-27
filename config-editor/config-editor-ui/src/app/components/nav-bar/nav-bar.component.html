@@ -71,6 +71,7 @@
         </a>
       </mat-menu>
       <button 
+        *ngIf="isAdminOfAnyService" 
         mat-icon-button
         class="right-element"
         [routerLink]="['/home/management']"

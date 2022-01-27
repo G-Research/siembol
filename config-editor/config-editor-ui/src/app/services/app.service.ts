@@ -14,6 +14,7 @@ export class AppContext {
   userServicesMap: Map<string, ServiceInfo>;
   testCaseSchema: JSONSchema7;
   repositoryLinks: { [name: string]: RepositoryLinks };
+  isAdminOfAnyService: boolean;
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -51,6 +52,10 @@ export class AppService {
     return this.appContext.repositoryLinks;
   }
 
+  get isAdminOfAnyService() {
+    return this.appContext.isAdminOfAnyService;
+  }
+
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
   setAppContext(appContext: AppContext): boolean {
@@ -72,6 +77,7 @@ export class AppService {
         if (appContext && testCaseSchema && repositoryLinks) {
           appContext.testCaseSchema = testCaseSchema;
           appContext.repositoryLinks = repositoryLinks;
+          appContext.isAdminOfAnyService = this.isUserAdminOfAnyService(appContext.userServices);
           return appContext;
         }
         throwError('Can not load application context');
@@ -94,15 +100,6 @@ export class AppService {
 
   getUserServiceRoles(serviceName: string): UserRole[] {
     return this.appContext.userServicesMap.get(serviceName).user_roles;
-  }
-
-  isUserAnAdmin(): boolean {
-    for (const userService of this.appContext.userServicesMap.values()) {
-      if (userService.user_roles.includes(UserRole.SERVICE_ADMIN)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   restartApplication(serviceName: string, application: string): Observable<Application[]> {
@@ -130,6 +127,15 @@ export class AppService {
 
   getServiceRepositoryLink(serviceName: string): RepositoryLinks {
     return this.appContext.repositoryLinks[serviceName];
+  }
+
+  private isUserAdminOfAnyService(userServices: ServiceInfo[]): boolean {
+    for (const userService of userServices) {
+      if (userService.user_roles.includes(UserRole.SERVICE_ADMIN)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private getServiceApplications(serviceName: string): Observable<Application[]> {

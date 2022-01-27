@@ -56,18 +56,18 @@ export class AppInitComponent implements OnInit, OnDestroy {
             redirectTo: 'home',
         },
         {
-            path: 'home',
-            component: LandingPageComponent,
-            children: [
-                { path: '', component: HomeViewComponent },
-                { path: 'management', component: ManagementViewComponent },
-            ],
-        },
-        {
             component: TestCaseHelpComponent,
             path: 'help/testcase',
-        }
+        },
     ];
+
+    private homeRoute: Route = {
+        path: 'home',
+        component: LandingPageComponent,
+        children: [
+            { path: '', component: HomeViewComponent },
+        ],
+    }
 
     constructor(private router: Router,
         private appService: AppService,
@@ -104,6 +104,10 @@ export class AppInitComponent implements OnInit, OnDestroy {
             })
             
         });
+        if (this.appService.isAdminOfAnyService) {
+            this.homeRoute.children.push({ path: 'management', component: ManagementViewComponent })
+        }
+        routes.push(this.homeRoute);
         routes.push({
             component: PageNotFoundComponent,
             path: '**'

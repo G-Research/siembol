@@ -121,6 +121,7 @@ describe('AppService', () => {
     spyOn<any>(service, 'loadTestCaseSchema').and.returnValue(of(mockTestCasesSchema));
     service.createAppContext().subscribe(context => {
       expect(context.repositoryLinks).toEqual(expectedAllRepositoriesLinks);
+      expect(context.isAdminOfAnyService).toEqual(true);
       done();
     });
 
@@ -149,13 +150,8 @@ describe('AppService', () => {
     req2.flush(mockTopologies2);
   })
 
-  it('should be admin user', () => {
-    service.setAppContext(mockAppContext);
-    expect(service.isUserAnAdmin()).toBeTrue();
-  })
-
   it('should not be admin user', () => {
     service.setAppContext(mockAppContextNoAdmin);
-    expect(service.isUserAnAdmin()).toBeFalse();
+    expect((service as any).isUserAdminOfAnyService(mockAppContextNoAdmin.userServices)).toBeFalse();
   })
 });

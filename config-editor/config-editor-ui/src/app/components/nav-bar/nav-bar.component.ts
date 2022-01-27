@@ -27,6 +27,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
     isHome: boolean;
     isManagement: boolean;
     repositoryLinks: RepositoryLinks;
+    isAdminOfAnyService: boolean;
     readonly repoNames = repoNames;
 
     constructor(private config: AppConfigService, 
@@ -42,6 +43,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.isAdminOfAnyService = this.appService.isAdminOfAnyService;
         this.serviceName$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(service => {
             if (service) {
                 this.userRoles = this.appService.getUserServiceRoles(service);
