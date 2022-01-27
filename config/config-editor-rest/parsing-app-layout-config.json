@@ -43,7 +43,7 @@
       "widget": {
         "formlyConfig": {
           "wrappers": [
-            "panel"
+            "expansion-panel"
           ]
         }
       }
@@ -104,7 +104,7 @@
       "widget": {
         "formlyConfig": {
           "wrappers": [
-            "panel"
+            "expansion-panel"
           ]
         }
       }
@@ -138,7 +138,7 @@
       "widget": {
         "formlyConfig": {
           "wrappers": [
-            "panel"
+            "expansion-panel"
           ]
         }
       }
