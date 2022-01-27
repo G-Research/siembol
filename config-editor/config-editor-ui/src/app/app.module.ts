@@ -17,6 +17,7 @@ import {
   LandingPageComponent,
   ImporterDialogComponent,
   ApplicationDialogComponent,
+  CloneDialogComponent,
   SearchComponent,
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
@@ -111,6 +112,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     SubmitDialogComponent,
     ImporterDialogComponent,
     ApplicationDialogComponent,
+    CloneDialogComponent,
     LandingPageComponent,
     SearchComponent,
     ConfigTileComponent,

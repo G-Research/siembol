@@ -362,7 +362,7 @@ export class ConfigStoreService {
     return true;
   }
 
-  setEditedClonedConfigByName(configName: string) {
+  setEditedClonedConfigByName(configName: string, new_name = configName + '_clone') {
     this.clearConfigHistory();
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
@@ -371,17 +371,53 @@ export class ConfigStoreService {
     const cloned = {
       author: this.user,
       configData: Object.assign({}, cloneDeep(configToClone.configData), {
-        [this.metaDataMap.name]: `${configToClone.name}_clone`,
+        [this.metaDataMap.name]: new_name,
         [this.metaDataMap.version]: 0,
       }),
       description: `cloned from ${configToClone.name}`,
       isNew: true,
-      name: `${configToClone.name}_clone`,
+      name: new_name,
       savedInBackend: false,
       testCases: [],
       version: 0,
     };
     this.updateEditedConfigAndTestCase(cloned, null);
+  }
+
+  setClonedConfigByName(configName: string, new_name: string, withTests: bool) {
+    this.clearConfigHistory();
+    const configToClone = this.getConfigByName(configName);
+    if (configToClone === undefined) {
+      throw Error('no config with such name');
+    }
+    const cloned = {
+      author: this.user,
+      configData: Object.assign({}, cloneDeep(configToClone.configData), {
+        [this.metaDataMap.name]: new_name,
+        [this.metaDataMap.version]: 0,
+      }),
+      description: `cloned from ${configToClone.name}`,
+      isNew: true,
+      name: new_name,
+      savedInBackend: false,
+      testCases: [],
+      version: 0,
+    };
+    this.updateEditedConfigAndTestCase(cloned, null);
+  }
+
+  cloneWithTestCases(configName:string, newName: string) {
+    const currentState = this.store.getValue();
+    const testCaseMap = currentState.testCaseMap;
+    this.setEditedClonedConfigByName(configName, newName);
+    // issue: new config set as edited 
+    this.submitEditedConfig();
+    testCaseMap[configName]
+      .forEach((testCaseWrapper: TestCaseWrapper) => {
+        this.testStoreService.setEditedClonedTestCaseByName(testCaseWrapper.testCase.test_case_name);
+    });
+    // this.get
+    // this.testStoreService
   }
 
   setEditedConfigNew() {

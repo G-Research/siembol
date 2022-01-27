@@ -17,6 +17,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
 import { Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
+import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -165,9 +166,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClone(id: number) {
-    this.router.navigate([this.editorService.serviceName, 'edit'], {
-      queryParams: { newConfig: true, cloneConfig: this.filteredConfigs[id].name },
-    });
+    this.dialog.open(CloneDialogComponent, { data: this.filteredConfigs[id].name });
   }
 
   onRemove(id: number) {

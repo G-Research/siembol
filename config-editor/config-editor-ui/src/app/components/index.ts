@@ -9,3 +9,4 @@ export { LandingPageComponent } from './landing-page/landing-page.component';
 export { SearchComponent } from './search/search.component';
 export { ImporterDialogComponent } from './importer-dialog/importer-dialog.component';
 export { ApplicationDialogComponent } from './application-dialog/application-dialog.component';
+export { CloneDialogComponent } from './clone-dialog/clone-dialog.component';
