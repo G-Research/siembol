@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ApplicationDialogComponent } from '..';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -107,10 +106,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.markHistoryChange = true;
     this.form.updateValueAndValidity();
   }
-
-  openApplicationDialog() {
-    this.dialog.open(ApplicationDialogComponent);
-}
 
   private updateAndWrapConfig(config: AdminConfig) {
     //NOTE: in the form we are using wrapping config to handle optionals, unions

@@ -2,13 +2,53 @@ import { TestBed } from '@angular/core/testing';
 import { AppConfigService } from '@app/services/app-config.service';
 import { AppService } from './app.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { mockAppContext, mockUserServicesMap, mockAppContextWithTestSchema } from 'testing/appContext';
+import { mockAppContext, mockAppContextNoAdmin, mockUserServicesMap } from 'testing/appContext';
 import { mockUserInfo } from 'testing/user';
 import { mockUiMetadataMap } from 'testing/uiMetadataMap';
 import { RepositoryLinks, UserRole } from '@app/model/config-model';
 import { mockTestCasesSchema } from 'testing/testCasesSchema';
 import { of } from 'rxjs';
 import { cloneDeep } from 'lodash';
+
+const mockTopology1 = 
+{ 
+  image: "test-image-alert",
+  attributes: ["test"],
+  topology_name: "myalert1",
+  topology_id: "123",
+  service_name: "myalert",
+}
+
+const mockTopology2 =
+{ 
+  image: "test-image-parsers",
+  attributes: ["test"],
+  topology_name: "myparsingapp1",
+  topology_id: "456",
+  service_name: "myparsingapp",
+}
+
+const mockTopology3 =
+{ 
+  image: "test-image-parsers",
+  attributes: ["test"],
+  topology_name: "myparsingapp2",
+  topology_id: "789",
+  service_name: "myparsingapp",
+}
+
+const mockTopologies1 = {
+  topologies: [
+    mockTopology1,
+  ],
+}
+
+const mockTopologies2 = {
+  topologies: [
+    mockTopology2,
+    mockTopology3,
+  ],
+}
 
 const mockRepositories1 = {
   "rules_repositories": {
@@ -79,9 +119,9 @@ describe('AppService', () => {
   it('should create app context', done => {
     spyOn<any>(service, 'loadUserInfo').and.returnValue(of(cloneDeep(mockAppContext)));
     spyOn<any>(service, 'loadTestCaseSchema').and.returnValue(of(mockTestCasesSchema));
-
     service.createAppContext().subscribe(context => {
       expect(context.repositoryLinks).toEqual(expectedAllRepositoriesLinks);
+      expect(context.isAdminOfAnyService).toEqual(true);
       done();
     });
 
@@ -92,5 +132,47 @@ describe('AppService', () => {
     const req2 = httpTestingController.expectOne('/api/v1/myparserconfig/configstore/repositories');
     expect(req2.request.method).toEqual('GET');
     req2.flush(mockRepositories2);
+  });
+
+  it('should get all applications: admin of one', done => {
+    service.setAppContext(mockAppContext);
+    service.getAllApplications().subscribe(apps => {
+      expect(apps).toEqual([mockTopology1]);
+      done()
+    })
+
+    const req1 = httpTestingController.expectOne('/api/v1/myalert/topologies');
+    expect(req1.request.method).toEqual('GET');
+    req1.flush(mockTopologies1);
+  })
+
+  it('should get all applications: admin of both', done => {
+    const mockAppContext2 = cloneDeep(mockAppContext);
+    mockAppContext2.userServices.push({
+      name: 'myparsingapp',
+      type: 'parsingapp',
+      user_roles: [
+          UserRole.SERVICE_USER,
+          UserRole.SERVICE_ADMIN,
+      ],
+    })
+    service.setAppContext(mockAppContext2);
+    service.getAllApplications().subscribe(apps => {
+      expect(apps).toEqual([mockTopology1, mockTopology2, mockTopology3]);
+      done()
+    })
+
+    const req1 = httpTestingController.expectOne('/api/v1/myalert/topologies');
+    expect(req1.request.method).toEqual('GET');
+    req1.flush(mockTopologies1);
+
+    const req2 = httpTestingController.expectOne('/api/v1/myparsingapp/topologies');
+    expect(req2.request.method).toEqual('GET');
+    req2.flush(mockTopologies2);
+  })
+
+  it('should not be admin user', () => {
+    service.setAppContext(mockAppContextNoAdmin);
+    expect((service as any).isUserAdminOfAnyService(mockAppContextNoAdmin.userServices)).toBeFalse();
   })
 });

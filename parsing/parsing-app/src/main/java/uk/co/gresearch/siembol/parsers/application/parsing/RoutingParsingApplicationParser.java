@@ -33,7 +33,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(String metadata, byte[] message) {
+    protected List<ParserResult> parseInternally(String source, String metadata, byte[] message) {
         List<ParserResult> ret = new ArrayList<>();
         ParserResult routerResult = routerParser.parseToResult(metadata, message);
         if (routerResult.getException() != null) {
@@ -46,7 +46,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
             if (!parsedMsg.containsKey(routingConditionField)
                     || !parsedMsg.containsKey(routingMessageField)) {
                 String errorMsg = String.format(MISSING_ROUTER_FIELDS,
-                        routingConditionField, routingMessageField, parsedMsg.toString());
+                        routingConditionField, routingMessageField, parsedMsg);
                 LOG.debug(errorMsg);
                 routerResult.setException(new IllegalStateException(errorMsg));
                 ret.add(routerResult);
@@ -77,8 +77,9 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
     }
 
     public static Builder<RoutingParsingApplicationParser> builder() {
-        return new Builder<RoutingParsingApplicationParser>() {
+        return new Builder<>() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public RoutingParsingApplicationParser build() {
                 if (routerParser == null
@@ -123,19 +124,18 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
             return this;
         }
 
-        public Builder<T> routerParser(SerializableSiembolParser siembolParser) throws Exception {
+        public Builder<T> routerParser(SerializableSiembolParser siembolParser) {
             final RouterCondition alwaysMatch = x -> true;
             this.routerParser = new SiembolParserWrapper(alwaysMatch, siembolParser, null);
             return this;
         }
 
-        public Builder<T> defaultParser(String topic, SerializableSiembolParser siembolParser) throws Exception {
-            final RouterCondition alwaysMatch = x -> true;
-            defaultParser = new SiembolParserWrapper(alwaysMatch, siembolParser, topic);
+        public Builder<T> defaultParser(String topic, SerializableSiembolParser siembolParser) {
+            defaultParser = new SiembolParserWrapper(siembolParser, topic);
             return this;
         }
 
-        public Builder<T> addParser(String topic, SerializableSiembolParser siembolParser, String pattern) throws Exception {
+        public Builder<T> addParser(String topic, SerializableSiembolParser siembolParser, String pattern) {
             final Pattern conditionPattern = Pattern.compile(pattern, Pattern.DOTALL);
             final RouterCondition condition = x -> conditionPattern.matcher(x).matches();
             parsers.add(new SiembolParserWrapper(condition, siembolParser, topic));

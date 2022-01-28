@@ -13,6 +13,15 @@ public class ParsingSettingsDto {
     @Attributes(title = "single parser", description = "The settings of the single parser parsing", minItems = 1)
     private ParserPropertiesDto singleParser;
 
+    @JsonProperty("topic_routing_parser")
+    @Attributes(description = "The settings of the topic name routing parsing")
+    private TopicRoutingParserDto topicRoutingParserDto;
+
+
+    @JsonProperty("header_routing_parser")
+    @Attributes(description = "The settings of the header routing parsing")
+    private HeaderRoutingParserDto headerRoutingParserDto;
+
     public RoutingParserDto getRoutingParser() {
         return routingParser;
     }
@@ -27,5 +36,21 @@ public class ParsingSettingsDto {
 
     public void setSingleParser(ParserPropertiesDto singleParser) {
         this.singleParser = singleParser;
+    }
+
+    public TopicRoutingParserDto getTopicRoutingParserDto() {
+        return topicRoutingParserDto;
+    }
+
+    public void setTopicRoutingParserDto(TopicRoutingParserDto topicRoutingParserDto) {
+        this.topicRoutingParserDto = topicRoutingParserDto;
+    }
+
+    public HeaderRoutingParserDto getHeaderRoutingParserDto() {
+        return headerRoutingParserDto;
+    }
+
+    public void setHeaderRoutingParserDto(HeaderRoutingParserDto headerRoutingParserDto) {
+        this.headerRoutingParserDto = headerRoutingParserDto;
     }
 }

@@ -126,7 +126,7 @@ public class RoutingParsingApplicationParserTest {
         when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
         when(defaultParser.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routerParser, times(1)).parseToResult(metadata, input);
         verify(defaultParser, times(1)).parseToResult(metadata, "dummy".getBytes());
@@ -158,7 +158,7 @@ public class RoutingParsingApplicationParserTest {
         when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
 
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routerParser, times(1)).parseToResult(metadata, input);
 
@@ -182,7 +182,7 @@ public class RoutingParsingApplicationParserTest {
         when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
         when(defaultParser.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routerParser, times(1)).parseToResult(metadata, input);
         verify(defaultParser, times(1)).parseToResult(metadata, "dummy".getBytes());
@@ -215,7 +215,7 @@ public class RoutingParsingApplicationParserTest {
         routerParserResult.setException(new IllegalStateException("test_exception"));
         when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routerParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -242,7 +242,7 @@ public class RoutingParsingApplicationParserTest {
         routerParserResult.getParsedMessages().get(1).remove(routingMessageField);
         when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(routerParser, times(1)).parseToResult(metadata, input);
 
         Assert.assertEquals(errorTopic, result.get(0).getTopic());
@@ -273,7 +273,7 @@ public class RoutingParsingApplicationParserTest {
         when(routerParser.parseToResult(metadata, input)).thenReturn(routerParserResult);
         when(defaultParser.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routerParser, times(1)).parseToResult(metadata, input);
         verify(defaultParser, times(1)).parseToResult(metadata, "dummy".getBytes());
@@ -307,7 +307,7 @@ public class RoutingParsingApplicationParserTest {
         when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
         when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
         verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
@@ -340,7 +340,7 @@ public class RoutingParsingApplicationParserTest {
         when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
         when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
         verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
@@ -376,7 +376,7 @@ public class RoutingParsingApplicationParserTest {
         when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
         when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
         verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());
@@ -414,7 +414,7 @@ public class RoutingParsingApplicationParserTest {
         when(routedParser1.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult1);
         when(routedParser2.parseToResult(metadata, "dummy".getBytes())).thenReturn(routedParserResult2);
 
-        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routedParser1, times(1)).parseToResult(metadata, "dummy".getBytes());
         verify(routedParser2, times(1)).parseToResult(metadata, "dummy".getBytes());

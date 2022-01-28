@@ -21,7 +21,7 @@
         }
       }
     },
-    "$..parsers": {
+    "$..routing_parser..parsers": {
       "widget": {
         "formlyConfig": {
           "wrappers": [
@@ -30,7 +30,7 @@
         }
       }
     },
-    "$..parsers.items": {
+    "$..routing_parser..parsers.items": {
       "widget": {
         "formlyConfig": {
           "wrappers": [
@@ -39,10 +39,14 @@
         }
       }
     },
-    "$..default_parser": {
-      "wrappers": [
-        "panel"
-      ]
+    "$..routing_parser..default_parser": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
+      }
     },
     "$..single_parser": {
       "widget": {
@@ -68,6 +72,74 @@
           "templateOptions": {
             "link": "https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html"
           }
+        }
+      }
+    },
+    "$..topic_routing_parser": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "field.parent.parent.model.parsing_app_settings.parsing_app_type !== 'topic_routing_parsing'"
+        }
+      }
+    },
+    "$..topic_routing_parser..parsers": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
+      }
+    },
+    "$..topic_routing_parser..parsers.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
+    },
+    "$..topic_routing_parser..default_parser": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
+      }
+    },
+    "$..header_routing_parser": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "field.parent.parent.model.parsing_app_settings.parsing_app_type !== 'header_routing_parsing'"
+        }
+      }
+    },
+    "$..header_routing_parser..parsers": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
+        }
+      }
+    },
+    "$..header_routing_parser..parsers.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
+    },
+    "$..header_routing_parser..default_parser": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "expansion-panel"
+          ]
         }
       }
     }

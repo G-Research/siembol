@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, SchemaInfo, UserRole } from '@app/model/config-model';
+import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, UserRole, SchemaInfo, Application, applications } from '@app/model/config-model';
 import { Observable, throwError, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
 import { UiMetadata } from '@app/model/ui-metadata-map';
 import 'rxjs/add/observable/forkJoin';
-import { mergeMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 
 export class AppContext {
   user: string;
@@ -14,6 +14,7 @@ export class AppContext {
   userServicesMap: Map<string, ServiceInfo>;
   testCaseSchema: JSONSchema7;
   repositoryLinks: { [name: string]: RepositoryLinks };
+  isAdminOfAnyService: boolean;
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -51,6 +52,10 @@ export class AppService {
     return this.appContext.repositoryLinks;
   }
 
+  get isAdminOfAnyService() {
+    return this.appContext.isAdminOfAnyService;
+  }
+
   constructor(private config: AppConfigService, private http: HttpClient) {}
 
   setAppContext(appContext: AppContext): boolean {
@@ -72,6 +77,7 @@ export class AppService {
         if (appContext && testCaseSchema && repositoryLinks) {
           appContext.testCaseSchema = testCaseSchema;
           appContext.repositoryLinks = repositoryLinks;
+          appContext.isAdminOfAnyService = this.isUserAdminOfAnyService(appContext.userServices);
           return appContext;
         }
         throwError('Can not load application context');
@@ -96,10 +102,47 @@ export class AppService {
     return this.appContext.userServicesMap.get(serviceName).user_roles;
   }
 
+  restartApplication(serviceName: string, application: string): Observable<Application[]> {
+    return this.http.post<applications>(
+      `${this.config.serviceRoot}api/v1/${serviceName}/topologies/${application}/restart`,
+      null
+    ).pipe(map(result => result.topologies));
+  }
+
+  restartAllApplications(): Observable<Application[]> {
+    return this.http.post<applications>(
+      `${this.config.serviceRoot}api/v1/topologies/restart`,
+      null
+    ).pipe(map(result => result.topologies));
+  }
+
+  getAllApplications(): Observable<Application[]> {
+    return forkJoin(
+      this.userServices
+      .filter(userService => userService.user_roles.includes(UserRole.SERVICE_ADMIN))
+      .map(userService => this.getServiceApplications(userService.name))
+    ).pipe(map(topologies => topologies.flat()));
+  }
+
   getServiceRepositoryLink(serviceName: string): RepositoryLinks {
     return this.appContext.repositoryLinks[serviceName];
   }
 
+  private isUserAdminOfAnyService(userServices: ServiceInfo[]): boolean {
+    for (const userService of userServices) {
+      if (userService.user_roles.includes(UserRole.SERVICE_ADMIN)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private getServiceApplications(serviceName: string): Observable<Application[]> {
+    return this.http.get<applications>(
+      `${this.config.serviceRoot}api/v1/${serviceName}/topologies`
+    ).pipe(map(result => result.topologies));
+  }
+  
   private getAllRepositoryLinks(userServices: ServiceInfo[]): Observable<{ [name: string]: RepositoryLinks }> {
     return forkJoin(userServices.map(x => this.getRepositoryLinks(x.name)))
             .map((links: RepositoryLinks[]) => {

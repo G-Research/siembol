@@ -1,0 +1,13 @@
+.mat-expansion-panel {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  max-width: 70vw;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+::ng-deep .with-icon .mat-button-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}

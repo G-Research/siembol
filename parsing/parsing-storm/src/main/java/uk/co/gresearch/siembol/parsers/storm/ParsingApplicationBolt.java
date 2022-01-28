@@ -89,7 +89,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
     private void updateParsers() {
         try {
-            ParsingApplicationFactory factory =  new ParsingApplicationFactoryImpl();
+            ParsingApplicationFactory factory = new ParsingApplicationFactoryImpl();
 
             LOG.info(PARSERS_UPDATE_START);
             String parserConfigs = zooKeeperConnector.getData();
@@ -117,6 +117,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         ParsingApplicationParser currentParser = parsingApplicationParser.get();
 
+        String source = tuple.getStringByField(ParsingApplicationTuples.SOURCE.toString());
         String metadata = tuple.getStringByField(ParsingApplicationTuples.METADATA.toString());
         Object logObj = tuple.getValueByField(ParsingApplicationTuples.LOG.toString());
         if (!(logObj instanceof byte[])) {
@@ -124,7 +125,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         }
 
         byte[] log = (byte[])logObj;
-        ArrayList<ParsingApplicationResult> results = currentParser.parse(metadata, log);
+        ArrayList<ParsingApplicationResult> results = currentParser.parse(source, metadata, log);
         if (!results.isEmpty()) {
             KafkaBatchWriterMessages kafkaBatchWriterMessages = new KafkaBatchWriterMessages();
             results.forEach(x -> x.getMessages().forEach(y ->

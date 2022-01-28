@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.parsers.application.factory;
 
+import uk.co.gresearch.siembol.parsers.application.model.ParsingApplicationTypeDto;
 import uk.co.gresearch.siembol.parsers.application.parsing.ParsingApplicationParser;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public class ParsingApplicationFactoryAttributes {
     private List<String> inputTopics;
     private ParsingApplicationParser applicationParser;
     private String message;
+    private String sourceHeaderName;
+    private ParsingApplicationTypeDto applicationType;
 
     public String getJsonSchema() {
         return jsonSchema;
@@ -85,5 +88,21 @@ public class ParsingApplicationFactoryAttributes {
 
     public void setApplicationParserSpecification(String applicationParserSpecification) {
         this.applicationParserSpecification = applicationParserSpecification;
+    }
+
+    public String getSourceHeaderName() {
+        return sourceHeaderName;
+    }
+
+    public void setSourceHeaderName(String sourceHeaderName) {
+        this.sourceHeaderName = sourceHeaderName;
+    }
+
+    public ParsingApplicationTypeDto getApplicationType() {
+        return applicationType;
+    }
+
+    public void setApplicationType(ParsingApplicationTypeDto applicationType) {
+        this.applicationType = applicationType;
     }
 }

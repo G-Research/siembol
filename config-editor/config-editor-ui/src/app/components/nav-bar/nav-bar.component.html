@@ -17,6 +17,9 @@
           </button>
         </mat-menu>
       </div>
+      <div *ngIf="isManagement">
+        <h1>Management</h1>
+      </div>
     </div>
     <div>
       <div *ngIf="!isHome">
@@ -67,6 +70,15 @@
           {{repoNames.admin_config_store_directory_name}}
         </a>
       </mat-menu>
+      <button 
+        *ngIf="isAdminOfAnyService" 
+        mat-icon-button
+        class="right-element"
+        [routerLink]="['/home/management']"
+        [matTooltip]="'Management'"
+      >
+        <mat-icon>settings_application</mat-icon>
+      </button>
       <button 
         mat-icon-button
         class="right-element"
