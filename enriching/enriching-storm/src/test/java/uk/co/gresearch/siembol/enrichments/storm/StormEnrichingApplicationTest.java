@@ -52,7 +52,6 @@ public class StormEnrichingApplicationTest {
                 "zk.max.retries": 10
               },
               "kafka.batch.writer.attributes": {
-                "batch.size": 1,
                 "producer.properties": {
                   "client.id": "writer",
                   "compression.type": "snappy",

@@ -84,7 +84,6 @@ public class StormParsingApplicationTest {
           "zk.max.retries": 10
         },
         "kafka.batch.writer.attributes": {
-          "batch.size": 1,
           "producer.properties": {
             "security.protocol": "PLAINTEXT"
           }

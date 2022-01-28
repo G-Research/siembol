@@ -58,7 +58,6 @@ public class GetParsingAppStormTopologyActionTest {
                  {
                    "application.name": "secret",
                    "kafka.batch.writer.attributes": {
-                     "batch.size": 1,
                      "producer.properties": {
                        "bootstrap.servers": "dummy",
                        "security.protocol": "SASL_PLAINTEXT"
@@ -92,7 +91,6 @@ public class GetParsingAppStormTopologyActionTest {
                  "zk.max.retries": 3
                },
                "kafka.batch.writer.attributes": {
-                 "batch.size": 50,
                  "producer.properties": {
                    "bootstrap.servers": "global_servers",
                    "security.protocol": "SASL_PLAINTEXT"
@@ -218,11 +216,6 @@ public class GetParsingAppStormTopologyActionTest {
         Assert.assertFalse(adminConfigPublicStr.contains("overridden.applications"));
         Assert.assertFalse(adminConfigPublicStr.contains("config_version"));
 
-        Assert.assertEquals(1, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-        Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-        Assert.assertEquals(1, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-        Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-
         Assert.assertEquals(2,
                 adminConfigSecret.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));
         Assert.assertEquals(1,
@@ -267,11 +260,6 @@ public class GetParsingAppStormTopologyActionTest {
         Assert.assertFalse(adminConfigSecretStr.contains("config_version"));
         Assert.assertFalse(adminConfigPublicStr.contains("overridden.applications"));
         Assert.assertFalse(adminConfigPublicStr.contains("config_version"));
-
-        Assert.assertEquals(50, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-        Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-        Assert.assertEquals(50, adminConfigSecret.getKafkaBatchWriterAttributes().getBatchSize().intValue());
-        Assert.assertEquals(50, adminConfigPublic.getKafkaBatchWriterAttributes().getBatchSize().intValue());
 
         Assert.assertEquals(1,
                 adminConfigSecret.getStormAttributes().getStormConfig().getRawMap().get("num.workers"));

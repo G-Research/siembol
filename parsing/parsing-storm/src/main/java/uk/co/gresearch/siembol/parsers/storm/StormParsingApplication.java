@@ -16,7 +16,7 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -103,7 +103,7 @@ public class StormParsingApplication {
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(KAFKA_WRITER,
-                new KafkaBatchWriterBolt(stormAppAttributes.getKafkaBatchWriterAttributes(),
+                new KafkaWriterBolt(stormAppAttributes.getKafkaBatchWriterAttributes(),
                         ParsingApplicationTuples.PARSING_MESSAGES.toString()),
                 parsingAttributes.getOutputParallelism())
                 .localOrShuffleGrouping(parsingAttributes.getName());

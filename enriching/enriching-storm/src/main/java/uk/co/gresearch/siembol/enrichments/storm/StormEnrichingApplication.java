@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterBolt;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -79,7 +79,7 @@ public class StormEnrichingApplication {
                 .localOrShuffleGrouping(MEMORY_ENRICHING_BOLT_NAME);
 
         builder.setBolt(KAFKA_WRITER_BOLT_NAME,
-                new KafkaBatchWriterBolt(attributes.getKafkaBatchWriterAttributes(),
+                new KafkaWriterBolt(attributes.getKafkaBatchWriterAttributes(),
                         EnrichmentTuples.KAFKA_MESSAGES.toString()),
                 attributes.getKafkaWriterBoltNumExecutors())
                 .localOrShuffleGrouping(MERGING_BOLT_NAME);
