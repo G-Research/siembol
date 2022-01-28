@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef } from "@angular/core";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, TemplateRef } from "@angular/core";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Application, applicationManagerColumns, displayedApplicationManagerColumns } from "@app/model/config-model";
 import { AppService } from "@app/services/app.service";
@@ -23,11 +23,10 @@ export class ApplicationDialogComponent {
     private dialogref: MatDialogRef<ApplicationDialogComponent>,
     private service: AppService,
     private dialog: MatDialog,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    @Inject(MAT_DIALOG_DATA) public data: Application[]
   ) {
-    this.service.getAllApplications().subscribe(a => {
-      this.createTable(a);
-    })
+      this.createTable(data);
   }
 
   onClickClose() {
