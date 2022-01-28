@@ -11,7 +11,7 @@ import {
 } from './authentication.service';
 import { Oauth2AuthenticationService } from '@app/services/oauth2-authentication.service';
 import { AppConfig, AuthenticationType, BuildInfo } from '../model';
-import { HomeHelpLink } from '@app/model/app-config';
+import { HelpLink, HOME_REGEX } from '@app/model/app-config';
 
 @Injectable({
   providedIn: 'root',
@@ -44,7 +44,14 @@ export class AppConfigService {
   }
 
   isHomePath(path: string): boolean {
-    if (path === '/home' || path === '/') {
+    if (HOME_REGEX.test(path)) {
+      return true;
+    }
+    return false;
+  }
+
+  isManagementPath(path: string): boolean {
+    if (path === '/home/management') {
       return true;
     }
     return false;
@@ -90,8 +97,12 @@ export class AppConfigService {
     return this._authenticationService;
   }
 
-  get homeHelpLinks(): HomeHelpLink[] {
+  get homeHelpLinks(): HelpLink[] {
     return this._config.homeHelpLinks;
+  }
+
+  get managementLinks(): HelpLink[] {
+    return this._config.managementLinks;
   }
 
   get historyMaxSize(): number {

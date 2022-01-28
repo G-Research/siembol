@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UrlHistoryService } from '@app/services/url-history.service';
 import { AppConfigService } from '@app/services/app-config.service';
 import { Router } from '@angular/router';
-import { HomeHelpLink } from '@app/model/app-config';
+import { HelpLink } from '@app/model/app-config';
 import { ServiceInfo } from '@app/model/config-model';
 import { AppService } from '@app/services/app.service';
 import { parseUrl } from '@app/commons/helper-functions'
@@ -16,7 +16,7 @@ import { parseUrl } from '@app/commons/helper-functions'
 export class HomeViewComponent implements OnInit {
     history: string[];
     root: string;
-    homeHelpLinks: HomeHelpLink[];
+    homeHelpLinks: HelpLink[];
     userServices: ServiceInfo[];
     
     constructor(private historyService: UrlHistoryService,

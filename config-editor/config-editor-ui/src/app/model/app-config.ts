@@ -19,13 +19,14 @@ export interface AppConfig {
   aboutApp: BuildInfo;
   authType: AuthenticationType;
   authAttributes: Oauth2Attributes | any;
-  homeHelpLinks?: HomeHelpLink[];
+  homeHelpLinks?: HelpLink[];
+  managementLinks?: HelpLink[];
   historyMaxSize?: number;
   blockingTimeout?: number;
   useImporters?: boolean;
 }
 
-export interface HomeHelpLink {
+export interface HelpLink {
   title: string;
   icon: string;
   link: string;
@@ -36,3 +37,5 @@ export interface Oauth2Attributes {
   expiresIntervalMinimum: number;
   oidcSettings: UserSettings;
 }
+
+export const HOME_REGEX = new RegExp('^\/($|home(\/|$))');

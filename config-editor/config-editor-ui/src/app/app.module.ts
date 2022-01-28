@@ -62,6 +62,7 @@ import { ConfigTestingComponent } from './components/testing/config-testing/conf
 import { RouterModule } from '@angular/router';
 import { EditorViewComponent } from './components/editor-view/editor-view.component';
 import { HomeViewComponent } from './components/home-view/home-view.component';
+import { ManagementViewComponent } from './components/management-view/management-view.component';
 import { AdminViewComponent } from './components/admin-view/admin-view.component';
 import { AppInitGuard, AuthGuard } from './guards';
 import { AppService } from './services/app.service';
@@ -102,6 +103,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ErrorDialogComponent,
     EditorViewComponent,
     HomeViewComponent,
+    ManagementViewComponent,
     AdminViewComponent,
     NavBarComponent,
     SideNavComponent,

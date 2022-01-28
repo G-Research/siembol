@@ -22,5 +22,17 @@
             "title": "Discussions",
             "link": "https://github.com/G-Research/siembol/discussions"
         }
+    ],
+    "managementLinks": [
+        {
+            "title": "Storm UI",
+            "icon": "apps",
+            "link": "storm.siembol.local"
+        },
+        {
+            "title": "Enrichment Tables",
+            "icon": "table_chart",
+            "link": "enrichment.siembol.local"
+        }
     ]
 }
