@@ -35,6 +35,6 @@ To add a new link you need three things:
 
 ## Siembol management page
 
-The siembol management page, which is only accessible by admins of any service, has a 'Management Links' section at the top of the page, similar to the links in the home page. This can be used to add links useful for just admins such as to monitoring dashboards. There are no links in the management page by default.
+The siembol [management page](./how_to_use_the_management_page.md), which is only accessible by admins of any service, has a 'Management Links' section at the top of the page, similar to the links in the home page. This can be used to add links useful for just admins such as to monitoring dashboards. There are no links in the management page by default.
 
 Links are added by the user in the `ui-config.json` file in the same way as for home links, but the key is "managementLinks". 
