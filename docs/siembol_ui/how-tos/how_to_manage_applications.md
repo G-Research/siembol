@@ -1,8 +1,8 @@
 # How to manage applications
 Admin users can manage applications from the actions in the [management page](./how_to_use_the_management_page.md) by clicking on the `Manage Applications` button. 
 
-This opens up a dialog similar to the own in the screenshot below, showing the running applications for all services the user is an admin for with the application name, service name, id, image and attributes. 
-A single application or all applications can be restarted from here.
+This opens up a dialog similar to the own in the screenshot below, showing the running applications for all services the user is an admin for with the service name, application name, id, image and attributes. 
+A single application or all applications can be restarted from here. Please wait a few minutes after restarting applications and check storm UI if the new state has been released
 
 <img src="../screenshots/applications_manager.png" alt="drawing"/>
 
