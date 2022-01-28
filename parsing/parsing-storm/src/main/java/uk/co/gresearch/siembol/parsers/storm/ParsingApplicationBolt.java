@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -127,10 +127,10 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         byte[] log = (byte[])logObj;
         ArrayList<ParsingApplicationResult> results = currentParser.parse(source, metadata, log);
         if (!results.isEmpty()) {
-            KafkaBatchWriterMessages kafkaBatchWriterMessages = new KafkaBatchWriterMessages();
+            KafkaWriterMessages kafkaWriterMessages = new KafkaWriterMessages();
             results.forEach(x -> x.getMessages().forEach(y ->
-                    kafkaBatchWriterMessages.add(new KafkaBatchWriterMessage(x.getTopic(), y))));
-            collector.emit(tuple, new Values(kafkaBatchWriterMessages));
+                    kafkaWriterMessages.add(new KafkaWriterMessage(x.getTopic(), y))));
+            collector.emit(tuple, new Values(kafkaWriterMessages));
         }
 
         collector.ack(tuple);
