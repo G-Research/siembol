@@ -72,13 +72,9 @@ export class CloneDialogComponent {
     }
 
     onClickClone() {
-      this.router.navigate([this.editorService.serviceName, 'edit'], {
-        queryParams: { 
-          cloneConfig: this.data, 
-          withTests: this.model['clone_test_cases'], 
-          newName: this.model['config_name'], 
-          },
-      });
+      const toClone = this.editorService.configStore
+        .getClonedConfigByName(this.data, this.model['config_name'], this.model['clone_test_cases']);
+      this.router.navigate([this.model['service_instance'], 'edit']);
 
       // if with test cases:
       // if new service -> create new serviceContext

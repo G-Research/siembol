@@ -12,6 +12,7 @@ import { AdminConfig, ConfigToImport, Importers, Type } from '@app/model/config-
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
+import { mockTestCaseFileHistory } from 'testing/testcases';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -384,26 +385,33 @@ export class ConfigStoreService {
     this.updateEditedConfigAndTestCase(cloned, null);
   }
 
-  setClonedConfigByName(configName: string, new_name: string, withTests: bool) {
+  getClonedConfigByName(configName: string, new_name: string, withTests: boolean) {
     this.clearConfigHistory();
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
       throw Error('no config with such name');
     }
-    const cloned = {
+    const cloned_config = {
       author: this.user,
       configData: Object.assign({}, cloneDeep(configToClone.configData), {
         [this.metaDataMap.name]: new_name,
         [this.metaDataMap.version]: 0,
       }),
-      description: `cloned from ${configToClone.name}`,
       isNew: true,
       name: new_name,
       savedInBackend: false,
       testCases: [],
       version: 0,
     };
-    this.updateEditedConfigAndTestCase(cloned, null);
+    let cloned_test_cases = {};
+    if (withTests) {
+      const currentState = this.store.getValue();
+      const testCaseMap = currentState.testCaseMap;
+      cloned_test_cases = testCaseMap[configName]
+    }
+    return {cloned_config, cloned_test_cases};
+    // this.updateEditedConfigAndTestCase(cloned, null);
+    // this.submitEditedConfig();
   }
 
   cloneWithTestCases(configName:string, newName: string) {
