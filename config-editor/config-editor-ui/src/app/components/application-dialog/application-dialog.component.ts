@@ -9,6 +9,7 @@ import { AppService } from "@app/services/app.service";
   selector: 're-application-dialog',
   styleUrls: ['application-dialog.component.scss'],
   templateUrl: 'application-dialog.component.html',
+  
 })
 export class ApplicationDialogComponent {
   MAX_DIALOG_WIDTH = '800px';
