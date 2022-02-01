@@ -47,7 +47,7 @@
         <curator_test_version>2.13.0</curator_test_version>
         <storm_version>2.3.0</storm_version>
         <kafka_storm_version>2.8.1</kafka_storm_version>
-        <kafka_version>2.8.1</kafka_version>
+        <kafka_version>3.1.0</kafka_version>
         <kafka_junit_version>4.2.0</kafka_junit_version>
         <spark_version>2.2.0</spark_version>
         <hadoop_version>3.3.1</hadoop_version>
