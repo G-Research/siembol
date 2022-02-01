@@ -230,3 +230,8 @@ export const applicationManagerColumns = [
 ];
 
 export const displayedApplicationManagerColumns = ["service_name", "application_name", "id", "image", "attributes", "restart"];
+
+export interface ConfigAndTestsToClone {
+  config: Config,
+  test_cases: TestCaseWrapper[]
+}

@@ -73,16 +73,14 @@ export class CloneDialogComponent {
 
     onClickClone() {
       const toClone = this.editorService.configStore
-        .getClonedConfigByName(this.data, this.model['config_name'], this.model['clone_test_cases']);
-      this.router.navigate([this.model['service_instance'], 'edit']);
-
-      // if with test cases:
-      // if new service -> create new serviceContext
-      // have to submit both config+tests to the store
-      // redirect to new config
-
-      // bulk cloning? 
-      // option to not redirect?
+        .getClonedConfigAndTestsByName(this.data, this.model['config_name'], this.model['clone_test_cases']);
+      this.router.navigate([this.model['service_instance'], 'edit']).then(() => {
+          this.editorService.configStore.submitClonedConfigAndTests(toClone).subscribe(() => {
+            this.router.navigate([this.model['service_instance'], 'edit'], {
+              queryParams: { configName: this.model['config_name'] },
+            });
+          });
+      });
     }
 
     private mapFields() {

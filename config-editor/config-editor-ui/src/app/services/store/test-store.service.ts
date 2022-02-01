@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, concat, Observable, of } from 'rxjs';
 import { ConfigStoreState } from '../../model/store-state';
 import { ConfigLoaderService } from '../config-loader.service';
 import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from '../../model/test-case';
@@ -7,6 +7,7 @@ import { ConfigTestResult, TestingType, Type } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
+import { last } from 'rxjs/operators';
 
 export class TestStoreService {
   testCaseHistoryService = new ConfigHistoryService();
@@ -26,6 +27,15 @@ export class TestStoreService {
     testCase.testCase.author = this.user;
     this.clearAndInitialiseTestCaseHistory(testCase);
     this.updateEditedTestCase(testCase);
+  }
+
+  getClonedTestCase(testCase: TestCaseWrapper, config_name: string) {
+    testCase.fileHistory = null;
+    testCase.testCaseResult = null;
+    testCase.testCase.version = 0;
+    testCase.testCase.author = this.user;
+    testCase.testCase.config_name = config_name;
+    return testCase;
   }
 
   setEditedTestCaseNew() {
@@ -93,6 +103,15 @@ export class TestStoreService {
     this.updateEditedTestCase(null);
   }
 
+  submitTestCases(testCaseWrappers: TestCaseWrapper[]): Observable<TestCaseMap> {
+    if (testCaseWrappers.length > 0) {
+      return concat(testCaseWrappers.map((testCaseWrapper: TestCaseWrapper) => 
+        this.configLoaderService.submitTestCase(testCaseWrapper)
+      )).flatMap(list => list).pipe(last());
+    };
+    return of(undefined);
+  }
+  
   submitEditedTestCase(): Observable<boolean> {
     const state = this.store.getValue();
     if (!state.editedConfig || !state.editedTestCase) {

@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import 'rxjs/add/operator/finally';
 import { Config, Deployment, PullRequestInfo } from '../../model';
 import { ConfigStoreState } from '../../model/store-state';
@@ -8,11 +8,11 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, ConfigToImport, Importers, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, Importers, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
-import { mockTestCaseFileHistory } from 'testing/testcases';
+import { mergeMap } from 'rxjs/operators';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -320,6 +320,10 @@ export class ConfigStoreService {
     });
   }
 
+  submitConfig(config: Config): Observable<Config[]> {
+    return this.configLoaderService.submitConfig(config);
+  }
+
   submitAdminConfig(): Observable<boolean> {
     const adminConfig = this.store.getValue().adminConfig;
     if (!adminConfig) {
@@ -363,69 +367,59 @@ export class ConfigStoreService {
     return true;
   }
 
-  setEditedClonedConfigByName(configName: string, new_name = configName + '_clone') {
-    this.clearConfigHistory();
-    const configToClone = this.getConfigByName(configName);
-    if (configToClone === undefined) {
-      throw Error('no config with such name');
-    }
-    const cloned = {
-      author: this.user,
-      configData: Object.assign({}, cloneDeep(configToClone.configData), {
-        [this.metaDataMap.name]: new_name,
-        [this.metaDataMap.version]: 0,
-      }),
-      description: `cloned from ${configToClone.name}`,
-      isNew: true,
-      name: new_name,
-      savedInBackend: false,
-      testCases: [],
-      version: 0,
-    };
+  setEditedClonedConfigByName(configName: string) {
+    const cloned = this.getClonedConfig(configName, configName + '_clone');
     this.updateEditedConfigAndTestCase(cloned, null);
   }
 
-  getClonedConfigByName(configName: string, new_name: string, withTests: boolean) {
-    this.clearConfigHistory();
-    const configToClone = this.getConfigByName(configName);
-    if (configToClone === undefined) {
-      throw Error('no config with such name');
-    }
-    const cloned_config = {
-      author: this.user,
-      configData: Object.assign({}, cloneDeep(configToClone.configData), {
-        [this.metaDataMap.name]: new_name,
-        [this.metaDataMap.version]: 0,
-      }),
-      isNew: true,
-      name: new_name,
-      savedInBackend: false,
-      testCases: [],
-      version: 0,
-    };
-    let cloned_test_cases = {};
+  getClonedConfigAndTestsByName(configName: string, new_name: string, withTests: boolean): ConfigAndTestsToClone {
+    const cloned_config = this.getClonedConfig(configName, new_name);
+    let cloned_test_cases = [];
     if (withTests) {
       const currentState = this.store.getValue();
       const testCaseMap = currentState.testCaseMap;
-      cloned_test_cases = testCaseMap[configName]
+      if (configName in testCaseMap) {
+        cloned_test_cases = testCaseMap[configName].map(
+          testCaseWrapper => 
+            this.testStoreService.getClonedTestCase(testCaseWrapper, new_name)
+        );
+      }
     }
-    return {cloned_config, cloned_test_cases};
-    // this.updateEditedConfigAndTestCase(cloned, null);
-    // this.submitEditedConfig();
+    return {config: cloned_config, test_cases: cloned_test_cases};
   }
 
-  cloneWithTestCases(configName:string, newName: string) {
-    const currentState = this.store.getValue();
-    const testCaseMap = currentState.testCaseMap;
-    this.setEditedClonedConfigByName(configName, newName);
-    // issue: new config set as edited 
-    this.submitEditedConfig();
-    testCaseMap[configName]
-      .forEach((testCaseWrapper: TestCaseWrapper) => {
-        this.testStoreService.setEditedClonedTestCaseByName(testCaseWrapper.testCase.test_case_name);
-    });
-    // this.get
-    // this.testStoreService
+  submitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
+    return this.submitConfig(toClone.config)
+      .pipe(
+        mergeMap(configs => 
+          forkJoin(
+            of(configs),
+            this.testStoreService.submitTestCases(toClone.test_cases)
+          )
+        )
+      ).map(([configs, testCaseMap]) => 
+        this.setConfigAndTestCasesInStore(configs, testCaseMap)
+      );
+  }
+
+  setConfigAndTestCasesInStore(configs: Config[], testCaseMap: TestCaseMap): boolean {
+    if (configs) {
+      const currentState = this.store.getValue();
+      if (!testCaseMap) {
+        testCaseMap = currentState.testCaseMap;
+      }
+
+      const newState = new ConfigStoreStateBuilder(currentState)
+        .configs(configs)
+        .testCaseMap(testCaseMap)
+        .updateTestCasesInConfigs()
+        .detectOutdatedConfigs()
+        .reorderConfigsByDeployment()
+        .computeFiltered(this.user)
+        .build();
+      this.store.next(newState);
+      return true;
+    }
   }
 
   setEditedConfigNew() {
@@ -601,5 +595,26 @@ export class ConfigStoreService {
     const config = currentState.configs.find(x => x.name === configName);
 
     return cloneDeep(config);
+  }
+
+  private getClonedConfig(configName: string, new_name: string): Config {
+    this.clearConfigHistory();
+    const configToClone = this.getConfigByName(configName);
+    if (configToClone === undefined) {
+      throw Error('no config with such name');
+    }
+    return {
+      author: this.user,
+      configData: Object.assign({}, cloneDeep(configToClone.configData), {
+        [this.metaDataMap.name]: new_name,
+        [this.metaDataMap.version]: 0,
+      }),
+      description: configToClone.description,
+      isNew: true,
+      name: new_name,
+      savedInBackend: false,
+      testCases: [],
+      version: 0,
+    };
   }
 }
