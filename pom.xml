@@ -56,11 +56,11 @@
         <spring_boot_version>2.6.2</spring_boot_version>
         <guava_version>31.0.1-jre</guava_version>
         <storm_guava_version>24.1.1-jre</storm_guava_version>
-        <springdoc_openapi_version>1.6.3</springdoc_openapi_version>
+        <springdoc_openapi_version>1.6.5</springdoc_openapi_version>
         <commons_beanutils_version>1.9.4</commons_beanutils_version>
         <multiline_string_version>0.1.2</multiline_string_version>
         <http_client_version>4.5.13</http_client_version>
-        <slf4j_version>1.7.32</slf4j_version>
+        <slf4j_version>1.7.35</slf4j_version>
         <commons_lang3_version>3.12.0</commons_lang3_version>
         <commons_io_version>2.11.0</commons_io_version>
         <gson_version>2.8.9</gson_version>
