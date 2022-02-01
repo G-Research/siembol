@@ -25,7 +25,7 @@ import uk.co.gresearch.siembol.alerts.protection.RuleProtectionSystemImpl;
 import uk.co.gresearch.siembol.alerts.storm.model.*;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
-public class KafkaWriterBolt extends BaseRichBolt {
+public class AlertingKafkaWriterBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String WRONG_ALERTS_FIELD_MESSAGE = "Wrong alerts type in tuple";
@@ -40,7 +40,7 @@ public class KafkaWriterBolt extends BaseRichBolt {
     private Producer<String, String> producer;
     private RuleProtectionSystem ruleProtection;
 
-    public KafkaWriterBolt(AlertingStormAttributesDto attributes) {
+    public AlertingKafkaWriterBolt(AlertingStormAttributesDto attributes) {
         this.props = new Properties();
         attributes.getKafkaProducerProperties().getRawMap().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
         this.outputTopic = attributes.getOutputTopic();
