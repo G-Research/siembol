@@ -320,10 +320,6 @@ export class ConfigStoreService {
     });
   }
 
-  submitConfig(config: Config): Observable<Config[]> {
-    return this.configLoaderService.submitConfig(config);
-  }
-
   submitAdminConfig(): Observable<boolean> {
     const adminConfig = this.store.getValue().adminConfig;
     if (!adminConfig) {
@@ -537,7 +533,7 @@ export class ConfigStoreService {
   }
 
   submitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
-    return this.submitConfig(toClone.config)
+    return this.configLoaderService.submitConfig(toClone.config)
       .pipe(
         mergeMap(configs => 
           forkJoin(
@@ -566,7 +562,6 @@ export class ConfigStoreService {
         .computeFiltered(this.user)
         .build();
       this.store.next(newState);
-      // this.configHistoryService.addConfig(config);
       return true;
     }
   }

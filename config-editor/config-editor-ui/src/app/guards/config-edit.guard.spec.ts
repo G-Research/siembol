@@ -15,6 +15,7 @@ describe('ConfigEditGuard', () => {
         'TestStoreService',
         {
           setEditedTestCaseNew: () => true,
+          setEditedClonedTestCaseByName: () => true,
           setEditedPastedTestCaseNew: () => true,
         },
         []
