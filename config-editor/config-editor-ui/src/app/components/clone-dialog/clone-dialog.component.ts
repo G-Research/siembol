@@ -77,7 +77,9 @@ export class CloneDialogComponent {
       this.submitting = true;
       const toClone = this.editorService.configStore
         .getClonedConfigAndTestsByName(this.data, this.model['config_name'], this.model['clone_test_cases']);
-      this.router.navigate([this.model['service_instance'], 'edit']).then(() => {
+        
+      this.editorService.createConfigServiceContext(this.model['service_instance'])
+        .map(x => this.editorService.setServiceContext(x)).subscribe(() => {
           this.editorService.configStore.submitClonedConfigAndTests(toClone).subscribe(
             success => {
               if (success) {
