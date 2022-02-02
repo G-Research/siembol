@@ -5,8 +5,6 @@
   align-items: stretch;
   padding: 10px 10px;
   padding-right: 30px;
-  max-width: 70vw;
-  max-height: 70vh;
   overflow-y: auto;
 }
 
@@ -35,4 +33,33 @@
 
 .bold {
   color: rgb(62, 216, 255);
+}
+
+.mat-column-service_name {
+  width: 14%;
+}
+.mat-column-application_name {
+  width: 18%;
+}
+.mat-column-id {
+  width: 22%;
+}
+.mat-column-image {
+  width: 28%;
+}
+.mat-column-attributes {
+  width: 10%;
+}
+.mat-column-restart {
+  width: 8%;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.fixActionRow {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
