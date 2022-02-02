@@ -5,7 +5,6 @@ import { of } from 'rxjs';
 import { mockTestCaseMap } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { mockUiMetadataParser } from 'testing/uiMetadataMap';
-import { mockParserConfig, mockParserConfigCloned } from 'testing/configs';
 import { AppConfigService } from '../app-config.service';
 
 describe('ConfigStoreService', () => {
@@ -37,21 +36,5 @@ describe('ConfigStoreService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  describe('setEditedClonedConfigByName', () => {
-    it('should succeed', () => {
-      spyOn<any>(service, 'updateEditedConfigAndTestCase');
-      spyOn<any>(service, 'getConfigByName').and.returnValue(mockParserConfig);
-      service.setEditedClonedConfigByName('config1');
-      expect(service['updateEditedConfigAndTestCase']).toHaveBeenCalledOnceWith(mockParserConfigCloned, null);
-    });
-
-    it('should fail', () => {
-      spyOn<any>(service, 'getConfigByName').and.returnValue(undefined);
-      expect(function () {
-        service.setEditedClonedConfigByName('config1');
-      }).toThrow();
-    });
   });
 });

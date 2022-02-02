@@ -15,7 +15,6 @@ describe('ConfigEditGuard', () => {
         'TestStoreService',
         {
           setEditedTestCaseNew: () => true,
-          setEditedClonedTestCaseByName: () => true,
           setEditedPastedTestCaseNew: () => true,
         },
         []
@@ -25,7 +24,6 @@ describe('ConfigEditGuard', () => {
         'ConfigStoreService', 
         {
           setEditedConfigAndTestCaseByName: () => true, 
-          setEditedClonedConfigByName: () => true,
           setNewEditedPastedConfig: () => true,
         }, 
         {
@@ -45,12 +43,6 @@ describe('ConfigEditGuard', () => {
       const route = jasmine.createSpyObj('ActivatedRouteSnapshot', [], { queryParams: {configName: "test"}});
       guard.canActivate(route);
       expect(store.setEditedConfigAndTestCaseByName).toHaveBeenCalledOnceWith("test", undefined);
-    });
-
-    it('clone config', () => {
-      const route = jasmine.createSpyObj('ActivatedRouteSnapshot', [], { queryParams: {cloneConfig: "test"}});
-      guard.canActivate(route);
-      expect(store.setEditedClonedConfigByName).toHaveBeenCalledOnceWith("test");
     });
 
     it('paste config', () => {

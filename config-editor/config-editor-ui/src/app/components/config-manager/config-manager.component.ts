@@ -166,7 +166,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClone(id: number) {
-    this.dialog.open(CloneDialogComponent, { data: this.filteredConfigs[id].name });
+    this.dialog.open(CloneDialogComponent, 
+      { data: this.filteredConfigs[id].name, disableClose: true });
   }
 
   onRemove(id: number) {

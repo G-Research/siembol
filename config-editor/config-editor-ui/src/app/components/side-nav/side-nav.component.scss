@@ -39,3 +39,11 @@
     margin-top: -35px !important;
     margin-left: 30px !important;
 }
+
+.router-holder {
+//   box-sizing: border-box;
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+//   flex-grow: 1;
+}

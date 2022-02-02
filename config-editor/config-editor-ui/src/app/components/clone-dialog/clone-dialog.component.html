@@ -1,8 +1,15 @@
-<h2 mat-dialog-title>Clone Config</h2>
-<form [formGroup]="form">
-  <formly-form [model]="model" [fields]="fields" [form]="form"></formly-form>
-</form>
-<div mat-dialog-actions class="button-row">
-  <button mat-raised-button color="primary" [disabled]="!form.valid" (click)="onClickClone()">CLONE CONFIG</button>
-  <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+<h1 mat-dialog-title>Clone Config</h1>
+<div *ngIf="!submitting">
+  <form [formGroup]="form">
+    <formly-form [model]="model" [fields]="fields" [form]="form"></formly-form>
+  </form>
+  <div mat-dialog-actions class="button-row" align="end">
+    <button mat-raised-button color="primary" [disabled]="!form.valid" (click)="onClickClone()">CLONE CONFIG</button>
+    <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+  </div>
+</div>
+
+<div *ngIf="submitting">
+  <p>Submitting</p>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>

@@ -367,61 +367,6 @@ export class ConfigStoreService {
     return true;
   }
 
-  setEditedClonedConfigByName(configName: string) {
-    const cloned = this.getClonedConfig(configName, configName + '_clone');
-    this.updateEditedConfigAndTestCase(cloned, null);
-  }
-
-  getClonedConfigAndTestsByName(configName: string, new_name: string, withTests: boolean): ConfigAndTestsToClone {
-    const cloned_config = this.getClonedConfig(configName, new_name);
-    let cloned_test_cases = [];
-    if (withTests) {
-      const currentState = this.store.getValue();
-      const testCaseMap = currentState.testCaseMap;
-      if (configName in testCaseMap) {
-        cloned_test_cases = testCaseMap[configName].map(
-          testCaseWrapper => 
-            this.testStoreService.getClonedTestCase(testCaseWrapper, new_name)
-        );
-      }
-    }
-    return {config: cloned_config, test_cases: cloned_test_cases};
-  }
-
-  submitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
-    return this.submitConfig(toClone.config)
-      .pipe(
-        mergeMap(configs => 
-          forkJoin(
-            of(configs),
-            this.testStoreService.submitTestCases(toClone.test_cases)
-          )
-        )
-      ).map(([configs, testCaseMap]) => 
-        this.setConfigAndTestCasesInStore(configs, testCaseMap)
-      );
-  }
-
-  setConfigAndTestCasesInStore(configs: Config[], testCaseMap: TestCaseMap): boolean {
-    if (configs) {
-      const currentState = this.store.getValue();
-      if (!testCaseMap) {
-        testCaseMap = currentState.testCaseMap;
-      }
-
-      const newState = new ConfigStoreStateBuilder(currentState)
-        .configs(configs)
-        .testCaseMap(testCaseMap)
-        .updateTestCasesInConfigs()
-        .detectOutdatedConfigs()
-        .reorderConfigsByDeployment()
-        .computeFiltered(this.user)
-        .build();
-      this.store.next(newState);
-      return true;
-    }
-  }
-
   setEditedConfigNew() {
     this.clearConfigHistory();
     const currentState = this.store.getValue();
@@ -573,6 +518,57 @@ export class ConfigStoreService {
         this.importers.next(i);
       }
     });
+  }
+
+  getClonedConfigAndTestsByName(configName: string, new_name: string, withTests: boolean): ConfigAndTestsToClone {
+    const cloned_config = this.getClonedConfig(configName, new_name);
+    let cloned_test_cases = [];
+    if (withTests) {
+      const currentState = this.store.getValue();
+      const testCaseMap = currentState.testCaseMap;
+      if (configName in testCaseMap) {
+        cloned_test_cases = testCaseMap[configName].map(
+          testCaseWrapper => 
+            this.testStoreService.getClonedTestCase(testCaseWrapper, new_name)
+        );
+      }
+    }
+    return {config: cloned_config, test_cases: cloned_test_cases};
+  }
+
+  submitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
+    return this.submitConfig(toClone.config)
+      .pipe(
+        mergeMap(configs => 
+          forkJoin(
+            of(configs),
+            this.testStoreService.submitTestCases(toClone.test_cases)
+          )
+        )
+      ).map(([configs, testCaseMap]) => 
+        this.setConfigAndTestCasesInStore(configs, testCaseMap)
+      );
+  }
+
+  setConfigAndTestCasesInStore(configs: Config[], testCaseMap: TestCaseMap): boolean {
+    if (configs) {
+      const currentState = this.store.getValue();
+      if (!testCaseMap) {
+        testCaseMap = currentState.testCaseMap;
+      }
+
+      const newState = new ConfigStoreStateBuilder(currentState)
+        .configs(configs)
+        .testCaseMap(testCaseMap)
+        .updateTestCasesInConfigs()
+        .detectOutdatedConfigs()
+        .reorderConfigsByDeployment()
+        .computeFiltered(this.user)
+        .build();
+      this.store.next(newState);
+      // this.configHistoryService.addConfig(config);
+      return true;
+    }
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

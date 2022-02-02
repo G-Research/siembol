@@ -31,9 +31,7 @@ export class ConfigEditGuard implements CanActivate {
   }
 
   private setConfig(params: Params): boolean {
-    if (params.cloneConfig) {
-      this.editorService.configStore.setEditedClonedConfigByName(params.cloneConfig);
-    } else if (params.newConfig) {
+    if (params.newConfig) {
       this.editorService.configStore.setEditedConfigNew();
     } else if (params.pasteConfig) {
       this.editorService.configStore.setNewEditedPastedConfig();

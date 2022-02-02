@@ -27,20 +27,21 @@ export class CloneDialogComponent {
         },
       },
       {
-        key: 'clone_test_cases',
-        type: 'checkbox',
-        defaultValue: true,
-        templateOptions: {
-          label: 'Include test cases',
-        },
-      },
-      {
         key: 'service_instance',
         type: 'enum',
         templateOptions: {
           label: "Service Instance",
           multiple: false,
+          hintEnd: "The name of the service to clone the config to",
           options: [],
+        },
+      },
+      {
+        key: 'clone_test_cases',
+        type: 'checkbox',
+        defaultValue: true,
+        templateOptions: {
+          label: 'Include test cases',
         },
       },
     ]
@@ -49,6 +50,7 @@ export class CloneDialogComponent {
     model = {};
     serviceOptions: string[] = [];
     currentService: string;
+    submitting = false;
     constructor(
       private dialogRef: MatDialogRef<CloneDialogComponent>,
       @Inject(MAT_DIALOG_DATA) public data: string,
@@ -72,13 +74,22 @@ export class CloneDialogComponent {
     }
 
     onClickClone() {
+      this.submitting = true;
       const toClone = this.editorService.configStore
         .getClonedConfigAndTestsByName(this.data, this.model['config_name'], this.model['clone_test_cases']);
       this.router.navigate([this.model['service_instance'], 'edit']).then(() => {
-          this.editorService.configStore.submitClonedConfigAndTests(toClone).subscribe(() => {
-            this.router.navigate([this.model['service_instance'], 'edit'], {
-              queryParams: { configName: this.model['config_name'] },
-            });
+          this.editorService.configStore.submitClonedConfigAndTests(toClone).subscribe(
+            success => {
+              if (success) {
+                this.router.navigate([this.model['service_instance'], 'edit'], {
+                  queryParams: { configName: this.model['config_name'] },
+                });
+                this.dialogRef.close();
+              }
+          },
+          e => {
+            this.dialogRef.close();
+            throw e;
           });
       });
     }
