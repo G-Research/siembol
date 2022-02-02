@@ -1,39 +1,43 @@
-<h1 mat-dialog-title>Application Manager</h1>
-<mat-form-field [ngStyle]="{display: dataSource?.data?.length > 1 ? 'block' : 'none'}"
-  class="filter" appearance="standard">
-  <mat-label>Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. siembol" #input>
-</mat-form-field>
-<div class="container">
-  <table mat-table [dataSource]="dataSource">
-    <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
-      <th mat-header-cell *matHeaderCellDef>
-        {{column.header}}
-      </th>
-      <td mat-cell *matCellDef="let row">
-        {{column.cell(row)}}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="attributes">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onViewAttributes(row.attributes, attributesViewer)">View attributes</button>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="restart">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" [disabled]="restartedApplications.includes(row.topology_name) || disableAllRestart === true" (click)="onRestartApplication(row.service_name, row.topology_name, restartedApplication)">Restart</button>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-</div>
-<div mat-dialog-actions>
-  <button mat-raised-button class="button-layout" color="accent" [disabled]="disableAllRestart" (click)="openInfoDialog('', confirmRestartAll)">RESTART ALL</button>
-  <button mat-raised-button class="button-layout" color="accent" (click)="onClickClose()">CLOSE</button>
-</div>
+<div class="fixActionRow">
+  <h1 mat-dialog-title>Application Manager</h1>
+  <mat-form-field [ngStyle]="{display: dataSource?.data?.length > 1 ? 'block' : 'none'}"
+    class="filter" appearance="standard">
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. siembol" #input>
+  </mat-form-field>
+  <div class="container">
+    <table mat-table width="100%" [dataSource]="dataSource">
+      <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+        <th mat-header-cell *matHeaderCellDef>
+          {{column.header}}
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{column.cell(row)}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="attributes">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-raised-button color="primary" (click)="onViewAttributes(row.attributes, attributesViewer)">View attributes</button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="restart">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-raised-button color="primary" [disabled]="restartedApplications.includes(row.topology_name) || disableAllRestart === true" (click)="onRestartApplication(row.service_name, row.topology_name, restartedApplication)">Restart</button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <div class="spacer"></div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-raised-button class="button-layout" color="accent" [disabled]="disableAllRestart" (click)="openInfoDialog('', confirmRestartAll)">RESTART ALL</button>
+    <button mat-raised-button class="button-layout" color="accent" (click)="onClickClose()">CLOSE</button>
+  </div>
+</div> 
 
 <ng-template #attributesViewer let-data>
   <mat-accordion [multi]="false" >

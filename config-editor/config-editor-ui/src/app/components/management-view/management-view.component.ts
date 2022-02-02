@@ -31,7 +31,6 @@ export class ManagementViewComponent  implements OnInit {
 
   openApplicationDialog() {
     this.service.getAllApplications().subscribe(apps => 
-      this.dialog.open(ApplicationDialogComponent, { data: apps })
-    );
+      this.dialog.open(ApplicationDialogComponent, { data: apps, height:'70%', width: '75%' })    );
   }
 }
