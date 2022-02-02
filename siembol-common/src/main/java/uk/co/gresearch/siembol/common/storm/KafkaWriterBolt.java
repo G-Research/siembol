@@ -18,6 +18,7 @@ import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 public class KafkaWriterBolt extends BaseRichBolt {
@@ -38,9 +39,13 @@ public class KafkaWriterBolt extends BaseRichBolt {
     private OutputCollector collector;
     private Producer<String, String> producer;
 
+    protected KafkaWriterBolt(Properties producerProperties) {
+        this.props = producerProperties;
+        this.fieldName = null;
+    }
+
     public KafkaWriterBolt(KafkaBatchWriterAttributesDto attributes, String fieldName) {
-        this.props = new Properties();
-        props.putAll(attributes.getProducerProperties().getRawMap());
+        this.props = attributes.getProducerProperties().getProperties();
         this.fieldName = fieldName;
     }
 
@@ -94,7 +99,7 @@ public class KafkaWriterBolt extends BaseRichBolt {
         try {
             var callBack = createProducerCallback(anchor);
             LOG.debug(SENDING_MESSAGE_LOG, message.getMessage(), message.getTopic());
-            producer.send(new ProducerRecord<>(message.getTopic(), message.getMessage()), callBack);
+            producer.send(message.getProducerRecord(), callBack);
         } catch (AuthorizationException e) {
             LOG.error(AUTH_EXCEPTION_MESSAGE, ExceptionUtils.getStackTrace(e));
             producer.close();

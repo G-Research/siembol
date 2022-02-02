@@ -2,17 +2,8 @@ package uk.co.gresearch.siembol.alerts.storm;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.KafkaException;
-import org.apache.kafka.common.errors.AuthorizationException;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
-import org.apache.storm.topology.OutputFieldsDeclarer;
-import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,25 +15,28 @@ import uk.co.gresearch.siembol.alerts.protection.RuleProtectionSystem;
 import uk.co.gresearch.siembol.alerts.protection.RuleProtectionSystemImpl;
 import uk.co.gresearch.siembol.alerts.storm.model.*;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterAnchor;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterBolt;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
 
-public class AlertingKafkaWriterBolt extends BaseRichBolt {
+public class AlertingKafkaWriterBolt extends KafkaWriterBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String WRONG_ALERTS_FIELD_MESSAGE = "Wrong alerts type in tuple";
     private static final String WRONG_EXCEPTION_FIELD_MESSAGE = "Wrong exceptions type in tuple";
+    private static final String RULE_PROTECTION_ERROR_MESSAGE =
+            "The rule: %s reaches the limit\n hourly matches: %d, daily matches: %d, alert: %s";
+    private static final String SEND_MSG_LOG = "Sending message {}\n to {} topic";
+    private static final String MISSING_CORRELATION_KEY_MSG = "Missing key in correlation alert %s";
 
     private final String errorSensorType;
-    private final Properties props;
     private final String errorTopic;
     private final String outputTopic;
     private final String correlationTopic;
-    private OutputCollector collector;
-    private Producer<String, String> producer;
     private RuleProtectionSystem ruleProtection;
 
     public AlertingKafkaWriterBolt(AlertingStormAttributesDto attributes) {
-        this.props = new Properties();
-        attributes.getKafkaProducerProperties().getRawMap().entrySet().forEach(x -> props.put(x.getKey(), x.getValue()));
+        super(attributes.getKafkaProducerProperties().getProperties());
         this.outputTopic = attributes.getOutputTopic();
         this.errorTopic = attributes.getKafkaErrorTopic();
         this.correlationTopic = attributes.getCorrelationOutputTopic();
@@ -65,74 +59,55 @@ public class AlertingKafkaWriterBolt extends BaseRichBolt {
             throw new IllegalStateException(WRONG_EXCEPTION_FIELD_MESSAGE);
         }
         ExceptionMessages exceptions = (ExceptionMessages)exceptionsObject;
+        var anchor = new KafkaWriterAnchor(tuple);
 
-        try {
-            for (AlertMessage match : matches) {
-                AlertingResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
-                int hourlyMatches = matchesInfo.getAttributes().getHourlyMatches();
-                int dailyMatches = matchesInfo.getAttributes().getDailyMatches();
+        for (var match : matches) {
+            AlertingResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
+            int hourlyMatches = matchesInfo.getAttributes().getHourlyMatches();
+            int dailyMatches = matchesInfo.getAttributes().getDailyMatches();
 
-                if (match.getMaxHourMatches().intValue() < hourlyMatches
-                        || match.getMaxDayMatches().intValue() < dailyMatches) {
-                    String msg = String.format(
-                            "The rule: %s reaches the limit\n hourly matches: %d, daily matches: %d, alert: %s",
-                            match.getFullRuleName(), hourlyMatches, dailyMatches, match.getAlertJson());
-                    LOG.debug(msg);
-                    exceptions.add(msg);
-                    continue;
-                }
-
-                if (match.isVisibleAlert()) {
-                    LOG.debug("Sending message {}\n to output topic", match.getAlertJson());
-                    producer.send(new ProducerRecord<>(outputTopic,
-                            String.valueOf(match.getAlertJson().hashCode()),
-                            match.getAlertJson()));
-                }
-
-                if (match.isCorrelationAlert()) {
-                    LOG.debug("Sending message {}\n to correlation alerts topic", match.getAlertJson());
-                    producer.send(new ProducerRecord<>(correlationTopic,
-                            match.getCorrelationKey().get(),
-                            match.getAlertJson()));
-                }
+            if (match.getMaxHourMatches().intValue() < hourlyMatches
+                    || match.getMaxDayMatches().intValue() < dailyMatches) {
+                String msg = String.format(RULE_PROTECTION_ERROR_MESSAGE,
+                        match.getFullRuleName(), hourlyMatches, dailyMatches, match.getAlertJson());
+                LOG.debug(msg);
+                exceptions.add(msg);
+                continue;
             }
 
-            for (String errorMsg : exceptions) {
-                String errorMsgToSend = getErrorMessageToSend(errorMsg);
-                LOG.debug("Sending message {}\n to error topic", errorMsgToSend);
-                producer.send(new ProducerRecord<>(errorTopic,
-                        String.valueOf(errorMsgToSend.hashCode()),
-                        errorMsgToSend));
+            if (match.isVisibleAlert()) {
+                LOG.debug(SEND_MSG_LOG, match.getAlertJson(), outputTopic);
+                anchor.acquire();
+                writeMessage(new KafkaWriterMessage(outputTopic, match.getAlertJson()), anchor);
             }
 
-            producer.flush();
-        } catch (AuthorizationException e) {
-                LOG.error("Exception {} during writing messages to the kafka",
-                        ExceptionUtils.getStackTrace(e));
-                producer.close();
-                throw new IllegalStateException(e);
-            } catch (KafkaException e) {
-            LOG.error("KafkaException {} during writing messages to the kafka",
-                    ExceptionUtils.getStackTrace(e));
-                collector.fail(tuple);
-                return;
-            }
+            if (match.isCorrelationAlert()) {
+                if (match.getCorrelationKey().isEmpty()) {
+                    String errorMsg = String.format(MISSING_CORRELATION_KEY_MSG, match.getAlertJson());
+                    LOG.error(errorMsg);
+                    throw new IllegalStateException(errorMsg);
+                }
 
-        LOG.debug("Acking tuple");
-        collector.ack(tuple);
+                LOG.debug(SEND_MSG_LOG, match.getAlertJson(), correlationTopic);
+                anchor.acquire();
+                writeMessage(new KafkaWriterMessage(correlationTopic,
+                        match.getCorrelationKey().get(),
+                        match.getAlertJson()), anchor);
+            }
+        }
+
+        for (var exception : exceptions) {
+            String errorMsgToSend = getErrorMessageToSend(exception);
+            LOG.debug(SEND_MSG_LOG, errorMsgToSend, errorTopic);
+            anchor.acquire();
+            writeMessage(new KafkaWriterMessage(errorTopic, errorMsgToSend), anchor);
+        }
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
-        this.collector = outputCollector;
         ruleProtection = new RuleProtectionSystemImpl();
-        producer = new KafkaProducer<>(props, new StringSerializer(), new StringSerializer());
-    }
-
-    @Override
-    public void cleanup() {
-        producer.close();
+        super.prepare(map, topologyContext, outputCollector);
     }
 
     private String getErrorMessageToSend(String errorMsg) {
@@ -141,9 +116,5 @@ public class AlertingKafkaWriterBolt extends BaseRichBolt {
         error.setFailedSensorType(errorSensorType);
         error.setMessage(errorMsg);
         return error.toString();
-    }
-
-    @Override
-    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
     }
 }
