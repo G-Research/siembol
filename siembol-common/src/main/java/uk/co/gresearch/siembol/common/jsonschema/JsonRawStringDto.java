@@ -26,6 +26,7 @@ public class JsonRawStringDto {
     }
 
     @JsonIgnore
+    @SchemaIgnore
     public Properties getProperties() {
         var props = new Properties();
         props.putAll(rawMap);
