@@ -16,6 +16,10 @@ public class KafkaWriterAnchor {
         counter.incrementAndGet();
     }
 
+    public void acquire(int number) {
+        counter.addAndGet(number);
+    }
+
     public boolean release() {
         return counter.decrementAndGet() <= 0;
     }
