@@ -29,9 +29,6 @@ public class KafkaWriterBolt extends KafkaWriterBoltBase {
 
         KafkaWriterMessages currentMessages = (KafkaWriterMessages)messagesObject;
         var anchor = new KafkaWriterAnchor(tuple);
-        currentMessages.forEach(x -> {
-            anchor.acquire();
-            writeMessage(x, anchor);
-        });
+        currentMessages.forEach(x -> writeMessage(x, anchor));
     }
 }

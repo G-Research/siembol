@@ -72,6 +72,7 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
 
     protected void writeMessage(KafkaWriterMessage message, KafkaWriterAnchor anchor) {
         try {
+            anchor.acquire();
             var callBack = createProducerCallback(anchor);
             LOG.debug(SENDING_MESSAGE_LOG, message.getMessage(), message.getTopic());
             producer.send(message.getProducerRecord(), callBack);

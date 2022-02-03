@@ -74,7 +74,6 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
 
             if (match.isVisibleAlert()) {
                 LOG.debug(SEND_MSG_LOG, match.getAlertJson(), outputTopic);
-                anchor.acquire();
                 writeMessage(new KafkaWriterMessage(outputTopic, match.getAlertJson()), anchor);
             }
 
@@ -86,7 +85,6 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
                 }
 
                 LOG.debug(SEND_MSG_LOG, match.getAlertJson(), correlationTopic);
-                anchor.acquire();
                 writeMessage(new KafkaWriterMessage(correlationTopic,
                         match.getCorrelationKey().get(),
                         match.getAlertJson()), anchor);
@@ -96,7 +94,6 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
         for (var exception : exceptions) {
             String errorMsgToSend = getErrorMessageToSend(exception);
             LOG.debug(SEND_MSG_LOG, errorMsgToSend, errorTopic);
-            anchor.acquire();
             writeMessage(new KafkaWriterMessage(errorTopic, errorMsgToSend), anchor);
         }
     }
