@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.alerts.storm;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 
 import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
         }
         ExceptionMessages exceptions = (ExceptionMessages)exceptionsObject;
         var anchor = new KafkaWriterAnchor(tuple);
+        var messages = new ArrayList<KafkaWriterMessage>();
 
         for (var match : matches) {
             AlertingResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
@@ -74,7 +76,7 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
 
             if (match.isVisibleAlert()) {
                 LOG.debug(SEND_MSG_LOG, match.getAlertJson(), outputTopic);
-                writeMessage(new KafkaWriterMessage(outputTopic, match.getAlertJson()), anchor);
+                messages.add(new KafkaWriterMessage(outputTopic, match.getAlertJson()));
             }
 
             if (match.isCorrelationAlert()) {
@@ -85,17 +87,19 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
                 }
 
                 LOG.debug(SEND_MSG_LOG, match.getAlertJson(), correlationTopic);
-                writeMessage(new KafkaWriterMessage(correlationTopic,
+                messages.add(new KafkaWriterMessage(correlationTopic,
                         match.getCorrelationKey().get(),
-                        match.getAlertJson()), anchor);
+                        match.getAlertJson()));
             }
         }
 
         for (var exception : exceptions) {
             String errorMsgToSend = getErrorMessageToSend(exception);
             LOG.debug(SEND_MSG_LOG, errorMsgToSend, errorTopic);
-            writeMessage(new KafkaWriterMessage(errorTopic, errorMsgToSend), anchor);
+            messages.add(new KafkaWriterMessage(errorTopic, errorMsgToSend));
         }
+
+        super.writeMessages(messages, anchor);
     }
 
     @Override

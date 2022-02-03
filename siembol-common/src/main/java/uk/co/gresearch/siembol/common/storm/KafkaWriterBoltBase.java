@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,6 +56,11 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
     }
 
+    protected void writeMessages(List<KafkaWriterMessage> messages, KafkaWriterAnchor anchor) {
+        anchor.acquire(messages.size());
+        messages.forEach(x -> writeMessage(x, anchor));
+    }
+
     private Callback createProducerCallback(final KafkaWriterAnchor anchor) {
         return (x, e) -> {
             synchronized (collector) {
@@ -70,9 +76,8 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
         };
     }
 
-    protected void writeMessage(KafkaWriterMessage message, KafkaWriterAnchor anchor) {
+    private void writeMessage(KafkaWriterMessage message, KafkaWriterAnchor anchor) {
         try {
-            anchor.acquire();
             var callBack = createProducerCallback(anchor);
             LOG.debug(SENDING_MESSAGE_LOG, message.getMessage(), message.getTopic());
             producer.send(message.getProducerRecord(), callBack);

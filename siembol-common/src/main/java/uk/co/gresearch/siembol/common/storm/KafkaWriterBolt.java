@@ -28,7 +28,12 @@ public class KafkaWriterBolt extends KafkaWriterBoltBase {
         }
 
         KafkaWriterMessages currentMessages = (KafkaWriterMessages)messagesObject;
+        if (currentMessages.isEmpty()) {
+            LOG.error(MISSING_MESSAGES_MSG);
+            throw new IllegalStateException(MISSING_MESSAGES_MSG);
+        }
+
         var anchor = new KafkaWriterAnchor(tuple);
-        currentMessages.forEach(x -> writeMessage(x, anchor));
+        writeMessages(currentMessages, anchor);
     }
 }
