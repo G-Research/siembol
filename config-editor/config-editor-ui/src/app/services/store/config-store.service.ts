@@ -589,7 +589,6 @@ export class ConfigStoreService {
   }
 
   private getClonedConfig(configName: string, new_name: string): Config {
-    this.clearConfigHistory();
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
       throw Error('no config with such name');

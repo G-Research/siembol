@@ -3,11 +3,12 @@ import { TestStoreService } from './test-store.service';
 import { ConfigLoaderService } from '../config-loader.service';
 import { mockStore } from 'testing/store';
 import { BehaviorSubject, of } from 'rxjs';
-import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap } from 'testing/testcases';
+import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap, mockTestCaseWrapper3 } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
+import { cold } from 'jasmine-marbles';
 
 describe('TestStoreService', () => {
   let configLoader: ConfigLoaderService;
@@ -78,4 +79,15 @@ describe('TestStoreService', () => {
       expect(service['store'].getValue().editedConfig.testCases[1].testCaseResult).toEqual(mockEvaluateTestCaseMatch);
     }));
   });
+
+  describe('submitTestCases', () => {
+    it('should submit test cases sequentially', () => {
+      spyOn(configLoader, 'submitTestCase').and.returnValues(cold(`---a`, {}), cold(`a`, {}), cold(`--a`, {}));
+      const mockTestCaseWrappers = [mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseWrapper3];
+      service.submitTestCases(mockTestCaseWrappers);
+
+      // spy to mock call to submitTestCase, expect called in order, 
+      //is it possible to put a delay on when the service returns the observable? Marble testing: time progression or virtual frames
+    });
+  })
 });
