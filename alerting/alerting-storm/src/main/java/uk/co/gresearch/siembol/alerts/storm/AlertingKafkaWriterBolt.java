@@ -1,9 +1,6 @@
 package uk.co.gresearch.siembol.alerts.storm;
 import java.lang.invoke.MethodHandles;
-import java.util.*;
 
-import org.apache.storm.task.OutputCollector;
-import org.apache.storm.task.TopologyContext;
 import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +13,10 @@ import uk.co.gresearch.siembol.alerts.protection.RuleProtectionSystemImpl;
 import uk.co.gresearch.siembol.alerts.storm.model.*;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterAnchor;
-import uk.co.gresearch.siembol.common.storm.KafkaWriterBolt;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterBoltBase;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
 
-public class AlertingKafkaWriterBolt extends KafkaWriterBolt {
+public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String WRONG_ALERTS_FIELD_MESSAGE = "Wrong alerts type in tuple";
@@ -105,9 +102,8 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBolt {
     }
 
     @Override
-    public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
+    public void prepareInternally() {
         ruleProtection = new RuleProtectionSystemImpl();
-        super.prepare(map, topologyContext, outputCollector);
     }
 
     private String getErrorMessageToSend(String errorMsg) {
