@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.common.storm;
 
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.io.Serializable;

@@ -27,7 +27,7 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     private static final String KAFKA_EXCEPTION_MESSAGE =
             "Exception {} during writing messages to the kafka";
     private static final String SENDING_MESSAGE_LOG =
-            "Sending message: {} to the topic: {}";
+            "Sending message: {}, key :{} to the topic: {} ";
 
     private final Properties props;
     private OutputCollector collector;
@@ -79,7 +79,7 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     private void writeMessage(KafkaWriterMessage message, KafkaWriterAnchor anchor) {
         try {
             var callBack = createProducerCallback(anchor);
-            LOG.debug(SENDING_MESSAGE_LOG, message.getMessage(), message.getTopic());
+            LOG.debug(SENDING_MESSAGE_LOG, message.getMessage(), message.getKey(), message.getTopic());
             producer.send(message.getProducerRecord(), callBack);
         } catch (AuthorizationException e) {
             LOG.error(AUTH_EXCEPTION_MESSAGE, ExceptionUtils.getStackTrace(e));

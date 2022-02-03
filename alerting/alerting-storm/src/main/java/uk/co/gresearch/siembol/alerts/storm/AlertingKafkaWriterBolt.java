@@ -57,7 +57,6 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
             throw new IllegalStateException(WRONG_EXCEPTION_FIELD_MESSAGE);
         }
         ExceptionMessages exceptions = (ExceptionMessages)exceptionsObject;
-        var anchor = new KafkaWriterAnchor(tuple);
         var messages = new ArrayList<KafkaWriterMessage>();
 
         for (var match : matches) {
@@ -99,6 +98,7 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
             messages.add(new KafkaWriterMessage(errorTopic, errorMsgToSend));
         }
 
+        var anchor = new KafkaWriterAnchor(tuple);
         super.writeMessages(messages, anchor);
     }
 
