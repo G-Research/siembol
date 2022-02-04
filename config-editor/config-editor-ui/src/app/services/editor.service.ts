@@ -97,7 +97,7 @@ export class EditorService {
             testSpecificationSchema: testSpecSchema,
           };
         }
-        throwError('Can not load service');
+        throwError(() => 'Can not load service');
       }));
   }
 
@@ -106,8 +106,9 @@ export class EditorService {
 
     return configLoader
       .getAdminSchema()
-      .pipe(mergeMap(schema => forkJoin(configLoader.getAdminConfig(), of(schema))))
-      .pipe(map(([adminConfig, originalSchema]) => {
+      .pipe(
+        mergeMap(schema => forkJoin([configLoader.getAdminConfig(), of(schema)])),
+        map(([adminConfig, originalSchema]) => {
         if (adminConfig && originalSchema) {
           configStore.updateAdmin(adminConfig);
           return {
@@ -119,7 +120,7 @@ export class EditorService {
             serviceName,
           };
         }
-        throwError('Can not load admin service');
+        throwError(() => 'Can not load admin service');
       }));
   }
 
