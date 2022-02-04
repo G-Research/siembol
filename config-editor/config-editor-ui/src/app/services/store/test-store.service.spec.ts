@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { TestStoreService } from './test-store.service';
 import { ConfigLoaderService } from '../config-loader.service';
@@ -8,7 +9,8 @@ import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
-import { cold } from 'jasmine-marbles';
+import { TestScheduler } from 'rxjs/testing';
+// import { cold } from 'jasmine-marbles';
 
 describe('TestStoreService', () => {
   let configLoader: ConfigLoaderService;
@@ -81,13 +83,29 @@ describe('TestStoreService', () => {
   });
 
   describe('submitTestCases', () => {
-    it('should submit test cases sequentially', () => {
-      spyOn(configLoader, 'submitTestCase').and.returnValues(cold(`---a`, {}), cold(`a`, {}), cold(`--a`, {}));
-      const mockTestCaseWrappers = [mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseWrapper3];
-      service.submitTestCases(mockTestCaseWrappers);
+    let testScheduler: TestScheduler;
 
-      // spy to mock call to submitTestCase, expect called in order, 
-      //is it possible to put a delay on when the service returns the observable? Marble testing: time progression or virtual frames
+    beforeEach(() => {
+      testScheduler = new TestScheduler((actual, expected) => {
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    it('should submit test cases in order', ()=> {
+      const mockTestCaseWrappers = [mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseWrapper3];
+      testScheduler.run(({ cold, expectObservable }) => {
+        const spy = spyOn(configLoader, 'submitTestCase').and.returnValues(
+          cold(`----a|`,  {a: "first" as any}), 
+          cold(`--a|`, {a: "second" as any}), 
+          cold('a|',  {a: "third" as any})
+        );
+        const testCaseMap$ = service.submitTestCases(mockTestCaseWrappers);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenCalledWith(mockTestCaseWrapper1);
+        expect(spy).toHaveBeenCalledWith(mockTestCaseWrapper2);
+        expect(spy).toHaveBeenCalledWith(mockTestCaseWrapper3);
+        expectObservable(testCaseMap$).toBe('---------(a|)',  {a: "third"});
+      })
     });
   })
 });

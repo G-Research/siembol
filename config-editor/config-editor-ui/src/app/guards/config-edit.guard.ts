@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Params } from '@angular/router';
 
 import { EditorService } from '../services/editor.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class ConfigEditGuard implements CanActivate {
     if (!this.setConfig(route.queryParams)) {
       return false;
     }
-    return this.editorService.configStore.editedConfig$.map(x => x !== null);
+    return this.editorService.configStore.editedConfig$.pipe(map(x => x !== null));
   }
 
   private setTestCase(params: Params) {

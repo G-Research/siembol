@@ -1,6 +1,5 @@
 import { cloneDeep } from 'lodash';
-import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import 'rxjs/add/operator/finally';
+import { BehaviorSubject, forkJoin, Observable, of, mergeMap, map, finalize } from 'rxjs';
 import { Config, Deployment, PullRequestInfo } from '../../model';
 import { ConfigStoreState } from '../../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../../model/test-case';
@@ -12,7 +11,6 @@ import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, Importers, Type } f
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
-import { mergeMap } from 'rxjs/operators';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -50,24 +48,24 @@ export class ConfigStoreService {
   private readonly importers = new BehaviorSubject<Importers>(importers);
 
   /*eslint-disable */
-  public readonly allConfigs$ = this.store.asObservable().map(x => x.configs);
-  public readonly deployment$ = this.store.asObservable().map(x => x.deployment);
-  public readonly initialDeployment$ = this.store.asObservable().map(x => x.initialDeployment);
-  public readonly filteredConfigs$ = this.store.asObservable().map(x => x.filteredConfigs);
-  public readonly filteredDeployment$ = this.store.asObservable().map(x => x.filteredDeployment);
-  public readonly searchTerm$ = this.store.asObservable().map(x => x.searchTerm);
-  public readonly filterMyConfigs$ = this.store.asObservable().map(x => x.filterMyConfigs);
-  public readonly filterUndeployed$ = this.store.asObservable().map(x => x.filterUndeployed);
-  public readonly filterUpgradable$ = this.store.asObservable().map(x => x.filterUpgradable);
-  public readonly deploymentHistory$ = this.store.asObservable().map(x => x.deploymentHistory);
-  public readonly editedConfig$ = this.store.asObservable().map(x => x.editedConfig);
-  public readonly editedConfigTestCases$ = this.store.asObservable().map(x => x.editedConfig.testCases);
-  public readonly editedTestCase$ = this.store.asObservable().map(x => x.editedTestCase);
-  public readonly editingTestCase$ = this.store.asObservable().map(x => x.editedTestCase !== null);
-  public readonly releaseSubmitInFlight$ = this.store.asObservable().map(x => x.releaseSubmitInFlight);
+  public readonly allConfigs$ = this.store.asObservable().pipe(map(x => x.configs));
+  public readonly deployment$ = this.store.asObservable().pipe(map(x => x.deployment));
+  public readonly initialDeployment$ = this.store.asObservable().pipe(map(x => x.initialDeployment));
+  public readonly filteredConfigs$ = this.store.asObservable().pipe(map(x => x.filteredConfigs));
+  public readonly filteredDeployment$ = this.store.asObservable().pipe(map(x => x.filteredDeployment));
+  public readonly searchTerm$ = this.store.asObservable().pipe(map(x => x.searchTerm));
+  public readonly filterMyConfigs$ = this.store.asObservable().pipe(map(x => x.filterMyConfigs));
+  public readonly filterUndeployed$ = this.store.asObservable().pipe(map(x => x.filterUndeployed));
+  public readonly filterUpgradable$ = this.store.asObservable().pipe(map(x => x.filterUpgradable));
+  public readonly deploymentHistory$ = this.store.asObservable().pipe(map(x => x.deploymentHistory));
+  public readonly editedConfig$ = this.store.asObservable().pipe(map(x => x.editedConfig));
+  public readonly editedConfigTestCases$ = this.store.asObservable().pipe(map(x => x.editedConfig.testCases));
+  public readonly editedTestCase$ = this.store.asObservable().pipe(map(x => x.editedTestCase));
+  public readonly editingTestCase$ = this.store.asObservable().pipe(map(x => x.editedTestCase !== null));
+  public readonly releaseSubmitInFlight$ = this.store.asObservable().pipe(map(x => x.releaseSubmitInFlight));
   public readonly pullRequestPending$ = this.pullRequestInfo.asObservable();
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
-  public readonly adminConfig$ = this.store.asObservable().map(x => x.adminConfig);
+  public readonly adminConfig$ = this.store.asObservable().pipe(map(x => x.adminConfig));
   public readonly importers$ = this.importers.asObservable();
 
   /*eslint-enable */
@@ -241,9 +239,9 @@ export class ConfigStoreService {
     this.updateReleaseSubmitInFlight(true);
     this.configLoaderService
       .submitRelease(deployment)
-      .finally(() => {
+      .pipe(finalize(() => {
         this.updateReleaseSubmitInFlight(false);
-      })
+      }))
       .subscribe((result: any) => {
         if (result) {
           this.loadPullRequestStatus();
@@ -253,23 +251,23 @@ export class ConfigStoreService {
 
   reloadStoreAndDeployment(): Observable<any> {
     const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled ? this.configLoaderService.getTestCases() : of({});
-    return Observable.forkJoin(
+    return forkJoin(
       this.configLoaderService.getConfigs(),
       this.configLoaderService.getRelease(),
       testCaseMapFun
-    ).map(([configs, deployment, testCaseMap]) => {
+    ).pipe(map(([configs, deployment, testCaseMap]) => {
       if (configs && deployment && testCaseMap) {
         this.initialise(configs, deployment, testCaseMap);
       }
-    });
+    }));
   }
 
   reloadAdminConfig(): Observable<any> {
-    return this.configLoaderService.getAdminConfig().map((config: AdminConfig) => {
+    return this.configLoaderService.getAdminConfig().pipe(map((config: AdminConfig) => {
       this.updateAdmin(config);
       this.configHistoryService.clear();
       this.configHistoryService.addConfig(config);
-    });
+    }));
   }
 
   validateEditedConfig(): Observable<any> {
@@ -296,7 +294,7 @@ export class ConfigStoreService {
       throw Error('empty edited config');
     }
 
-    return this.configLoaderService.submitConfig(config).map(configs => {
+    return this.configLoaderService.submitConfig(config).pipe(map(configs => {
       if (configs) {
         const currentEdited = configs.find(x => x.name === config.name);
         if (!currentEdited) {
@@ -317,7 +315,7 @@ export class ConfigStoreService {
 
         return true;
       }
-    });
+    }));
   }
 
   submitAdminConfig(): Observable<boolean> {
@@ -326,7 +324,7 @@ export class ConfigStoreService {
       throw Error('empty admin config');
     }
 
-    return this.configLoaderService.submitAdminConfig(adminConfig).map((result: any) => {
+    return this.configLoaderService.submitAdminConfig(adminConfig).pipe(map((result: any) => {
       if (result) {
         this.loadAdminPullRequestStatus();
         this.configHistoryService.clear();
@@ -334,7 +332,7 @@ export class ConfigStoreService {
         return true;
       }
       return false;
-    });
+    }));
   }
 
   /**
@@ -446,7 +444,7 @@ export class ConfigStoreService {
   }
 
   deleteConfig(configName: string): Observable<any> {
-    return this.configLoaderService.deleteConfig(configName).map(data => {
+    return this.configLoaderService.deleteConfig(configName).pipe(map(data => {
       const newState = new ConfigStoreStateBuilder(this.store.getValue())
         .testCaseMap(data.testCases)
         .configs(data.configs)
@@ -457,11 +455,11 @@ export class ConfigStoreService {
         .build();
 
       this.store.next(newState);
-    });
+    }));
   }
 
   deleteTestCase(configName: string, testCaseName: string): Observable<any> {
-    return this.configLoaderService.deleteTestCase(configName, testCaseName).map(testCaseMap => {
+    return this.configLoaderService.deleteTestCase(configName, testCaseName).pipe(map(testCaseMap => {
       const newState = new ConfigStoreStateBuilder(this.store.getValue())
         .testCaseMap(testCaseMap)
         .updateTestCasesInConfigs()
@@ -470,7 +468,7 @@ export class ConfigStoreService {
         .build();
 
       this.store.next(newState);
-    });
+    }));
   }
 
   undoConfig() {
@@ -499,13 +497,13 @@ export class ConfigStoreService {
   }
 
   importConfig(configToImport: ConfigToImport): Observable<boolean> {
-    return this.configLoaderService.importConfig(configToImport).map(result => {
+    return this.configLoaderService.importConfig(configToImport).pipe(map(result => {
       if (result.imported_configuration) {
         this.clipboardService.updatePastedConfig(result.imported_configuration);
         return true;
       }
       return false;
-    });
+    }));
   }
 
   loadImporters() {
@@ -541,9 +539,9 @@ export class ConfigStoreService {
             this.testStoreService.submitTestCases(toClone.test_cases)
           )
         )
-      ).map(([configs, testCaseMap]) => 
+      ).pipe(map(([configs, testCaseMap]) => 
         this.setConfigAndTestCasesInStore(configs, testCaseMap)
-      );
+      ));
   }
 
   setConfigAndTestCasesInStore(configs: Config[], testCaseMap: TestCaseMap): boolean {

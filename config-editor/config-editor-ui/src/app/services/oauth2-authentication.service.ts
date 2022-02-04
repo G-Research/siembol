@@ -3,6 +3,7 @@ import { User, UserManager } from 'oidc-client';
 import { from, Observable, of } from 'rxjs';
 import { HttpRequest } from '@angular/common/http';
 import { Oauth2Attributes } from '@app/model/app-config';
+import { map } from 'rxjs/operators';
 
 export class Oauth2AuthenticationService extends DefaultAuthenticationService {
   private callbackPath: string;
@@ -51,13 +52,13 @@ export class Oauth2AuthenticationService extends DefaultAuthenticationService {
   }
 
   private completeAuthentication(): Observable<boolean> {
-    return from(this.userManager.signinRedirectCallback().catch()).map(user => {
+    return from(this.userManager.signinRedirectCallback().catch()).pipe(map(user => {
       if (this.hasUserFreshToken(user)) {
         this.user = user;
         return true;
       }
       return false;
-    });
+    }));
   }
 
   private hasUserFreshToken(user: User): boolean {

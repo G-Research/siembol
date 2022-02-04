@@ -7,7 +7,7 @@ import { ConfigTestResult, TestingType, Type } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
-import { last } from 'rxjs/operators';
+import { last, map, mergeMap } from 'rxjs/operators';
 
 export class TestStoreService {
   testCaseHistoryService = new ConfigHistoryService();
@@ -105,9 +105,9 @@ export class TestStoreService {
 
   submitTestCases(testCaseWrappers: TestCaseWrapper[]): Observable<TestCaseMap> {
     if (testCaseWrappers.length > 0) {
-      return concat(testCaseWrappers.map((testCaseWrapper: TestCaseWrapper) => 
+      return concat(...testCaseWrappers.map((testCaseWrapper: TestCaseWrapper) => 
         this.configLoaderService.submitTestCase(testCaseWrapper)
-      )).flatMap(list => list).pipe(last());
+      )).pipe(last());
     };
     return of(undefined);
   }
@@ -121,7 +121,7 @@ export class TestStoreService {
     const testCaseWrapper = state.editedTestCase;
     const editedConfig = state.editedConfig;
 
-    return this.configLoaderService.submitTestCase(testCaseWrapper).map((testCaseMap: TestCaseMap) => {
+    return this.configLoaderService.submitTestCase(testCaseWrapper).pipe(map((testCaseMap: TestCaseMap) => {
       if (testCaseMap) {
         const currentState = this.store.getValue();
         if (editedConfig.name !== currentState.editedConfig.name) {
@@ -148,7 +148,7 @@ export class TestStoreService {
 
         return true;
       }
-    });
+    }));
   }
 
   runEditedTestCase() {

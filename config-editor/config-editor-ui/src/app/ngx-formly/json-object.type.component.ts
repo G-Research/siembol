@@ -68,7 +68,7 @@ export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDest
   valid = true;
   tree = {};
 
-  private ngUnsubscribe: Subject<any> = new Subject();
+  private ngUnsubscribe: Subject<void> = new Subject();
 
   constructor(private changeDetector: ChangeDetectorRef, private ngZone: NgZone) {
     super();

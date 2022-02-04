@@ -20,7 +20,7 @@ import { ManagementViewComponent } from '../management-view/management-view.comp
     template: '',
 })
 export class AppInitComponent implements OnInit, OnDestroy {
-    private ngUnsubscribe = new Subject();
+    private ngUnsubscribe = new Subject<void>();
 
     private readonly configRoutes: Routes = [
         {

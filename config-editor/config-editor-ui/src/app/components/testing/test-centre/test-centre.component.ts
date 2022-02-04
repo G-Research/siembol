@@ -25,7 +25,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   testCase: TestCaseWrapper;
 
   private testStoreService: TestStoreService;
-  private ngUnsubscribe = new Subject();
+  private ngUnsubscribe = new Subject<void>();
   constructor(
     private editorService: EditorService,
     public snackbar: PopupService,

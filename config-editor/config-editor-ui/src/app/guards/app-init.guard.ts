@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
 
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AppService } from '../services/app.service';
 
 @Injectable({
@@ -17,6 +17,6 @@ export class AppInitGuard implements CanActivate {
             return true;
         }
 
-        return this.appService.createAppContext().map(x => this.appService.setAppContext(x));
+        return this.appService.createAppContext().pipe(map(x => this.appService.setAppContext(x)));
     }
 }

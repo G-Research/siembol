@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError, BehaviorSubject, of } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, of, forkJoin } from 'rxjs';
 import { AppConfigService } from '@app/services/app-config.service';
 import { ConfigLoaderService } from './config-loader.service';
 import { JSONSchema7 } from 'json-schema';
 import { ConfigStoreService } from './store/config-store.service';
 import { UiMetadata } from '../model/ui-metadata-map';
 import { AppService } from './app.service';
-import { mergeMap } from 'rxjs/operators';
+import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
 
@@ -75,7 +75,7 @@ export class EditorService {
       .getSchema()
       .pipe(
         mergeMap(schema =>
-          Observable.forkJoin(
+          forkJoin(
             configLoader.getConfigs(),
             configLoader.getRelease(),
             of(schema),
@@ -84,7 +84,7 @@ export class EditorService {
           )
         )
       )
-      .map(([configs, deployment, originalSchema, testCaseMap, testSpecSchema]) => {
+      .pipe(map(([configs, deployment, originalSchema, testCaseMap, testSpecSchema]) => {
         if (configs && deployment && originalSchema && testCaseMap && testSpecSchema) {
           configStore.initialise(configs, deployment, testCaseMap);
           return {
@@ -98,7 +98,7 @@ export class EditorService {
           };
         }
         throwError('Can not load service');
-      });
+      }));
   }
 
   createAdminServiceContext(serviceName: string): Observable<ServiceContext> {
@@ -106,8 +106,8 @@ export class EditorService {
 
     return configLoader
       .getAdminSchema()
-      .pipe(mergeMap(schema => Observable.forkJoin(configLoader.getAdminConfig(), of(schema))))
-      .map(([adminConfig, originalSchema]) => {
+      .pipe(mergeMap(schema => forkJoin(configLoader.getAdminConfig(), of(schema))))
+      .pipe(map(([adminConfig, originalSchema]) => {
         if (adminConfig && originalSchema) {
           configStore.updateAdmin(adminConfig);
           return {
@@ -120,7 +120,7 @@ export class EditorService {
           };
         }
         throwError('Can not load admin service');
-      });
+      }));
   }
 
   private initialiseContext(

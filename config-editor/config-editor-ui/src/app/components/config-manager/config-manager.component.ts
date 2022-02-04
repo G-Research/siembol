@@ -67,7 +67,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   importers: Importers;
   useImporters: boolean;
 
-  private ngUnsubscribe = new Subject();
+  private ngUnsubscribe = new Subject<void>();
   private filteredConfigs: Config[];
   private configStore: ConfigStoreService;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';

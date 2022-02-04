@@ -11,7 +11,7 @@ import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
 import { take, catchError } from 'rxjs/operators';
-import { throwError, of } from 'rxjs';
+import { throwError, of, mergeMap } from 'rxjs';
 import { DiffResults } from 'ngx-text-diff/lib/ngx-text-diff.model';
 import { AppService } from '@app/services/app.service';
 import { DeploymentWrapper, TestingType } from '@app/model/config-model';
@@ -111,14 +111,14 @@ export class DeployDialogComponent {
     this.newDeployment = { ...this.newDeployment, ...this.extrasData };
     this.service.configLoader
       .getRelease()
-      .flatMap((d: DeploymentWrapper) => {
-        if (d.storedDeployment.deploymentVersion > this.newDeployment.deploymentVersion) {
-          return of(false);
-        }
-        return this.service.configLoader.validateRelease(this.newDeployment);
-      })
-      .pipe(take(1))
       .pipe(
+        mergeMap((d: DeploymentWrapper) => {
+          if (d.storedDeployment.deploymentVersion > this.newDeployment.deploymentVersion) {
+            return of(false);
+          }
+          return this.service.configLoader.validateRelease(this.newDeployment);
+        }),
+        take(1),
         catchError(e => {
           this.isDeploymentValid = false;
           this.message = this.INVALID_MESSAGE;
