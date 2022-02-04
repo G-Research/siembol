@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2022-02-04
+
+- Reworking kafka writing in Storm applications to use async sending in order to improve performance
+- Deprecating custom batching in kafka writer and use Storm and Kafka batching instead 
+- Upgrading Apache Kafka dependency to 3.1.0 and Spring Boot applications to 2.6.3 
+- Upgrading Angular to 13.2.0 in Siembol UI
+- Adding management page into Siembol UI including manegement links and restarting all siembol storm applications
+- Adding topic routing parsing and header routing parsing application types
+- Various fixes required for Siembol k8s deployment
+
 ## [2.1.0] - 2021-11-19
 
 - Supporting autocreation of ZooKeeper nodes in ZooKeeper connector

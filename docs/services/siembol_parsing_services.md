@@ -107,7 +107,7 @@ Parsers are integrated in a stream application (storm topology) that combines on
 - `parsing_app_autho` - The author of the parsing application
 - `parsing_app_description`- Description of the parsing application 
 - `parsing_app_settings` - Parsing application settings
-    - `parsing_app_type`- The type of the parsing application - `router_parsing` or `single_parser`
+    - `parsing_app_type`- The type of the parsing application - `single_parser`, `router_parsing`, `topic_routing_parsing` or `header_routing_parsing`
     - `input_topics` - The kafka topics for reading messages for parsing
     - `error_topic`- The kafka topic for publishing error messages
     - `input_parallelism` - The number of parallel executors for reading messages from the input kafka topics
@@ -130,6 +130,21 @@ The application integrates multiple parsers. First, the router parser parses the
 - `parsers` - The list of parsers for further parsing
     - `routing_field_pattern` - The pattern for selecting the parser
     - `parser_properties` - The properties of the selected parser with `parser_name` and `output_topic`
+### Topic routing parsing
+![topic_routing_parsing](images/topic_router_parsing.svg)
+The application integrates multiple parsers and reads logs from multiple topics. The parser is selected based on the topic name on which the log was received.
+- `default_parser` - The parser that should be used if no other parsers is selected with `parser_name` and `output_topic`
+- `parsers` - The list of parsers for further parsing
+    - `topic_name` - The name of the topic for selecting the parser
+    - `parser_properties` - The properties of the selected parser with `parser_name` and `output_topic`
+### Header routing parsing
+![header_routing_parsing](images/header_router_parsing.svg)
+The application integrates multiple parsers and uses a kafka message header for routing. The parser is selected based on the dedicated header velue.
+- `default_parser` - The parser that should be used if no other parsers is selected with `parser_name` and `output_topic`
+- `header_name` - The name of the header used for routing
+- `parsers` - The list of parsers for further parsing
+    - `source_header_value` - The value in the header for selecting the parser
+    - `parser_properties` - The properties of the selected parser with `parser_name` and `output_topic`        
 ## Admin Config
 - `topology.name.prefix` - The prefix that will be used to create a topology name using the application name, by default `parsing`
 - `client.id.prefix` - The prefix that will be used to create a kafka producer client id using the application name
@@ -138,7 +153,6 @@ The application integrates multiple parsers. First, the router parser parses the
     - `zk.url` - Zookeeper servers url. Multiple servers are separated by a comma
     - `zk.path` - Path to a zookeeper node
 - `kafka.batch.writer.attributes` - Global settings for the kafka batch writer used if they are not overridden
-    - `batch.size` - The max size of batch used for producing messages
     - `producer.properties` - Defines kafka producer properties, see [https://kafka.apache.org/0102/documentation.html#producerconfigs](https://kafka.apache.org/0102/documentation.html#producerconfigs)
 - `storm.attributes` - Global settings for storm attributes used if they are not overridden
     - `bootstrap.servers` - Kafka brokers servers url. Multiple servers are separated by a comma
