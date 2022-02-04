@@ -67,7 +67,6 @@ Note: you can only enrich from one table per rule. If you want to enrich the sam
     - `zk.url` - Zookeeper servers url. Multiple servers are separated by comma
     - `zk.path` - Path to a zookeeper node
 - `kafka.batch.writer.attributes` - Kafka batch writer attributes for producing output messages
-     - `batch.size` - The max size of batch used for producing messages
     - `producer.properties` - Defines kafka producer properties, see [https://kafka.apache.org/0102/documentation.html#producerconfigs](https://kafka.apache.org/0102/documentation.html#producerconfigs)
 - `storm.attributes` - Storm attributes for the enrichment topology
 - `bootstrap.servers` - Kafka brokers servers url. Multiple servers are separated by comma
