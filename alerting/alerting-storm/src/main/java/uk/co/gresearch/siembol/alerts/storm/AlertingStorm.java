@@ -64,7 +64,7 @@ public class AlertingStorm {
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(KAFKA_WRITER,
-                new KafkaWriterBolt(attributes), attributes.getKafkaWriterBoltNumExecutors())
+                new AlertingKafkaWriterBolt(attributes), attributes.getKafkaWriterBoltNumExecutors())
                 .localOrShuffleGrouping(AlertingEngineType.SIEMBOL_ALERTS.getEngineName());
 
         return builder.createTopology();
@@ -84,7 +84,7 @@ public class AlertingStorm {
                 .fieldsGrouping(KAFKA_SPOUT, new Fields(TupleFieldNames.CORRELATION_KEY.toString()));
 
         builder.setBolt(KAFKA_WRITER,
-                new KafkaWriterBolt(attributes), attributes.getKafkaWriterBoltNumExecutors())
+                new AlertingKafkaWriterBolt(attributes), attributes.getKafkaWriterBoltNumExecutors())
                 .localOrShuffleGrouping(AlertingEngineType.SIEMBOL_CORRELATION_ALERTS.getEngineName());
 
         return builder.createTopology();

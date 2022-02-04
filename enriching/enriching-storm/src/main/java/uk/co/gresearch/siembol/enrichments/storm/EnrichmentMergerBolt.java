@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessage;
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
 import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluatorLibrary;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
@@ -74,9 +74,9 @@ public class EnrichmentMergerBolt extends BaseRichBolt {
         }
 
         LOG.debug(EVENT_INFO_LOG, event);
-        KafkaBatchWriterMessages messages = new KafkaBatchWriterMessages();
-        messages.add(new KafkaBatchWriterMessage(outputTopic, event));
-        exceptions.forEach(x -> messages.add(new KafkaBatchWriterMessage(errorTopic, x)));
+        KafkaWriterMessages messages = new KafkaWriterMessages();
+        messages.add(new KafkaWriterMessage(outputTopic, event));
+        exceptions.forEach(x -> messages.add(new KafkaWriterMessage(errorTopic, x)));
         collector.emit(tuple, new Values(messages));
         collector.ack(tuple);
     }

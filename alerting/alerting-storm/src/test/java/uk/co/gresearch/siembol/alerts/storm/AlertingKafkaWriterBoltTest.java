@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-public class KafkaWriterBoltTest {
+public class AlertingKafkaWriterBoltTest {
     private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
             .readerFor(AlertingStormAttributesDto.class);
     private static final ObjectReader JSON_MAP_READER = new ObjectMapper()
@@ -89,7 +89,7 @@ public class KafkaWriterBoltTest {
     public static KafkaJunitRule kafkaRule = new KafkaJunitRule(EphemeralKafkaBroker.create());
 
     private AlertingStormAttributesDto attributes;
-    private KafkaWriterBolt writerBolt;
+    private AlertingKafkaWriterBolt writerBolt;
     private String bootstrapServer;
     private Tuple tuple;
     private OutputCollector collector;
@@ -113,7 +113,7 @@ public class KafkaWriterBoltTest {
         when(tuple.getValueByField(eq(TupleFieldNames.ALERTING_EXCEPTIONS.toString()))).thenReturn(exceptionMessages);
 
         kafkaRule.waitForStartup();
-        writerBolt = new KafkaWriterBolt(attributes);
+        writerBolt = new AlertingKafkaWriterBolt(attributes);
         writerBolt.prepare(null, null, collector);
     }
 

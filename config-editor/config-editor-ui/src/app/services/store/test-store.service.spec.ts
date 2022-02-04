@@ -10,7 +10,6 @@ import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { TestScheduler } from 'rxjs/testing';
-// import { cold } from 'jasmine-marbles';
 
 describe('TestStoreService', () => {
   let configLoader: ConfigLoaderService;

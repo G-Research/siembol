@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import uk.co.gresearch.siembol.common.storm.KafkaBatchWriterMessages;
+import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentExceptions;
@@ -68,8 +68,8 @@ public class EnrichmentMergerBoltTest {
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
         Assert.assertEquals(1, values.size());
-        Assert.assertTrue(values.get(0) instanceof KafkaBatchWriterMessages);
-        KafkaBatchWriterMessages messages = (KafkaBatchWriterMessages)values.get(0);
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertTrue(messages.get(0).getMessage().contains(enrichedEventPrefix.trim()));
@@ -83,8 +83,8 @@ public class EnrichmentMergerBoltTest {
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
         Assert.assertEquals(1, values.size());
-        Assert.assertTrue(values.get(0) instanceof KafkaBatchWriterMessages);
-        KafkaBatchWriterMessages messages = (KafkaBatchWriterMessages)values.get(0);
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertFalse(messages.get(0).getMessage().isEmpty());
@@ -106,8 +106,8 @@ public class EnrichmentMergerBoltTest {
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
         Assert.assertEquals(1, values.size());
-        Assert.assertTrue(values.get(0) instanceof KafkaBatchWriterMessages);
-        KafkaBatchWriterMessages messages = (KafkaBatchWriterMessages)values.get(0);
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
 
@@ -126,8 +126,8 @@ public class EnrichmentMergerBoltTest {
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
         Assert.assertEquals(1, values.size());
-        Assert.assertTrue(values.get(0) instanceof KafkaBatchWriterMessages);
-        KafkaBatchWriterMessages messages = (KafkaBatchWriterMessages)values.get(0);
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertTrue(messages.get(0).getMessage().contains("\"test\":\"enrichment\""));
@@ -141,8 +141,8 @@ public class EnrichmentMergerBoltTest {
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
         Assert.assertEquals(1, values.size());
-        Assert.assertTrue(values.get(0) instanceof KafkaBatchWriterMessages);
-        KafkaBatchWriterMessages messages = (KafkaBatchWriterMessages)values.get(0);
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertEquals("INVALID", messages.get(0).getMessage());
