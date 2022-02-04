@@ -139,7 +139,7 @@ The application integrates multiple parsers and reads logs from multiple topics.
     - `parser_properties` - The properties of the selected parser with `parser_name` and `output_topic`
 ### Header routing parsing
 ![header_routing_parsing](images/header_router_parsing.svg)
-The application integrates multiple parsers and uses a kafka message header for routing. The parser is selected based on the dedicated header velue.
+The application integrates multiple parsers and uses a kafka message header for routing. The parser is selected based on the dedicated header value.
 - `default_parser` - The parser that should be used if no other parsers is selected with `parser_name` and `output_topic`
 - `header_name` - The name of the header used for routing
 - `parsers` - The list of parsers for further parsing
