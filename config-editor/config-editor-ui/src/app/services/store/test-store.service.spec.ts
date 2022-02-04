@@ -4,7 +4,7 @@ import { TestStoreService } from './test-store.service';
 import { ConfigLoaderService } from '../config-loader.service';
 import { mockStore } from 'testing/store';
 import { BehaviorSubject, of } from 'rxjs';
-import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap, mockTestCaseWrapper3 } from 'testing/testcases';
+import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap, mockTestCaseWrapper3, mockTestCase1 } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
@@ -107,5 +107,18 @@ describe('TestStoreService', () => {
         expectObservable(testCaseMap$).toBe('---------(a|)',  {a: "third"});
       })
     });
+  })
+
+  it("should return cloned test case", () => {
+    const clone = service.getClonedTestCase(mockTestCaseWrapper1, "config_name");
+    const mockTestCase1Clone = cloneDeep(mockTestCase1);
+    mockTestCase1Clone.config_name = "config_name";
+    mockTestCase1Clone.version = 0;
+    const expected = { 
+      fileHistory: null, 
+      testCaseResult: null, 
+      testCase: mockTestCase1Clone,
+    }
+    expect(clone).toEqual(expected);
   })
 });

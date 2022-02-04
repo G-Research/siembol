@@ -1,4 +1,4 @@
-import { BehaviorSubject, concat, Observable, of } from 'rxjs';
+import { BehaviorSubject, concat, Observable, of, last, map } from 'rxjs';
 import { ConfigStoreState } from '../../model/store-state';
 import { ConfigLoaderService } from '../config-loader.service';
 import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from '../../model/test-case';
@@ -7,7 +7,6 @@ import { ConfigTestResult, TestingType, Type } from '../../model/config-model';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
-import { last, map, mergeMap } from 'rxjs/operators';
 
 export class TestStoreService {
   testCaseHistoryService = new ConfigHistoryService();
@@ -30,12 +29,13 @@ export class TestStoreService {
   }
 
   getClonedTestCase(testCase: TestCaseWrapper, config_name: string) {
-    testCase.fileHistory = null;
-    testCase.testCaseResult = null;
-    testCase.testCase.version = 0;
-    testCase.testCase.author = this.user;
-    testCase.testCase.config_name = config_name;
-    return testCase;
+    const testCaseClone = cloneDeep(testCase);
+    testCaseClone.fileHistory = null;
+    testCaseClone.testCaseResult = null;
+    testCaseClone.testCase.version = 0;
+    testCaseClone.testCase.author = this.user;
+    testCaseClone.testCase.config_name = config_name;
+    return testCaseClone;
   }
 
   setEditedTestCaseNew() {

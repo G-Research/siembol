@@ -534,10 +534,10 @@ export class ConfigStoreService {
     return this.configLoaderService.submitConfig(toClone.config)
       .pipe(
         mergeMap(configs => 
-          forkJoin(
+          forkJoin([
             of(configs),
-            this.testStoreService.submitTestCases(toClone.test_cases)
-          )
+            this.testStoreService.submitTestCases(toClone.test_cases),
+          ])
         )
       ).pipe(map(([configs, testCaseMap]) => 
         this.setConfigAndTestCasesInStore(configs, testCaseMap)
@@ -582,7 +582,6 @@ export class ConfigStoreService {
   private getConfigByName(configName: string): Config {
     const currentState = this.store.getValue();
     const config = currentState.configs.find(x => x.name === configName);
-
     return cloneDeep(config);
   }
 
