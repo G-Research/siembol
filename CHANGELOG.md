@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecating custom batching in kafka writer and use Storm and Kafka batching instead 
 - Upgrading Apache Kafka dependency to 3.1.0 and Spring Boot applications to 2.6.3 
 - Upgrading Angular to 13.2.0 in Siembol UI
-- Adding management page into Siembol UI including manegement links and restarting all siembol storm applications
+- Adding management page into Siembol UI including management links and restarting all Siembol Storm applications
 - Adding topic routing parsing and header routing parsing application types
 - Various fixes required for Siembol k8s deployment
 
