@@ -7,7 +7,7 @@
     font-size: 1em;
     min-width: 250px;
     padding: 0 10px;
-    // height: 100vh;
+    height: 100vh;
     mat-divider {
         border-top-width: 1px;
         min-width: 100%;
@@ -41,5 +41,5 @@
 }
 
 .router-holder {
-  height: 100vh;
+    height: calc(100vh - 94px);
 }
