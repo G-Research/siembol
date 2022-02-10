@@ -1,3 +1,4 @@
+import { ServiceContext } from '@app/services/editor.service';
 import { UserSettings } from 'oidc-client';
 
 export interface BuildInfo {
@@ -39,3 +40,7 @@ export interface Oauth2Attributes {
 }
 
 export const HOME_REGEX = new RegExp('^\/($|home(\/|$))');
+
+export interface ServiceContextMap {
+  [serviceName: string]: ServiceContext; 
+}

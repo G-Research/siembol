@@ -6,6 +6,8 @@ import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
 import { UiMetadata } from '@app/model/ui-metadata-map';
 import { map, mergeMap } from 'rxjs/operators';
+import { ServiceContextMap } from '@app/model/app-config';
+import { ServiceContext } from './editor.service';
 
 export class AppContext {
   user: string;
@@ -14,6 +16,7 @@ export class AppContext {
   testCaseSchema: JSONSchema7;
   repositoryLinks: { [name: string]: RepositoryLinks };
   isAdminOfAnyService: boolean;
+  serviceContextMap: ServiceContextMap = {};
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -50,7 +53,6 @@ export class AppService {
   get repositoryLinks() {
     return this.appContext.repositoryLinks;
   }
-
   get isAdminOfAnyService() {
     return this.appContext.isAdminOfAnyService;
   }
@@ -125,6 +127,14 @@ export class AppService {
 
   getServiceRepositoryLink(serviceName: string): RepositoryLinks {
     return this.appContext.repositoryLinks[serviceName];
+  }
+
+  updateServiceContextMap(serviceContext: ServiceContext) {
+    this.appContext.serviceContextMap[serviceContext.serviceName] = serviceContext;
+  }
+
+  getServiceContext(serviceName: string): ServiceContext {
+    return this.appContext.serviceContextMap[serviceName];
   }
 
   private isUserAdminOfAnyService(userServices: ServiceInfo[]): boolean {

@@ -6,7 +6,6 @@ import { ServiceInfo } from "@app/model/config-model";
 import { AppService } from "@app/services/app.service";
 import { EditorService } from "@app/services/editor.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { map } from "rxjs";
 import * as fields from "./clone-dialog-field.json";
 
 
@@ -46,24 +45,19 @@ export class CloneDialogComponent {
 
     onClickClone() {
       this.submitting = true;
-      const toClone = this.editorService.configStore
-        .getClonedConfigAndTestsByName(this.data, this.model['config_name'], this.model['clone_test_cases']);
-        
-      this.editorService.createConfigServiceContext(this.model['service_instance'])
-        .pipe(map(x => this.editorService.setServiceContext(x))).subscribe(() => {
-          this.editorService.configStore.submitClonedConfigAndTests(toClone).subscribe(
-            success => {
-              if (success) {
-                this.router.navigate([this.model['service_instance'], 'edit'], {
-                  queryParams: { configName: this.model['config_name'] },
-                });
-                this.dialogRef.close();
-              }
-          },
-          e => {
+      this.router.navigate([this.model['service_instance'], 'edit'], {
+        queryParams: { 
+          newConfigName: this.model['config_name'], 
+          cloneConfig: this.data,
+          fromService: this.editorService.serviceName,
+          withTestCases: this.model['clone_test_cases'] },
+      }).then(
+          () => {
             this.dialogRef.close();
-            throw e;
-          });
+      },
+      e => {
+        this.dialogRef.close();
+        throw e;
       });
     }
 

@@ -11,6 +11,7 @@ import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, Importers, Type } f
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
+import { AppService } from '../app.service';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -86,7 +87,8 @@ export class ConfigStoreService {
     private user: string, 
     private metaDataMap: UiMetadata, 
     private configLoaderService: ConfigLoaderService, 
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private appService: AppService
   ) {
     this.clipboardStoreService = new ClipboardStoreService(this.configLoaderService, this.store);
     this.testStoreService = new TestStoreService(
@@ -514,8 +516,21 @@ export class ConfigStoreService {
     });
   }
 
-  getClonedConfigAndTestsByName(configName: string, new_name: string, withTests: boolean): ConfigAndTestsToClone {
-    const cloned_config = this.getClonedConfig(configName, new_name);
+  setClonedConfigAndTests(configName: string, newName: string, withTests: boolean): Observable<boolean> {
+    const toClone = this.getClonedConfigAndTestsByName(configName, newName, withTests);
+    return this.submitClonedConfigAndTests(toClone);
+  }
+
+  setClonedConfigAndTestsOtherService(
+    configName: string, newName: string, withTests: boolean, fromService: string
+  ) {
+    const toClone = this.appService.getServiceContext(fromService)
+      .configStore.getClonedConfigAndTestsByName(configName, newName, withTests);
+    return this.submitClonedConfigAndTests(toClone);
+  }
+
+  getClonedConfigAndTestsByName(configName: string, newName: string, withTests: boolean): ConfigAndTestsToClone {
+    const cloned_config = this.getClonedConfig(configName, newName);
     let cloned_test_cases = [];
     if (withTests) {
       const currentState = this.store.getValue();
@@ -523,7 +538,7 @@ export class ConfigStoreService {
       if (configName in testCaseMap) {
         cloned_test_cases = testCaseMap[configName].map(
           testCaseWrapper => 
-            this.testStoreService.getClonedTestCase(testCaseWrapper, new_name)
+            this.testStoreService.getClonedTestCase(testCaseWrapper, newName)
         );
       }
     }
@@ -535,29 +550,31 @@ export class ConfigStoreService {
       .pipe(
         mergeMap(configs => 
           forkJoin([
+            of(toClone.config),
             of(configs),
             this.testStoreService.submitTestCases(toClone.test_cases),
           ])
-        )
-      ).pipe(map(([configs, testCaseMap]) => 
-        this.setConfigAndTestCasesInStore(configs, testCaseMap)
+        ),
+        map(([config, configs, testCaseMap]) => 
+        this.setConfigAndTestCasesInStore(config.name, configs, testCaseMap)
       ));
   }
 
-  setConfigAndTestCasesInStore(configs: Config[], testCaseMap: TestCaseMap): boolean {
+  setConfigAndTestCasesInStore(editedConfigName: string, configs: Config[], testCaseMap: TestCaseMap): boolean {
     if (configs) {
       const currentState = this.store.getValue();
       if (!testCaseMap) {
         testCaseMap = currentState.testCaseMap;
       }
-
       const newState = new ConfigStoreStateBuilder(currentState)
+        .editedConfig(configs.find(config => config.name === editedConfigName))
         .configs(configs)
         .testCaseMap(testCaseMap)
         .updateTestCasesInConfigs()
         .detectOutdatedConfigs()
         .reorderConfigsByDeployment()
         .computeFiltered(this.user)
+        .editedConfigTestCases(testCaseMap[editedConfigName])
         .build();
       this.store.next(newState);
       return true;
