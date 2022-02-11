@@ -13,7 +13,7 @@ export class ConfigEditGuard implements CanActivate {
     private router: Router
     ) {}
 
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     if (!this.editorService.configStore || !this.editorService.configStore.editedConfig$) {
       return false;
     }
