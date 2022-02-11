@@ -1,3 +1,5 @@
+import { TestBed } from "@angular/core/testing";
+import { RouterTestingModule } from "@angular/router/testing";
 import { EditorService } from "@app/services/editor.service";
 import { TestStoreService } from "@app/services/store/test-store.service";
 import { of } from "rxjs";
@@ -10,6 +12,10 @@ describe('ConfigEditGuard', () => {
     let testStore: TestStoreService;
     let service: EditorService;
     beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule],
+        providers: [],
+      });
       testStore = jasmine.createSpyObj
       (
         'TestStoreService',

@@ -6,7 +6,6 @@ import { ServiceInfo } from "@app/model/config-model";
 import { AppService } from "@app/services/app.service";
 import { EditorService } from "@app/services/editor.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import * as fields from "./clone-dialog-field.json";
 
 
 @Component({
@@ -15,7 +14,36 @@ import * as fields from "./clone-dialog-field.json";
     templateUrl: 'clone-dialog.component.html',
 })
 export class CloneDialogComponent {
-    fields: FormlyFieldConfig[] = (fields as any).default;
+    fields: FormlyFieldConfig[] = [ 
+      {
+        key: "config_name",
+        type: "input",
+        templateOptions: {
+          label: "Cloned config name",
+          pattern: "^[a-zA-Z0-9_\\-]+$",
+          hintEnd: "The name of the cloned config",
+          required: true,
+        },
+      },
+      {
+        key: "service_instance",
+        type: "enum",
+        templateOptions: {
+          label: "Service Instance",
+          multiple: false,
+          hintEnd: "The name of the service to clone the config to",
+          options: [],
+        },
+      },
+      {
+        key: "clone_test_cases",
+        type: "checkbox",
+        defaultValue: true,
+        templateOptions: {
+          label: "Include test cases",
+        },
+      },
+    ];
     form: FormGroup = new FormGroup({});
     model = {};
     serviceOptions: string[] = [];
@@ -67,7 +95,7 @@ export class CloneDialogComponent {
           f.defaultValue = this.currentService;
           f.templateOptions.options = this.serviceOptions.map(
             function(service) {
-              return { "value": service,"label": service}
+              return { value: service, label: service}
             }
           )
         }
