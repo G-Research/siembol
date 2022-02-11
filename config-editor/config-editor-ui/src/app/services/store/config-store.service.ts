@@ -521,7 +521,7 @@ export class ConfigStoreService {
     return this.submitClonedConfigAndTests(toClone);
   }
 
-  setClonedConfigAndTestsOtherService(
+  setClonedConfigAndTestsFromOtherService(
     configName: string, newName: string, withTests: boolean, fromService: string
   ) {
     const toClone = this.appService.getServiceContext(fromService)

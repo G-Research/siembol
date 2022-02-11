@@ -44,3 +44,9 @@ export const HOME_REGEX = new RegExp('^\/($|home(\/|$))');
 export interface ServiceContextMap {
   [serviceName: string]: ServiceContext; 
 }
+
+export enum GuardResult {
+  SUCCESS = 'success',
+  FAILURE = 'failure',
+  ROUTE = 'route',
+}

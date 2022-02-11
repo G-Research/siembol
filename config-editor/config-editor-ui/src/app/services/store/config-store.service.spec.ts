@@ -7,6 +7,7 @@ import { AppConfigService } from '../app-config.service';
 import { cloneDeep } from 'lodash';
 import { mockTestCaseMap } from 'testing/testcases';
 import { of } from 'rxjs';
+import { AppService } from '../app.service';
 
 const expectedClonedConfig = {
   author: "siembol",
@@ -25,6 +26,7 @@ const expectedClonedConfig = {
 describe('ConfigStoreService', () => {
   let configLoader: ConfigLoaderService;
   let configService: AppConfigService;
+  let appService: AppService;
   let service: ConfigStoreService;
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,11 +43,16 @@ describe('ConfigStoreService', () => {
             useImporters: false,
           },
         },
+        {
+          provide: AppService,
+          useValue:  {},
+      },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
     configService = TestBed.inject(AppConfigService);
-    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader, configService);
+    appService = TestBed.inject(AppService);
+    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader, configService, appService);
   });
 
   it('should be created', () => {
@@ -97,7 +104,7 @@ describe('ConfigStoreService', () => {
     const spy = spyOn(service, 'setConfigAndTestCasesInStore').and.returnValue(true);
     service.submitClonedConfigAndTests(to_clone).subscribe(() => {
       expect(spy_test_service).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledOnceWith([mockParserConfig], mockTestCaseMap);
+      expect(spy).toHaveBeenCalledOnceWith("test_clone", [mockParserConfig], mockTestCaseMap);
       done();
     })
   });

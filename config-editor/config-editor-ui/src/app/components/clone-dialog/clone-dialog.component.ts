@@ -2,7 +2,7 @@ import { Component, Inject } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Router } from "@angular/router";
-import { ServiceInfo } from "@app/model/config-model";
+import { NAME_REGEX, ServiceInfo } from "@app/model/config-model";
 import { AppService } from "@app/services/app.service";
 import { EditorService } from "@app/services/editor.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
@@ -20,7 +20,7 @@ export class CloneDialogComponent {
         type: "input",
         templateOptions: {
           label: "Cloned config name",
-          pattern: "^[a-zA-Z0-9_\\-]+$",
+          pattern: NAME_REGEX,
           hintEnd: "The name of the cloned config",
           required: true,
         },
