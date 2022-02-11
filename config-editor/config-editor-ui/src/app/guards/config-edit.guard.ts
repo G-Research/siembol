@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, CanActivate, Params, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Params, Router } from '@angular/router';
 import { EditorService } from '../services/editor.service';
 import { map, mergeMap, Observable, of } from 'rxjs';
 
@@ -9,8 +9,7 @@ import { map, mergeMap, Observable, of } from 'rxjs';
 export class ConfigEditGuard implements CanActivate {
   constructor(
     private editorService: EditorService, 
-    private router: Router,
-    private activeRoute: ActivatedRoute
+    private router: Router
     ) {}
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | Promise<boolean> | boolean {
@@ -22,7 +21,6 @@ export class ConfigEditGuard implements CanActivate {
       return result.pipe(mergeMap((success: boolean) => {
         if (success) {
           this.router.navigate([this.editorService.serviceName, 'edit'], { 
-            relativeTo: this.activeRoute,
             queryParams: { configName: route.queryParams.newConfigName },
           })
         }
