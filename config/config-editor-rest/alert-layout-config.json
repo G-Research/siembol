@@ -41,7 +41,8 @@
                     "is_negated": {
                         "type": "boolean",
                         "description": "The matcher is negated",
-                        "default": false
+                        "default": false,
+                        "indeterminate":  false
                     },
                     "field": {
                         "widget": {
@@ -75,7 +76,7 @@
                     "matchers": {
                         "widget": {
                             "formlyConfig": {
-                                "hideExpression": "field.parent.model && !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
+                                "hideExpression": "!field.parent.model || !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
                             }
                         },
                         "type": "array",
@@ -104,12 +105,17 @@
                                 "is_negated": {
                                     "type": "boolean",
                                     "description": "The matcher is negated",
-                                    "default": false
+                                    "default": false,
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!model"
+                                        }
+                                    }
                                 },
                                 "field": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "model && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                            "hideExpression": "!model || !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "string",
@@ -118,7 +124,7 @@
                                 "case_insensitive": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "model && model.matcher_type !== 'IS_IN_SET'"
+                                            "hideExpression": "!model || model.matcher_type !== 'IS_IN_SET'"
                                         }
                                     },
                                     "type": "boolean",
@@ -129,7 +135,7 @@
                                     "widget": {
                                         "formlyConfig": {
                                             "type": "textarea",
-                                            "hideExpression": "model && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                            "hideExpression": "!model || model.matcher_type && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "string",
@@ -138,7 +144,7 @@
                                 "matchers": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "field.parent.model && !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
+                                            "hideExpression": "!field.parent.model || !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
                                         }
                                     },
                                     "type": "array",
@@ -165,11 +171,21 @@
                                             "is_negated": {
                                                 "type": "boolean",
                                                 "description": "The matcher is negated",
-                                                "default": false
+                                                "default": false,
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!model"
+                                                    }
+                                                }
                                             },
                                             "field": {
                                                 "type": "string",
-                                                "description": "Field on which the matcher will be evaluated"
+                                                "description": "Field on which the matcher will be evaluated",
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!model"
+                                                    }
+                                                }
                                             },
                                             "case_insensitive": {
                                                 "type": "boolean",
@@ -177,14 +193,15 @@
                                                 "default": false,
                                                 "widget": {
                                                     "formlyConfig": {
-                                                        "hideExpression": "model && model.matcher_type !== 'IS_IN_SET'"
+                                                        "hideExpression": "!model || model.matcher_type !== 'IS_IN_SET'"
                                                     }
                                                 }
                                             },
                                             "data": {
                                                 "widget": {
                                                     "formlyConfig": {
-                                                        "type": "textarea"
+                                                        "type": "textarea",
+                                                        "hideExpression": "!model"
                                                     }
                                                 },
                                                 "type": "string",
