@@ -32,6 +32,7 @@
                         "enum": [
                             "REGEX_MATCH",
                             "IS_IN_SET",
+                            "CONTAINS",
                             "COMPOSITE_AND",
                             "COMPOSITE_OR"
                         ],
@@ -41,25 +42,34 @@
                     "is_negated": {
                         "type": "boolean",
                         "description": "The matcher is negated",
-                        "default": false,
-                        "indeterminate":  false
+                        "default": false
                     },
                     "field": {
                         "widget": {
                             "formlyConfig": {
-                                "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                "hideExpression": "!['CONTAINS','IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                             }
                         },
                         "type": "string",
                         "description": "Field on which the matcher will be evaluated"
                     },
-                    "case_insensitive": {
+                    "starts_with": {
                         "type": "boolean",
-                        "description": "Use case insensitive string compare",
+                        "description": "The field value starts with the pattern",
                         "default": false,
                         "widget": {
                             "formlyConfig": {
-                                "hideExpression": "model.matcher_type !== 'IS_IN_SET'"
+                                "hideExpression": "!['CONTAINS'].includes(model.matcher_type)"
+                            }
+                        }
+                    },
+                    "ends_with": {
+                        "type": "boolean",
+                        "description": "The field value ends with the pattern",
+                        "default": false,
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "!['CONTAINS'].includes(model.matcher_type)"
                             }
                         }
                     },
@@ -69,23 +79,16 @@
                         "widget": {
                             "formlyConfig": {
                                 "type": "textarea",
-                                "hideExpression": "!['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                "hideExpression": "!['CONTAINS', 'IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                             }
                         }
                     },
                     "matchers": {
-                        "widget": {
-                            "formlyConfig": {
-                                "hideExpression": "!field.parent.model || !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
-                            }
-                        },
                         "type": "array",
                         "items": {
                             "widget": {
                                 "formlyConfig": {
-                                    "wrappers": [
-                                        "expansion-panel"
-                                    ]
+                                    "hideExpression": "field.parent.model && !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
                                 }
                             },
                             "type": "object",
@@ -96,6 +99,7 @@
                                     "enum": [
                                         "REGEX_MATCH",
                                         "IS_IN_SET",
+                                        "CONTAINS",
                                         "COMPOSITE_AND",
                                         "COMPOSITE_OR"
                                     ],
@@ -105,55 +109,53 @@
                                 "is_negated": {
                                     "type": "boolean",
                                     "description": "The matcher is negated",
-                                    "default": false,
-                                    "widget": {
-                                        "formlyConfig": {
-                                            "hideExpression": "!model"
-                                        }
-                                    }
+                                    "default": false
                                 },
                                 "field": {
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "!model || !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                            "hideExpression": "!['CONTAINS','IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
                                     },
                                     "type": "string",
                                     "description": "Field on which the matcher will be evaluated"
                                 },
-                                "case_insensitive": {
+                                "starts_with": {
+                                    "type": "boolean",
+                                    "description": "The field value starts with the pattern",
+                                    "default": false,
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "!model || model.matcher_type !== 'IS_IN_SET'"
+                                            "hideExpression": "!['CONTAINS'].includes(model.matcher_type)"
                                         }
-                                    },
+                                    }
+                                },
+                                "ends_with": {
                                     "type": "boolean",
-                                    "description": "Use case insensitive string compare",
-                                    "default": false
+                                    "description": "The field value ends with the pattern",
+                                    "default": false,
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!['CONTAINS'].includes(model.matcher_type)"
+                                        }
+                                    }
                                 },
                                 "data": {
+                                    "type": "string",
+                                    "description": "Matcher expression as defined by matcher type",
                                     "widget": {
                                         "formlyConfig": {
                                             "type": "textarea",
-                                            "hideExpression": "!model || model.matcher_type && !['IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
+                                            "hideExpression": "!['CONTAINS', 'IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                         }
-                                    },
-                                    "type": "string",
-                                    "description": "Matcher expression as defined by matcher type"
+                                    }
                                 },
                                 "matchers": {
-                                    "widget": {
-                                        "formlyConfig": {
-                                            "hideExpression": "!field.parent.model || !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
-                                        }
-                                    },
                                     "type": "array",
                                     "items": {
                                         "widget": {
                                             "formlyConfig": {
-                                                "wrappers": [
-                                                    "expansion-panel"
-                                                ]
+                                                "hideExpression": "field.parent.model && !['COMPOSITE_AND', 'COMPOSITE_OR'].includes(field.parent.model.matcher_type)"
                                             }
                                         },
                                         "type": "object",
@@ -163,49 +165,55 @@
                                             "matcher_type": {
                                                 "enum": [
                                                     "REGEX_MATCH",
-                                                    "IS_IN_SET"
+                                                    "IS_IN_SET",
+                                                    "CONTAINS"
                                                 ],
                                                 "type": "string",
-                                                "description": "Type of matcher, either Regex match or list of strings (newline delimited)"
+                                                "description": "Type of matcher, either Regex match or list of strings (newline delimited) or a composite matcher composing several matchers"
                                             },
                                             "is_negated": {
                                                 "type": "boolean",
                                                 "description": "The matcher is negated",
-                                                "default": false,
-                                                "widget": {
-                                                    "formlyConfig": {
-                                                        "hideExpression": "!model"
-                                                    }
-                                                }
+                                                "default": false
                                             },
                                             "field": {
-                                                "type": "string",
-                                                "description": "Field on which the matcher will be evaluated",
                                                 "widget": {
                                                     "formlyConfig": {
-                                                        "hideExpression": "!model"
+                                                        "hideExpression": "!['CONTAINS','IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                                     }
-                                                }
+                                                },
+                                                "type": "string",
+                                                "description": "Field on which the matcher will be evaluated"
                                             },
-                                            "case_insensitive": {
+                                            "starts_with": {
                                                 "type": "boolean",
-                                                "description": "Use case insensitive string compare",
+                                                "description": "The field value starts with the pattern",
                                                 "default": false,
                                                 "widget": {
                                                     "formlyConfig": {
-                                                        "hideExpression": "!model || model.matcher_type !== 'IS_IN_SET'"
+                                                        "hideExpression": "!['CONTAINS'].includes(model.matcher_type)"
+                                                    }
+                                                }
+                                            },
+                                            "ends_with": {
+                                                "type": "boolean",
+                                                "description": "The field value ends with the pattern",
+                                                "default": false,
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!['CONTAINS'].includes(model.matcher_type)"
                                                     }
                                                 }
                                             },
                                             "data": {
+                                                "type": "string",
+                                                "description": "Matcher expression as defined by matcher type",
                                                 "widget": {
                                                     "formlyConfig": {
                                                         "type": "textarea",
-                                                        "hideExpression": "!model"
+                                                        "hideExpression": "!['CONTAINS', 'IS_IN_SET', 'REGEX_MATCH'].includes(model.matcher_type)"
                                                     }
-                                                },
-                                                "type": "string",
-                                                "description": "Matcher expression as defined by matcher type"
+                                                }
                                             }
                                         },
                                         "required": [
@@ -374,3 +382,4 @@
         }
     }
 }
+
