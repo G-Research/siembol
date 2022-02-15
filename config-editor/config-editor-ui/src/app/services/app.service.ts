@@ -134,7 +134,10 @@ export class AppService {
   }
 
   getServiceContext(serviceName: string): ServiceContext {
-    return this.appContext.serviceContextMap[serviceName];
+    if (serviceName in this.appContext.serviceContextMap) {
+      return this.appContext.serviceContextMap[serviceName];
+    }
+    throwError(() => `Service: ${serviceName} does not exist in context map.`);
   }
 
   private isUserAdminOfAnyService(userServices: ServiceInfo[]): boolean {

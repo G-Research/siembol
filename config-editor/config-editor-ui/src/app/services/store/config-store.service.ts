@@ -277,7 +277,10 @@ export class ConfigStoreService {
     if (!config) {
       throw Error('empty edited config');
     }
+    return this.validateConfig(config);
+  }
 
+  validateConfig(config: Config): Observable<any> {
     return this.configLoaderService.validateConfig(config.configData);
   }
 
@@ -518,15 +521,15 @@ export class ConfigStoreService {
 
   setClonedConfigAndTests(configName: string, newName: string, withTests: boolean): Observable<boolean> {
     const toClone = this.getClonedConfigAndTestsByName(configName, newName, withTests);
-    return this.submitClonedConfigAndTests(toClone);
+    return this.validateAndSubmitClonedConfigAndTests(toClone);
   }
 
   setClonedConfigAndTestsFromOtherService(
     configName: string, newName: string, withTests: boolean, fromService: string
-  ) {
+  ): Observable<boolean> {
     const toClone = this.appService.getServiceContext(fromService)
       .configStore.getClonedConfigAndTestsByName(configName, newName, withTests);
-    return this.submitClonedConfigAndTests(toClone);
+    return this.validateAndSubmitClonedConfigAndTests(toClone);
   }
 
   getClonedConfigAndTestsByName(configName: string, newName: string, withTests: boolean): ConfigAndTestsToClone {
@@ -545,6 +548,11 @@ export class ConfigStoreService {
     return {config: cloned_config, test_cases: cloned_test_cases};
   }
 
+  validateClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
+    return this.validateConfig(toClone.config)
+      .pipe(mergeMap(() => this.testStoreService.validateTestCases(toClone.test_cases)));
+  }
+
   submitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
     return this.configLoaderService.submitConfig(toClone.config)
       .pipe(
@@ -558,6 +566,12 @@ export class ConfigStoreService {
         map(([config, configs, testCaseMap]) => 
         this.setConfigAndTestCasesInStore(config.name, configs, testCaseMap)
       ));
+  }
+
+  validateAndSubmitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
+    return this.validateClonedConfigAndTests(toClone).pipe(
+      mergeMap(() => this.submitClonedConfigAndTests(toClone))
+    );
   }
 
   setConfigAndTestCasesInStore(editedConfigName: string, configs: Config[], testCaseMap: TestCaseMap): boolean {
@@ -602,7 +616,7 @@ export class ConfigStoreService {
     return cloneDeep(config);
   }
 
-  private getClonedConfig(configName: string, new_name: string): Config {
+  private getClonedConfig(configName: string, newName: string): Config {
     const configToClone = this.getConfigByName(configName);
     if (configToClone === undefined) {
       throw Error('no config with such name');
@@ -610,12 +624,12 @@ export class ConfigStoreService {
     return {
       author: this.user,
       configData: Object.assign({}, cloneDeep(configToClone.configData), {
-        [this.metaDataMap.name]: new_name,
+        [this.metaDataMap.name]: newName,
         [this.metaDataMap.version]: 0,
       }),
       description: configToClone.description,
       isNew: true,
-      name: new_name,
+      name: newName,
       savedInBackend: false,
       testCases: [],
       version: 0,

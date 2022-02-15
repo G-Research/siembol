@@ -111,6 +111,15 @@ export class TestStoreService {
     };
     return of(undefined);
   }
+
+  validateTestCases(testCaseWrappers: TestCaseWrapper[]): Observable<boolean> {
+    if (testCaseWrappers.length > 0) {
+      return concat(...testCaseWrappers.map((testCaseWrapper: TestCaseWrapper) => 
+        this.configLoaderService.validateTestCase(testCaseWrapper.testCase)
+      )).pipe(last());
+    };
+    return of(true);
+  }
   
   submitEditedTestCase(): Observable<boolean> {
     const state = this.store.getValue();
