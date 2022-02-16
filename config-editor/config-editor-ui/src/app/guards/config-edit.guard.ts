@@ -17,7 +17,8 @@ export class ConfigEditGuard implements CanActivate {
     if (!this.editorService.configStore || !this.editorService.configStore.editedConfig$) {
       return false;
     }
-    return this.setConfig(route.queryParams).pipe(mergeMap((result: GuardResult) => {
+    return this.setConfig(route.queryParams).pipe(
+      mergeMap((result: GuardResult) => {
       switch(result) {
         case (GuardResult.ROUTE): {
           this.router.navigate([this.editorService.serviceName, 'edit'], { 
@@ -71,8 +72,8 @@ export class ConfigEditGuard implements CanActivate {
         params.cloneConfig, params.newConfigName, params.withTestCases
       );
     }
-    return result.pipe(map(
-      success => {
+    return result.pipe(
+      map(success => {
         if (success === true) {
           return GuardResult.ROUTE;
         } 

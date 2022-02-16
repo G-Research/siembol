@@ -2,7 +2,7 @@ import { Component, Inject } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Router } from "@angular/router";
-import { NAME_REGEX, ServiceInfo } from "@app/model/config-model";
+import { ExistingConfigError, NAME_REGEX, ServiceInfo } from "@app/model/config-model";
 import { AppService } from "@app/services/app.service";
 import { EditorService } from "@app/services/editor.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
@@ -80,12 +80,17 @@ export class CloneDialogComponent {
           fromService: this.editorService.serviceName,
           withTestCases: this.model['clone_test_cases'] },
       }).then(
-          () => {
-            this.dialogRef.close();
-      },
-      e => {
-        this.dialogRef.close();
-        throw e;
+        () => {
+          this.dialogRef.close();
+      }).catch(
+        error=> {  
+          if (error instanceof ExistingConfigError) {
+            this.router.navigate([this.currentService])
+          } else {
+          this.router.navigate([this.model['service_instance']])
+          }
+          this.dialogRef.close();
+          throw error;
       });
     }
 

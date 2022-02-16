@@ -164,7 +164,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
           path: '',
         },
       ],
-      { useHash: false }
+      { useHash: false, onSameUrlNavigation: 'reload' }
     ),
     BrowserAnimationsModule,
     HttpClientModule,

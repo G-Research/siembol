@@ -235,3 +235,10 @@ export interface ConfigAndTestsToClone {
   config: Config,
   test_cases: TestCaseWrapper[]
 }
+
+export class ExistingConfigError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}

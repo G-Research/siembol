@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash';
-import { BehaviorSubject, forkJoin, Observable, of, mergeMap, map, finalize } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of, mergeMap, map, finalize, throwError } from 'rxjs';
 import { Config, Deployment, PullRequestInfo } from '../../model';
 import { ConfigStoreState } from '../../model/store-state';
 import { TestCaseMap, TestCaseWrapper } from '../../model/test-case';
@@ -7,7 +7,7 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, Importers, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, Importers, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
@@ -569,9 +569,13 @@ export class ConfigStoreService {
   }
 
   validateAndSubmitClonedConfigAndTests(toClone: ConfigAndTestsToClone): Observable<boolean> {
-    return this.validateClonedConfigAndTests(toClone).pipe(
-      mergeMap(() => this.submitClonedConfigAndTests(toClone))
-    );
+    if (this.getConfigByName(toClone.config.name) === undefined) {
+      return this.validateClonedConfigAndTests(toClone).pipe(
+        mergeMap(() => this.submitClonedConfigAndTests(toClone))
+      );
+    }
+    return throwError(() => new ExistingConfigError(`Config with name ${toClone.config.name} already exists in service`));
+    
   }
 
   setConfigAndTestCasesInStore(editedConfigName: string, configs: Config[], testCaseMap: TestCaseMap): boolean {

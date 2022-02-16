@@ -27,6 +27,7 @@ export class AppInitComponent implements OnInit, OnDestroy {
             path: '',
             component: ConfigManagerComponent,
             canActivate: [AuthGuard, EditorServiceGuard],
+            runGuardsAndResolvers: 'always',
         },
         {
             component: EditorViewComponent,
