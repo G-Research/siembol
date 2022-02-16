@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,35 +15,41 @@ export class SearchComponent implements OnInit {
   @Input() filterMyConfigs: boolean;
   @Input() filterUndeployed: boolean;
   @Input() filterUpgradable: boolean;
-  @Output() searchTermChange: EventEmitter<string> = new EventEmitter<string>();
-  @Output() myConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() undeployedConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() updatedConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() readonly searchTermChange: EventEmitter<string> = new EventEmitter<string>();
+  @Output() readonly myConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() readonly undeployedConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() readonly updatedConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  debouncer: Subject<string> = new Subject<string>();
 
   myConfigs = true;
 
   ngOnInit(): void {
     this.searchBox.nativeElement.focus();
+    this.debouncer
+        .pipe(debounceTime(300), distinctUntilChanged())
+        .subscribe(
+          (searchTerm: string) => this.searchTermChange.emit(searchTerm)
+        );
   }
 
-  public onSearch(searchTerm: string) {
-    this.searchTermChange.emit(searchTerm);
+  onSearch(searchTerm: string) {
+    this.debouncer.next(searchTerm);
   }
 
-  public onClearSearch() {
+  onClearSearch() {
     this.onSearch('');
     this.searchTerm = '';
   }
 
-  public clickMyConfigs($event: boolean) {
+  clickMyConfigs($event: boolean) {
       this.myConfigsChange.emit($event);
   }
 
-  public clickNotDeployed($event: boolean) {
+  clickNotDeployed($event: boolean) {
       this.undeployedConfigsChange.emit($event);
   }
 
-  public clickUpdatedConfigs($event: boolean) {
+  clickUpdatedConfigs($event: boolean) {
       this.updatedConfigsChange.emit($event);
   }
 }
