@@ -43,7 +43,9 @@ public class ContainsMatcher extends BasicMatcher {
             if (evaluatedPattern.isEmpty()) {
                 return EvaluationResult.NO_MATCH;
             }
-            currentPattern = evaluatedPattern.get().toLowerCase();
+            currentPattern = flags.contains(Flags.CASE_INSENSITIVE)
+                    ? evaluatedPattern.get().toLowerCase()
+                    : evaluatedPattern.get();
         }
 
         return checkPredicate.test(stringToCheck, currentPattern)

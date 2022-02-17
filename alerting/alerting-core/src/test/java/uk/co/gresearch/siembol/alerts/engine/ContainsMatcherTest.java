@@ -208,6 +208,22 @@ public class ContainsMatcherTest {
                 .fieldName(field)
                 .build();
 
+        event.put("project", "Siembol");
+        event.put(field, "aasecret Siembolbbb");
+        EvaluationResult rest = matcher.match(event);
+
+        Assert.assertEquals(EvaluationResult.MATCH, rest);
+        Assert.assertFalse(matcher.canModifyEvent());
+    }
+
+    @Test
+    public void testGoodNoMatchPatternInsideStringCaseSensitiveWithVariable() {
+        matcher = ContainsMatcher.builder()
+                .data(patternWithVariable)
+                .isCaseInsensitiveCompare(false)
+                .fieldName(field)
+                .build();
+
         event.put(field, "aasecret Siembolbbb");
         EvaluationResult rest = matcher.match(event);
 
@@ -216,7 +232,7 @@ public class ContainsMatcherTest {
     }
 
     @Test
-    public void testGoodMatchPatternInsideStringCaseInSensitiveWithVAriable() {
+    public void testGoodMatchPatternInsideStringCaseInSensitiveWithVariable() {
         matcher = ContainsMatcher.builder()
                 .data(patternWithVariable)
                 .isCaseInsensitiveCompare(true)
