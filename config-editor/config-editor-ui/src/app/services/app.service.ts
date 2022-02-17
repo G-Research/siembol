@@ -5,8 +5,9 @@ import { Observable, throwError, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
 import { UiMetadata } from '@app/model/ui-metadata-map';
-import 'rxjs/add/observable/forkJoin';
 import { map, mergeMap } from 'rxjs/operators';
+import { ServiceContextMap } from '@app/model/app-config';
+import { ServiceContext } from './editor.service';
 
 export class AppContext {
   user: string;
@@ -15,6 +16,7 @@ export class AppContext {
   testCaseSchema: JSONSchema7;
   repositoryLinks: { [name: string]: RepositoryLinks };
   isAdminOfAnyService: boolean;
+  serviceContextMap: ServiceContextMap = {};
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -51,7 +53,6 @@ export class AppService {
   get repositoryLinks() {
     return this.appContext.repositoryLinks;
   }
-
   get isAdminOfAnyService() {
     return this.appContext.isAdminOfAnyService;
   }
@@ -73,7 +74,7 @@ export class AppService {
             this.getAllRepositoryLinks(appContext.userServices),
             of(appContext)
             )
-      )).map(([testCaseSchema, repositoryLinks, appContext]) => {
+      )).pipe(map(([testCaseSchema, repositoryLinks, appContext]) => {
         if (appContext && testCaseSchema && repositoryLinks) {
           appContext.testCaseSchema = testCaseSchema;
           appContext.repositoryLinks = repositoryLinks;
@@ -81,16 +82,16 @@ export class AppService {
           return appContext;
         }
         throwError('Can not load application context');
-      });
+      }));
   }
 
   loadTestCaseSchema(): Observable<JSONSchema7> {
-    return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`).map((r: SchemaInfo) => {
+    return this.http.get(`${this.config.serviceRoot}api/v1/testcases/schema`).pipe(map((r: SchemaInfo) => {
       if (r === undefined || r.rules_schema === undefined) {
         throwError('empty test case schema endpoint response');
       }
       return r.rules_schema;
-    });
+    }));
   }
 
   getUiMetadataMap(serviceName: string): UiMetadata {
@@ -128,6 +129,17 @@ export class AppService {
     return this.appContext.repositoryLinks[serviceName];
   }
 
+  updateServiceContextMap(serviceContext: ServiceContext) {
+    this.appContext.serviceContextMap[serviceContext.serviceName] = serviceContext;
+  }
+
+  getServiceContext(serviceName: string): ServiceContext {
+    if (serviceName in this.appContext.serviceContextMap) {
+      return this.appContext.serviceContextMap[serviceName];
+    }
+    throwError(() => `Service: ${serviceName} does not exist in context map.`);
+  }
+
   private isUserAdminOfAnyService(userServices: ServiceInfo[]): boolean {
     for (const userService of userServices) {
       if (userService.user_roles.includes(UserRole.SERVICE_ADMIN)) {
@@ -145,25 +157,25 @@ export class AppService {
   
   private getAllRepositoryLinks(userServices: ServiceInfo[]): Observable<{ [name: string]: RepositoryLinks }> {
     return forkJoin(userServices.map(x => this.getRepositoryLinks(x.name)))
-            .map((links: RepositoryLinks[]) => {
+            .pipe(map((links: RepositoryLinks[]) => {
                 if (links) {
                     return links.reduce((pre, cur) => ({ ...pre, [cur.service_name]: cur }), {});
                 }
-            })
+            }));
   }
 
   private getRepositoryLinks(serviceName: string): Observable<RepositoryLinks> {
     return this.http
       .get<RepositoryLinksWrapper>(`${this.config.serviceRoot}api/v1/${serviceName}/configstore/repositories`)
-      .map(result => ({
+      .pipe(map(result => ({
           ...result.rules_repositories,
           service_name: serviceName,
         })
-      );
+      ));
   }
 
   private loadUserInfo(): Observable<AppContext> {
-    return this.http.get(`${this.config.serviceRoot}user`).map((r: UserInfo) => {
+    return this.http.get(`${this.config.serviceRoot}user`).pipe(map((r: UserInfo) => {
       if (r === undefined || r.user_name === undefined || r.services === undefined) {
         throwError('empty user endpoint response');
       }
@@ -179,6 +191,6 @@ export class AppService {
         }
       });
       return ret;
-    });
+    }));
   }
 }

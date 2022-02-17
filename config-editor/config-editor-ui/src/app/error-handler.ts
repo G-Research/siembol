@@ -12,18 +12,16 @@ export class GlobalErrorHandler implements ErrorHandler {
 
     handleError(data: Error | HttpErrorResponse) {
         let message: string;
-        let status: StatusCode;
+        data = data["rejection"] ? data["rejection"] : data;
         if (data instanceof HttpErrorResponse) {
             message = data.error.message ? data.error.message
                 : data.error.exception ? data.error.exception
                 : data.message
             if (data.status === StatusCode.ERROR) {
                 message = 'Server error, please contact administrator.\n' + message;
-            } else if (data.status == StatusCode.UNKNOWN_ERROR) {
+            } else if (data.status === StatusCode.UNKNOWN_ERROR) {
                 message = "Cannot reach backend, please contact administrator"
             }
-            status = data.status 
-
         } else {
             message = data.toString();
         }
@@ -31,7 +29,7 @@ export class GlobalErrorHandler implements ErrorHandler {
         this.ngZone.run(() => {
             this.dialog.open(ErrorDialogComponent,
                 {
-                    data: message
+                    data: message,
                 });
         });
     }

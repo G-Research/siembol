@@ -7,7 +7,7 @@ import { Type } from '@app/model/config-model';
 import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, tap, map, filter } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
@@ -22,7 +22,7 @@ import { areJsonEqual } from '@app/commons/helper-functions';
 export class EditorComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
   titleFormControl = new FormControl('', [Validators.pattern(NAME_REGEX), Validators.required]);
-  ngUnsubscribe = new Subject();
+  ngUnsubscribe = new Subject<void>();
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
   config: Config;
@@ -38,15 +38,17 @@ export class EditorComponent implements OnInit, OnDestroy {
   ) {
     this.editedConfig$ = editorService.configStore.editedConfig$;
     this.configData$ = this.editedConfig$
-    .pipe(takeUntil(this.ngUnsubscribe))
-    .do(x => {
-      this.config = x;
-      this.configName = this.config.name;
-    })
-    .filter(x => 
-      !areJsonEqual(x, this.cleanConfig(this.form.value))
-    )
-    .map(x => this.editorService.configSchema.wrapConfig(x.configData));
+    .pipe(
+      takeUntil(this.ngUnsubscribe),
+      tap(x => {
+        this.config = x;
+        this.configName = this.config.name;
+      }),
+      filter(x => 
+        !areJsonEqual(x, this.cleanConfig(this.form.value))
+      ),
+      map(x => this.editorService.configSchema.wrapConfig(x.configData))
+    );
   }
 
   ngOnInit() {

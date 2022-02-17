@@ -7,7 +7,7 @@ import { Type, AdminConfig } from '@app/model/config-model';
 import { PopupService } from '@app/services/popup.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, tap ,filter, map } from 'rxjs';
 import { takeUntil, take, debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
@@ -24,7 +24,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   @Input() field: FormlyFieldConfig;
 
   @BlockUI() blockUI: NgBlockUI;
-  ngUnsubscribe = new Subject();
+  ngUnsubscribe = new Subject<void>();
   configData$: Observable<ConfigData>;
   options: FormlyFormOptions = {};
   form: FormGroup = new FormGroup({});
@@ -46,12 +46,14 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.adminPullRequestPending$ = this.editorService.configStore.adminPullRequestPending$;
     this.serviceName = editorService.serviceName;
     this.configData$ = this.adminConfig$
-    .pipe(takeUntil(this.ngUnsubscribe))
-    .do(x => {
-      this.config = x
-    })
-    .filter(x => !this.editorService.adminSchema.areConfigEqual(x, this.prepareAdminConfig(this.form.value)))    
-    .map(x => this.updateAndWrapConfig(x));
+    .pipe(
+      takeUntil(this.ngUnsubscribe),
+      tap(x => {
+        this.config = x
+      }),
+      filter(x => !this.editorService.adminSchema.areConfigEqual(x, this.prepareAdminConfig(this.form.value))),
+      map(x => this.updateAndWrapConfig(x))
+    );
   }
 
   ngOnInit() {

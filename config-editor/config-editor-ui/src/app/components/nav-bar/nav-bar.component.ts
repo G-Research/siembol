@@ -16,7 +16,7 @@ import { startWith, takeUntil } from 'rxjs/operators';
     templateUrl: './nav-bar.component.html',
 })
 export class NavBarComponent implements OnInit, OnDestroy {
-    ngUnsubscribe = new Subject();
+    ngUnsubscribe = new Subject<void>();
     user: string;
     userRoles: string[];
     serviceName$: Observable<string>;

@@ -26,7 +26,7 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly TESTING_TAB = TESTING_TAB;
   readonly CONFIG_TAB = CONFIG_TAB;
   readonly NO_TAB = -1;
-  ngUnsubscribe = new Subject();
+  ngUnsubscribe = new Subject<void>();
   configData: ConfigData;
 
   schema: JSONSchema7;

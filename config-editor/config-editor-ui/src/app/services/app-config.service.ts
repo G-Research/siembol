@@ -1,7 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
 import { ConfigData } from '../model/config-model';
 import { UiMetadataMap } from '../model/ui-metadata-map';
 import {

@@ -101,6 +101,15 @@ export const mockTestCaseWrapper2 =
   testCaseResult: null,
 };
 
+export const mockTestCaseWrapper3 =
+{
+  fileHistory: [
+    mockTestCaseFileHistory,
+  ],
+  testCase: mockTestCase3,
+  testCaseResult: null,
+};
+
 export const mockTestCaseMap =
 {
   config1: [

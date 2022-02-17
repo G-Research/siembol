@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, concat, Observable, of, last, map } from 'rxjs';
 import { ConfigStoreState } from '../../model/store-state';
 import { ConfigLoaderService } from '../config-loader.service';
 import { TestCaseWrapper, TestCaseResult, TestCaseMap, isNewTestCase } from '../../model/test-case';
@@ -26,6 +26,16 @@ export class TestStoreService {
     testCase.testCase.author = this.user;
     this.clearAndInitialiseTestCaseHistory(testCase);
     this.updateEditedTestCase(testCase);
+  }
+
+  getClonedTestCase(testCase: TestCaseWrapper, config_name: string) {
+    const testCaseClone = cloneDeep(testCase);
+    testCaseClone.fileHistory = null;
+    testCaseClone.testCaseResult = null;
+    testCaseClone.testCase.version = 0;
+    testCaseClone.testCase.author = this.user;
+    testCaseClone.testCase.config_name = config_name;
+    return testCaseClone;
   }
 
   setEditedTestCaseNew() {
@@ -93,6 +103,24 @@ export class TestStoreService {
     this.updateEditedTestCase(null);
   }
 
+  submitTestCases(testCaseWrappers: TestCaseWrapper[]): Observable<TestCaseMap> {
+    if (testCaseWrappers.length > 0) {
+      return concat(...testCaseWrappers.map((testCaseWrapper: TestCaseWrapper) => 
+        this.configLoaderService.submitTestCase(testCaseWrapper)
+      )).pipe(last());
+    };
+    return of(undefined);
+  }
+
+  validateTestCases(testCaseWrappers: TestCaseWrapper[]): Observable<boolean> {
+    if (testCaseWrappers.length > 0) {
+      return concat(...testCaseWrappers.map((testCaseWrapper: TestCaseWrapper) => 
+        this.configLoaderService.validateTestCase(testCaseWrapper.testCase)
+      )).pipe(last());
+    };
+    return of(true);
+  }
+  
   submitEditedTestCase(): Observable<boolean> {
     const state = this.store.getValue();
     if (!state.editedConfig || !state.editedTestCase) {
@@ -102,7 +130,7 @@ export class TestStoreService {
     const testCaseWrapper = state.editedTestCase;
     const editedConfig = state.editedConfig;
 
-    return this.configLoaderService.submitTestCase(testCaseWrapper).map((testCaseMap: TestCaseMap) => {
+    return this.configLoaderService.submitTestCase(testCaseWrapper).pipe(map((testCaseMap: TestCaseMap) => {
       if (testCaseMap) {
         const currentState = this.store.getValue();
         if (editedConfig.name !== currentState.editedConfig.name) {
@@ -129,7 +157,7 @@ export class TestStoreService {
 
         return true;
       }
-    });
+    }));
   }
 
   runEditedTestCase() {

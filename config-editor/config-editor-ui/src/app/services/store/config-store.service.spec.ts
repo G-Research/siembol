@@ -1,16 +1,32 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigStoreService } from './config-store.service';
 import { ConfigLoaderService } from '../config-loader.service';
-import { of } from 'rxjs';
-import { mockTestCaseMap } from 'testing/testcases';
-import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
+import { mockParserConfig, mockParserConfigData } from 'testing/configs';
 import { mockUiMetadataParser } from 'testing/uiMetadataMap';
-import { mockParserConfig, mockParserConfigCloned } from 'testing/configs';
 import { AppConfigService } from '../app-config.service';
+import { cloneDeep } from 'lodash';
+import { mockTestCaseMap } from 'testing/testcases';
+import { of } from 'rxjs';
+import { AppService } from '../app.service';
+
+const expectedClonedConfig = {
+  author: "siembol",
+  configData: Object.assign({}, cloneDeep(mockParserConfigData), {
+    parser_name : "test_clone",
+    parser_version: 0,
+  }),
+  description: undefined,
+  isNew: true,
+  name: "test_clone",
+  savedInBackend: false,
+  testCases: [],
+  version: 0,
+};
 
 describe('ConfigStoreService', () => {
   let configLoader: ConfigLoaderService;
   let configService: AppConfigService;
+  let appService: AppService;
   let service: ConfigStoreService;
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -18,8 +34,7 @@ describe('ConfigStoreService', () => {
         {
           provide: ConfigLoaderService,
           useValue: {
-            evaluateTestCase: () => of(mockEvaluateTestCaseMatch),
-            submitTestCase: () => of(mockTestCaseMap),
+            submitConfig: () => of([mockParserConfig]),
           },
         },
         {
@@ -28,30 +43,70 @@ describe('ConfigStoreService', () => {
             useImporters: false,
           },
         },
+        {
+          provide: AppService,
+          useValue:  {},
+      },
       ],
     });
     configLoader = TestBed.inject(ConfigLoaderService);
     configService = TestBed.inject(AppConfigService);
-    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader, configService);
+    appService = TestBed.inject(AppService);
+    service = new ConfigStoreService('siembol', mockUiMetadataParser, configLoader, configService, appService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('setEditedClonedConfigByName', () => {
-    it('should succeed', () => {
-      spyOn<any>(service, 'updateEditedConfigAndTestCase');
-      spyOn<any>(service, 'getConfigByName').and.returnValue(mockParserConfig);
-      service.setEditedClonedConfigByName('config1');
-      expect(service['updateEditedConfigAndTestCase']).toHaveBeenCalledOnceWith(mockParserConfigCloned, null);
-    });
+  it('should get cloned config and test cases', () => {
+    spyOn(service['store'], 'getValue').and.returnValue({
+      configs: [cloneDeep(mockParserConfig)],
+      testCaseMap: cloneDeep(mockTestCaseMap),
+    } as any);
+    const spy = spyOn(service.testService, 'getClonedTestCase').and.returnValues(
+      {name: "test1"},
+      {name: "test2"}
+    );
+    const toClone = service.getClonedConfigAndTestsByName("config1", "test_clone", true);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(toClone).toEqual({
+      config: expectedClonedConfig,
+      test_cases: [
+        {name: "test1"},
+        {name: "test2"},
+      ]} as any
+    )
+  })
 
-    it('should fail', () => {
-      spyOn<any>(service, 'getConfigByName').and.returnValue(undefined);
-      expect(function () {
-        service.setEditedClonedConfigByName('config1');
-      }).toThrow();
-    });
+  it('should get cloned config only', () => {
+    spyOn(service['store'], 'getValue').and.returnValue({
+      configs: [cloneDeep(mockParserConfig)],
+      testCaseMap: cloneDeep(mockTestCaseMap),
+    } as any);
+    const toClone = service.getClonedConfigAndTestsByName("config1", "test_clone", false);
+    expect(toClone).toEqual({
+      config: expectedClonedConfig,
+      test_cases: [],
+    }
+    )
+  })
+
+  it('should submit clone config and test cases', done => {
+    const to_clone = {
+      config: expectedClonedConfig,
+      test_cases: [
+        {name: "test1"},
+        {name: "test2"},
+      ],
+    } as any;
+    const spy_test_service = spyOn(service['testStoreService'], 'submitTestCases').and.returnValue(of(mockTestCaseMap));
+    const spy = spyOn(service, 'setConfigAndTestCasesInStore').and.returnValue(true);
+    service.submitClonedConfigAndTests(to_clone).subscribe(() => {
+      expect(spy_test_service).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledOnceWith("test_clone", [mockParserConfig], mockTestCaseMap);
+      done();
+    })
   });
 });
+

@@ -61,4 +61,3 @@ import 'zone.js';  // Included with Angular CLI.
  */
 // import 'intl/locale-data/jsonp/en';
 
-import './rxjs.imports.ts';

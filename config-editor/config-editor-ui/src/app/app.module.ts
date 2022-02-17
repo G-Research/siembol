@@ -17,6 +17,7 @@ import {
   LandingPageComponent,
   ImporterDialogComponent,
   ApplicationDialogComponent,
+  CloneDialogComponent,
   SearchComponent,
 } from '@app/components';
 import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
@@ -113,6 +114,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     SubmitDialogComponent,
     ImporterDialogComponent,
     ApplicationDialogComponent,
+    CloneDialogComponent,
     LandingPageComponent,
     SearchComponent,
     ConfigTileComponent,
@@ -162,7 +164,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
           path: '',
         },
       ],
-      { useHash: false }
+      { useHash: false, onSameUrlNavigation: 'reload' }
     ),
     BrowserAnimationsModule,
     HttpClientModule,
