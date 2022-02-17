@@ -148,7 +148,7 @@
                                     "default": false,
                                     "widget": {
                                         "formlyConfig": {
-                                            "hideExpression": "!model || !['CONTAINS', IS_IN_SET'].includes(model.matcher_type)"
+                                            "hideExpression": "!model || !['CONTAINS', 'IS_IN_SET'].includes(model.matcher_type)"
                                         }
                                     }
                                 },
