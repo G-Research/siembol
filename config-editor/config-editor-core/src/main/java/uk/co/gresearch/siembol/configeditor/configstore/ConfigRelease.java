@@ -12,6 +12,9 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class ConfigRelease {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -19,13 +22,15 @@ public class ConfigRelease {
     private static final String PENDING_PR_ERROR_MSG = "Can not release %s because PR %s is pending";
     private static final String WRONG_VERSION_ERROR_MSG = "Can not release %s version %d from version %d";
     private static final String SUBMIT_COMPLETED_LOG_MSG = "Prepared {} PR in the branch name: {} PR: {}";
-    private static final String CONFIG_IN_RELEASE= "Config %s is in the current release";
+    private static final String CONFIG_IN_RELEASE = "Config %s is in the current release";
+    private static final String NOT_INITIALISED_ERROR_MSG = "The release was not initialised";
 
     private final String directory;
     private final GitRepository gitRepository;
     private final ConfigInfoProvider configInfoProvider;
     private final ReleasePullRequestService pullRequestService;
     private final ConfigInfoType configType;
+    private final AtomicReference<ConfigEditorResult> cacheResult;
 
     public ConfigRelease(GitRepository gitRepository,
                          ReleasePullRequestService pullRequestService,
@@ -36,10 +41,24 @@ public class ConfigRelease {
         this.configInfoProvider = configInfoProvider;
         this.pullRequestService = pullRequestService;
         this.configType = configInfoProvider.getConfigInfoType();
+        this.cacheResult = new AtomicReference<>(
+                ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_INITIALISED_ERROR_MSG));
     }
 
     public ConfigEditorResult getConfigsReleaseStatus() throws IOException {
         return pullRequestService.pendingPullRequest();
+    }
+
+    public void init() throws IOException, GitAPIException {
+        var current = getConfigsRelease();
+        if (current.getStatusCode() != OK) {
+            throw new IllegalStateException(NOT_INITIALISED_ERROR_MSG);
+        }
+    }
+
+    public ConfigEditorResult getConfigsReleaseFromCache() {
+        var current = cacheResult.get();
+        return new ConfigEditorResult(current.getStatusCode(), current.getAttributes());
     }
 
     public ConfigEditorResult getConfigsRelease() throws IOException, GitAPIException {
@@ -50,6 +69,7 @@ public class ConfigRelease {
 
         int releaseVersion = configInfoProvider.getReleaseVersion(ret.getAttributes().getFiles());
         ret.getAttributes().setReleaseVersion(releaseVersion, configType);
+        cacheResult.set(ret);
         return ret;
     }
 
@@ -103,7 +123,7 @@ public class ConfigRelease {
             return releaseResult;
         }
 
-       Optional<ConfigEditorFile> release = releaseResult.getAttributes().getFiles().stream().findFirst();
+        Optional<ConfigEditorFile> release = releaseResult.getAttributes().getFiles().stream().findFirst();
         if (release.isPresent() && configInfoProvider.isConfigInRelease(release.get().getContent(), configName)) {
             String message = String.format(CONFIG_IN_RELEASE, configName);
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST, message);

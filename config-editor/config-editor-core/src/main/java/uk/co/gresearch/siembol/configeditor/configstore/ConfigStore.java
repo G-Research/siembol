@@ -22,11 +22,15 @@ public interface ConfigStore extends HealthCheckable {
 
     ConfigEditorResult getConfigs();
 
+    ConfigEditorResult getConfigsReleaseFromCache();
+
     ConfigEditorResult getConfigsRelease();
 
     ConfigEditorResult getConfigsReleaseStatus();
 
     ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease);
+
+    ConfigEditorResult getAdminConfigFromCache();
 
     ConfigEditorResult getAdminConfig();
 

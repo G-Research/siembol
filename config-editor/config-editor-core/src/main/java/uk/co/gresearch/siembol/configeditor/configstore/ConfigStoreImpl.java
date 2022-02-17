@@ -146,6 +146,15 @@ public class ConfigStoreImpl implements ConfigStore {
     }
 
     @Override
+    public ConfigEditorResult getConfigsReleaseFromCache() {
+        if (exception.get() != null) {
+            return ConfigEditorResult.fromException(exception.get());
+        }
+
+        return release.getConfigsReleaseFromCache();
+    }
+
+    @Override
     public ConfigEditorResult getConfigsRelease() {
         Callable<ConfigEditorResult> command = release::getConfigsRelease;
         return executeStoreCommand(command, releaseExecutorService);
@@ -161,6 +170,19 @@ public class ConfigStoreImpl implements ConfigStore {
     public ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease) {
         Callable<ConfigEditorResult> command = () -> release.submitConfigsRelease(user, rulesRelease);
         return executeStoreCommand(command, releaseExecutorService);
+    }
+
+    @Override
+    public ConfigEditorResult getAdminConfigFromCache() {
+        if (adminConfig == null) {
+            return ConfigEditorResult.fromMessage(ERROR, ADMIN_CONFIG_UNSUPPORTED_MSG);
+        }
+
+        if (exception.get() != null) {
+            return ConfigEditorResult.fromException(exception.get());
+        }
+
+        return adminConfig.getConfigsReleaseFromCache();
     }
 
     @Override
@@ -354,7 +376,8 @@ public class ConfigStoreImpl implements ConfigStore {
                     pullRequestService,
                     configInfoProvider,
                     releaseDirectory);
-
+            release.init();
+            
             configs = new ConfigItems(gitStoreRepo, configInfoProvider, configStoreDirectory);
             configs.init();
 
@@ -373,6 +396,7 @@ public class ConfigStoreImpl implements ConfigStore {
                         adminConfigPullRequestService,
                         ADMIN_CONFIG_INFO_PROVIDER,
                         adminConfigDirectory);
+                adminConfig.init();
             }
 
             return new ConfigStoreImpl(this);

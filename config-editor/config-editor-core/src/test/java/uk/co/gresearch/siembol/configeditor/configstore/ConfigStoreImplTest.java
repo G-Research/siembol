@@ -24,8 +24,8 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 
 public class ConfigStoreImplTest {
     private ExecutorService executorService;
-    private Map<String, String> filesContent = new HashMap<>();
-    private Map<String, String> filesTestCaseContent = new HashMap<>();
+    private final Map<String, String> filesContent = new HashMap<>();
+    private final Map<String, String> filesTestCaseContent = new HashMap<>();
     private List<ConfigEditorFile> files;
     private ConfigEditorResult getFilesResult;
     private List<ConfigEditorFile> filesTestCases;
@@ -279,6 +279,14 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void getReleaseFromCache() {
+        when(release.getConfigsReleaseFromCache()).thenReturn(genericResult);
+        ConfigEditorResult ret = configStore.getConfigsReleaseFromCache();
+        verify(release).getConfigsReleaseFromCache();
+        Assert.assertEquals(ret, genericResult);
+    }
+
+    @Test
     public void getAdminConfig() throws GitAPIException, IOException {
         when(adminConfig.getConfigsRelease()).thenReturn(genericResult);
         ConfigEditorResult ret = configStore.getAdminConfig();
@@ -287,10 +295,27 @@ public class ConfigStoreImplTest {
     }
 
     @Test
+    public void getAdminConfigFromCache() {
+        when(adminConfig.getConfigsReleaseFromCache()).thenReturn(genericResult);
+        ConfigEditorResult ret = configStore.getAdminConfigFromCache();
+        verify(adminConfig).getConfigsReleaseFromCache();
+        Assert.assertEquals(ret, genericResult);
+    }
+
+    @Test
     public void getAdminConfigUnsupported() {
         builder.adminConfig = null;
         configStore = new ConfigStoreImpl(builder);
         ConfigEditorResult ret = configStore.getAdminConfig();
+        Assert.assertEquals(ERROR, ret.getStatusCode());
+        Assert.assertNotNull(ret.getAttributes().getMessage());
+    }
+
+    @Test
+    public void getAdminConfigFromCacheUnsupported() {
+        builder.adminConfig = null;
+        configStore = new ConfigStoreImpl(builder);
+        ConfigEditorResult ret = configStore.getAdminConfigFromCache();
         Assert.assertEquals(ERROR, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getMessage());
     }
@@ -442,7 +467,7 @@ public class ConfigStoreImplTest {
     private static ExecutorService currentThreadExecutorService() {
         ThreadPoolExecutor.CallerRunsPolicy callerRunsPolicy = new ThreadPoolExecutor.CallerRunsPolicy();
         return new ThreadPoolExecutor(0, 1, 0L,
-                TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), callerRunsPolicy) {
+                TimeUnit.SECONDS, new SynchronousQueue<>(), callerRunsPolicy) {
             @Override
             public void execute(Runnable command) {
                 callerRunsPolicy.rejectedExecution(command, this);
