@@ -216,7 +216,6 @@
                                                 "default": false,
                                                 "widget": {
                                                     "formlyConfig": {
-                                                        "type": "textarea",
                                                         "hideExpression": "!model"
                                                     }
                                                 }
