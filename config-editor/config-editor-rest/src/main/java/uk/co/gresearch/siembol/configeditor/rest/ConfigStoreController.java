@@ -142,7 +142,7 @@ public class ConfigStoreController {
         UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigStore(user, service)
-                .getConfigsRelease()
+                .getConfigsReleaseFromCache()
                 .toResponseEntity();
     }
 
@@ -196,7 +196,7 @@ public class ConfigStoreController {
         user.setServiceUserRole(ServiceUserRole.SERVICE_ADMIN);
         return serviceAggregator
                 .getConfigStore(user, service)
-                .getAdminConfig()
+                .getAdminConfigFromCache()
                 .toResponseEntity();
     }
 

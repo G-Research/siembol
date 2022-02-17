@@ -114,10 +114,19 @@ public class ConfigReleaseTest {
 
     @Test
     public void getRelease() throws IOException, GitAPIException {
+        ConfigEditorResult resultCache = configRelease.getConfigsReleaseFromCache();
+        Assert.assertEquals(ERROR, resultCache.getStatusCode());
+        Assert.assertNotNull(resultCache.getAttributes().getMessage());
+
         ConfigEditorResult result = configRelease.getConfigsRelease();
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getFiles());
         Assert.assertEquals(releaseVersion, result.getAttributes().getRulesVersion());
+
+        resultCache = configRelease.getConfigsReleaseFromCache();
+        Assert.assertEquals(OK, resultCache.getStatusCode());
+        Assert.assertNotNull(resultCache.getAttributes().getFiles());
+        Assert.assertEquals(releaseVersion, resultCache.getAttributes().getRulesVersion());
     }
 
     @Test
@@ -193,5 +202,27 @@ public class ConfigReleaseTest {
         when(gitRepo.getFiles(eq(directory), any())).thenReturn(ConfigEditorResult.fromMessage(ERROR, "error"));
         ConfigEditorResult result = configRelease.checkConfigNotInRelease("test_config");
         Assert.assertEquals(ERROR, result.getStatusCode());
+    }
+
+    @Test
+    public void getReleaseFromCacheNotInitialised() {
+        ConfigEditorResult result = configRelease.getConfigsReleaseFromCache();
+        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getMessage());
+    }
+
+    @Test
+    public void getReleaseFromCacheInitialised() throws GitAPIException, IOException {
+        configRelease.init();
+        ConfigEditorResult result = configRelease.getConfigsReleaseFromCache();
+        Assert.assertEquals(OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getFiles());
+        Assert.assertEquals(releaseVersion, result.getAttributes().getRulesVersion());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void initReleaseFailed() throws GitAPIException, IOException {
+        when(gitRepo.getFiles(eq(directory), any())).thenReturn(ConfigEditorResult.fromMessage(ERROR, "error"));
+        configRelease.init();
     }
 }
