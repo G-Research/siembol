@@ -20,7 +20,7 @@ import { SchemaService } from '@app/services/schema/schema.service';
 export class AdminViewComponent implements AfterViewInit, OnDestroy {
   @ViewChild(AdminComponent) adminComponent: AdminComponent;
 
-  ngUnsubscribe = new Subject();
+  ngUnsubscribe = new Subject<void>();
   configData: any;
 
   schema: JSONSchema7;

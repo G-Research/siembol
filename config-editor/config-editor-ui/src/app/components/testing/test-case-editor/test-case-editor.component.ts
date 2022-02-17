@@ -22,7 +22,7 @@ import { SchemaService } from '@app/services/schema/schema.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestCaseEditorComponent implements OnInit, OnDestroy {
-  ngUnsubscribe = new Subject();
+  ngUnsubscribe = new Subject<void>();
   editedTestCase$: Observable<TestCaseWrapper>;
   field: FormlyFieldConfig;
   options: any;

@@ -70,13 +70,13 @@ export class ConfigLoaderService {
   getConfigs(): Observable<Config[]> {
     return this.http
       .get<GitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs`)
-      .map(result => {
+      .pipe(map(result => {
         if (result.files) {
           return result.files.map(file => this.getConfigFromFile(file));
         }
 
         throw new DOMException('bad format response when loading configs');
-      });
+      }));
   }
 
   getTestSpecificationSchema(): Observable<JSONSchema7> {
@@ -86,25 +86,25 @@ export class ConfigLoaderService {
   }
 
   getSchema(): Observable<JSONSchema7> {
-    return this.http.get<SchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`).map(x => {
+    return this.http.get<SchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/schema`).pipe(map(x => {
       try {
         return x.rules_schema;
       } catch {
         throw new Error('Call to schema endpoint didn\'t return the expected schema');
       }
-    });
+    }));
   }
 
   getAdminSchema(): Observable<JSONSchema7> {
     return this.http
       .get<AdminSchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/schema`)
-      .map(x => {
+      .pipe(map(x => {
         try {
           return x.admin_config_schema;
         } catch {
           throw new Error('Call to schema endpoint didn\'t return the expected schema');
         }
-      });
+      }));
   }
 
   getPullRequestStatus(): Observable<PullRequestInfo> {
@@ -227,13 +227,13 @@ export class ConfigLoaderService {
 
   submitConfig(config: Config): Observable<Config[]> {
     const fun = config.isNew ? this.submitNewConfig(config) : this.submitConfigEdit(config);
-    return fun.map(result => {
+    return fun.pipe(map(result => {
       if (result.files && result.files.length > 0) {
         return result.files.map(file => this.getConfigFromFile(file));
       }
 
       throw new DOMException('bad format response when submiting a config');
-    });
+    }));
   }
 
   submitConfigEdit(config: Config): Observable<GitFiles<any>> {
@@ -334,11 +334,11 @@ export class ConfigLoaderService {
     const ret = {} as TestCaseResult;
 
     return this.testSingleConfig(configData, testCaseWrapper.testCase.test_specification)
-      .map((result: ConfigTestResult) => {
+      .pipe(
+        map((result: ConfigTestResult) => {
         ret.testResult = result;
         return result;
-      })
-      .pipe(
+      }),
         mergeMap(testResult =>
           this.evaluateTestCaseFromResult(testCaseWrapper.testCase, testResult.test_result_raw_output)
         ),
@@ -373,7 +373,7 @@ export class ConfigLoaderService {
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs/delete?configName=${configName}`,
         null
       )
-      .map(result => {
+      .pipe(map(result => {
         if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.testCaseEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
@@ -385,7 +385,7 @@ export class ConfigLoaderService {
           configAndTestCases['testCases'] = this.testCaseFilesToMap(result.test_cases_files);
         }
         return configAndTestCases;
-      });
+      }));
   }
 
   deleteTestCase(configName: string, testCaseName: string): Observable<TestCaseMap> {

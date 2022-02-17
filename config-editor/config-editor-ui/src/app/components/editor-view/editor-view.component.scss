@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    height: 100%;
+    height: calc(100% - 48px);
 }
 
 mat-card-content {

@@ -23,6 +23,14 @@ public class MatcherDto {
     @Attributes(description = "Use case insensitive string compare")
     private Boolean caseInsensitiveCompare = false;
 
+    @JsonProperty("starts_with")
+    @Attributes(description = "The field value starts with the pattern")
+    private Boolean startsWith = false;
+
+    @JsonProperty("ends_with")
+    @Attributes(description = "The field value ends with the pattern")
+    private Boolean endsWith = false;
+
     @Attributes(description = "Matcher expression as defined by matcher type")
     private String data;
 
@@ -75,6 +83,22 @@ public class MatcherDto {
 
     public void setMatchers(List<MatcherDto> matchers) {
         this.matchers = matchers;
+    }
+
+    public Boolean getStartsWith() {
+        return startsWith;
+    }
+
+    public void setStartsWith(Boolean startsWith) {
+        this.startsWith = startsWith;
+    }
+
+    public Boolean getEndsWith() {
+        return endsWith;
+    }
+
+    public void setEndsWith(Boolean endsWith) {
+        this.endsWith = endsWith;
     }
 }
 

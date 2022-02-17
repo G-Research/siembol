@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Type } from '@app/model/config-model';
 import { ConfigStoreState } from '@app/model/store-state';
-import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, from, map, catchError, mergeMap, Observable, throwError } from 'rxjs';
 import { ConfigLoaderService } from './config-loader.service';
 import { ConfigStoreStateBuilder } from './store/config-store-state.builder';
 
@@ -12,20 +12,21 @@ export class ClipboardStoreService {
   constructor(private configLoader: ConfigLoaderService, private store: BehaviorSubject<ConfigStoreState>) {}
 
   validateConfig(type: Type): Observable<boolean> {
-    return this.getClipboard()
-      .mergeMap(s => {
+    return this.getClipboard().pipe(
+      mergeMap(s => {
         const json = JSON.parse(s);
         return this.validateType(type, json)
-          .map(() => json)
-          .catch(e => {
+          .pipe(
+            map(() => json),
+            catchError(e => {
             const message = e.error.exception ? e.error.exception : e.error.message;
             return throwError('Unable to paste config from clipboard: ' + message);
-          });
-      })
-      .map((json: string) => {
+          }));
+      }),
+      map((json: string) => {
         this.updatePastedConfig(json);
         return true;
-      });
+      }));
   }
 
   copyFromClipboard(str: any) {
@@ -57,11 +58,11 @@ export class ClipboardStoreService {
   }
 
   private getClipboard(): Observable<any> {
-    return from(navigator.clipboard.readText()).map(c => {
+    return from(navigator.clipboard.readText()).pipe(map(c => {
       if (!this.isJsonString(c)) {
         throw Error('Clipboard is not JSON');
       }
       return c;
-    });
+    }));
   }
 }

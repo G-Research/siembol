@@ -7,7 +7,6 @@
     font-size: 1em;
     min-width: 250px;
     padding: 0 10px;
-    // height: 100vh;
     mat-divider {
         border-top-width: 1px;
         min-width: 100%;
@@ -38,4 +37,8 @@
 ::ng-deep .mat-menu-panel.myMenu  {
     margin-top: -35px !important;
     margin-left: 30px !important;
+}
+
+.router-holder {
+    height: calc(100vh - 94px);
 }

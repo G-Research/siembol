@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
 
 import { EditorService } from '../services/editor.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -19,6 +19,6 @@ export class AdminGuard implements CanActivate {
         }
 
         return this.editorService.createAdminServiceContext(serviceName)
-            .map(x => this.editorService.setServiceContext(x));
+            .pipe(map(x => this.editorService.setServiceContext(x)));
     }
 }

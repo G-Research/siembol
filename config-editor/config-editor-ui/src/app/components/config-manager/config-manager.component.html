@@ -23,7 +23,7 @@
                     </div>
                     <div class="add-button">
                         <a 
-                          *ngIf="useImporters && (importers$ | async)?.config_importers.length == 1" 
+                          *ngIf="useImporters && (importers$ | async)?.config_importers.length === 1" 
                           mat-button 
                           color="primary" 
                           title="Import Config from Clipboard" 
@@ -52,7 +52,14 @@
                 <div @list cdkDropList id="store-list" [cdkDropListData]="allConfigs$ | async" [cdkDropListConnectedTo]="['deployment-list']" [cdkDropListEnterPredicate]="noReturnPredicate"
                     (cdkDropListDropped)="drop($event)" class="rule-list">
                         <re-config-tile *ngFor="let config of (filteredConfigs$ | async); index as i; trackBy: trackConfigByName"
-                            cdkDrag [cdkDragData]="config" [config]="config" [notDeployed]="i>=filteredDeployment.configs.length" (edit)="onEdit(i)" (view)="onView(i)" (clone)="onClone(i)" (addToDeployment)="addToDeployment(i)" (deleteFromStore)="deleteConfigFromStore(i)">
+                            cdkDrag 
+                            [cdkDragData]="config" 
+                            [config]="config" 
+                            [notDeployed]="i>=filteredDeployment.configs.length" 
+                            (edit)="onEdit(i)" (view)="onView(i)" 
+                            (clone)="onClone(i)" 
+                            (addToDeployment)="addToDeployment(i)" 
+                            (deleteFromStore)="deleteConfigFromStore(i)">
                         </re-config-tile>
                     </div>
             </div>

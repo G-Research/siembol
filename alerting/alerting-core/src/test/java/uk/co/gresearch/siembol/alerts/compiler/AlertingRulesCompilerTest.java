@@ -87,10 +87,13 @@ public class AlertingRulesCompilerTest {
               "source_type": "*",
               "matchers": [
                 {
-                  "matcher_type": "REGEX_MATCH",
+                  "matcher_type": "CONTAINS",
                   "is_negated": false,
                   "field": "is_alert",
-                  "data": "(?i)true"
+                  "data": "true",
+                  "case_insensitive" : true,
+                  "starts_with" : true,
+                  "ends_with" : true
                 },
                 {
                   "matcher_type": "REGEX_MATCH",
@@ -119,10 +122,11 @@ public class AlertingRulesCompilerTest {
                           "data": "(?i)true"
                         },
                         {
-                          "matcher_type": "REGEX_MATCH",
+                          "matcher_type": "IS_IN_SET",
                           "is_negated": false,
                           "field": "is_detected",
-                          "data": "(?i)yes"
+                          "data": "yes",
+                          "case_insensitive" : true
                         }
                       ]
                     }

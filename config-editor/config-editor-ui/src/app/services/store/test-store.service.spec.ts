@@ -1,13 +1,15 @@
+/* eslint-disable no-unused-vars */
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { TestStoreService } from './test-store.service';
 import { ConfigLoaderService } from '../config-loader.service';
 import { mockStore } from 'testing/store';
 import { BehaviorSubject, of } from 'rxjs';
-import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap } from 'testing/testcases';
+import { mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseMap, mockTestCaseWrapper3, mockTestCase1 } from 'testing/testcases';
 import { mockEvaluateTestCaseMatch } from 'testing/testCaseResults';
 import { delay } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
 import { ClipboardStoreService } from '../clipboard-store.service';
+import { TestScheduler } from 'rxjs/testing';
 
 describe('TestStoreService', () => {
   let configLoader: ConfigLoaderService;
@@ -78,4 +80,44 @@ describe('TestStoreService', () => {
       expect(service['store'].getValue().editedConfig.testCases[1].testCaseResult).toEqual(mockEvaluateTestCaseMatch);
     }));
   });
+
+  describe('submitTestCases', () => {
+    let testScheduler: TestScheduler;
+
+    beforeEach(() => {
+      testScheduler = new TestScheduler((actual, expected) => {
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    it('should submit test cases in order', ()=> {
+      const mockTestCaseWrappers = [mockTestCaseWrapper1, mockTestCaseWrapper2, mockTestCaseWrapper3];
+      testScheduler.run(({ cold, expectObservable }) => {
+        const spy = spyOn(configLoader, 'submitTestCase').and.returnValues(
+          cold(`----a|`,  {a: "first" as any}), 
+          cold(`--a|`, {a: "second" as any}), 
+          cold('a|',  {a: "third" as any})
+        );
+        const testCaseMap$ = service.submitTestCases(mockTestCaseWrappers);
+        expect(spy).toHaveBeenCalledTimes(3);
+        expect(spy).toHaveBeenCalledWith(mockTestCaseWrapper1);
+        expect(spy).toHaveBeenCalledWith(mockTestCaseWrapper2);
+        expect(spy).toHaveBeenCalledWith(mockTestCaseWrapper3);
+        expectObservable(testCaseMap$).toBe('---------(a|)',  {a: "third"});
+      })
+    });
+  })
+
+  it("should return cloned test case", () => {
+    const clone = service.getClonedTestCase(mockTestCaseWrapper1, "config_name");
+    const mockTestCase1Clone = cloneDeep(mockTestCase1);
+    mockTestCase1Clone.config_name = "config_name";
+    mockTestCase1Clone.version = 0;
+    const expected = { 
+      fileHistory: null, 
+      testCaseResult: null, 
+      testCase: mockTestCase1Clone,
+    }
+    expect(clone).toEqual(expected);
+  })
 });
