@@ -7,6 +7,7 @@ import com.github.reinert.jjschema.Attributes;
 public enum MatcherTypeDto {
     @JsonProperty("REGEX_MATCH") REGEX_MATCH("REGEX_MATCH"),
     @JsonProperty("IS_IN_SET") IS_IN_SET("IS_IN_SET"),
+    @JsonProperty("CONTAINS") CONTAINS("CONTAINS"),
     @JsonProperty("COMPOSITE_AND") COMPOSITE_AND("COMPOSITE_AND"),
     @JsonProperty("COMPOSITE_OR") COMPOSITE_OR("COMPOSITE_OR");
     private final String name;
