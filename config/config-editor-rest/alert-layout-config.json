@@ -42,8 +42,7 @@
                     "is_negated": {
                         "type": "boolean",
                         "description": "The matcher is negated",
-                        "default": false,
-                        "indeterminate": false
+                        "default": false
                     },
                     "field": {
                         "widget": {
