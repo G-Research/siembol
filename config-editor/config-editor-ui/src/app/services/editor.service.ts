@@ -10,7 +10,6 @@ import { AppService } from './app.service';
 import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
-import { cloneDeep } from 'lodash';
 
 export class ServiceContext {
   metaDataMap: UiMetadata;
@@ -61,7 +60,7 @@ export class EditorService {
 
   setServiceContext(serviceContext: ServiceContext): boolean {
     this.serviceContext = serviceContext;
-    this.appService.updateServiceContextMap(cloneDeep(serviceContext));
+    this.appService.updateServiceContextMap(serviceContext);
     this.serviceNameSubject.next(this.serviceName);
     return true;
   }
