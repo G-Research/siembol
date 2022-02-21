@@ -34,17 +34,12 @@ public class CSVExtractor extends ParserExtractor {
             }
 
             Object value = getValue(message.substring(offset, delimiterOffset));
-            if (!shouldSkipEmptyValues()
-                    || !EMPTY_STRING.equals(value)) {
-                values.add(value);
-            }
-
+            values.add(value);
             offset = delimiterOffset + 1;
         }
 
         if (!message.isEmpty()
-                && message.charAt(message.length() - 1) == delimiter
-                && !shouldSkipEmptyValues()) {
+                && message.charAt(message.length() - 1) == delimiter) {
             //NOTE: if the last character is delimiter we would like to add the last empty column
             values.add(EMPTY_STRING);
         }
@@ -56,10 +51,7 @@ public class CSVExtractor extends ParserExtractor {
         Iterable<String> tmp = Splitter.on(delimiter).split(message);
         for (String strValue : tmp) {
             Object value = getValue(strValue);
-            if (!shouldSkipEmptyValues()
-                    || !EMPTY_STRING.equals(value)) {
-                values.add(value);
-            }
+            values.add(value);
         }
 
         return values;
@@ -88,7 +80,9 @@ public class CSVExtractor extends ParserExtractor {
 
         for (int i = 0; i < values.size(); i++) {
             if (!skippingColumnName.equals(currentNames.get(i))) {
-                ret.put(currentNames.get(i), values.get(i));
+                if (!shouldSkipEmptyValues() || !EMPTY_STRING.equals(values.get(i))) {
+                    ret.put(currentNames.get(i), values.get(i));
+                }
             }
         }
 
@@ -117,8 +111,7 @@ public class CSVExtractor extends ParserExtractor {
 
         return new Builder<CSVExtractor>() {
             @Override
-            public CSVExtractor build()
-            {
+            public CSVExtractor build() {
                 if (this.columnNamesList == null ||
                         this.columnNamesList.isEmpty()) {
                     throw new IllegalArgumentException("Empty column names");

@@ -149,7 +149,7 @@ public class CSVExtractorTest {
                 ParserExtractor.ParserExtractorFlags.SKIP_EMPTY_VALUES);
 
         columnNamesList.add(new ColumnNames(
-                Arrays.asList("c1", "c2", "c3", "c4")));
+                Arrays.asList("c1", "c2", "c3", "c4", "c5")));
         CSVExtractor extractor = CSVExtractor.builder()
                 .columnNames(columnNamesList)
                 .extractorFlags(extractorFlags)
@@ -162,7 +162,7 @@ public class CSVExtractorTest {
         Assert.assertEquals("a", out.get("c1"));
         Assert.assertEquals("bb", out.get("c2"));
         Assert.assertEquals("ccc", out.get("c3"));
-        Assert.assertEquals("ee", out.get("c4"));
+        Assert.assertEquals("ee", out.get("c5"));
     }
 
     @Test
