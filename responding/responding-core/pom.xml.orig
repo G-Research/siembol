@@ -11,7 +11,11 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>responding</artifactId>
-        <version>2.3.4-SNAPSHOT</version>
+<<<<<<< HEAD
+        <version>2.0.0-SNAPSHOT</version>
+=======
+        <version>1.4.2-SNAPSHOT</version>
+>>>>>>> 4ba89d6 (config editor rest: adding enrichment tables update into sync service (#324))
     </parent>
     <dependencies>
         <dependency>
@@ -35,17 +39,25 @@
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>2.3.4-SNAPSHOT</version>
+<<<<<<< HEAD
+            <version>2.0.0-SNAPSHOT</version>
+=======
+            <version>1.4.2-SNAPSHOT</version>
+>>>>>>> 4ba89d6 (config editor rest: adding enrichment tables update into sync service (#324))
         </dependency>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>alerting-core</artifactId>
-            <version>2.3.4-SNAPSHOT</version>
+<<<<<<< HEAD
+            <version>2.0.0-SNAPSHOT</version>
+=======
+            <version>1.4.2-SNAPSHOT</version>
+>>>>>>> 4ba89d6 (config editor rest: adding enrichment tables update into sync service (#324))
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.7.0</version>
+            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -70,12 +82,6 @@
             <version>1.16</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito_version}</version>
@@ -90,12 +96,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka_version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

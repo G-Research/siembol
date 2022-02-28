@@ -36,7 +36,7 @@ public class ApplicationConfiguration implements DisposableBean {
     @Bean
     RespondingCompiler respondingCompiler() throws Exception {
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>();
-        evaluatorFactories.addAll(ProvidedEvaluators.getRespondingEvaluatorFactories()
+        evaluatorFactories.addAll(ProvidedEvaluators.getRespondingEvaluatorFactories(properties.getEvaluatorsProperties())
                 .getAttributes()
                 .getRespondingEvaluatorFactories());
 
