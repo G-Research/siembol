@@ -56,7 +56,7 @@
         <spring_boot_version>2.6.4</spring_boot_version>
         <guava_version>31.0.1-jre</guava_version>
         <storm_guava_version>24.1.1-jre</storm_guava_version>
-        <springdoc_openapi_version>1.6.5</springdoc_openapi_version>
+        <springdoc_openapi_version>1.6.6</springdoc_openapi_version>
         <commons_beanutils_version>1.9.4</commons_beanutils_version>
         <multiline_string_version>0.1.2</multiline_string_version>
         <http_client_version>4.5.13</http_client_version>
@@ -151,7 +151,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>1.6.12</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
