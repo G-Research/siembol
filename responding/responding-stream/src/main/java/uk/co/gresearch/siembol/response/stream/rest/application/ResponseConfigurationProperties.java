@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Configuration;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.response.model.ProvidedEvaluatorsProperties;
 
 import java.util.Map;
 
@@ -16,6 +17,8 @@ public class ResponseConfigurationProperties {
     private Boolean inactiveStreamService = false;
     @NestedConfigurationProperty
     private ZooKeeperAttributesDto zookeperAttributes;
+    @NestedConfigurationProperty
+    private ProvidedEvaluatorsProperties evaluatorsProperties;
 
     public String getInputTopic() {
         return inputTopic;
@@ -55,5 +58,13 @@ public class ResponseConfigurationProperties {
 
     public void setStreamConfig(Map<String, Object> streamConfig) {
         this.streamConfig = streamConfig;
+    }
+
+    public ProvidedEvaluatorsProperties getEvaluatorsProperties() {
+        return evaluatorsProperties;
+    }
+
+    public void setEvaluatorsProperties(ProvidedEvaluatorsProperties evaluatorsProperties) {
+        this.evaluatorsProperties = evaluatorsProperties;
     }
 }

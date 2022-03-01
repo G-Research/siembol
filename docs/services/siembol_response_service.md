@@ -101,6 +101,12 @@ Sleep evaluator is postponing the further evaluation of the rule by time provide
     - `time_unit_type`- The type of time unit from `seconds`, `milli_seconds`
     - `sleeping_time` - The time of sleeping in the time units
 
+#### Kafka writer
+Kafka writer evaluator produces a message with alert to a kafka topic.
+- `evaluator_type` - The type equals to `kafka_writer`
+- `evaluator_attributes`
+  - `topic_name`- The name of the kafka topic
+
 ## Plugins
 Siembol response plugins allows to extend the functionality of siembol response by integrating custom evaluators if needed. A response plugin can contain one or more evaluators and siembol response can load one or more plugins if needed.
 

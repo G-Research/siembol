@@ -11,6 +11,7 @@ import uk.co.gresearch.siembol.response.common.*;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
 import uk.co.gresearch.siembol.response.engine.ResponseEngine;
+import uk.co.gresearch.siembol.response.model.ProvidedEvaluatorsProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class ZooKeeperRulesProviderTest {
     public void setUp() throws Exception {
         testMetricFactory = new TestMetricFactory();
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>(
-                ProvidedEvaluators.getRespondingEvaluatorFactories()
+                ProvidedEvaluators.getRespondingEvaluatorFactories(new ProvidedEvaluatorsProperties())
                         .getAttributes()
                         .getRespondingEvaluatorFactories());
 
