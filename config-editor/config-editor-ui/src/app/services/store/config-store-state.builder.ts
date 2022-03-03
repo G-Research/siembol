@@ -164,17 +164,6 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  addConfigToDeploymenInPosition(filteredConfigIndex: number, filteredDeploymentIndex: number) {
-    if (filteredConfigIndex < this.state.filteredDeployment.configs.length) {
-      return this.moveConfigInDeployment(filteredConfigIndex, filteredDeploymentIndex);
-    }
-
-    const configToAdd = cloneDeep(this.state.filteredConfigs[filteredConfigIndex]);
-    this.state.deployment.configs.push(configToAdd);
-    this.state.filteredDeployment.configs.push(configToAdd);
-    return this.moveConfigInDeployment(this.state.filteredDeployment.configs.length - 1, filteredDeploymentIndex);
-  }
-
   removeConfigFromDeployment(filteredIndex: number) {
     this.state.deployment.configs = this.state.deployment.configs.filter(
       x => x.name !== this.state.filteredDeployment.configs[filteredIndex].name
@@ -182,9 +171,9 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  moveConfigInDeployment(filteredPreviousIndex: number, filteredCurrentIndex: number) {
+  moveConfigInDeployment(configName: string, filteredCurrentIndex: number) {
     const previousIndex = this.state.deployment.configs.findIndex(
-      e => e.name === this.state.filteredDeployment.configs[filteredPreviousIndex].name
+      e => e.name === configName
     );
     const currentIndex = this.state.deployment.configs.findIndex(
       e => e.name === this.state.filteredDeployment.configs[filteredCurrentIndex].name

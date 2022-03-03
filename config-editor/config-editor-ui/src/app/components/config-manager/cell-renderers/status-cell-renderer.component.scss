@@ -1,0 +1,25 @@
+.buttons {
+  margin-right: 0px;
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  .mat-icon {
+      padding-top: 10px;
+      margin: 0 5px;
+      color: rgb(180, 180, 180);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+          color: white;
+      }
+  }
+  .mat-raised-button {
+    margin: 5px 5px 5px 0;
+    }
+
+  .drag-hint {
+      cursor: move;
+  }
+}

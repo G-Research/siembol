@@ -1,13 +1,13 @@
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
-import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { Config, Deployment, PullRequestInfo } from '@app/model';
 import { PopupService } from '@app/services/popup.service';
 import { cloneDeep } from 'lodash';
-import { Observable, Subject } from 'rxjs';
-import { skip, take, takeUntil } from 'rxjs/operators';
+import { Observable, Subject, zip } from 'rxjs';
+import { map, skip, take, takeUntil } from 'rxjs/operators';
 import { DeployDialogComponent } from '../deploy-dialog/deploy-dialog.component';
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
@@ -15,9 +15,13 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { Importers, Type } from '@app/model/config-model';
+import { ConfigManagerRow, Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
+import { configManagerColumns } from '../../model/config-model';
+import { ActionCellRendererComponent } from './action-cell-renderer.component';
+import { StatusCellRendererComponent } from './cell-renderers/status-cell-renderer.component';
+import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from 'ag-grid-community';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,16 +65,53 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   filterUndeployed$: Observable<boolean>;
   filterUpgradable$: Observable<boolean>;
   deploymentHistory$: Observable<FileHistory[]>;
+  rowData$: Observable<ConfigManagerRow[]>;
   deploymentHistory;
   disableEditingFeatures: boolean;
   importers$: Observable<Importers>;
   importers: Importers;
   useImporters: boolean;
+  columnDefs = configManagerColumns;
+  defaultColDef;
+  frameworkComponents;
+  context;
+    gridOptions = {
+      suppressMoveWhenRowDragging: true,
+      rowDragManaged:true,
+      // PROPERTIES
+      // Objects like myRowData and myColDefs would be created in your application
+      // rowData: myRowData,
+      // columnDefs: myColDefs,
+      // pagination: true,
+      rowSelection: 'single',
+      suppressClickEdit: true,
+      rowHeight: 50,
+
+      // EVENTS
+      // Add event handlers
+      // onRowClicked: event => console.log('A row was clicked'),
+      // onColumnResized: event => console.log('A column was resized'),
+      // onGridReady: event => console.log('The grid is now ready'),
+      onRowDragEnd: (event: RowDragEvent) => {
+        this.drop(event);
+      },
+      onGridSizeChanged: (event: GridSizeChangedEvent) => {
+        event.api.sizeColumnsToFit();
+      }, 
+
+
+      // // CALLBACKS
+      // getRowHeight: (params) => 25
+  }
+  private gridApi;
+  private gridColumnApi;
 
   private ngUnsubscribe = new Subject<void>();
   private filteredConfigs: Config[];
   private configStore: ConfigStoreService;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
+
+  
   constructor(
     public dialog: MatDialog,
     private snackbar: PopupService,
@@ -78,6 +119,12 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private router: Router,
     private configService: AppConfigService
   ) {
+    this.frameworkComponents = {
+      actionCellRenderer: ActionCellRendererComponent,
+      statusCellRenderer: StatusCellRendererComponent,
+    };
+    this.context = { componentParent: this };
+
     this.disableEditingFeatures = editorService.metaDataMap.disableEditingFeatures;
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.allConfigs$;
@@ -98,6 +145,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.deploymentHistory$ = this.configStore.deploymentHistory$;
     this.importers$ = this.configStore.importers$;
     this.useImporters = this.configService.useImporters;
+
+    this.rowData$ = this.getRowData(this.filteredConfigs$, this.filteredDeployment$);
   }
 
   ngOnInit() {
@@ -121,6 +170,13 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.importers$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(i => {
       this.importers = i;
     });
+
+    this.rowData$ = this.getRowData(this.filteredConfigs$, this.filteredDeployment$);
+  }
+
+  onGridReady(params) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
   }
 
   ngOnDestroy() {
@@ -136,20 +192,14 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.upgradeConfigInDeployment(index);
   }
 
-  drop(event: CdkDragDrop<Config[]>) {
-    if (event.container.id === 'deployment-list') {
-      if (event.previousContainer.id === 'store-list') {
-        this.configStore.addConfigToDeploymentInPosition(event.previousIndex, event.currentIndex);
-      } else if (event.previousContainer.id === 'deployment-list' && event.currentIndex !== event.previousIndex) {
-        this.configStore.moveConfigInDeployment(event.previousIndex, event.currentIndex);
-      }
-    }
+  drop(event: RowDragEvent) {
+    this.configStore.moveConfigInDeployment(event.node.id, event.node.rowIndex);
   }
 
-  onView(id: number, releaseId: number = undefined) {
+  onView(id: number) {
     this.dialog.open(JsonViewerComponent, {
       data: {
-        config1: releaseId === undefined ? undefined : this.filteredDeployment.configs[releaseId].configData,
+        config1: id === undefined ? undefined : this.filteredDeployment.configs[id].configData,
         config2: this.filteredConfigs[id].configData,
       },
     });
@@ -228,10 +278,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.updateFilterUndeployed($event);
   }
 
-  trackConfigByName(index: number, item: Config) {
-    return item.name;
-  }
-
   deleteConfigFromStore(index: number) {
     this.blockUI.start('deleting config');
     this.configStore.deleteConfig(this.filteredConfigs[index].name).subscribe(() => {
@@ -256,6 +302,30 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
         this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { pasteConfig: true } });
       }
     });
+  }
 
+  getRowNodeId: GetRowNodeIdFunc = function (data) {
+    return data.config_name;
+  };
+
+  getRowData(configs$: Observable<Config[]>, deployment$: Observable<Deployment>): Observable<ConfigManagerRow[]> {
+    return zip([configs$, deployment$]).pipe(
+      takeUntil(this.ngUnsubscribe),
+      map(([configs, deployment]) => 
+        configs.map(
+          (config: Config) => this.getRowFromConfig(config, deployment)
+      )));
+  }
+
+  private getRowFromConfig(config: Config, deployment: Deployment): ConfigManagerRow {
+    const deploymentConfig = deployment.configs.find(x => x.name === config.name);
+    const deploymentVersion = deploymentConfig? deploymentConfig.version : 0;
+    return ({
+      "author": config.author, 
+      "version": config.version, 
+      "config_name": config.name, 
+      "deployedVersion":  deploymentVersion,
+      "configHistory": config.fileHistory,
+    });
   }
 }

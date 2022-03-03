@@ -1,13 +1,15 @@
 .container {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
     padding: 10px 30px;
     min-height: 100%;
+    width: 90%;
     &>mat-divider {
         margin: 0 40px;
     }
-    max-width: 1800px;
+    max-width: 3000px;
     margin: auto;
 }
 
@@ -16,6 +18,14 @@
     &>mat-divider {
         margin: 10px 0;
     }
+}
+
+#myGrid {
+    margin-top: 15px;
+}
+
+::ng-deep .ag-cell-focus, .ag-cell {
+    border: none !important;
 }
 
 .title-info {
@@ -37,7 +47,7 @@
 }
 
 .rules-container {
-    width: 60%;
+    width: 80%;
     min-width: 800px;
     margin-left: auto;
 }
@@ -67,7 +77,7 @@
     justify-content: space-between;
     align-items: center;
     color: white;
-    margin-bottom: -5px;
+    margin-bottom: 10px;
     h2 {
         width: 90px;
         max-width: 90px;
@@ -153,7 +163,7 @@ mat-card {
 .pr-message {
     color: orange;
     display: inline-block;
-    margin-right: 10px;
+    // margin-right: 10px;
 }
 
 .placeholder-box {
@@ -199,7 +209,12 @@ re-search {
 }
 
 .history-button {
-    margin: 0 0 0 auto;
+    margin-right: 10px;
     color: #868686;
     margin-top: 3px;
+}
+
+.refresh-button {
+    margin: 0;
+    padding: 0;
 }

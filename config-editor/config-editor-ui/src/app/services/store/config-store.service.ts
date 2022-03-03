@@ -178,16 +178,16 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  addConfigToDeploymentInPosition(filteredConfigIndex: number, filteredDeploymentPosition: number) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .addConfigToDeploymenInPosition(filteredConfigIndex, filteredDeploymentPosition)
-      .detectOutdatedConfigs()
-      .reorderConfigsByDeployment()
-      .computeFiltered(this.user)
-      .build();
+  // addConfigToDeploymentInPosition(filteredConfigIndex: number, filteredDeploymentPosition: number) {
+  //   const newState = new ConfigStoreStateBuilder(this.store.getValue())
+  //     .addConfigToDeploymenInPosition(filteredConfigIndex, filteredDeploymentPosition)
+  //     .detectOutdatedConfigs()
+  //     .reorderConfigsByDeployment()
+  //     .computeFiltered(this.user)
+  //     .build();
 
-    this.store.next(newState);
-  }
+  //   this.store.next(newState);
+  // }
 
   removeConfigFromDeployment(filteredIndex: number) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
@@ -211,9 +211,9 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  moveConfigInDeployment(filteredPreviousIndex: number, filteredCurrentIndex: number) {
+  moveConfigInDeployment(configName: string, filteredCurrentIndex: number) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .moveConfigInDeployment(filteredPreviousIndex, filteredCurrentIndex)
+      .moveConfigInDeployment(configName, filteredCurrentIndex)
       .reorderConfigsByDeployment()
       .computeFiltered(this.user)
       .build();

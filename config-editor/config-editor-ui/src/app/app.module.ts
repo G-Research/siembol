@@ -75,6 +75,10 @@ import { UrlHistoryService } from './services/url-history.service';
 import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { ActionCellRendererComponent } from './components/config-manager/action-cell-renderer.component';
+import { AgGridModule } from 'ag-grid-angular';
+import { StatusCellRendererComponent } from './components/config-manager/cell-renderers/status-cell-renderer.component';
+import { ConfigHistoryTooltipComponent } from './components/config-manager/tooltips/config-history-tooltip.component';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -97,6 +101,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [
+    ConfigHistoryTooltipComponent,
+    ActionCellRendererComponent,
+    StatusCellRendererComponent,
     RawJsonDirective,
     AppComponent,
     HomeComponent,
@@ -232,6 +239,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ReactiveFormsModule,
     FormlyMaterialModule,
     NgxPopperModule.forRoot({}),
+    AgGridModule.withComponents([]),
   ],
   providers: [
     environment.production ? PROD_PROVIDERS : DEV_PROVIDERS,

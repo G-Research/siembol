@@ -1,0 +1,22 @@
+.buttons {
+  margin-right: 0px;
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  transition: all 0.2s ease-in-out;
+  a {
+      margin: 0 5px;
+      color: rgb(180, 180, 180);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+          color: white;
+      }
+  }
+
+  .drag-hint {
+      cursor: move;
+  }
+}

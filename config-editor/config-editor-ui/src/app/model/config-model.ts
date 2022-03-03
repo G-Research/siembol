@@ -1,6 +1,8 @@
 import { TestCase, TestCaseWrapper, TestCaseEvaluationResult, TestCaseMap } from './test-case';
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from 'rxjs';
+import { ConfigHistoryTooltipComponent } from '@app/components/config-manager/tooltips/config-history-tooltip.component';
+// import { ActionCellRenderer } from "./action-cell-renderer.component";
 
 export const NAME_REGEX = '^[a-zA-Z0-9_\\-]+$';
 
@@ -241,4 +243,49 @@ export class ExistingConfigError extends Error {
     super(message);
     this.name = this.constructor.name;
   }
+}
+
+export const configManagerColumns = [
+  { 
+    field: "config_name",
+    minWidth: 250,
+    headerName: "Config Name",
+    tooltipField: "config_name",
+    rowDrag: true,
+  },
+  { field: "author"},
+  { 
+    field: "version",
+    maxWidth: 90,
+    tooltipComponent: ConfigHistoryTooltipComponent,
+    tooltipField: "version",
+  },
+  { 
+    headerName: "Actions",
+    minWidth: 150,
+    cellRenderer: "actionCellRenderer",
+    editable: false,
+    colId: "action",
+  },
+  { 
+    headerName: "Deployment Status",
+    minWidth: 300,
+    cellRenderer: "statusCellRenderer",
+    editable: false,
+    colId: "status",
+  },
+];
+
+export interface ConfigManagerRow {
+  config_name: string,
+  author: string,
+  version: number,
+  deployedVersion: number,
+  configHistory: FileHistory[]
+}
+
+export enum ConfigStatus {
+  UP_TO_DATE = "up-to-date",
+  UPGRADABLE = "upgradable",
+  UNDEPLOYED = "undeployed",
 }
