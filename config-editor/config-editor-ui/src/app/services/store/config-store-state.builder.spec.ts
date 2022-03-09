@@ -180,7 +180,7 @@ describe('ConfigStoreStateBuilder', () => {
     mockRelease.configs = mockConfigsSorted;
     builder.release(mockRelease as Release);
     builder.computeFiltered("siembol");
-    builder.moveConfigInRelease(0,4);
+    builder.moveConfigInRelease('test1', 4);
     expect((builder['state'] as any).release.configs).toEqual(mockConfigsMoved);
   })
 
@@ -229,20 +229,4 @@ describe('ConfigStoreStateBuilder', () => {
       builder.addConfigToRelease(4);
       expect((builder['state'] as any).release.configs).toEqual(mockConfigsSorted);
     })
-
-  it("should add config to release in position", () => {
-    const mockReleaseConfigs = [
-      { name: 'test1' },
-      { name: 'test3' },
-      { name: 'test4' },
-      { name: 'test5' },
-    ];
-    builder.configs(mockConfigsSorted as Config[]);
-    builder.release({configs: mockReleaseConfigs} as Release);
-    builder.reorderConfigsByRelease();
-    builder.computeFiltered("siembol");
-    builder.addConfigToDeploymenInPosition(4, 1);
-    expect((builder['state'] as any).release.configs).toEqual(mockConfigsSorted);
-  })
-  
 });

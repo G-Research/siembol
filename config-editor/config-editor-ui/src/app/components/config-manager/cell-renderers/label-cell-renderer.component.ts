@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from "@angular/core";
+import { Component } from "@angular/core";
 import { ConfigStatus } from "@app/model/config-model";
 import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 import { ICellRendererParams } from '@ag-grid-community/core';
@@ -51,7 +51,7 @@ import { ICellRendererParams } from '@ag-grid-community/core';
   
   `,
 })
-export class LabelCellRendererComponent implements ICellRendererAngularComp, OnDestroy {
+export class LabelCellRendererComponent implements ICellRendererAngularComp {
   status: ConfigStatus;
   configStatusEnum = ConfigStatus;
   labels: string[];
@@ -62,11 +62,6 @@ export class LabelCellRendererComponent implements ICellRendererAngularComp, OnD
   agInit(params: any): void {
     this.params = params;
     this.labels = params.node.data.labels_;
-  }
-
-  ngOnDestroy() {
-    // no need to remove the button click handler
-    // https://stackoverflow.com/questions/49083993/does-angular-automatically-remove-template-event-listeners
   }
 
   refresh(params: ICellRendererParams) {

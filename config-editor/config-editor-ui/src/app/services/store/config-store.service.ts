@@ -178,17 +178,6 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  // addConfigToReleaseInPosition(filteredConfigIndex: number, filteredReleasePosition: number) {
-  //   const newState = new ConfigStoreStateBuilder(this.store.getValue())
-  //     .addConfigToDeploymenInPosition(filteredConfigIndex, filteredReleasePosition)
-  //     .detectOutdatedConfigs()
-  //     .reorderConfigsByRelease()
-  //     .computeFiltered(this.user)
-  //     .build();
-
-  //   this.store.next(newState);
-  // }
-
   removeConfigFromRelease(filteredIndex: number) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .removeConfigFromRelease(filteredIndex)

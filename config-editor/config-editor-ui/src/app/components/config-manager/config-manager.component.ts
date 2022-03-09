@@ -70,46 +70,26 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   useImporters: boolean;
   columnDefs = configManagerColumns;
   defaultColDef = {
-    // wrapText: true,
-    // flex: 1,
-    // resizable: true,
+    flex: 1,
     autoHeight: true,
   };
-  frameworkComponents;
   context;
-    gridOptions = {
-      suppressMoveWhenRowDragging: true,
-      rowDragManaged:true,
-      // PROPERTIES
-      // Objects like myRowData and myColDefs would be created in your application
-      // rowData: myRowData,
-      // columnDefs: myColDefs,
-      // pagination: true,
-      rowSelection: 'single',
-      suppressClickEdit: true,
-      rowHeight: 50,
-
-      // EVENTS
-      // Add event handlers
-      // onRowClicked: event => console.log('A row was clicked'),
-      // onColumnResized: event => console.log('A column was resized'),
-      // onGridReady: event => console.log('The grid is now ready'),
-      onRowDragEnter: (event: RowDragEvent) => {
-        this.rowMoveStartIndex = event.node.rowIndex;
-      },
-      onRowDragEnd: (event: RowDragEvent) => {
-        this.drop(event);
-      },
-      onGridSizeChanged: (event: GridSizeChangedEvent) => {
-        event.api.sizeColumnsToFit();
-      }, 
-
-
-      // // CALLBACKS
-      // getRowHeight: (params) => 25
+  gridOptions = {
+    suppressMoveWhenRowDragging: true,
+    rowDragManaged:true,
+    rowSelection: 'single',
+    suppressClickEdit: true,
+    rowHeight: 50,
+    onRowDragEnter: (event: RowDragEvent) => {
+      this.rowMoveStartIndex = event.node.rowIndex;
+    },
+    onRowDragEnd: (event: RowDragEvent) => {
+      this.drop(event);
+    },
+    onGridSizeChanged: (event: GridSizeChangedEvent) => {
+      event.api.sizeColumnsToFit();
+    }, 
   }
-  private gridApi;
-  private gridColumnApi;
   private countChangesInRelease = 0;
   private rowMoveStartIndex: number;
 
@@ -118,7 +98,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   private configStore: ConfigStoreService;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
 
-  
   constructor(
     public dialog: MatDialog,
     private snackbar: PopupService,
@@ -175,11 +154,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
 
     this.rowData$ = this.getRowData(this.filteredConfigs$, this.filteredRelease$);
-  }
-
-  onGridReady(params) {
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
   }
 
   ngOnDestroy() {

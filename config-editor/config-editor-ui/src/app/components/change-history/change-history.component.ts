@@ -6,6 +6,6 @@ import { Component, Input } from '@angular/core';
   templateUrl: './change-history.component.html',
   styleUrls: ['./change-history.component.scss'],
 })
-export class ChangeHistoryComponent{
+export class ChangeHistoryComponent {
     @Input() history: FileHistory[];
 }

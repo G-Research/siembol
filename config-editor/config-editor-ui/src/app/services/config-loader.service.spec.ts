@@ -9,7 +9,7 @@ import {
   mockEvaluationResultMatch,
   mockEvaluateTestCaseFromResult,
 } from 'testing/testCaseResults';
-import { mockRelease } from 'testing/release';
+import { mockReleaseFiles } from 'testing/release';
 import { mockReleaseWrapper, mockRelease } from 'testing/releaseWrapper';
 import { mockTestCaseMap, mockTestCaseWrapper1, mockTestCase1 } from 'testing/testcases';
 import { mockTestCaseFiles } from 'testing/testCaseFiles';
@@ -73,7 +73,7 @@ describe('ConfigLoaderService', () => {
 
     const req = httpTestingController.expectOne('/api/v1/test/configstore/release');
     expect(req.request.method).toEqual('GET');
-    req.flush(mockRelease);
+    req.flush(mockReleaseFiles);
   });
 
   it('should convert testcase files to map', () => {

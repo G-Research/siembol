@@ -73,10 +73,7 @@
                 [defaultColDef]="defaultColDef"
                 [immutableData]="true"
                 [rowData]="(rowData$ | async)"
-                [frameworkComponents]="frameworkComponents"
-                (gridReady)="onGridReady($event)"
                 [gridOptions]="gridOptions"
-                [suppressClickEdit]="true"
                 [getRowNodeId]="getRowNodeId"
             ></ag-grid-angular>
         </div> 
