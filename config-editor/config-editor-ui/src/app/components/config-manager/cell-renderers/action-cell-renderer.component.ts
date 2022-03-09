@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { ICellRendererAngularComp } from "ag-grid-angular";
 import { ICellRendererParams } from "ag-grid-community";
 
@@ -22,16 +22,12 @@ import { ICellRendererParams } from "ag-grid-community";
   </span>
   `,
 })
-export class ActionCellRendererComponent implements ICellRendererAngularComp, OnInit, OnDestroy {
+export class ActionCellRendererComponent implements ICellRendererAngularComp, OnDestroy {
   notDeployed: boolean;
   private params: any;
 
-  ngOnInit() {
-    this.notDeployed = this.params.node.data.deployedVersion === 0;
-  }
-
-  agInit(params: any): void {
-    this.params = params;
+  agInit(params: any) {
+    this.refresh(params);
   }
 
   editConfig() {
@@ -57,6 +53,7 @@ export class ActionCellRendererComponent implements ICellRendererAngularComp, On
 
   refresh(params: ICellRendererParams) {
     this.params = params;
+    this.notDeployed = this.params.node.data.deployedVersion === 0;
     return true
-}
+  }
 }

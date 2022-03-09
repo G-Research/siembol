@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { FileHistory } from '@app/model';
 
 @Component({
-  selector: 're-config-history-tooltip-component',
+  selector: 're-config-tooltip-component',
   template: `
   <div class="custom-tooltip">
     <re-change-history [history]="configHistory"></re-change-history>
@@ -12,7 +12,7 @@ import { FileHistory } from '@app/model';
   `,
   styles: [],
 })
-export class ConfigHistoryTooltipComponent implements ITooltipAngularComp {
+export class ConfigTooltipComponent implements ITooltipAngularComp {
   configHistory: FileHistory[];
   private params: ITooltipParams;
 

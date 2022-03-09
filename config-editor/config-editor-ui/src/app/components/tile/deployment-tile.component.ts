@@ -4,11 +4,11 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 're-deployment-tile',
+    selector: 're-release-tile',
     styleUrls: ['./config-tile.component.scss'],
-    templateUrl: './deployment-tile.component.html',
+    templateUrl: './release-tile.component.html',
 })
-export class DeploymentTileComponent {
+export class ReleaseTileComponent {
 
     @Input() config: Config;
 

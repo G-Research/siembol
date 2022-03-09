@@ -1,15 +1,15 @@
-import { Config, Deployment, FileHistory } from '.';
+import { Config, Release, FileHistory } from '.';
 import { TestCaseMap, TestCaseWrapper } from './test-case';
 import { AdminConfig } from './config-model';
 
 export interface ConfigStoreState {
   configs: Config[];
-  deployment: Deployment;
-  initialDeployment: Deployment;
-  deploymentHistory: FileHistory[];
+  release: Release;
+  initialRelease: Release;
+  releaseHistory: FileHistory[];
   sortedConfigs: Config[];
   filteredConfigs: Config[];
-  filteredDeployment: Deployment;
+  filteredRelease: Release;
   searchTerm: string;
   filterMyConfigs: boolean;
   filterUndeployed: boolean;

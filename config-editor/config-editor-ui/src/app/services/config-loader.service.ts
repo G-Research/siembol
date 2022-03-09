@@ -6,8 +6,8 @@ import {
   ConfigTestResult,
   Config,
   Content,
-  Deployment,
-  DeploymentWrapper,
+  Release,
+  ReleaseWrapper,
   GitFiles,
   PullRequestInfo,
   SchemaInfo,
@@ -15,7 +15,7 @@ import {
   AdminSchemaInfo,
   AdminConfig,
   AdminConfigGitFiles,
-  DeploymentGitFiles,
+  ReleaseGitFiles,
   ConfigAndTestCases,
   GitFilesDelete,
   Importers,
@@ -119,23 +119,23 @@ export class ConfigLoaderService {
     );
   }
 
-  getRelease(): Observable<DeploymentWrapper> {
+  getRelease(): Observable<ReleaseWrapper> {
     return this.http
-      .get<DeploymentGitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`)
+      .get<ReleaseGitFiles<any>>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`)
       .pipe(
         map(result => {
           const file = result.files[0];
           if (file) {
             let extras = {};
-            if (this.uiMetadata.deployment.extras) {
-              extras = this.uiMetadata.deployment.extras.reduce((a, x) => ({ ...a, [x]: file.content[x] }), {});
+            if (this.uiMetadata.release.extras) {
+              extras = this.uiMetadata.release.extras.reduce((a, x) => ({ ...a, [x]: file.content[x] }), {});
             }
             return {
-              deploymentHistory: file.file_history,
-              storedDeployment: {
+              releaseHistory: file.file_history,
+              storedRelease: {
                 ...extras,
                 ...{
-                  configs: file.content[this.uiMetadata.deployment.config_array].map(configData => ({
+                  configs: file.content[this.uiMetadata.release.config_array].map(configData => ({
                     author: configData[this.uiMetadata.author],
                     configData,
                     description: configData[this.uiMetadata.description],
@@ -146,7 +146,7 @@ export class ConfigLoaderService {
                     version: configData[this.uiMetadata.version],
                     versionFlag: -1,
                   })),
-                  deploymentVersion: file.content[this.uiMetadata.deployment.version],
+                  releaseVersion: file.content[this.uiMetadata.release.version],
                 },
               },
             };
@@ -155,10 +155,10 @@ export class ConfigLoaderService {
             throw new Error('Unexpected files from backend');
           }
           return {
-            deploymentHistory: [],
-            storedDeployment: {
+            releaseHistory: [],
+            storedRelease: {
               configs: [],
-              deploymentVersion: 0,
+              releaseVersion: 0,
             },
           };
         })
@@ -205,8 +205,8 @@ export class ConfigLoaderService {
     );
   }
 
-  validateRelease(deployment: Deployment): Observable<any> {
-    const validationFormat = this.marshalDeploymentFormat(deployment);
+  validateRelease(release: Release): Observable<any> {
+    const validationFormat = this.marshalReleaseFormat(release);
     const json = JSON.stringify(validationFormat, null, 2);
 
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/validate`, json);
@@ -218,8 +218,8 @@ export class ConfigLoaderService {
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/adminconfig/validate`, json);
   }
 
-  submitRelease(deployment: Deployment): Observable<any> {
-    const releaseFormat = this.marshalDeploymentFormat(deployment);
+  submitRelease(release: Release): Observable<any> {
+    const releaseFormat = this.marshalReleaseFormat(release);
     const json = JSON.stringify(releaseFormat, null, 2);
 
     return this.http.post<any>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/release`, json);
@@ -263,17 +263,17 @@ export class ConfigLoaderService {
     );
   }
 
-  testDeploymentConfig(deployment: Deployment, testSpecification: any): Observable<ConfigTestResult> {
+  testReleaseConfig(release: Release, testSpecification: any): Observable<ConfigTestResult> {
     const testDto: ConfigTestDto = {
       files: [
         {
-          content: deployment,
+          content: release,
         },
       ],
       test_specification: testSpecification,
     };
 
-    testDto.files[0].content = this.marshalDeploymentFormat(testDto.files[0].content);
+    testDto.files[0].content = this.marshalReleaseFormat(testDto.files[0].content);
 
     return this.http.post<ConfigTestResult>(
       `${this.config.serviceRoot}api/v1/${this.serviceName}/configs/test?singleConfig=false`,
@@ -433,14 +433,14 @@ export class ConfigLoaderService {
     return testCaseMap;
   }
 
-  private marshalDeploymentFormat(deployment: Deployment): any {
-    const d = cloneDeep(deployment);
-    delete d.deploymentVersion;
+  private marshalReleaseFormat(release: Release): any {
+    const d = cloneDeep(release);
+    delete d.releaseVersion;
     delete d.configs;
 
     return Object.assign(d, {
-      [this.uiMetadata.deployment.version]: deployment.deploymentVersion,
-      [this.uiMetadata.deployment.config_array]: deployment.configs.map(config => cloneDeep(config.configData)),
+      [this.uiMetadata.release.version]: release.releaseVersion,
+      [this.uiMetadata.release.config_array]: release.configs.map(config => cloneDeep(config.configData)),
     });
   }
 }

@@ -1,20 +1,24 @@
 import { TestCase, TestCaseWrapper, TestCaseEvaluationResult, TestCaseMap } from './test-case';
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from 'rxjs';
-import { ConfigHistoryTooltipComponent } from '@app/components/config-manager/tooltips/config-history-tooltip.component';
-// import { ActionCellRenderer } from "./action-cell-renderer.component";
+import { ConfigTooltipComponent } from '@app/components/config-manager/tooltips/config-tooltip.component';
+import { StoreHeaderGroupComponent } from '@app/components/config-manager/header-groups/store-header-group.component';
+import { ReleaseHeaderGroupComponent } from '@app/components/config-manager/header-groups/release-header-group.component';
+import { ActionCellRendererComponent } from "@app/components/config-manager/cell-renderers/action-cell-renderer.component";
+import { LabelCellRendererComponent } from '@app/components/config-manager/cell-renderers/label-cell-renderer.component';
+import { StatusCellRendererComponent } from '@app/components/config-manager/cell-renderers/status-cell-renderer.component';
 
 export const NAME_REGEX = '^[a-zA-Z0-9_\\-]+$';
 
 export const repoNames = {
   store_directory_name: 'Config Store Folder',
-  release_directory_name: 'Config Deployment Folder',
+  release_directory_name: 'Config Release Folder',
   testcase_store_directory_name: 'Config Testcase Folder',
   admin_config_store_directory_name: 'Admin Config Folder',
 };
 
 export enum TestingType {
-  DEPLOYMENT_TESTING = 'deployment_testing',
+  DEPLOYMENT_TESTING = 'release_testing',
   CONFIG_TESTING = 'config_testing',
 }
 
@@ -49,7 +53,7 @@ export interface AdminConfigGitFiles<T> extends GitFiles<T> {
   config_version: number;
 }
 
-export interface DeploymentGitFiles<T> extends GitFiles<T> {
+export interface ReleaseGitFiles<T> extends GitFiles<T> {
   rules_version: number;
 }
 
@@ -141,9 +145,9 @@ export interface ConfigTestDto {
 
 export type ConfigData = any;
 
-export interface Deployment {
+export interface Release {
   configs: Config[];
-  deploymentVersion: number;
+  releaseVersion: number;
 }
 
 export interface ConfigTestResult {
@@ -154,9 +158,9 @@ export interface ConfigTestResult {
   test_result_raw_output?: any;
 }
 
-export interface DeploymentWrapper {
-  storedDeployment: Deployment;
-  deploymentHistory: FileHistory[];
+export interface ReleaseWrapper {
+  storedRelease: Release;
+  releaseHistory: FileHistory[];
 }
 
 export interface TestCaseResultAttributes {
@@ -245,43 +249,68 @@ export class ExistingConfigError extends Error {
   }
 }
 
-export const configManagerColumns = [
+export const storeColumns = [
   { 
     field: "config_name",
-    minWidth: 250,
+    minWidth: 150,
+    maxWidth: 350,
     headerName: "Config Name",
     tooltipField: "config_name",
-    rowDrag: true,
-  },
-  { field: "author"},
-  { 
-    field: "version",
-    maxWidth: 90,
-    tooltipComponent: ConfigHistoryTooltipComponent,
-    tooltipField: "version",
+    tooltipComponent: ConfigTooltipComponent,
+    rowDrag: params => params.node.data.deployedVersion > 0,
   },
   { 
-    headerName: "Actions",
-    minWidth: 150,
-    cellRenderer: "actionCellRenderer",
+    field: "author",
+    maxWidth: 120,
+  },
+  {
+    field: "labels",
+    minWidth: 250,
+    cellRenderer: LabelCellRendererComponent,
+    wrapText: true,
+    // autoHeight: true,
+  },
+  { 
+    headerName: "Store Actions",
+    minWidth: 200,
+    maxWidth: 200,
+    cellRenderer: ActionCellRendererComponent,
     editable: false,
     colId: "action",
   },
+];
+
+export const releaseColumns = [
   { 
-    headerName: "Deployment Status",
+    headerName: "Release Actions",
     minWidth: 300,
-    cellRenderer: "statusCellRenderer",
+    maxWidth: 350,
+    cellRenderer: StatusCellRendererComponent,
     editable: false,
     colId: "status",
   },
-];
+]
+
+export const configManagerColumns = [
+  { 
+    headerName: "Store",
+    headerGroupComponent: StoreHeaderGroupComponent,
+    children: storeColumns,
+  },
+  {
+    headerName: "Release",
+    headerGroupComponent: ReleaseHeaderGroupComponent,
+    children: releaseColumns,
+  },
+]
 
 export interface ConfigManagerRow {
   config_name: string,
   author: string,
   version: number,
   deployedVersion: number,
-  configHistory: FileHistory[]
+  configHistory: FileHistory[],
+  labels_: string[],
 }
 
 export enum ConfigStatus {

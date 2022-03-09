@@ -13,7 +13,7 @@
             <button *ngIf="config.versionFlag > 0" mat-button color="accent" (click)="upgradeConfig()">Upgrade to v{{config.versionFlag}}</button>
         </span>
         <span class="buttons">
-            <a (click)="deleteConfig()" [title]="'Remove from Deployment'">
+            <a (click)="deleteConfig()" [title]="'Remove from Release'">
                 <mat-icon>delete</mat-icon>
             </a>
         </span>

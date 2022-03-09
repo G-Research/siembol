@@ -1,17 +1,17 @@
-import { DeploymentWrapper, Deployment } from '@app/model/config-model';
+import { ReleaseWrapper, Release } from '@app/model/config-model';
 import { mockParserConfigMin } from './configs';
 
-export const mockDeployment: Deployment =
+export const mockRelease: Release =
 {
     configs:[
         mockParserConfigMin,
     ],
-    deploymentVersion:1,
+    releaseVersion:1,
 };
 
-export const mockDeploymentWrapper: DeploymentWrapper =
+export const mockReleaseWrapper: ReleaseWrapper =
 {
-   deploymentHistory:[
+   releaseHistory:[
       {
          added:40,
          author:'siembol',
@@ -25,5 +25,5 @@ export const mockDeploymentWrapper: DeploymentWrapper =
          removed:1,
       },
    ],
-   storedDeployment: mockDeployment,
+   storedRelease: mockRelease,
 };

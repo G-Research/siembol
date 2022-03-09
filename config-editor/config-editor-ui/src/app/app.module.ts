@@ -20,9 +20,7 @@ import {
   CloneDialogComponent,
   SearchComponent,
 } from '@app/components';
-import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
 import { InputTypeComponent } from './ngx-formly/input.type.component';
-import { DeploymentTileComponent } from '@app/components/tile/deployment-tile.component';
 import { AppConfigService } from '@app/services/app-config.service';
 import { HomeComponent, PageNotFoundComponent } from '@app/containers';
 import { CredentialsInterceptor } from '@app/credentials-interceptor';
@@ -75,10 +73,12 @@ import { UrlHistoryService } from './services/url-history.service';
 import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
-import { ActionCellRendererComponent } from './components/config-manager/action-cell-renderer.component';
+import { ActionCellRendererComponent } from './components/config-manager/cell-renderers/action-cell-renderer.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { StatusCellRendererComponent } from './components/config-manager/cell-renderers/status-cell-renderer.component';
-import { ConfigHistoryTooltipComponent } from './components/config-manager/tooltips/config-history-tooltip.component';
+import { ConfigTooltipComponent } from './components/config-manager/tooltips/config-tooltip.component';
+import { LabelCellRendererComponent } from './components/config-manager/cell-renderers/label-cell-renderer.component';
+import { ReleaseHeaderGroupComponent } from './components/config-manager/header-groups/release-header-group.component';
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -101,7 +101,9 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [
-    ConfigHistoryTooltipComponent,
+    ReleaseHeaderGroupComponent,
+    LabelCellRendererComponent,
+    ConfigTooltipComponent,
     ActionCellRendererComponent,
     StatusCellRendererComponent,
     RawJsonDirective,
@@ -124,8 +126,6 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     CloneDialogComponent,
     LandingPageComponent,
     SearchComponent,
-    ConfigTileComponent,
-    DeploymentTileComponent,
     EditorComponent,
     AdminComponent,
     ChangeHistoryComponent,

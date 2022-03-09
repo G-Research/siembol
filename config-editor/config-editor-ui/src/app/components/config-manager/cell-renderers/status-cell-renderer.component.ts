@@ -9,11 +9,16 @@ import { ICellRendererParams } from "ag-grid-community";
   template: `
   <span class="buttons">
     <a *ngIf="status === configStatusEnum.UP_TO_DATE">Up-to-date</a>
-    <a *ngIf="status === configStatusEnum.UNDEPLOYED" mat-raised-button color="accent" (click)="deployConfig()">Deploy</a>
-    <a *ngIf="status === configStatusEnum.UPGRADABLE" mat-raised-button color="accent" (click)="upgradeConfig()">Upgrade</a>
+    <a *ngIf="status === configStatusEnum.UNDEPLOYED" mat-raised-button color="accent" (click)="deployConfig()">Deploy Config</a>
+    <a *ngIf="status === configStatusEnum.UPGRADABLE" 
+        mat-raised-button 
+        color="accent" 
+        (click)="upgradeConfig()">
+        Upgrade v{{deployedVersion}} to v{{lastVersion}}
+    </a>
     <a *ngIf="status === configStatusEnum.UPGRADABLE" mat-raised-button (click)="viewDiff()">View Diff</a>
-    <a *ngIf="status !== configStatusEnum.UNDEPLOYED" (click)="deleteConfigFromDeployment()" [title]="'Delete Config From Deployment'">
-        <mat-icon>delete</mat-icon>
+    <a *ngIf="status !== configStatusEnum.UNDEPLOYED" (click)="deleteConfigFromRelease()" [title]="'Delete Config From Release'">
+        <mat-icon class="delete-button">delete</mat-icon>
     </a>
   </span>
   `,
@@ -21,12 +26,13 @@ import { ICellRendererParams } from "ag-grid-community";
 export class StatusCellRendererComponent implements ICellRendererAngularComp, OnInit, OnDestroy {
   status: ConfigStatus;
   configStatusEnum = ConfigStatus;
+  deployedVersion: number;
+  lastVersion: number;
   private params: any;
 
   ngOnInit() {
     this.updateStatus();
   }
-
 
   updateStatus() { 
     this.status = this.getStatus();
@@ -36,24 +42,23 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp, On
     this.params = params;
   }
 
-  deleteConfigFromDeployment() {
+  deleteConfigFromRelease() {
     this.params.context.componentParent.onRemove(this.params.node.rowIndex);
-    this.updateStatus();
+    this.params.context.componentParent.incrementChangesInRelease();
   }
 
   upgradeConfig() {
     this.params.context.componentParent.upgrade(this.params.node.rowIndex);
-    this.updateStatus();
+    this.params.context.componentParent.incrementChangesInRelease();
   }
 
   deployConfig() {
-    this.params.context.componentParent.addToDeployment(this.params.node.rowIndex);
-    this.updateStatus();
+    this.params.context.componentParent.addToRelease(this.params.node.rowIndex);
+    this.params.context.componentParent.incrementChangesInRelease();
   }
 
   viewDiff() {
     this.params.context.componentParent.onView(this.params.node.rowIndex);
-    this.updateStatus();
   }
 
   ngOnDestroy() {
@@ -68,12 +73,12 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp, On
   }
 
   private getStatus() {
-    const deployedVersion = this.params.node.data.deployedVersion;
-    const lastVersion = this.params.node.data.version;
-    switch(deployedVersion) {
+    this.deployedVersion = this.params.node.data.deployedVersion;
+    this.lastVersion = this.params.node.data.version;
+    switch(this.deployedVersion) {
       case(0):
         return ConfigStatus.UNDEPLOYED;
-      case(lastVersion):
+      case(this.lastVersion):
         return ConfigStatus.UP_TO_DATE;
       default:
         return ConfigStatus.UPGRADABLE;

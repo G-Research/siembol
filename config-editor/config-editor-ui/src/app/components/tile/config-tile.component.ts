@@ -13,7 +13,7 @@ export class ConfigTileComponent {
 
   @Output() readonly edit = new EventEmitter<number>();
   @Output() readonly view = new EventEmitter<number>();
-  @Output() readonly addToDeployment = new EventEmitter<number>();
+  @Output() readonly addToRelease = new EventEmitter<number>();
   @Output() readonly clone = new EventEmitter<number>();
   @Output() readonly deleteFromStore = new EventEmitter<number>();
 
@@ -25,8 +25,8 @@ export class ConfigTileComponent {
     this.view.emit();
   }
 
-  addConfigToDeployment() {
-    this.addToDeployment.emit();
+  addConfigToRelease() {
+    this.addToRelease.emit();
   }
 
   cloneConfig() {

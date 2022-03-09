@@ -5,7 +5,7 @@ export {
   PullRequestInfo,
   Config,
   ConfigData,
-  Deployment,
+  Release,
   RepositoryLinks,
   RepositoryLinksWrapper,
   FileHistory,

@@ -6,7 +6,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { FormGroup } from '@angular/forms';
 import { AppConfigService } from '@app/services/app-config.service';
 import { EditorService } from '@services/editor.service';
-import { ConfigData, Deployment } from '@app/model';
+import { ConfigData, Release } from '@app/model';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { cloneDeep } from 'lodash';
@@ -14,7 +14,8 @@ import { take, catchError } from 'rxjs/operators';
 import { throwError, of, mergeMap } from 'rxjs';
 import { DiffResults } from 'ngx-text-diff/lib/ngx-text-diff.model';
 import { AppService } from '@app/services/app.service';
-import { DeploymentWrapper, TestingType } from '@app/model/config-model';
+import { ReleaseWrapper, TestingType } from '@app/model/config-model';
+
 
 @Component({
   selector: 're-deploy-dialog',
@@ -22,21 +23,22 @@ import { DeploymentWrapper, TestingType } from '@app/model/config-model';
   templateUrl: 'deploy-dialog.component.html',
 })
 export class DeployDialogComponent {
-  newDeployment: Deployment;
+  newRelease: Release;
   newContent: ConfigData;
   initContent: ConfigData;
   environment: string;
-  isDeploymentValid = undefined;
+  isReleaseValid = undefined;
   message: string;
   validating = false;
   hasChanged = true;
   exception: string;
   statusCode: string;
-  deploymentSchema = {};
+  releaseSchema = {};
   serviceName: string;
   uiMetadata: UiMetadata;
   extrasData = {};
   testingType = TestingType.DEPLOYMENT_TESTING;
+
 
   testEnabled = false;
   options: FormlyFormOptions = { formState: {} };
@@ -44,9 +46,9 @@ export class DeployDialogComponent {
   field: FormlyFieldConfig;
   form: FormGroup = new FormGroup({});
 
-  private readonly OUTDATED_DEPLOYMENT_MESSAGE = `Old version detected, latest deployment 
-        have now been reloaded. Please prepare your deployment again.`;
-  private readonly INVALID_MESSAGE = 'Deployment is invalid.';
+  private readonly OUTDATED_DEPLOYMENT_MESSAGE = `Old version detected, latest release 
+        have now been reloaded. Please prepare your release again.`;
+  private readonly INVALID_MESSAGE = 'Release is invalid.';
   private readonly MAX_HEIGHT = '90vh';
 
   constructor(
@@ -56,21 +58,21 @@ export class DeployDialogComponent {
     private service: EditorService,
     private formlyJsonSchema: FormlyJsonschema,
     private appService: AppService,
-    @Inject(MAT_DIALOG_DATA) public data: Deployment
+    @Inject(MAT_DIALOG_DATA) public data: Release
   ) {
     this.serviceName = service.serviceName;
     this.uiMetadata = this.appService.getUiMetadataMap(this.serviceName);
-    this.newDeployment = data;
-    if (this.uiMetadata.deployment.extras !== undefined) {
-      this.field = this.formlyJsonSchema.toFieldConfig(service.configSchema.createDeploymentSchema());
-      this.extrasData = this.uiMetadata.deployment.extras.reduce((a, x) => ({ ...a, [x]: this.newDeployment[x] }), {});
+    this.newRelease = data;
+    if (this.uiMetadata.release.extras !== undefined) {
+      this.field = this.formlyJsonSchema.toFieldConfig(service.configSchema.createReleaseSchema());
+      this.extrasData = this.uiMetadata.release.extras.reduce((a, x) => ({ ...a, [x]: this.newRelease[x] }), {});
       this.form.valueChanges.subscribe(() => {
-        this.isDeploymentValid = undefined;
+        this.isReleaseValid = undefined;
       })
     } else {
       this.validating = true;
       this.service.configLoader
-        .validateRelease(this.newDeployment)
+        .validateRelease(this.newRelease)
         .pipe(take(1))
         .pipe(
           catchError(e => {
@@ -81,26 +83,26 @@ export class DeployDialogComponent {
         .subscribe(s => {
           this.validating = false;
           if (s) {
-            this.isDeploymentValid = true;
+            this.isReleaseValid = true;
           } else {
-            this.service.configStore.reloadStoreAndDeployment();
+            this.service.configStore.reloadStoreAndRelease();
             this.dialogref.close();
             throw this.OUTDATED_DEPLOYMENT_MESSAGE;
           }
         });
     }
-    this.testEnabled = this.uiMetadata.testing.deploymentTestEnabled;
+    this.testEnabled = this.uiMetadata.testing.releaseTestEnabled;
     this.environment = this.config.environment;
 
-    this.service.configStore.initialDeployment$.subscribe((d: Deployment) => {
-      this.initContent = this.getDeploymentMetadataString(d);
+    this.service.configStore.initialRelease$.subscribe((d: Release) => {
+      this.initContent = this.getReleaseMetadataString(d);
     });
-    this.newContent = this.getDeploymentMetadataString(this.newDeployment);
+    this.newContent = this.getReleaseMetadataString(this.newRelease);
   }
 
-  getDeploymentMetadataString(deployment: Deployment): string {
+  getReleaseMetadataString(release: Release): string {
     return (
-      Object.values(deployment.configs)
+      Object.values(release.configs)
         .map((c: ConfigData) => `${c.name} (v${c.version} ${c.author})`)
         .join('\n') + '\n'
     );
@@ -108,19 +110,19 @@ export class DeployDialogComponent {
 
   onValidate() {
     this.validating = true;
-    this.newDeployment = { ...this.newDeployment, ...this.extrasData };
+    this.newRelease = { ...this.newRelease, ...this.extrasData };
     this.service.configLoader
       .getRelease()
       .pipe(
-        mergeMap((d: DeploymentWrapper) => {
-          if (d.storedDeployment.deploymentVersion > this.newDeployment.deploymentVersion) {
+        mergeMap((d: ReleaseWrapper) => {
+          if (d.storedRelease.releaseVersion > this.newRelease.releaseVersion) {
             return of(false);
           }
-          return this.service.configLoader.validateRelease(this.newDeployment);
+          return this.service.configLoader.validateRelease(this.newRelease);
         }),
         take(1),
         catchError(e => {
-          this.isDeploymentValid = false;
+          this.isReleaseValid = false;
           this.message = this.INVALID_MESSAGE;
           return throwError(e);
         })
@@ -128,9 +130,9 @@ export class DeployDialogComponent {
       .subscribe(s => {
         this.validating = false;
         if (s) {
-          this.isDeploymentValid = true;
+          this.isReleaseValid = true;
         } else {
-          this.service.configStore.reloadStoreAndDeployment().subscribe(() => {
+          this.service.configStore.reloadStoreAndRelease().subscribe(() => {
             this.dialogref.close();
             throw this.OUTDATED_DEPLOYMENT_MESSAGE;
           });
@@ -139,11 +141,11 @@ export class DeployDialogComponent {
   }
 
   onClickDeploy() {
-    const deployment =
+    const release =
       this.extrasData !== undefined
-        ? Object.assign(cloneDeep(this.newDeployment), this.extrasData)
-        : this.newDeployment;
-    this.dialogref.close(deployment);
+        ? Object.assign(cloneDeep(this.newRelease), this.extrasData)
+        : this.newRelease;
+    this.dialogref.close(release);
   }
 
   onClickTest(templateRef: TemplateRef<any>) {
@@ -157,6 +159,7 @@ export class DeployDialogComponent {
   }
 
   onCompareResults(diffResults: DiffResults) {
+    // document.getElementById("showDiffs").click();
     if (!diffResults.hasDiff) {
       this.hasChanged = false;
     }

@@ -10,7 +10,7 @@ import {
   mockEvaluateTestCaseFromResult,
 } from 'testing/testCaseResults';
 import { mockRelease } from 'testing/release';
-import { mockDeploymentWrapper, mockDeployment } from 'testing/deploymentWrapper';
+import { mockReleaseWrapper, mockRelease } from 'testing/releaseWrapper';
 import { mockTestCaseMap, mockTestCaseWrapper1, mockTestCase1 } from 'testing/testcases';
 import { mockTestCaseFiles } from 'testing/testCaseFiles';
 import { mockParserConfig, mockParserConfigFiles, mockParserConfigData, mockParserConfigFile } from 'testing/configs';
@@ -69,7 +69,7 @@ describe('ConfigLoaderService', () => {
   });
 
   it('should get release', () => {
-    service.getRelease().subscribe(s => expect(s).toEqual(mockDeploymentWrapper), fail);
+    service.getRelease().subscribe(s => expect(s).toEqual(mockReleaseWrapper), fail);
 
     const req = httpTestingController.expectOne('/api/v1/test/configstore/release');
     expect(req.request.method).toEqual('GET');
@@ -90,8 +90,8 @@ describe('ConfigLoaderService', () => {
     req.flush(mockParserConfigFiles);
   });
 
-  it('should marshal deployment format', () => {
-    expect(service['marshalDeploymentFormat'](mockDeployment)).toEqual({
+  it('should marshal release format', () => {
+    expect(service['marshalReleaseFormat'](mockRelease)).toEqual({
       parsers_configurations: [mockParserConfigData],
       parsers_version: 1,
     });
