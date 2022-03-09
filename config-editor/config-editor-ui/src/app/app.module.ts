@@ -76,11 +76,11 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { ActionCellRendererComponent } from './components/config-manager/cell-renderers/action-cell-renderer.component';
 import { AgGridModule } from '@ag-grid-community/angular';
 import { StatusCellRendererComponent } from './components/config-manager/cell-renderers/status-cell-renderer.component';
-import { ConfigTooltipComponent } from './components/config-manager/tooltips/config-tooltip.component';
 import { LabelCellRendererComponent } from './components/config-manager/cell-renderers/label-cell-renderer.component';
 import { ReleaseHeaderGroupComponent } from './components/config-manager/header-groups/release-header-group.component';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ModuleRegistry } from '@ag-grid-community/core';
+import { ConfigNameCellRendererComponent } from './components/config-manager/cell-renderers/config-name-cell-renderer.component';
 
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
@@ -109,7 +109,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
   declarations: [
     ReleaseHeaderGroupComponent,
     LabelCellRendererComponent,
-    ConfigTooltipComponent,
+    ConfigNameCellRendererComponent,
     ActionCellRendererComponent,
     StatusCellRendererComponent,
     RawJsonDirective,

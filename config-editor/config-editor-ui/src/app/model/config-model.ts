@@ -1,12 +1,12 @@
 import { TestCase, TestCaseWrapper, TestCaseEvaluationResult, TestCaseMap } from './test-case';
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from 'rxjs';
-import { ConfigTooltipComponent } from '@app/components/config-manager/tooltips/config-tooltip.component';
 import { StoreHeaderGroupComponent } from '@app/components/config-manager/header-groups/store-header-group.component';
 import { ReleaseHeaderGroupComponent } from '@app/components/config-manager/header-groups/release-header-group.component';
 import { ActionCellRendererComponent } from "@app/components/config-manager/cell-renderers/action-cell-renderer.component";
 import { LabelCellRendererComponent } from '@app/components/config-manager/cell-renderers/label-cell-renderer.component';
 import { StatusCellRendererComponent } from '@app/components/config-manager/cell-renderers/status-cell-renderer.component';
+import { ConfigNameCellRendererComponent } from '@app/components/config-manager/cell-renderers/config-name-cell-renderer.component';
 
 export const NAME_REGEX = '^[a-zA-Z0-9_\\-]+$';
 
@@ -255,8 +255,7 @@ export const storeColumns = [
     minWidth: 150,
     maxWidth: 350,
     headerName: "Config Name",
-    tooltipField: "config_name",
-    tooltipComponent: ConfigTooltipComponent,
+    cellRenderer: ConfigNameCellRendererComponent,
     rowDrag: params => params.node.data.deployedVersion > 0,
   },
   { 
@@ -311,6 +310,7 @@ export interface ConfigManagerRow {
   deployedVersion: number,
   configHistory: FileHistory[],
   labels_: string[],
+  testCasesCount: number,
 }
 
 export enum ConfigStatus {

@@ -75,6 +75,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
   context;
   gridOptions = {
+    tooltipShowDelay: 100,
     suppressMoveWhenRowDragging: true,
     rowDragManaged:true,
     rowSelection: 'single',
@@ -310,6 +311,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
       deployedVersion:  releaseVersion,
       configHistory: config.fileHistory,
       labels_: config.tags,
+      testCasesCount: config.testCases.length,
     });
   }
 }
