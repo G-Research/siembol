@@ -74,7 +74,7 @@ import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { ActionCellRendererComponent } from './components/config-manager/cell-renderers/action-cell-renderer.component';
-import { AgGridModule } from 'ag-grid-angular';
+import { AgGridModule } from '@ag-grid-community/angular';
 import { StatusCellRendererComponent } from './components/config-manager/cell-renderers/status-cell-renderer.component';
 import { ConfigTooltipComponent } from './components/config-manager/tooltips/config-tooltip.component';
 import { LabelCellRendererComponent } from './components/config-manager/cell-renderers/label-cell-renderer.component';

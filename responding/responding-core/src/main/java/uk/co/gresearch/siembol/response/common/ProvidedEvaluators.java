@@ -3,11 +3,13 @@ package uk.co.gresearch.siembol.response.common;
 import uk.co.gresearch.siembol.response.evaluators.arrayreducers.ArrayReducerEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.assignment.JsonPathAssignmentEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.fixed.FixedResultEvaluatorFactory;
+import uk.co.gresearch.siembol.response.evaluators.kafkawriter.KafkaWriterEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.markdowntable.ArrayTableFormatterEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.markdowntable.TableFormatterEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.matching.MatchingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.sleep.SleepEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.throttling.AlertThrottlingEvaluatorFactory;
+import uk.co.gresearch.siembol.response.model.ProvidedEvaluatorsProperties;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +24,8 @@ public enum ProvidedEvaluators {
     ARRAY_MARKDOWN_TABLE_FORMATTER_EVALUATOR("array_markdown_table_formatter"),
     ARRAY_REDUCER_EVALUATOR("array_reducer"),
     ALERT_THROTTLING_EVALUATOR("alert_throttling"),
-    SLEEP_EVALUATOR("sleep");
+    SLEEP_EVALUATOR("sleep"),
+    KAFKA_WRITER_EVALUATOR("kafka_writer");
 
     private final String name;
     ProvidedEvaluators(String name) {
@@ -34,7 +37,8 @@ public enum ProvidedEvaluators {
         return name;
     }
 
-    public static RespondingResult getRespondingEvaluatorFactories() throws Exception{
+    public static RespondingResult getRespondingEvaluatorFactories(
+            ProvidedEvaluatorsProperties properties) throws Exception {
         List<RespondingEvaluatorFactory> factories = Arrays.asList(
                 new FixedResultEvaluatorFactory(),
                 new MatchingEvaluatorFactory(),
@@ -44,6 +48,10 @@ public enum ProvidedEvaluators {
                 new ArrayReducerEvaluatorFactory(),
                 new AlertThrottlingEvaluatorFactory(),
                 new SleepEvaluatorFactory());
+
+        if (properties != null && properties.getKafkaWriter() != null) {
+                factories.add(new KafkaWriterEvaluatorFactory(properties.getKafkaWriter()));
+        }
 
         RespondingResultAttributes attributes = new RespondingResultAttributes();
         attributes.setRespondingEvaluatorFactories(factories);

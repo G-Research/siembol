@@ -18,7 +18,7 @@ import { ConfigManagerRow, Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from '../../model/config-model';
-import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from 'ag-grid-community';
+import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from '@ag-grid-community/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
