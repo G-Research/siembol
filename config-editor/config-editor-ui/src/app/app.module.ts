@@ -79,6 +79,12 @@ import { StatusCellRendererComponent } from './components/config-manager/cell-re
 import { ConfigTooltipComponent } from './components/config-manager/tooltips/config-tooltip.component';
 import { LabelCellRendererComponent } from './components/config-manager/cell-renderers/label-cell-renderer.component';
 import { ReleaseHeaderGroupComponent } from './components/config-manager/header-groups/release-header-group.component';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ModuleRegistry } from '@ag-grid-community/core';
+
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+])
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
