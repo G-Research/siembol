@@ -4,7 +4,7 @@
     justify-content: space-between;
     align-items: stretch;
     padding: 10px 30px;
-    min-height: 100%;
+    height: calc(100vh - 64px);
     width: 90%;
     &>mat-divider {
         margin: 0 40px;
@@ -22,7 +22,8 @@
 
 #myGrid {
     margin-top: 15px;
-    height: 79vh;
+    height: 100%;
+    width: 100%;
 }
 
 ::ng-deep .ag-row .ag-cell {

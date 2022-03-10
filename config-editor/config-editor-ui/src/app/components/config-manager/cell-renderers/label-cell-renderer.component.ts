@@ -6,6 +6,12 @@ import { ICellRendererParams } from '@ag-grid-community/core';
 @Component({
   selector: "re-label-cell-renderer",
   styles: [`
+    .labels_cell {
+      height: 30px;
+      display: flex;
+      width: 100%;
+      padding: 3px 0;
+    }
     .label-chip {
       display: inline-block;
       padding: 2px 4px;
@@ -28,10 +34,15 @@ import { ICellRendererParams } from '@ag-grid-community/core';
       overflow: hidden;
       white-space: nowrap;
       max-width: 400px;
+    }
+    .label-expand {
+      align-items:top;
+      display: flex;
+      justify-content:flex-end;
     }`,
   ],
   template: `
-  <div #labels_cell [ngStyle]="{'height': height}" style="margin-top: 10px; height: 30px; display: flex; width: 100%">
+  <div class="labels_cell" #labels_cell [ngStyle]="{'height': height}">
     <div style="width:90%;">
       <div class="label-chip" [matTooltip]="label" *ngFor="let label of labels">
         <div class="label-text" *ngIf="label !== null || label !== ''">
@@ -39,7 +50,7 @@ import { ICellRendererParams } from '@ag-grid-community/core';
         </div>    
       </div>
     </div> 
-    <div style="align-items:top; display: flex;justify-content:flex-end">
+    <div class="label-expand">
       <a *ngIf="!expanded && checkOverflow(labels_cell)" (click)="expandDiv()" [title]="'expand labels'">
         <mat-icon>expand_more</mat-icon>
       </a>
@@ -48,7 +59,6 @@ import { ICellRendererParams } from '@ag-grid-community/core';
       </a>
     </div>
   </div>
-  
   `,
 })
 export class LabelCellRendererComponent implements ICellRendererAngularComp {

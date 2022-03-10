@@ -223,6 +223,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
           if (results && results.configs.length > 0) {
             if (results.releaseVersion >= 0) {
               this.configStore.submitRelease(results);
+              this.countChangesInRelease = 0;
             }
           }
         });
@@ -239,6 +240,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   onSyncWithGit() {
     this.blockUI.start('loading store and releases');
     this.configStore.reloadStoreAndRelease().subscribe(() => {
+      this.countChangesInRelease = 0;
       this.blockUI.stop();
     });
     setTimeout(() => {

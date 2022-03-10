@@ -29,6 +29,7 @@ import { ICellRendererParams } from '@ag-grid-community/core';
     [popperModifiers]="{preventOverflow: {boundariesElement: 'viewport'}}">
     <popper-content #fileHistory>
       <div class="custom-tooltip">
+        <b>Config Name</b>: {{ configName }}<br>
         <b>Version</b>: {{ version }}<br>
         <b>Number of test cases</b>: {{ testCasesCount }}
         <re-change-history [history]="configHistory"></re-change-history>

@@ -159,7 +159,6 @@ export class DeployDialogComponent {
   }
 
   onCompareResults(diffResults: DiffResults) {
-    // document.getElementById("showDiffs").click();
     if (!diffResults.hasDiff) {
       this.hasChanged = false;
     }

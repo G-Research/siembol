@@ -7,7 +7,9 @@
   padding: 10px;
   transition: all 0.2s ease-in-out;
   a {
+      display: flex;
       margin: 0 5px;
+      padding: 5px 0;
       color: rgb(180, 180, 180);
       cursor: pointer;
       transition: all 0.2s ease-in-out;
