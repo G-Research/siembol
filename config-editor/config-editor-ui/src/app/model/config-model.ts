@@ -1,12 +1,6 @@
 import { TestCase, TestCaseWrapper, TestCaseEvaluationResult, TestCaseMap } from './test-case';
 import { JSONSchema7 } from 'json-schema';
 import { Observable } from 'rxjs';
-import { StoreHeaderGroupComponent } from '@app/components/config-manager/header-groups/store-header-group.component';
-import { ReleaseHeaderGroupComponent } from '@app/components/config-manager/header-groups/release-header-group.component';
-import { ActionCellRendererComponent } from "@app/components/config-manager/cell-renderers/action-cell-renderer.component";
-import { LabelCellRendererComponent } from '@app/components/config-manager/cell-renderers/label-cell-renderer.component';
-import { StatusCellRendererComponent } from '@app/components/config-manager/cell-renderers/status-cell-renderer.component';
-import { ConfigNameCellRendererComponent } from '@app/components/config-manager/cell-renderers/config-name-cell-renderer.component';
 
 export const NAME_REGEX = '^[a-zA-Z0-9_\\-]+$';
 
@@ -18,7 +12,7 @@ export const repoNames = {
 };
 
 export enum TestingType {
-  DEPLOYMENT_TESTING = 'release_testing',
+  RELEASE_TESTING = 'release_testing',
   CONFIG_TESTING = 'config_testing',
 }
 
@@ -112,7 +106,7 @@ export interface PullRequestInfo {
 
 export interface Config {
   versionFlag?: number;
-  isDeployed?: boolean;
+  isReleased?: boolean;
   isNew: boolean;
   configData: ConfigData;
   savedInBackend: boolean;
@@ -249,65 +243,11 @@ export class ExistingConfigError extends Error {
   }
 }
 
-export const storeColumns = [
-  { 
-    field: "config_name",
-    minWidth: 150,
-    maxWidth: 350,
-    headerName: "Config Name",
-    cellRenderer: ConfigNameCellRendererComponent,
-    rowDrag: params => params.node.data.deployedVersion > 0,
-  },
-  { 
-    field: "author",
-    maxWidth: 120,
-  },
-  {
-    field: "labels",
-    minWidth: 250,
-    cellRenderer: LabelCellRendererComponent,
-    wrapText: true,
-    // autoHeight: true,
-  },
-  { 
-    headerName: "Store Actions",
-    minWidth: 200,
-    maxWidth: 200,
-    cellRenderer: ActionCellRendererComponent,
-    editable: false,
-    colId: "action",
-  },
-];
-
-export const releaseColumns = [
-  { 
-    headerName: "Release Actions",
-    minWidth: 300,
-    maxWidth: 350,
-    cellRenderer: StatusCellRendererComponent,
-    editable: false,
-    colId: "status",
-  },
-]
-
-export const configManagerColumns = [
-  { 
-    headerName: "Store",
-    headerGroupComponent: StoreHeaderGroupComponent,
-    children: storeColumns,
-  },
-  {
-    headerName: "Release",
-    headerGroupComponent: ReleaseHeaderGroupComponent,
-    children: releaseColumns,
-  },
-]
-
 export interface ConfigManagerRow {
   config_name: string,
   author: string,
   version: number,
-  deployedVersion: number,
+  releasedVersion: number,
   configHistory: FileHistory[],
   labels_: string[],
   testCasesCount: number,
@@ -316,5 +256,5 @@ export interface ConfigManagerRow {
 export enum ConfigStatus {
   UP_TO_DATE = "up-to-date",
   UPGRADABLE = "upgradable",
-  UNDEPLOYED = "undeployed",
+  UNRELEASED = "unreleased",
 }

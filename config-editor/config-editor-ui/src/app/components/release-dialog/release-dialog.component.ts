@@ -18,11 +18,11 @@ import { ReleaseWrapper, TestingType } from '@app/model/config-model';
 
 
 @Component({
-  selector: 're-deploy-dialog',
-  styleUrls: ['deploy-dialog.component.scss'],
-  templateUrl: 'deploy-dialog.component.html',
+  selector: 're-release-dialog',
+  styleUrls: ['release-dialog.component.scss'],
+  templateUrl: 'release-dialog.component.html',
 })
-export class DeployDialogComponent {
+export class ReleaseDialogComponent {
   newRelease: Release;
   newContent: ConfigData;
   initContent: ConfigData;
@@ -37,7 +37,7 @@ export class DeployDialogComponent {
   serviceName: string;
   uiMetadata: UiMetadata;
   extrasData = {};
-  testingType = TestingType.DEPLOYMENT_TESTING;
+  testingType = TestingType.RELEASE_TESTING;
 
 
   testEnabled = false;
@@ -46,13 +46,13 @@ export class DeployDialogComponent {
   field: FormlyFieldConfig;
   form: FormGroup = new FormGroup({});
 
-  private readonly OUTDATED_DEPLOYMENT_MESSAGE = `Old version detected, latest release 
+  private readonly OUTDATED_RELEASE_MESSAGE = `Old version detected, latest release 
         have now been reloaded. Please prepare your release again.`;
   private readonly INVALID_MESSAGE = 'Release is invalid.';
   private readonly MAX_HEIGHT = '90vh';
 
   constructor(
-    public dialogref: MatDialogRef<DeployDialogComponent>,
+    public dialogref: MatDialogRef<ReleaseDialogComponent>,
     private config: AppConfigService,
     public dialog: MatDialog,
     private service: EditorService,
@@ -87,7 +87,7 @@ export class DeployDialogComponent {
           } else {
             this.service.configStore.reloadStoreAndRelease();
             this.dialogref.close();
-            throw this.OUTDATED_DEPLOYMENT_MESSAGE;
+            throw this.OUTDATED_RELEASE_MESSAGE;
           }
         });
     }
@@ -134,13 +134,13 @@ export class DeployDialogComponent {
         } else {
           this.service.configStore.reloadStoreAndRelease().subscribe(() => {
             this.dialogref.close();
-            throw this.OUTDATED_DEPLOYMENT_MESSAGE;
+            throw this.OUTDATED_RELEASE_MESSAGE;
           });
         }
       });
   }
 
-  onClickDeploy() {
+  onClickRelease() {
     const release =
       this.extrasData !== undefined
         ? Object.assign(cloneDeep(this.newRelease), this.extrasData)

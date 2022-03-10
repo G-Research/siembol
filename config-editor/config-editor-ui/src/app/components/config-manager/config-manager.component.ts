@@ -1,13 +1,12 @@
-import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditorService } from '@services/editor.service';
 import { Config, Release, PullRequestInfo } from '@app/model';
 import { PopupService } from '@app/services/popup.service';
 import { cloneDeep } from 'lodash';
-import { Observable, Subject, zip } from 'rxjs';
-import { map, skip, take, takeUntil } from 'rxjs/operators';
-import { DeployDialogComponent } from '../deploy-dialog/deploy-dialog.component';
+import { Observable, Subject } from 'rxjs';
+import { skip, take, takeUntil } from 'rxjs/operators';
+import { ReleaseDialogComponent } from '../release-dialog/release-dialog.component';
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/store/config-store.service';
@@ -17,7 +16,7 @@ import { AppConfigService } from '@app/services/app-config.service';
 import { ConfigManagerRow, Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
-import { configManagerColumns } from '../../model/config-model';
+import { configManagerColumns } from './columns';
 import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from '@ag-grid-community/core';
 
 @Component({
@@ -25,24 +24,6 @@ import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from '@ag-grid-c
   selector: 're-config-manager',
   styleUrls: ['./config-manager.component.scss'],
   templateUrl: './config-manager.component.html',
-  animations: [
-    trigger('list', [
-      transition(':enter', [
-        transition('* => *', []),
-        query(
-          ':enter',
-          [
-            style({ opacity: 0 }),
-            stagger(10, [
-              style({ transform: 'scale(0.8)', opacity: 0 }),
-              animate('.6s cubic-bezier(.8,-0.6,0.7,1.5)', style({ transform: 'scale(1)', opacity: 1 })),
-            ]),
-          ],
-          { optional: true }
-        ),
-      ]),
-    ]),
-  ],
 })
 export class ConfigManagerComponent implements OnInit, OnDestroy {
   @BlockUI() blockUI: NgBlockUI;
@@ -50,7 +31,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   filteredConfigs$: Observable<Config[]>;
   release$: Observable<Release>;
   release: Release;
-  configs: Config[];
   selectedConfig$: Observable<number>;
   selectedConfig: number;
   pullRequestPending$: Observable<PullRequestInfo>;
@@ -59,7 +39,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   filteredRelease: Release;
   filteredRelease$: Observable<Release>;
   filterMyConfigs$: Observable<boolean>;
-  filterUndeployed$: Observable<boolean>;
+  filterUnreleased$: Observable<boolean>;
   filterUpgradable$: Observable<boolean>;
   releaseHistory$: Observable<FileHistory[]>;
   rowData$: Observable<ConfigManagerRow[]>;
@@ -91,7 +71,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
       event.api.sizeColumnsToFit();
     }, 
   }
-  private countChangesInRelease = 0;
+  private countChangesInRelease$ : Observable<number>;
   private rowMoveStartIndex: number;
 
   private ngUnsubscribe = new Subject<void>();
@@ -122,22 +102,20 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.filteredRelease$ = this.configStore.filteredRelease$;
     this.filterMyConfigs$ = this.configStore.filterMyConfigs$;
 
-    this.filterUndeployed$ = this.configStore.filterUndeployed$;
+    this.filterUnreleased$ = this.configStore.filterUnreleased$;
     this.filterUpgradable$ = this.configStore.filterUpgradable$;
 
     this.releaseHistory$ = this.configStore.releaseHistory$;
     this.importers$ = this.configStore.importers$;
     this.useImporters = this.configService.useImporters;
 
-    this.rowData$ = this.getRowData(this.filteredConfigs$, this.filteredRelease$);
+    this.rowData$ = this.configStore.configRowData$;
+    this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
   }
 
   ngOnInit() {
     this.release$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
       this.release = cloneDeep(s);
-    });
-    this.allConfigs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(r => {
-      this.configs = cloneDeep(r);
     });
 
     this.filteredConfigs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => (this.filteredConfigs = s));
@@ -153,8 +131,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.importers$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(i => {
       this.importers = i;
     });
-
-    this.rowData$ = this.getRowData(this.filteredConfigs$, this.filteredRelease$);
   }
 
   ngOnDestroy() {
@@ -168,12 +144,13 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   upgrade(index: number) {
     this.configStore.upgradeConfigInRelease(index);
+    this.configStore.incrementChangesInRelease();
   }
 
   drop(event: RowDragEvent) {
     if (this.rowMoveStartIndex !== event.node.rowIndex) {
       this.configStore.moveConfigInRelease(event.node.id, event.node.rowIndex);
-      this.incrementChangesInRelease();
+      this.configStore.incrementChangesInRelease();
     } 
   }
 
@@ -196,6 +173,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   addToRelease(id: number) {
     this.configStore.addConfigToRelease(id);
+    this.configStore.incrementChangesInRelease();
   }
 
   onClone(id: number) {
@@ -205,17 +183,18 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onRemove(id: number) {
     this.configStore.removeConfigFromRelease(id);
+    this.configStore.incrementChangesInRelease();
   }
 
   onClickCreate() {
     this.router.navigate([this.editorService.serviceName, 'edit'], { queryParams: { newConfig: true } });
   }
 
-  onDeploy() {
+  onRelease() {
     this.configStore.loadPullRequestStatus();
     this.pullRequestPending$.pipe(skip(1), take(1)).subscribe(a => {
       if (!a.pull_request_pending) {
-        const dialogRef = this.dialog.open(DeployDialogComponent, {
+        const dialogRef = this.dialog.open(ReleaseDialogComponent, {
           data: cloneDeep(this.release),
           maxHeight: '90vh',
         });
@@ -223,7 +202,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
           if (results && results.configs.length > 0) {
             if (results.releaseVersion >= 0) {
               this.configStore.submitRelease(results);
-              this.countChangesInRelease = 0;
+              this.configStore.resetChangesInRelease();
             }
           }
         });
@@ -240,7 +219,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   onSyncWithGit() {
     this.blockUI.start('loading store and releases');
     this.configStore.reloadStoreAndRelease().subscribe(() => {
-      this.countChangesInRelease = 0;
+      this.configStore.resetChangesInRelease();
       this.blockUI.stop();
     });
     setTimeout(() => {
@@ -248,16 +227,12 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     }, this.configService.blockingTimeout);
   }
 
-  noReturnPredicate() {
-    return false;
-  }
-
   onFilterUpgradable($event: boolean) {
     this.configStore.updateFilterUpgradable($event);
   }
 
-  onFilterUndeployed($event: boolean) {
-    this.configStore.updateFilterUndeployed($event);
+  onFilterUnreleased($event: boolean) {
+    this.configStore.updateFilterUnreleased($event);
   }
 
   deleteConfigFromStore(index: number) {
@@ -289,31 +264,4 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   getRowNodeId: GetRowNodeIdFunc = function (data) {
     return data.config_name;
   };
-
-  getRowData(configs$: Observable<Config[]>, release$: Observable<Release>): Observable<ConfigManagerRow[]> {
-    return zip([configs$, release$]).pipe(
-      takeUntil(this.ngUnsubscribe),
-      map(([configs, release]) => 
-        configs.map(
-          (config: Config) => this.getRowFromConfig(config, release)
-      )));
-  }
-
-  incrementChangesInRelease() {
-    this.countChangesInRelease += 1;
-  }
-
-  private getRowFromConfig(config: Config, release: Release): ConfigManagerRow {
-    const releaseConfig = release.configs.find(x => x.name === config.name);
-    const releaseVersion = releaseConfig? releaseConfig.version : 0;
-    return ({
-      author: config.author, 
-      version: config.version, 
-      config_name: config.name, 
-      deployedVersion:  releaseVersion,
-      configHistory: config.fileHistory,
-      labels_: config.tags,
-      testCasesCount: config.testCases.length,
-    });
-  }
 }

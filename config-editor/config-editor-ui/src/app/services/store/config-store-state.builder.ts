@@ -4,7 +4,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, ConfigManagerRow } from '@app/model/config-model';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -42,8 +42,8 @@ export class ConfigStoreStateBuilder {
     this.state.configs.forEach(config => {
       const matchingConfig = this.state.release.configs.find(r => !r.isNew && r.name === config.name);
       if (matchingConfig) {
-        config.isDeployed = true;
-        matchingConfig.isDeployed = true;
+        config.isReleased = true;
+        matchingConfig.isReleased = true;
         if (matchingConfig.version !== config.version) {
           config.versionFlag = config.version;
           matchingConfig.versionFlag = config.version;
@@ -52,7 +52,7 @@ export class ConfigStoreStateBuilder {
           matchingConfig.versionFlag = -1;
         }
       } else {
-        config.isDeployed = false;
+        config.isReleased = false;
         config.versionFlag = -1;
       }
     });
@@ -116,9 +116,9 @@ export class ConfigStoreStateBuilder {
     this.state.filteredConfigs = cloneDeep(this.state.sortedConfigs);
     this.state.filteredRelease = cloneDeep(this.state.release);
 
-    if (this.state.filterUndeployed) {
+    if (this.state.filterUnreleased) {
       this.state.filteredRelease.configs = [];
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isDeployed);
+      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isReleased);
     }
 
     if (this.state.filterUpgradable) {
@@ -144,8 +144,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  filterUndeployed(filterUndeployed: boolean): ConfigStoreStateBuilder {
-    this.state.filterUndeployed = filterUndeployed;
+  filterUnreleased(filterUnreleased: boolean): ConfigStoreStateBuilder {
+    this.state.filterUnreleased = filterUnreleased;
     return this;
   }
 
@@ -221,6 +221,37 @@ export class ConfigStoreStateBuilder {
 
   build(): ConfigStoreState {
     return this.state;
+  }
+
+  incrementChangesInRelease() {
+    this.state.countChangesInRelease += 1;
+    return this;
+  }
+
+  resetChangesInRelease() {
+    this.state.countChangesInRelease = 0;
+    return this;
+  }
+
+  computeRowData() {
+    this.state.configRowData = this.state.filteredConfigs.map(
+      (config: Config) => this.getRowFromConfig(config, this.state.filteredRelease)
+    );
+    return this;
+  }
+
+  private getRowFromConfig(config: Config, release: Release): ConfigManagerRow {
+    const releaseConfig = release.configs.find(x => x.name === config.name);
+    const releaseVersion = releaseConfig? releaseConfig.version : 0;
+    return ({
+      author: config.author, 
+      version: config.version, 
+      config_name: config.name, 
+      releasedVersion:  releaseVersion,
+      configHistory: config.fileHistory,
+      labels_: config.tags,
+      testCasesCount: config.testCases.length,
+    });
   }
 
   private filterSearchTerm(config: any) {

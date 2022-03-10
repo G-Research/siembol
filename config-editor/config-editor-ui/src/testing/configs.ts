@@ -89,7 +89,7 @@ export const mockParserConfig: Config =
             removed: 2,
         },
     ],
-    isDeployed: false,
+    isReleased: false,
     isNew: false,
     name: 'config1',
     savedInBackend: true,

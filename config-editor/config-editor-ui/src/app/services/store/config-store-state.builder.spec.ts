@@ -14,14 +14,14 @@ const mockConfigsUnsorted = [
 ];
 
 const mockConfigsFilter = [
-  { author: 'siembol', isDeployed: false, name: 'test1', tags: ['test4'], version: 2, versionFlag: -1 },
-  { author: 'John', isDeployed: true, name: 'parse_alert', tags: ['test2'], version: 2, versionFlag: 3 },
-  { author: 'siembol', isDeployed: true, name: 'test3', tags: ['alert', 'Test4', 'test3'], version: 2, versionFlag: -1 },
+  { author: 'siembol', isReleased: false, name: 'test1', tags: ['test4'], version: 2, versionFlag: -1 },
+  { author: 'John', isReleased: true, name: 'parse_alert', tags: ['test2'], version: 2, versionFlag: 3 },
+  { author: 'siembol', isReleased: true, name: 'test3', tags: ['alert', 'Test4', 'test3'], version: 2, versionFlag: -1 },
 ];
 
 const mockReleaseConfigsFilter = [
-  { author: 'John', isDeployed: true, name: 'parse_alert', tags: ['test2'], version: 2, versionFlag: 3 },
-  { author: 'siembol', isDeployed: true, name: 'test3', tags: ['alert', 'Test4', 'test3'], version: 2, versionFlag: -1 },
+  { author: 'John', isReleased: true, name: 'parse_alert', tags: ['test2'], version: 2, versionFlag: 3 },
+  { author: 'siembol', isReleased: true, name: 'test3', tags: ['alert', 'Test4', 'test3'], version: 2, versionFlag: -1 },
 ];
 
 const mockRelease = {
@@ -61,10 +61,10 @@ describe('ConfigStoreStateBuilder', () => {
       expect(builder['state'].release.configs[0].versionFlag).toEqual(3);
     });
 
-    it('should be not deployed', () => {
-      expect(builder['state'].configs[1].isDeployed).toBeUndefined();
+    it('should be not released', () => {
+      expect(builder['state'].configs[1].isReleased).toBeUndefined();
       builder.detectOutdatedConfigs();
-      expect(builder['state'].configs[1].isDeployed).toEqual(false);
+      expect(builder['state'].configs[1].isReleased).toEqual(false);
     });
   });
 
@@ -85,7 +85,7 @@ describe('ConfigStoreStateBuilder', () => {
       expect((builder['state'] as any).sortedConfigs).toEqual(mockConfigsSorted);
     });
 
-    it('should reorder with non deployed configs', () => {
+    it('should reorder with non released configs', () => {
       const mockConfigsUnsorted2 = cloneDeep(mockConfigsUnsorted);
       mockConfigsUnsorted2.splice(2, 0, { name: 'test6' });
       mockConfigsUnsorted2.splice(4, 0, { name: 'test7' });
@@ -122,8 +122,8 @@ describe('ConfigStoreStateBuilder', () => {
       builder.release(mockRelease as Release);
       builder.reorderConfigsByRelease();
     });
-    it('should filter undeployed', () => {
-      builder.filterUndeployed(true);
+    it('should filter unreleased', () => {
+      builder.filterUnreleased(true);
       builder.computeFiltered('siembol');
       expect((builder['state'] as any).filteredConfigs).toEqual([mockConfigsFilter[0]]);
       expect((builder['state'] as any).filteredRelease.configs).toEqual([]);
@@ -227,6 +227,44 @@ describe('ConfigStoreStateBuilder', () => {
       builder.reorderConfigsByRelease();
       builder.computeFiltered("siembol");
       builder.addConfigToRelease(4);
-      expect((builder['state'] as any).release.configs).toEqual(mockConfigsSorted);
+      const state = builder.build();
+      expect(state.release.configs).toEqual(mockConfigsSorted);
     })
+
+  it("should compute row data", () => {
+    const expectedRowData = [{ 
+      author: 'siembol', 
+      version: 2, 
+      config_name: 'config1', 
+      releasedVersion: 2, 
+      configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
+      labels_: [ 'generic', 'json_extractor' ],
+      testCasesCount: 0 ,
+    },
+    { 
+      author: 'siembol', 
+      version: 0, 
+      config_name: 'config1_clone', 
+      releasedVersion: 0, 
+      configHistory: undefined, 
+      labels_: undefined, 
+      testCasesCount: 0,
+    }];
+    
+    const state = builder.computeFiltered("siembol").computeRowData().build();
+    expect(state.configRowData).toEqual(expectedRowData);
+  })
+
+  it("should increment changes in release", () => {
+    const state1 = builder
+      .incrementChangesInRelease()
+      .incrementChangesInRelease()
+      .build()
+    expect(state1.countChangesInRelease).toEqual(2);
+
+    const state2 = builder
+      .resetChangesInRelease()
+      .build()
+    expect(state2.countChangesInRelease).toEqual(0);
+  })
 });

@@ -21,7 +21,7 @@ const initialConfigStoreState: ConfigStoreState = {
   editedConfig: null,
   editedTestCase: null,
   filterMyConfigs: false,
-  filterUndeployed: false,
+  filterUnreleased: false,
   filterUpgradable: false,
   filteredConfigs: [],
   filteredRelease: undefined,
@@ -31,6 +31,8 @@ const initialConfigStoreState: ConfigStoreState = {
   sortedConfigs: [],
   testCaseMap: {},
   pastedConfig: undefined,
+  countChangesInRelease: 0,
+  configRowData: [],
 };
 
 const initialPullRequestState: PullRequestInfo = {
@@ -56,7 +58,7 @@ export class ConfigStoreService {
   public readonly filteredRelease$ = this.store.asObservable().pipe(map(x => x.filteredRelease));
   public readonly searchTerm$ = this.store.asObservable().pipe(map(x => x.searchTerm));
   public readonly filterMyConfigs$ = this.store.asObservable().pipe(map(x => x.filterMyConfigs));
-  public readonly filterUndeployed$ = this.store.asObservable().pipe(map(x => x.filterUndeployed));
+  public readonly filterUnreleased$ = this.store.asObservable().pipe(map(x => x.filterUnreleased));
   public readonly filterUpgradable$ = this.store.asObservable().pipe(map(x => x.filterUpgradable));
   public readonly releaseHistory$ = this.store.asObservable().pipe(map(x => x.releaseHistory));
   public readonly editedConfig$ = this.store.asObservable().pipe(map(x => x.editedConfig));
@@ -68,6 +70,8 @@ export class ConfigStoreService {
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
   public readonly adminConfig$ = this.store.asObservable().pipe(map(x => x.adminConfig));
   public readonly importers$ = this.importers.asObservable();
+  public readonly configRowData$ = this.store.asObservable().pipe(map(x => x.configRowData));
+  public readonly countChangesInRelease$ = this.store.asObservable().pipe(map(x => x.countChangesInRelease));
 
   /*eslint-enable */
 
@@ -111,6 +115,7 @@ export class ConfigStoreService {
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -135,6 +140,7 @@ export class ConfigStoreService {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .searchTerm(searchTerm)
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -144,6 +150,7 @@ export class ConfigStoreService {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .filterMyConfigs(value)
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -153,15 +160,17 @@ export class ConfigStoreService {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .filterUpgradable(value)
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
   }
 
-  updateFilterUndeployed(value: boolean) {
+  updateFilterUnreleased(value: boolean) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .filterUndeployed(value)
+      .filterUnreleased(value)
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -173,6 +182,7 @@ export class ConfigStoreService {
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -184,6 +194,7 @@ export class ConfigStoreService {
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -195,6 +206,7 @@ export class ConfigStoreService {
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -205,6 +217,7 @@ export class ConfigStoreService {
       .moveConfigInRelease(configName, filteredCurrentIndex)
       .reorderConfigsByRelease()
       .computeFiltered(this.user)
+      .computeRowData()
       .build();
 
     this.store.next(newState);
@@ -302,6 +315,7 @@ export class ConfigStoreService {
           .reorderConfigsByRelease()
           .computeFiltered(this.user)
           .editedConfigByName(config.name)
+          .computeRowData()
           .build();
         this.store.next(newState);
         this.configHistoryService.clear();
@@ -446,6 +460,7 @@ export class ConfigStoreService {
         .detectOutdatedConfigs()
         .reorderConfigsByRelease()
         .computeFiltered(this.user)
+        .computeRowData()
         .build();
 
       this.store.next(newState);
@@ -459,6 +474,7 @@ export class ConfigStoreService {
         .updateTestCasesInConfigs()
         .editedConfigByName(configName)
         .computeFiltered(this.user)
+        .computeRowData()
         .build();
 
       this.store.next(newState);
@@ -582,10 +598,25 @@ export class ConfigStoreService {
         .reorderConfigsByRelease()
         .computeFiltered(this.user)
         .editedConfigTestCases(testCaseMap[editedConfigName])
+        .computeRowData()
         .build();
       this.store.next(newState);
       return true;
     }
+  }
+
+  incrementChangesInRelease() {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue())
+      .incrementChangesInRelease()
+      .build();
+    this.store.next(newState);
+  }
+
+  resetChangesInRelease() {
+    const newState = new ConfigStoreStateBuilder(this.store.getValue())
+      .resetChangesInRelease()
+      .build();
+    this.store.next(newState);
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

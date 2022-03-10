@@ -9,7 +9,7 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     <mat-divider></mat-divider>
   </div>
-  <div *ngIf="hasChanged; else nothingToDeploy">
+  <div *ngIf="hasChanged; else nothingToRelease">
     <p>Changes in release:</p>
     <td-ngx-text-diff
         id="text-diff"
@@ -22,11 +22,11 @@
         (compareResults)="onCompareResults($event)">
     </td-ngx-text-diff>
   </div>
-  <ng-template #nothingToDeploy>No change in config.</ng-template>
+  <ng-template #nothingToRelease>No change in config.</ng-template>
   <ng-template #validationDone>
     <div *ngIf="isReleaseValid === true; else notValid">
       <p>Validation successful</p>
-      <p>Deploying to environment: {{ environment }}</p>
+      <p>Releasing to environment: {{ environment }}</p>
     </div>
     <ng-template #notValid>
       <p>{{message}}</p>
@@ -44,7 +44,7 @@
 
 <div mat-dialog-actions class="button-row">
   <button mat-raised-button color="primary" [disabled]="!testEnabled || !isReleaseValid" (click)="onClickTest(testingDialog)">TEST</button>
-  <button mat-raised-button color="primary" [disabled]="!isReleaseValid" (click)="onClickDeploy()">DEPLOY</button>
+  <button mat-raised-button color="primary" [disabled]="!isReleaseValid" (click)="onClickRelease()">RELEASE</button>
   <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
 </div>
 

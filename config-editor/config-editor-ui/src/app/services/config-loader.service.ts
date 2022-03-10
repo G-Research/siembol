@@ -56,7 +56,7 @@ export class ConfigLoaderService {
       configData: file.content,
       description: file.content[this.uiMetadata.description],
       fileHistory: file.file_history,
-      isDeployed: false,
+      isReleased: false,
       isNew: false,
       name: file.content[this.uiMetadata.name],
       savedInBackend: true,

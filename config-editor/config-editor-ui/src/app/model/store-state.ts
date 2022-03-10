@@ -1,6 +1,6 @@
 import { Config, Release, FileHistory } from '.';
 import { TestCaseMap, TestCaseWrapper } from './test-case';
-import { AdminConfig } from './config-model';
+import { AdminConfig, ConfigManagerRow } from './config-model';
 
 export interface ConfigStoreState {
   configs: Config[];
@@ -12,7 +12,7 @@ export interface ConfigStoreState {
   filteredRelease: Release;
   searchTerm: string;
   filterMyConfigs: boolean;
-  filterUndeployed: boolean;
+  filterUnreleased: boolean;
   filterUpgradable: boolean;
   releaseSubmitInFlight: boolean;
   editedConfig: Config;
@@ -20,4 +20,6 @@ export interface ConfigStoreState {
   testCaseMap: TestCaseMap;
   adminConfig: AdminConfig;
   pastedConfig: any;
+  countChangesInRelease: number;
+  configRowData: ConfigManagerRow[];
 }

@@ -12,7 +12,7 @@ import {
   SideNavComponent,
   JsonViewerComponent,
   ConfigManagerComponent,
-  DeployDialogComponent,
+  ReleaseDialogComponent,
   SubmitDialogComponent,
   LandingPageComponent,
   ImporterDialogComponent,
@@ -73,14 +73,15 @@ import { UrlHistoryService } from './services/url-history.service';
 import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
-import { ActionCellRendererComponent } from './components/config-manager/cell-renderers/action-cell-renderer.component';
+import { StoreActionCellRendererComponent } from './components/config-manager/cell-renderers/store-action-cell-renderer.component';
 import { AgGridModule } from '@ag-grid-community/angular';
-import { StatusCellRendererComponent } from './components/config-manager/cell-renderers/status-cell-renderer.component';
+import { ReleaseActionsCellRendererComponent } from './components/config-manager/cell-renderers/release-actions-cell-renderer.component';
 import { LabelCellRendererComponent } from './components/config-manager/cell-renderers/label-cell-renderer.component';
 import { ReleaseHeaderGroupComponent } from './components/config-manager/header-groups/release-header-group.component';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ModuleRegistry } from '@ag-grid-community/core';
 import { ConfigNameCellRendererComponent } from './components/config-manager/cell-renderers/config-name-cell-renderer.component';
+import { StoreHeaderGroupComponent } from './components/config-manager/header-groups/store-header-group.component';
 
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
@@ -107,11 +108,12 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [
+    StoreHeaderGroupComponent,
     ReleaseHeaderGroupComponent,
     LabelCellRendererComponent,
     ConfigNameCellRendererComponent,
-    ActionCellRendererComponent,
-    StatusCellRendererComponent,
+    StoreActionCellRendererComponent,
+    ReleaseActionsCellRendererComponent,
     RawJsonDirective,
     AppComponent,
     HomeComponent,
@@ -125,7 +127,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     SideNavComponent,
     JsonViewerComponent,
     ConfigManagerComponent,
-    DeployDialogComponent,
+    ReleaseDialogComponent,
     SubmitDialogComponent,
     ImporterDialogComponent,
     ApplicationDialogComponent,

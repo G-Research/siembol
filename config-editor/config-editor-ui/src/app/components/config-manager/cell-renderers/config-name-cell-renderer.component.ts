@@ -16,6 +16,10 @@ import { ICellRendererParams } from '@ag-grid-community/core';
       max-height: 400px;
       color: black;
     }
+    .column-fixed {
+      display: inline-block;
+      padding-right: 20px;
+    }
   `,
   ],
   template: `

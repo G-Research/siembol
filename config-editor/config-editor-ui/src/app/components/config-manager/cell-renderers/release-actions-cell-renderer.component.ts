@@ -4,29 +4,29 @@ import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 import { ICellRendererParams } from '@ag-grid-community/core';
 
 @Component({
-  selector: "re-status-cell-renderer",
-  styleUrls: ['./status-cell-renderer.component.scss'],
+  selector: "re-release-actions-cell-renderer",
+  styleUrls: ['./release-actions-cell-renderer.component.scss'],
   template: `
   <span class="buttons">
     <a *ngIf="status === configStatusEnum.UP_TO_DATE">Up-to-date</a>
-    <a *ngIf="status === configStatusEnum.UNDEPLOYED" mat-raised-button color="accent" (click)="deployConfig()">Deploy Config</a>
+    <a *ngIf="status === configStatusEnum.UNRELEASED" mat-raised-button color="accent" (click)="addConfigToRelease()">Add to Release</a>
     <a *ngIf="status === configStatusEnum.UPGRADABLE" 
         mat-raised-button 
         color="accent" 
         (click)="upgradeConfig()">
-        Upgrade v{{deployedVersion}} to v{{lastVersion}}
+        Upgrade v{{releasedVersion}} to v{{lastVersion}}
     </a>
     <a *ngIf="status === configStatusEnum.UPGRADABLE" mat-raised-button (click)="viewDiff()">View Diff</a>
-    <a *ngIf="status !== configStatusEnum.UNDEPLOYED" (click)="deleteConfigFromRelease()" [title]="'Delete Config From Release'">
-        <mat-icon class="delete-button">delete</mat-icon>
+    <a *ngIf="status !== configStatusEnum.UNRELEASED" (click)="removeConfigFromRelease()" [title]="'Remove Config From Release'">
+        <mat-icon class="delete-button">clear</mat-icon>
     </a>
   </span>
   `,
 })
-export class StatusCellRendererComponent implements ICellRendererAngularComp, OnInit {
+export class ReleaseActionsCellRendererComponent implements ICellRendererAngularComp, OnInit {
   status: ConfigStatus;
   configStatusEnum = ConfigStatus;
-  deployedVersion: number;
+  releasedVersion: number;
   lastVersion: number;
   private params: any;
 
@@ -42,19 +42,16 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp, On
     this.params = params;
   }
 
-  deleteConfigFromRelease() {
+  removeConfigFromRelease() {
     this.params.context.componentParent.onRemove(this.params.node.rowIndex);
-    this.params.context.componentParent.incrementChangesInRelease();
   }
 
   upgradeConfig() {
     this.params.context.componentParent.upgrade(this.params.node.rowIndex);
-    this.params.context.componentParent.incrementChangesInRelease();
   }
 
-  deployConfig() {
+  addConfigToRelease() {
     this.params.context.componentParent.addToRelease(this.params.node.rowIndex);
-    this.params.context.componentParent.incrementChangesInRelease();
   }
 
   viewDiff() {
@@ -68,11 +65,11 @@ export class StatusCellRendererComponent implements ICellRendererAngularComp, On
   }
 
   private getStatus() {
-    this.deployedVersion = this.params.node.data.deployedVersion;
+    this.releasedVersion = this.params.node.data.releasedVersion;
     this.lastVersion = this.params.node.data.version;
-    switch(this.deployedVersion) {
+    switch(this.releasedVersion) {
       case(0):
-        return ConfigStatus.UNDEPLOYED;
+        return ConfigStatus.UNRELEASED;
       case(this.lastVersion):
         return ConfigStatus.UP_TO_DATE;
       default:

@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   template: `
   <div class="ag-header-group-cell-label">
     <div class="customHeaderLabel">
-      {{ this.params.displayName }}: {{ this.params.context.componentParent.configs.length}} items
+      {{ this.params.displayName }}: {{ (this.params.context.componentParent.allConfigs$ | async).length}} items
     </div>
   </div>`,
   styles : [],

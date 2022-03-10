@@ -3,8 +3,8 @@ import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 import { ICellRendererParams } from '@ag-grid-community/core';
 
 @Component({
-  selector: "re-action-cell-renderer",
-  styleUrls: ['./action-cell-renderer.component.scss'],
+  selector: "re-store-action-cell-renderer",
+  styleUrls: ['./store-action-cell-renderer.component.scss'],
   template: `
   <span class="buttons">
     <a (click)="editConfig()" [title]="'Edit Config'">
@@ -16,14 +16,14 @@ import { ICellRendererParams } from '@ag-grid-community/core';
     <a (click)="cloneConfig()" [title]="'Clone Config'">
         <mat-icon>content_copy</mat-icon>
     </a>
-    <a *ngIf="notDeployed" (click)="deleteConfigFromStore()" [title]="'Delete Config From Store'">
+    <a *ngIf="notReleased" (click)="deleteConfigFromStore()" [title]="'Delete Config From Store'">
         <mat-icon>delete</mat-icon>
     </a>
   </span>
   `,
 })
-export class ActionCellRendererComponent implements ICellRendererAngularComp {
-  notDeployed: boolean;
+export class StoreActionCellRendererComponent implements ICellRendererAngularComp {
+  notReleased: boolean;
   private params: any;
 
   agInit(params: any) {
@@ -48,7 +48,7 @@ export class ActionCellRendererComponent implements ICellRendererAngularComp {
 
   refresh(params: ICellRendererParams) {
     this.params = params;
-    this.notDeployed = this.params.node.data.deployedVersion === 0;
+    this.notReleased = this.params.node.data.releasedVersion === 0;
     return true
   }
 }
