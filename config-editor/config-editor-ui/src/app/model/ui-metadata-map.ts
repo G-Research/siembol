@@ -12,18 +12,18 @@ export interface UiMetadata {
   labelsFunc: string;
   testing: TestConfig;
   perConfigSchemaPath: string;
-  deployment: DeploymentConfig;
+  release: ReleaseConfig;
   unionType?: UnionType;
   disableEditingFeatures?: boolean;
 }
 
 export interface TestConfig {
   perConfigTestEnabled: boolean;
-  deploymentTestEnabled: boolean;
+  releaseTestEnabled: boolean;
   testCaseEnabled: boolean;
 }
 
-export interface DeploymentConfig {
+export interface ReleaseConfig {
   version: string;
   config_array: string;
   extras?: string[];

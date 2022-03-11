@@ -12,7 +12,7 @@ import {
   SideNavComponent,
   JsonViewerComponent,
   ConfigManagerComponent,
-  DeployDialogComponent,
+  ReleaseDialogComponent,
   SubmitDialogComponent,
   LandingPageComponent,
   ImporterDialogComponent,
@@ -20,9 +20,7 @@ import {
   CloneDialogComponent,
   SearchComponent,
 } from '@app/components';
-import { ConfigTileComponent } from '@app/components/tile/config-tile.component';
 import { InputTypeComponent } from './ngx-formly/input.type.component';
-import { DeploymentTileComponent } from '@app/components/tile/deployment-tile.component';
 import { AppConfigService } from '@app/services/app-config.service';
 import { HomeComponent, PageNotFoundComponent } from '@app/containers';
 import { CredentialsInterceptor } from '@app/credentials-interceptor';
@@ -75,6 +73,19 @@ import { UrlHistoryService } from './services/url-history.service';
 import { RawJsonDirective } from './ngx-formly/rawjson.accessor';
 import { TestStatusBadgeComponent } from './components/testing/test-status-badge/test-status-badge.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { StoreActionCellRendererComponent } from './components/config-manager/cell-renderers/store-action-cell-renderer.component';
+import { AgGridModule } from '@ag-grid-community/angular';
+import { ReleaseActionsCellRendererComponent } from './components/config-manager/cell-renderers/release-actions-cell-renderer.component';
+import { LabelCellRendererComponent } from './components/config-manager/cell-renderers/label-cell-renderer.component';
+import { ReleaseHeaderGroupComponent } from './components/config-manager/header-groups/release-header-group.component';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ModuleRegistry } from '@ag-grid-community/core';
+import { ConfigNameCellRendererComponent } from './components/config-manager/cell-renderers/config-name-cell-renderer.component';
+import { StoreHeaderGroupComponent } from './components/config-manager/header-groups/store-header-group.component';
+
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+])
 
 export function configServiceFactory(config: AppConfigService) {
   return () => config.loadConfigAndMetadata();
@@ -97,6 +108,12 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
 @NgModule({
   bootstrap: [AppComponent],
   declarations: [
+    StoreHeaderGroupComponent,
+    ReleaseHeaderGroupComponent,
+    LabelCellRendererComponent,
+    ConfigNameCellRendererComponent,
+    StoreActionCellRendererComponent,
+    ReleaseActionsCellRendererComponent,
     RawJsonDirective,
     AppComponent,
     HomeComponent,
@@ -110,15 +127,13 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     SideNavComponent,
     JsonViewerComponent,
     ConfigManagerComponent,
-    DeployDialogComponent,
+    ReleaseDialogComponent,
     SubmitDialogComponent,
     ImporterDialogComponent,
     ApplicationDialogComponent,
     CloneDialogComponent,
     LandingPageComponent,
     SearchComponent,
-    ConfigTileComponent,
-    DeploymentTileComponent,
     EditorComponent,
     AdminComponent,
     ChangeHistoryComponent,
@@ -232,6 +247,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ReactiveFormsModule,
     FormlyMaterialModule,
     NgxPopperModule.forRoot({}),
+    AgGridModule.withComponents([]),
   ],
   providers: [
     environment.production ? PROD_PROVIDERS : DEV_PROVIDERS,

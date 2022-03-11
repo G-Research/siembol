@@ -1,0 +1,53 @@
+<div mat-dialog-title class="title-row">
+  <mat-icon *ngIf="!validating && isReleaseValid === true">check</mat-icon>
+  <mat-icon *ngIf="!validating && isReleaseValid === false">cancel</mat-icon>
+  <h1>Submit Release</h1>
+</div>
+<div mat-dialog-content>
+  <div class="validation" *ngIf="validating; else validationDone">
+    <p> Validating </p>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-divider></mat-divider>
+  </div>
+  <div *ngIf="hasChanged; else nothingToRelease">
+    <p>Changes in release:</p>
+    <td-ngx-text-diff
+        id="text-diff"
+        [left]="(initContent === undefined ? newContent : initContent)"
+        [right]="newContent"
+        [loading]="true"
+        [hideMatchingLines]="false"
+        [format]="'SideBySide'"
+        [showToolbar]="true"
+        (compareResults)="onCompareResults($event)">
+    </td-ngx-text-diff>
+  </div>
+  <ng-template #nothingToRelease>No change in config.</ng-template>
+  <ng-template #validationDone>
+    <div *ngIf="isReleaseValid === true; else notValid">
+      <p>Validation successful</p>
+      <p>Releasing to environment: {{ environment }}</p>
+    </div>
+    <ng-template #notValid>
+      <p>{{message}}</p>
+      <mat-divider></mat-divider>
+    </ng-template>
+  </ng-template>
+</div>
+<mat-divider></mat-divider>
+<ng-container *ngIf="uiMetadata.release.extras !== undefined">
+  <form [formGroup]="form">
+    <formly-form [model]="extrasData" [fields]="[field]" [options]="options" [form]="form"></formly-form>
+  </form>
+  <button mat-raised-button [disabled]="!form.valid" color="primary" (click)="onValidate()">VALIDATE</button>
+</ng-container>
+
+<div mat-dialog-actions class="button-row">
+  <button mat-raised-button color="primary" [disabled]="!testEnabled || !isReleaseValid" (click)="onClickTest(testingDialog)">TEST</button>
+  <button mat-raised-button color="primary" [disabled]="!isReleaseValid" (click)="onClickRelease()">RELEASE</button>
+  <button mat-raised-button color="accent" (click)="onClickClose()">CANCEL</button>
+</div>
+
+<ng-template #testingDialog>
+  <re-config-testing [testingType]="testingType"></re-config-testing>
+</ng-template>
