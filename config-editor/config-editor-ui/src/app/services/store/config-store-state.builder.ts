@@ -116,25 +116,25 @@ export class ConfigStoreStateBuilder {
     this.state.filteredConfigs = cloneDeep(this.state.sortedConfigs);
     this.state.filteredRelease = cloneDeep(this.state.release);
 
-    if (this.state.filterUnreleased) {
-      this.state.filteredRelease.configs = [];
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isReleased);
-    }
+    // if (this.state.filterUnreleased) {
+    //   this.state.filteredRelease.configs = [];
+    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isReleased);
+    // }
 
-    if (this.state.filterUpgradable) {
-      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(d => d.versionFlag > 0);
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.versionFlag > 0);
-    }
+    // if (this.state.filterUpgradable) {
+    //   this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(d => d.versionFlag > 0);
+    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.versionFlag > 0);
+    // }
 
-    if (this.state.filterMyConfigs) {
-      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(r => r.author === user);
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.author === user);
-    }
+    // if (this.state.filterMyConfigs) {
+    //   this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(r => r.author === user);
+    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.author === user);
+    // }
 
-    if (this.state.searchTerm !== undefined && this.state.searchTerm !== '') {
-      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(c => this.filterSearchTerm(c));
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(c => this.filterSearchTerm(c));
-    }
+    // if (this.state.searchTerm !== undefined && this.state.searchTerm !== '') {
+    //   this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(c => this.filterSearchTerm(c));
+    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(c => this.filterSearchTerm(c));
+    // }
 
     return this;
   }
@@ -254,10 +254,10 @@ export class ConfigStoreStateBuilder {
     });
   }
 
-  private filterSearchTerm(config: any) {
-    const lowerCaseSearchTerm = this.state.searchTerm.toLowerCase();
-    return config.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-           config.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
-           config.tags === undefined ? true : config.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
-  }
+  // private filterSearchTerm(config: any) {
+  //   const lowerCaseSearchTerm = this.state.searchTerm.toLowerCase();
+  //   return config.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+  //          config.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
+  //          config.tags === undefined ? true : config.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
+  // }
 }

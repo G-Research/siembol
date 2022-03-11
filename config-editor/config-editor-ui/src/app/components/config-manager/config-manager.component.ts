@@ -17,7 +17,7 @@ import { ConfigManagerRow, Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
-import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from '@ag-grid-community/core';
+import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent, RowNode } from '@ag-grid-community/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,11 +28,10 @@ import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent } from '@ag-grid-c
 export class ConfigManagerComponent implements OnInit, OnDestroy {
   @BlockUI() blockUI: NgBlockUI;
   allConfigs$: Observable<Config[]>;
+  configs: Config[];
   filteredConfigs$: Observable<Config[]>;
   release$: Observable<Release>;
   release: Release;
-  selectedConfig$: Observable<number>;
-  selectedConfig: number;
   pullRequestPending$: Observable<PullRequestInfo>;
   releaseSubmitInFlight$: Observable<boolean>;
   searchTerm$: Observable<string>;
@@ -53,7 +52,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     flex: 1,
     autoHeight: true,
   };
-  context;
+  context: any;
   gridOptions = {
     tooltipShowDelay: 100,
     suppressMoveWhenRowDragging: true,
@@ -70,7 +69,13 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     onGridSizeChanged: (event: GridSizeChangedEvent) => {
       event.api.sizeColumnsToFit();
     }, 
-  }
+    onGridReady: (params) => {
+      this.api = params.api;
+    },
+    isExternalFilterPresent: this.isExternalFilterPresent.bind(this),
+   doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
+  };
+  api;
   private countChangesInRelease$ : Observable<number>;
   private rowMoveStartIndex: number;
 
@@ -90,7 +95,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
     this.disableEditingFeatures = editorService.metaDataMap.disableEditingFeatures;
     this.configStore = editorService.configStore;
-    this.allConfigs$ = this.configStore.allConfigs$;
+    this.allConfigs$ = this.configStore.sortedConfigs$;
 
     this.filteredConfigs$ = this.configStore.filteredConfigs$;
 
@@ -117,6 +122,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.release$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
       this.release = cloneDeep(s);
     });
+    this.allConfigs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
+      this.configs = cloneDeep(s);
+    });
 
     this.filteredConfigs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => (this.filteredConfigs = s));
 
@@ -139,7 +147,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onSearch(searchTerm: string) {
-    this.configStore.updateSearchTerm(searchTerm);
+    // this.configStore.updateSearchTerm(searchTerm);
+    this.api.setQuickFilter(
+      searchTerm
+    );
   }
 
   upgrade(index: number) {
@@ -154,20 +165,27 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     } 
   }
 
-  onView(id: number) {
+  onView(name: string) {
     this.dialog.open(JsonViewerComponent, {
       data: {
-        config1: id >= this.filteredRelease.configs.length? 
-          undefined : 
-          this.filteredRelease.configs[id].configData,
-        config2: this.filteredConfigs[id].configData,
+        config1: undefined, 
+        config2: this.configs.find(c => c.name === name).configData,
       },
     });
   }
 
-  onEdit(id: number) {
+  onViewDiff(name: string) {
+    this.dialog.open(JsonViewerComponent, {
+      data: {
+        config1: this.release.configs.find(r => r.name === name).configData,
+        config2: this.configs.find(c => c.name === name).configData,
+      },
+    });
+  }
+
+  onEdit(name: string) {
     this.router.navigate([this.editorService.serviceName, 'edit'], {
-      queryParams: { configName: this.filteredConfigs[id].name },
+      queryParams: { configName: name },
     });
   }
 
@@ -176,9 +194,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.incrementChangesInRelease();
   }
 
-  onClone(id: number) {
+  onClone(name: string) {
     this.dialog.open(CloneDialogComponent, 
-      { data: this.filteredConfigs[id].name, disableClose: true });
+      { data: name, disableClose: true });
   }
 
   onRemove(id: number) {
@@ -214,6 +232,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onFilterMine($event: boolean) {
     this.configStore.updateFilterMyConfigs($event);
+    this.api.onFilterChanged();
   }
 
   onSyncWithGit() {
@@ -229,10 +248,12 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onFilterUpgradable($event: boolean) {
     this.configStore.updateFilterUpgradable($event);
+    this.api.onFilterChanged();
   }
 
   onFilterUnreleased($event: boolean) {
     this.configStore.updateFilterUnreleased($event);
+    this.api.onFilterChanged();
   }
 
   deleteConfigFromStore(index: number) {
@@ -264,4 +285,12 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   getRowNodeId: GetRowNodeIdFunc = function (data) {
     return data.config_name;
   };
+
+  isExternalFilterPresent(): boolean {
+    return this.configStore.isExternalFilterPresent();
+  }
+
+  doesExternalFilterPass(node: RowNode): boolean {
+    return this.configStore.doesExternalFilterPass(node);
+  }
 }

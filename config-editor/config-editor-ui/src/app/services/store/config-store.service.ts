@@ -12,6 +12,7 @@ import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
 import { AppService } from '../app.service';
+import { RowNode } from '@ag-grid-community/core';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -52,6 +53,7 @@ export class ConfigStoreService {
 
   /*eslint-disable */
   public readonly allConfigs$ = this.store.asObservable().pipe(map(x => x.configs));
+  public readonly sortedConfigs$ = this.store.asObservable().pipe(map(x => x.sortedConfigs));
   public readonly release$ = this.store.asObservable().pipe(map(x => x.release));
   public readonly initialRelease$ = this.store.asObservable().pipe(map(x => x.initialRelease));
   public readonly filteredConfigs$ = this.store.asObservable().pipe(map(x => x.filteredConfigs));
@@ -617,6 +619,28 @@ export class ConfigStoreService {
       .resetChangesInRelease()
       .build();
     this.store.next(newState);
+  }
+
+
+   isExternalFilterPresent(): boolean {
+    const state = this.store.getValue();
+    return state.filterMyConfigs 
+      || state.filterUnreleased 
+      || state.filterUpgradable;
+  }
+
+  doesExternalFilterPass(node: RowNode): boolean {
+    const state = this.store.getValue();
+    if (state.filterMyConfigs && node.data.author !== this.user) {
+      return false;
+    }
+    if (state.filterUnreleased && node.data.releasedVersion !== 0) {
+      return false;
+    }
+    if (state.filterUpgradable && node.data.releasedVersion === node.data.version) {
+      return false;
+    } 
+    return true;
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

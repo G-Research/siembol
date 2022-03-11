@@ -2,9 +2,16 @@
     <ng-scrollbar [track]="'all'" class="scrollbar">
         <div class="container">
             <div class="container-title">
-                <re-search [searchTerm]="searchTerm$ | async" [filterMyConfigs]="filterMyConfigs$ | async" [filterUnreleased]="filterUnreleased$ | async"
-                    [filterUpgradable]="filterUpgradable$ | async" (searchTermChange)="onSearch($event)" (myConfigsChange)="onFilterMine($event)"
-                    (unreleasedConfigsChange)="onFilterUnreleased($event)" (updatedConfigsChange)="onFilterUpgradable($event)">
+                <re-search 
+                    [searchTerm]="searchTerm$ | async" 
+                    [filterMyConfigs]="filterMyConfigs$ | async" 
+                    [filterUnreleased]="filterUnreleased$ | async"
+                    [filterUpgradable]="filterUpgradable$ | async" 
+                    (searchTermChange)="onSearch($event)" 
+                    (myConfigsChange)="onFilterMine($event)"
+                    (unreleasedConfigsChange)="onFilterUnreleased($event)" 
+                    (updatedConfigsChange)="onFilterUpgradable($event)"
+                    >
                 </re-search>
                 <div class="add-button">
                     <a mat-button color="primary" title="Create Config" (click)="onClickCreate()">

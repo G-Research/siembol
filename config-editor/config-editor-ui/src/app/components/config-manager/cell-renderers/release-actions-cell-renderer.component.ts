@@ -55,7 +55,7 @@ export class ReleaseActionsCellRendererComponent implements ICellRendererAngular
   }
 
   viewDiff() {
-    this.params.context.componentParent.onView(this.params.node.rowIndex);
+    this.params.context.componentParent.onViewDiff(this.params.node.id);
   }
 
   refresh(params: ICellRendererParams) {
