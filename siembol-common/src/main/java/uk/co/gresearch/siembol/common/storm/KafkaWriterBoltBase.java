@@ -12,11 +12,15 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
@@ -30,22 +34,26 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
             "Sending message: {}, key :{} to the topic: {} ";
 
     private final Properties props;
+    private final StormMetricsRegistrarFactory metricsFactory;
     private OutputCollector collector;
     private Producer<String, String> producer;
+    private SiembolMetricsRegistrar metricsRegistrar;
 
-    protected KafkaWriterBoltBase(Properties producerProperties) {
+    protected KafkaWriterBoltBase(Properties producerProperties, StormMetricsRegistrarFactory metricsFactory) {
         this.props = producerProperties;
+        this.metricsFactory = metricsFactory;
     }
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
         producer = new KafkaProducer<>(props, new StringSerializer(), new StringSerializer());
+        metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
         prepareInternally();
     }
 
-   protected void prepareInternally() {
-   }
+    protected void prepareInternally() {
+    }
 
     @Override
     public void cleanup() {
@@ -56,8 +64,12 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
     }
 
-    protected void writeMessages(List<KafkaWriterMessage> messages, KafkaWriterAnchor anchor) {
+    protected void writeMessages(List<KafkaWriterMessage> messages, List<String> countersNames, KafkaWriterAnchor anchor) {
         anchor.acquire(messages.size());
+        List<SiembolCounter> siembolCounters = countersNames.stream()
+                .map(x -> metricsRegistrar.registerCounter(x))
+                .collect(Collectors.toList());
+        anchor.addSiembolCounters(siembolCounters);
         messages.forEach(x -> writeMessage(x, anchor));
     }
 
@@ -69,6 +81,7 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
                     collector.fail(anchor.getTuple());
                 } else {
                     if (anchor.release()) {
+                        anchor.incrementSiembolCounters();
                         collector.ack(anchor.getTuple());
                     }
                 }

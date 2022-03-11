@@ -10,6 +10,7 @@ import org.apache.storm.generated.StormTopology;
 import org.junit.*;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -140,7 +141,8 @@ public class StormParsingApplicationTest {
         kafkaRule.waitForStartup();
         topology = StormParsingApplication.createTopology(stormAttributes,
                 parsingAttributes,
-                zooKeeperConnectorFactory);
+                zooKeeperConnectorFactory,
+                new StormMetricsRegistrarFactoryImpl());
 
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();

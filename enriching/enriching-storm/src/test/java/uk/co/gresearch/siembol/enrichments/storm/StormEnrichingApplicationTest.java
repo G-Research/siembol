@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.filesystem.ByteArrayFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
@@ -208,7 +209,8 @@ public class StormEnrichingApplicationTest {
         kafkaRule.waitForStartup();
         topology = StormEnrichingApplication.createTopology(enrichmentAttributes,
                 zooKeeperConnectorFactory,
-                fileSystemFactory);
+                fileSystemFactory,
+                new StormMetricsRegistrarFactoryImpl());
 
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();

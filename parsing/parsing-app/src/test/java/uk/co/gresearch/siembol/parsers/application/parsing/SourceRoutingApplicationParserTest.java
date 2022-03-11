@@ -203,7 +203,9 @@ public class SourceRoutingApplicationParserTest {
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(routedParser1, times(1)).parseToResult(metadata, input);
 
-        Assert.assertTrue(result.isEmpty());
+        Assert.assertFalse(result.isEmpty());
+        Assert.assertEquals(1, result.size());
+        Assert.assertNull(result.get(0).getMessages());
     }
 
     @Test

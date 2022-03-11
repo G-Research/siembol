@@ -5,7 +5,8 @@ public enum EnrichmentTuples {
     COMMANDS("commands"),
     ENRICHMENTS("enrichments"),
     EXCEPTIONS("exceptions"),
-    KAFKA_MESSAGES("messages");
+    KAFKA_MESSAGES("messages"),
+    COUNTERS("counters");
 
     private final String name;
     EnrichmentTuples(String name) {

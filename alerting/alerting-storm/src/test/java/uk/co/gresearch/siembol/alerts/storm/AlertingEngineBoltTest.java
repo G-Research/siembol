@@ -13,6 +13,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
+import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnectorFactory;
@@ -113,13 +116,14 @@ public class AlertingEngineBoltTest {
 
     private Tuple tuple;
     private OutputCollector collector;
-    AlertingEngineBolt AlertingEngineBolt;
-    AlertingStormAttributesDto stormAttributes;
-    ZooKeeperAttributesDto zookeperAttributes;
+    private AlertingEngineBolt AlertingEngineBolt;
+    private AlertingStormAttributesDto stormAttributes;
+    private ZooKeeperAttributesDto zookeperAttributes;
 
-    ZooKeeperCompositeConnector zooKeeperConnector;
-    ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
-    ArgumentCaptor<Values> argumentEmitCaptor;
+    private ZooKeeperCompositeConnector zooKeeperConnector;
+    private ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
+    private ArgumentCaptor<Values> argumentEmitCaptor;
+    private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -139,7 +143,11 @@ public class AlertingEngineBoltTest {
         when(tuple.getStringByField(eq(TupleFieldNames.EVENT.toString()))).thenReturn(event.trim());
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        AlertingEngineBolt = new AlertingEngineBolt(stormAttributes, zooKeeperConnectorFactory);
+        metricsTestRegistrarFactory = new StormMetricsTestRegistrarFactoryImpl();
+
+        AlertingEngineBolt = new AlertingEngineBolt(stormAttributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
         AlertingEngineBolt.prepare(null, null, collector);
     }
 

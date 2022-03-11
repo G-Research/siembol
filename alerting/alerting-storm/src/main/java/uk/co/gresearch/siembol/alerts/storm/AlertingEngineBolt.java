@@ -16,6 +16,9 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.*;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
@@ -30,8 +33,6 @@ import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static java.lang.Integer.min;
 
 public class AlertingEngineBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
@@ -54,17 +55,22 @@ public class AlertingEngineBolt extends BaseRichBolt {
 
     private OutputCollector collector;
     private ZooKeeperCompositeConnector zooKeeperConnector;
+    private SiembolMetricsRegistrar metricsRegistrar;
     private final ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
     private final ZooKeeperAttributesDto zookeperAttributes;
+    private final StormMetricsRegistrarFactory metricsFactory;
+
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes,
-                       ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory) {
+                       ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory,
+                       StormMetricsRegistrarFactory metricsFactory) {
         this.zookeperAttributes = attributes.getZookeperAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
+        this.metricsFactory = metricsFactory;
     }
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes) {
-        this(attributes, new ZooKeeperCompositeConnectorFactoryImpl());
+        this(attributes, new ZooKeeperCompositeConnectorFactoryImpl(), new StormMetricsRegistrarFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")
@@ -74,6 +80,7 @@ public class AlertingEngineBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_INIT_START);
             zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateRules();
             if (AlertingEngine.get() == null) {

@@ -43,6 +43,7 @@ public class EnrichingRule extends Rule {
         ret.setTableName(tableName);
         ret.setTags(enrichmentTags);
         ret.setEnrichmentFields(enrichmentFields);
+        ret.setRuleName(getFullRuleName());
         return Optional.of(ret);
     }
 

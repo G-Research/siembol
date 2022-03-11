@@ -11,6 +11,7 @@ import org.apache.storm.generated.StormTopology;
 import org.junit.*;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnectorFactory;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
@@ -158,7 +159,9 @@ public class CorrelationAlertingTest {
                 .put("bootstrap.servers", bootstrapServer);
 
         kafkaRule.waitForStartup();
-        topology = AlertingStorm.createCorrelationAlertingTopology(alertingStormAttributes, zooKeeperConnectorFactory);
+        topology = AlertingStorm.createCorrelationAlertingTopology(alertingStormAttributes,
+                zooKeeperConnectorFactory,
+                new StormMetricsRegistrarFactoryImpl());
         LocalCluster cluster = new LocalCluster();
         Config config = new Config();
         config.put(Config.TOPOLOGY_DEBUG, true);

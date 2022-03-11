@@ -16,4 +16,5 @@ public class AdminConfigDto {
     public void setConfigVersion(Integer configVersion) {
         this.configVersion = configVersion;
     }
+
 }

@@ -4,7 +4,8 @@ public enum ParsingApplicationTuples {
     SOURCE("source"),
     METADATA("metadata"),
     LOG("log"),
-    PARSING_MESSAGES("messages");
+    PARSING_MESSAGES("messages"),
+    COUNTERS("counters");
 
     private final String name;
     ParsingApplicationTuples(String name) {

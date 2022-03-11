@@ -184,6 +184,12 @@
             <version>${slf4j_version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.8.3</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
     </build>

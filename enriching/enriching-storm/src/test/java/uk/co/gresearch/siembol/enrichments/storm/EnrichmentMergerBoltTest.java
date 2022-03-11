@@ -12,6 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
+import uk.co.gresearch.siembol.common.storm.SiembolMetricsCounters;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentExceptions;
@@ -39,13 +40,17 @@ public class EnrichmentMergerBoltTest {
     private OutputCollector collector;
     private EnrichmentExceptions exceptions;
     private EnrichmentPairs enrichments;
-    EnrichmentMergerBolt mergerBolt;
-    ArgumentCaptor<Values> argumentEmitCaptor;
+    private SiembolMetricsCounters counters;
+    private EnrichmentMergerBolt mergerBolt;
+    private ArgumentCaptor<Values> argumentEmitCaptor;
+    private String testCounterName = "test_counter";
 
     @Before
     public void setUp() {
         exceptions = new EnrichmentExceptions();
         enrichments = new EnrichmentPairs();
+        counters = new SiembolMetricsCounters();
+        counters.add(testCounterName);
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
@@ -53,6 +58,7 @@ public class EnrichmentMergerBoltTest {
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
         when(tuple.getValueByField(eq(EnrichmentTuples.ENRICHMENTS.toString()))).thenReturn(enrichments);
         when(tuple.getValueByField(eq(EnrichmentTuples.EXCEPTIONS.toString()))).thenReturn(exceptions);
+        when(tuple.getValueByField(eq(EnrichmentTuples.COUNTERS.toString()))).thenReturn(counters);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
         StormEnrichmentAttributesDto attributes = new StormEnrichmentAttributesDto();
@@ -67,9 +73,14 @@ public class EnrichmentMergerBoltTest {
         mergerBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counterValues = (SiembolMetricsCounters)values.get(1);
+        Assert.assertEquals(1, counterValues.size());
+        Assert.assertEquals("test_counter", counterValues.get(0));
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertTrue(messages.get(0).getMessage().contains(enrichedEventPrefix.trim()));
@@ -82,9 +93,15 @@ public class EnrichmentMergerBoltTest {
         mergerBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counterValues = (SiembolMetricsCounters)values.get(1);
+        Assert.assertEquals(1, counterValues.size());
+        Assert.assertEquals("test_counter", counterValues.get(0));
+
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertFalse(messages.get(0).getMessage().isEmpty());
@@ -105,9 +122,14 @@ public class EnrichmentMergerBoltTest {
 
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counterValues = (SiembolMetricsCounters)values.get(1);
+        Assert.assertEquals(1, counterValues.size());
+        Assert.assertEquals("test_counter", counterValues.get(0));
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
 
@@ -125,9 +147,14 @@ public class EnrichmentMergerBoltTest {
 
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counterValues = (SiembolMetricsCounters)values.get(1);
+        Assert.assertEquals(1, counterValues.size());
+        Assert.assertEquals("test_counter", counterValues.get(0));
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertTrue(messages.get(0).getMessage().contains("\"test\":\"enrichment\""));
@@ -140,9 +167,14 @@ public class EnrichmentMergerBoltTest {
 
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counterValues = (SiembolMetricsCounters)values.get(1);
+        Assert.assertEquals(1, counterValues.size());
+        Assert.assertEquals("test_counter", counterValues.get(0));
 
         Assert.assertEquals(outputTopic, messages.get(0).getTopic());
         Assert.assertEquals("INVALID", messages.get(0).getMessage());

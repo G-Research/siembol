@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -65,12 +66,13 @@ public class EnrichmentEvaluatorBoltTest {
 
     private Tuple tuple;
     private OutputCollector collector;
-    EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
-    ZooKeeperAttributesDto zooKeeperAttributes;
-    StormEnrichmentAttributesDto attributes;
-    ZooKeeperConnector zooKeeperConnector;
-    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
-    ArgumentCaptor<Values> argumentEmitCaptor;
+    private EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
+    private ZooKeeperAttributesDto zooKeeperAttributes;
+    private StormEnrichmentAttributesDto attributes;
+    private ZooKeeperConnector zooKeeperConnector;
+    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private ArgumentCaptor<Values> argumentEmitCaptor;
+    private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -91,7 +93,11 @@ public class EnrichmentEvaluatorBoltTest {
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        enrichmentEvaluatorBolt = new EnrichmentEvaluatorBolt(attributes, zooKeeperConnectorFactory);
+        metricsTestRegistrarFactory = new StormMetricsTestRegistrarFactoryImpl();
+
+        enrichmentEvaluatorBolt = new EnrichmentEvaluatorBolt(attributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
         enrichmentEvaluatorBolt.prepare(null, null, collector);
     }
 

@@ -12,9 +12,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.storm.SiembolMetricsCounters;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryAttributes;
@@ -84,13 +87,15 @@ public class ParsingApplicationBoltTest {
 
     private Tuple tuple;
     private OutputCollector collector;
-    ParsingApplicationBolt parsingApplicationBolt;
-    ParsingApplicationFactoryAttributes parsingAttributes;
-    ZooKeeperAttributesDto zookeperAttributes;
-    StormParsingApplicationAttributesDto attributes;
-    ZooKeeperConnector zooKeeperConnector;
-    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
-    ArgumentCaptor<Values> argumentEmitCaptor;
+    private ParsingApplicationBolt parsingApplicationBolt;
+    private ParsingApplicationFactoryAttributes parsingAttributes;
+    private ZooKeeperAttributesDto zookeperAttributes;
+    private StormParsingApplicationAttributesDto attributes;
+    private ZooKeeperConnector zooKeeperConnector;
+    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private ArgumentCaptor<Values> argumentEmitCaptor;
+    private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
+
 
     @Before
     public void setUp() throws Exception {
@@ -116,8 +121,12 @@ public class ParsingApplicationBoltTest {
 
 
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
+        metricsTestRegistrarFactory = new StormMetricsTestRegistrarFactoryImpl();
 
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zooKeeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes,
+                parsingAttributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
         parsingApplicationBolt.prepare(null, null, collector);
     }
 
@@ -126,7 +135,7 @@ public class ParsingApplicationBoltTest {
        parsingApplicationBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
         Assert.assertEquals(1, messages.size());
@@ -136,6 +145,12 @@ public class ParsingApplicationBoltTest {
         Assert.assertEquals("RAW_LOG", parsed.get(SiembolMessageFields.ORIGINAL.toString()));
         Assert.assertEquals("single", parsed.get(SiembolMessageFields.SENSOR_TYPE.toString()));
         Assert.assertNull(parsed.get("metadata_is_metadata"));
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counters = (SiembolMetricsCounters)values.get(1);
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName()));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                .getMetricName("single")));
     }
 
     @Test
@@ -143,14 +158,17 @@ public class ParsingApplicationBoltTest {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser.replace(
                 "\"parse_metadata\" : false", "\"parse_metadata\" : true"
         ));
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zooKeeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes,
+                parsingAttributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
         parsingApplicationBolt.prepare(null, null, collector);
 
         when(tuple.getStringByField(eq(ParsingApplicationTuples.METADATA.toString()))).thenReturn("INVALID");
         parsingApplicationBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
         Assert.assertEquals(1, messages.size());
@@ -160,6 +178,15 @@ public class ParsingApplicationBoltTest {
         Assert.assertEquals("RAW_LOG", parsed.get("raw_message"));
         Assert.assertEquals("error", parsed.get(SiembolMessageFields.SENSOR_TYPE.toString()));
         Assert.assertEquals("parser_error", parsed.get("error_type"));
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counters = (SiembolMetricsCounters)values.get(1);
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_APP_ERROR_MESSAGES.getMetricName()));
+        /**
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                .getMetricName("single")));
+         TODO: +filtering tests
+        */
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -174,12 +201,15 @@ public class ParsingApplicationBoltTest {
                 "\"parse_metadata\" : false", "\"parse_metadata\" : true"
         ));
 
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zooKeeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes,
+                parsingAttributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
         parsingApplicationBolt.prepare(null, null, collector);
         parsingApplicationBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(1, values.size());
+        Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
         KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
         Assert.assertEquals(1, messages.size());
@@ -189,12 +219,21 @@ public class ParsingApplicationBoltTest {
         Assert.assertEquals("RAW_LOG", parsed.get(SiembolMessageFields.ORIGINAL.toString()));
         Assert.assertEquals("single", parsed.get(SiembolMessageFields.SENSOR_TYPE.toString()));
         Assert.assertEquals(true, parsed.get("metadata_is_metadata"));
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counters = (SiembolMetricsCounters)values.get(1);
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName()));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                .getMetricName("single")));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testExceptionData() throws Exception {
         when(zooKeeperConnector.getData()).thenReturn("INVALID");
-        parsingApplicationBolt = new ParsingApplicationBolt(attributes, parsingAttributes, zooKeeperConnectorFactory);
+        parsingApplicationBolt = new ParsingApplicationBolt(attributes,
+                parsingAttributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
         parsingApplicationBolt.prepare(null, null, collector);
     }
 }

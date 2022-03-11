@@ -14,6 +14,11 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsCachedRegistrar;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
@@ -49,18 +54,23 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
     protected static final String COMPILER_EXCEPTION_MSG_FORMAT = "Exception during enriching rules compilation: %s";
     protected final AtomicReference<EnrichmentEvaluator> enrichmentEvaluator = new AtomicReference<>();
 
+    private SiembolMetricsRegistrar metricsRegistrar;
     private OutputCollector collector;
     private ZooKeeperConnector zooKeeperConnector;
     private final ZooKeeperAttributesDto zooKeeperAttributes;
     private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private final StormMetricsRegistrarFactory metricsFactory;
 
-    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes, ZooKeeperConnectorFactory zooKeeperConnectorFactory) {
+    EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes,
+                            ZooKeeperConnectorFactory zooKeeperConnectorFactory,
+                            StormMetricsRegistrarFactory metricsFactory) {
         this.zooKeeperAttributes = attributes.getEnrichingRulesZookeperAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
+        this.metricsFactory = metricsFactory;
     }
 
     public EnrichmentEvaluatorBolt(StormEnrichmentAttributesDto attributes) {
-        this(attributes, new ZooKeeperConnectorFactoryImpl());
+        this(attributes, new ZooKeeperConnectorFactoryImpl(), new StormMetricsRegistrarFactoryImpl());
     }
 
     @Override
@@ -69,6 +79,7 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
         try {
             LOG.info(ENGINE_INIT_START);
             zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes);
+            metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateRules();
             if (enrichmentEvaluator.get() == null) {
@@ -93,7 +104,7 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
             
             EnrichmentEvaluator engine = getEnrichmentEvaluator(rules);
             enrichmentEvaluator.set(engine);
-
+            metricsRegistrar.registerCounter(SiembolMetrics.ENRICHMENT_RULES_UPDATE.getMetricName()).increment();
             LOG.info(ENGINE_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
