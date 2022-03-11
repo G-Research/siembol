@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2022-03-11
+
+- Adding kafka writer evaluator in Siembol response
+- Fixing handling empty strings in csv parser in Siembol parsing
+- Various performance improvements in Siembol UI
+- Adding CONTAINS matcher in Alerting
+- Supporting cloning configurations with test cases in Siembol UI
+
 ## [2.2.0] - 2022-02-04
 
 - Reworking kafka writing in Storm applications to use async sending in order to improve performance
