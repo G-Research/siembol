@@ -21,5 +21,5 @@ export interface ConfigStoreState {
   adminConfig: AdminConfig;
   pastedConfig: any;
   countChangesInRelease: number;
-  configManagRowData: ConfigManagerRow[];
+  configManagerRowData: ConfigManagerRow[];
 }

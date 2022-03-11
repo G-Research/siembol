@@ -252,7 +252,7 @@ describe('ConfigStoreStateBuilder', () => {
     }];
     
     const state = builder.computeFiltered("siembol").computeConfigManagerRowData().build();
-    expect(state.configManagRowData).toEqual(expectedRowData);
+    expect(state.configManagerRowData).toEqual(expectedRowData);
   })
 
   it("should increment changes in release", () => {

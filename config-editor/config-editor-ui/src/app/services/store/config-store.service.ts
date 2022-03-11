@@ -32,7 +32,7 @@ const initialConfigStoreState: ConfigStoreState = {
   testCaseMap: {},
   pastedConfig: undefined,
   countChangesInRelease: 0,
-  configManagRowData: [],
+  configManagerRowData: [],
 };
 
 const initialPullRequestState: PullRequestInfo = {
@@ -70,7 +70,7 @@ export class ConfigStoreService {
   public readonly adminPullRequestPending$ = this.adminPullRequestInfo.asObservable();
   public readonly adminConfig$ = this.store.asObservable().pipe(map(x => x.adminConfig));
   public readonly importers$ = this.importers.asObservable();
-  public readonly configManagRowData$ = this.store.asObservable().pipe(map(x => x.configManagRowData));
+  public readonly configManagerRowData$ = this.store.asObservable().pipe(map(x => x.configManagerRowData));
   public readonly countChangesInRelease$ = this.store.asObservable().pipe(map(x => x.countChangesInRelease));
 
   /*eslint-enable */

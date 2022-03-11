@@ -23,6 +23,6 @@ export const mockStore: ConfigStoreState = {
   sortedConfigs: [cloneDeep(mockParserConfig), cloneDeep(mockParserConfigCloned)],
   testCaseMap: cloneDeep(mockTestCaseMap),
   pastedConfig: undefined,
-  configManagRowData: [],
+  configManagerRowData: [],
   countChangesInRelease: 0,
 };

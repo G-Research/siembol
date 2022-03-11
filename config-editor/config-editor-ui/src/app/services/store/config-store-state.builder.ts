@@ -234,7 +234,7 @@ export class ConfigStoreStateBuilder {
   }
 
   computeConfigManagerRowData() {
-    this.state.configManagRowData = this.state.filteredConfigs.map(
+    this.state.configManagerRowData = this.state.filteredConfigs.map(
       (config: Config) => this.getRowFromConfig(config, this.state.filteredRelease)
     );
     return this;
