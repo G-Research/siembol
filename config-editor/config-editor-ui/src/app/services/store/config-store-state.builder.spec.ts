@@ -251,8 +251,8 @@ describe('ConfigStoreStateBuilder', () => {
       testCasesCount: 0,
     }];
     
-    const state = builder.computeFiltered("siembol").computeRowData().build();
-    expect(state.configRowData).toEqual(expectedRowData);
+    const state = builder.computeFiltered("siembol").computeConfigManagerRowData().build();
+    expect(state.configManagRowData).toEqual(expectedRowData);
   })
 
   it("should increment changes in release", () => {

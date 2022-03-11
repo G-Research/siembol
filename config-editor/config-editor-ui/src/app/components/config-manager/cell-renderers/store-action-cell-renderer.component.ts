@@ -31,15 +31,15 @@ export class StoreActionCellRendererComponent implements ICellRendererAngularCom
   }
 
   editConfig() {
-    this.params.context.componentParent.onEdit(this.params.node.rowIndex);
+    this.params.context.componentParent.onEdit(this.params.node.id);
   }
 
   viewConfig() {
-    this.params.context.componentParent.onView(this.params.node.rowIndex);
+    this.params.context.componentParent.onView(this.params.node.id);
   }
 
   cloneConfig() {
-    this.params.context.componentParent.onClone(this.params.node.rowIndex);
+    this.params.context.componentParent.onClone(this.params.node.id);
   }
 
   deleteConfigFromStore() {
