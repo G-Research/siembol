@@ -1,6 +1,6 @@
 {
   "name": "rule-editor.ui",
-  "version": "2.4.0-dev",
+  "version": "2.4.1-dev",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -20,6 +20,9 @@
   },
   "private": true,
   "dependencies": {
+    "@ag-grid-community/angular": "^27.0.0",
+    "@ag-grid-community/client-side-row-model": "^27.0.0",
+    "@ag-grid-community/core": "^27.0.1",
     "@angular-devkit/build-angular": "^13.2.5",
     "@angular/animations": "^13.2.5",
     "@angular/cdk": "^13.2.5",

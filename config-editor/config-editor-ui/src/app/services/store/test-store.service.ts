@@ -146,7 +146,7 @@ export class TestStoreService {
           .testCaseMap(testCaseMap)
           .updateTestCasesInConfigs()
           .detectOutdatedConfigs()
-          .reorderConfigsByDeployment()
+          .reorderConfigsByRelease()
           .computeFiltered(this.user)
           .editedTestCase(submittedTestCase)
           .editedTestCaseResult(testCaseWrapper.testCaseResult)
@@ -240,7 +240,7 @@ export class TestStoreService {
     if (type === TestingType.CONFIG_TESTING) {
       return this.testEditedConfig(testSpecification);
     }
-    return this.testDeployment(testSpecification);
+    return this.testRelease(testSpecification);
   }
 
   testEditedConfig(testSpecification: any): Observable<ConfigTestResult> {
@@ -252,9 +252,9 @@ export class TestStoreService {
     return this.configLoaderService.testSingleConfig(config.configData, testSpecification);
   }
 
-  testDeployment(testSpecification: any): Observable<ConfigTestResult> {
-    const deployment = this.store.getValue().deployment;
-    return this.configLoaderService.testDeploymentConfig(deployment, testSpecification);
+  testRelease(testSpecification: any): Observable<ConfigTestResult> {
+    const release = this.store.getValue().release;
+    return this.configLoaderService.testReleaseConfig(release, testSpecification);
   }
 
   undoTestCase() {

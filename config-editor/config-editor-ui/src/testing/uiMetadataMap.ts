@@ -2,7 +2,7 @@ import { UiMetadataMap, UiMetadata } from '@app/model/ui-metadata-map';
 
 export const mockUiMetadataParser: UiMetadata = {
     author: 'parser_author',
-    deployment: {
+    release: {
         config_array: 'parsers_configurations',
         version: 'parsers_version',
     },
@@ -11,7 +11,7 @@ export const mockUiMetadataParser: UiMetadata = {
     name: 'parser_name',
     perConfigSchemaPath: 'properties.parsers_configurations.items',
     testing: {
-        deploymentTestEnabled: true,
+        releaseTestEnabled: true,
         perConfigTestEnabled: true,
         testCaseEnabled: true,
     },
@@ -21,7 +21,7 @@ export const mockUiMetadataParser: UiMetadata = {
 export const mockUiMetadataAlert: UiMetadata =
 {
     author: 'rule_author',
-    deployment: {
+    release: {
         config_array: 'rules',
         extras: [
             'tags',
@@ -34,7 +34,7 @@ export const mockUiMetadataAlert: UiMetadata =
     name: 'rule_name',
     perConfigSchemaPath: 'properties.rules.items',
     testing: {
-        deploymentTestEnabled: true,
+        releaseTestEnabled: true,
         perConfigTestEnabled: true,
         testCaseEnabled: true,
     },

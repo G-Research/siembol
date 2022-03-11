@@ -6,13 +6,13 @@ export const NAME_REGEX = '^[a-zA-Z0-9_\\-]+$';
 
 export const repoNames = {
   store_directory_name: 'Config Store Folder',
-  release_directory_name: 'Config Deployment Folder',
+  release_directory_name: 'Config Release Folder',
   testcase_store_directory_name: 'Config Testcase Folder',
   admin_config_store_directory_name: 'Admin Config Folder',
 };
 
 export enum TestingType {
-  DEPLOYMENT_TESTING = 'deployment_testing',
+  RELEASE_TESTING = 'release_testing',
   CONFIG_TESTING = 'config_testing',
 }
 
@@ -47,7 +47,7 @@ export interface AdminConfigGitFiles<T> extends GitFiles<T> {
   config_version: number;
 }
 
-export interface DeploymentGitFiles<T> extends GitFiles<T> {
+export interface ReleaseGitFiles<T> extends GitFiles<T> {
   rules_version: number;
 }
 
@@ -106,7 +106,7 @@ export interface PullRequestInfo {
 
 export interface Config {
   versionFlag?: number;
-  isDeployed?: boolean;
+  isReleased?: boolean;
   isNew: boolean;
   configData: ConfigData;
   savedInBackend: boolean;
@@ -139,9 +139,9 @@ export interface ConfigTestDto {
 
 export type ConfigData = any;
 
-export interface Deployment {
+export interface Release {
   configs: Config[];
-  deploymentVersion: number;
+  releaseVersion: number;
 }
 
 export interface ConfigTestResult {
@@ -152,9 +152,9 @@ export interface ConfigTestResult {
   test_result_raw_output?: any;
 }
 
-export interface DeploymentWrapper {
-  storedDeployment: Deployment;
-  deploymentHistory: FileHistory[];
+export interface ReleaseWrapper {
+  storedRelease: Release;
+  releaseHistory: FileHistory[];
 }
 
 export interface TestCaseResultAttributes {
@@ -241,4 +241,20 @@ export class ExistingConfigError extends Error {
     super(message);
     this.name = this.constructor.name;
   }
+}
+
+export interface ConfigManagerRow {
+  config_name: string,
+  author: string,
+  version: number,
+  releasedVersion: number,
+  configHistory: FileHistory[],
+  labels_: string[],
+  testCasesCount: number,
+}
+
+export enum ConfigStatus {
+  UP_TO_DATE = "up-to-date",
+  UPGRADABLE = "upgradable",
+  UNRELEASED = "unreleased",
 }

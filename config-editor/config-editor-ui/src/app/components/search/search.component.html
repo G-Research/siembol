@@ -8,7 +8,7 @@
     </mat-form-field>
     <span class="checkboxes">
         <mat-checkbox (change)="clickMyConfigs($event.checked)" [ngModel]="filterMyConfigs">My Edits</mat-checkbox>
-        <mat-checkbox (change)="clickNotDeployed($event.checked)" [ngModel]="filterUndeployed">Undeployed</mat-checkbox>
+        <mat-checkbox (change)="clickNotReleased($event.checked)" [ngModel]="filterUnreleased">Unreleased</mat-checkbox>
         <mat-checkbox (change)="clickUpdatedConfigs($event.checked)" [ngModel]="filterUpgradable">Upgradable</mat-checkbox>
     </span>
 </div>
