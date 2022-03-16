@@ -16,11 +16,7 @@ import { ICellRendererParams } from '@ag-grid-community/core';
         (click)="upgradeConfig()">
         Upgrade v{{releasedVersion}} to v{{lastVersion}}
     </a>
-<<<<<<< HEAD
     <a *ngIf="status === configStatusEnum.UPGRADABLE" mat-raised-button color="primary" (click)="viewDiff()">View Diff</a>
-=======
-    <a *ngIf="status === configStatusEnum.UPGRADABLE" mat-raised-button (click)="viewDiff()">View Diff</a>
->>>>>>> origin/main
     <a *ngIf="status !== configStatusEnum.UNRELEASED" (click)="removeConfigFromRelease()" [title]="'Remove Config From Release'">
         <mat-icon class="delete-button">clear</mat-icon>
     </a>
