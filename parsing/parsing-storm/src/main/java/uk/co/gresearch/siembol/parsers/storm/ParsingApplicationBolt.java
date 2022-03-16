@@ -119,11 +119,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             }
 
             metricsRegistrar.registerCounter(SiembolMetrics.PARSING_CONFIGS_UPDATE.getMetricName()).increment();
-            metricsRegistrar.registerGauge(SiembolMetrics.PARSING_CONFIGS_UPDATE_VERSION.getMetricName())
-                            .setValue(result.getAttributes().getParsingParallelism()); //TODO:
-
             parsingApplicationParser.set(result.getAttributes().getApplicationParser());
-
             LOG.info(PARSERS_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
@@ -150,7 +146,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         for (var result : results) {
             if (ParsingApplicationResult.ResultType.FILTERED.equals(result.getResultType())) {
                 metricsRegistrar.registerCounter(
-                        SiembolMetrics.PARSING_SOURCE_TYPE_FILTERED_MESSAGES.getMetricName(result.getSourceType()))
+                                SiembolMetrics.PARSING_SOURCE_TYPE_FILTERED_MESSAGES.getMetricName(result.getSourceType()))
                         .increment();
                 metricsRegistrar.registerCounter(SiembolMetrics.PARSING_APP_FILTERED_MESSAGES.getMetricName())
                         .increment();
@@ -163,7 +159,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
                             counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
                                     .getMetricName(result.getSourceType()));
                             counters.add(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName());
-                                    break;
+                            break;
                         case ERROR:
                             counters.add(SiembolMetrics.PARSING_APP_ERROR_MESSAGES
                                     .getMetricName());
@@ -184,6 +180,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields(ParsingApplicationTuples.PARSING_MESSAGES.toString()));
+        declarer.declare(new Fields(ParsingApplicationTuples.PARSING_MESSAGES.toString(),
+                ParsingApplicationTuples.COUNTERS.toString()));
     }
 }
