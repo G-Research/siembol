@@ -1,6 +1,6 @@
 import { Config, Release, FileHistory } from '.';
 import { TestCaseMap, TestCaseWrapper } from './test-case';
-import { AdminConfig, ConfigManagerRow } from './config-model';
+import { AdminConfig, ConfigManagerRow, EnabledCheckboxFilters } from './config-model';
 
 export interface ConfigStoreState {
   configs: Config[];
@@ -8,8 +8,6 @@ export interface ConfigStoreState {
   initialRelease: Release;
   releaseHistory: FileHistory[];
   sortedConfigs: Config[];
-  filteredConfigs: Config[];
-  filteredRelease: Release;
   searchTerm: string;
   filterMyConfigs: boolean;
   filterUnreleased: boolean;
@@ -22,4 +20,5 @@ export interface ConfigStoreState {
   pastedConfig: any;
   countChangesInRelease: number;
   configRowData: ConfigManagerRow[];
+  enabledCheckboxFilters: EnabledCheckboxFilters;
 }

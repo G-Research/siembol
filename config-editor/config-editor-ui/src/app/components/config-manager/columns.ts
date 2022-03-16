@@ -31,6 +31,7 @@ const storeColumns = [
     cellRenderer: StoreActionCellRendererComponent,
     editable: false,
     colId: "action",
+    getQuickFilterText: () => '',
   },
 ];
 
@@ -42,6 +43,7 @@ const releaseColumns = [
     cellRenderer: ReleaseActionsCellRendererComponent,
     editable: false,
     colId: "status",
+    getQuickFilterText: () => '',
   },
 ]
 

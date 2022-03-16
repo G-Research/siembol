@@ -4,7 +4,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, ConfigManagerRow } from '@app/model/config-model';
+import { AdminConfig, CheckboxEvent, ConfigManagerRow } from '@app/model/config-model';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -112,33 +112,6 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  computeFiltered(user: string): ConfigStoreStateBuilder {
-    this.state.filteredConfigs = cloneDeep(this.state.sortedConfigs);
-    this.state.filteredRelease = cloneDeep(this.state.release);
-
-    // if (this.state.filterUnreleased) {
-    //   this.state.filteredRelease.configs = [];
-    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isReleased);
-    // }
-
-    // if (this.state.filterUpgradable) {
-    //   this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(d => d.versionFlag > 0);
-    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.versionFlag > 0);
-    // }
-
-    // if (this.state.filterMyConfigs) {
-    //   this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(r => r.author === user);
-    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.author === user);
-    // }
-
-    // if (this.state.searchTerm !== undefined && this.state.searchTerm !== '') {
-    //   this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(c => this.filterSearchTerm(c));
-    //   this.state.filteredConfigs = this.state.filteredConfigs.filter(c => this.filterSearchTerm(c));
-    // }
-
-    return this;
-  }
-
   filterMyConfigs(filterMyConfigs: boolean): ConfigStoreStateBuilder {
     this.state.filterMyConfigs = filterMyConfigs;
     return this;
@@ -154,19 +127,27 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  addConfigToRelease(filteredIndex: number) {
-    if (filteredIndex < this.state.filteredRelease.configs.length) {
-      return this;
+  updateCheckboxFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
+    if (this.state.enabledCheckboxFilters[event.title] === undefined) {
+      this.state.enabledCheckboxFilters[event.title] = {};
     }
+    if (event.checked) {
+      this.state.enabledCheckboxFilters[event.title][event.name] = true;
+    } else {
+      delete this.state.enabledCheckboxFilters[event.title][event.name];
+    }
+    return this;
+  }
 
-    const configToAdd = cloneDeep(this.state.filteredConfigs[filteredIndex]);
+  addConfigToRelease(name: string) {
+    const configToAdd = cloneDeep(this.state.configs.find(c => c.name === name));
     this.state.release.configs.push(configToAdd);
     return this;
   }
 
-  removeConfigFromRelease(filteredIndex: number) {
+  removeConfigFromRelease(name: string) {
     this.state.release.configs = this.state.release.configs.filter(
-      x => x.name !== this.state.filteredRelease.configs[filteredIndex].name
+      x => x.name !== name
     );
     return this;
   }
@@ -176,7 +157,7 @@ export class ConfigStoreStateBuilder {
       e => e.name === configName
     );
     const currentIndex = this.state.release.configs.findIndex(
-      e => e.name === this.state.filteredRelease.configs[filteredCurrentIndex]?.name
+      e => e.name === this.state.release.configs[filteredCurrentIndex]?.name
     );
     if (currentIndex === -1) {
       return this;
@@ -185,10 +166,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  upgradeConfigInRelease(filteredIndex: number) {
-    const configName = this.state.filteredRelease.configs[filteredIndex].name;
+  upgradeConfigInRelease(configName: string) {
     const originalReleaseIndex = this.state.release.configs.findIndex(d => d.name === configName);
-
     const configToUpgrade = this.state.configs.find(c => c.name === configName);
     this.state.release.configs[originalReleaseIndex] = cloneDeep(configToUpgrade);
     return this;
@@ -234,8 +213,8 @@ export class ConfigStoreStateBuilder {
   }
 
   computeRowData() {
-    this.state.configRowData = this.state.filteredConfigs.map(
-      (config: Config) => this.getRowFromConfig(config, this.state.filteredRelease)
+    this.state.configRowData = this.state.sortedConfigs.map(
+      (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
   }
@@ -249,15 +228,8 @@ export class ConfigStoreStateBuilder {
       config_name: config.name, 
       releasedVersion:  releaseVersion,
       configHistory: config.fileHistory,
-      labels_: config.tags,
+      labels: config.tags,
       testCasesCount: config.testCases.length,
     });
   }
-
-  // private filterSearchTerm(config: any) {
-  //   const lowerCaseSearchTerm = this.state.searchTerm.toLowerCase();
-  //   return config.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-  //          config.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
-  //          config.tags === undefined ? true : config.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
-  // }
 }

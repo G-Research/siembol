@@ -1,7 +1,19 @@
 <block-ui>
-    <ng-scrollbar [track]="'all'" class="scrollbar">
-        <div class="container">
+    <mat-drawer-container class="example-container" autosize>
+        <mat-drawer #drawer mode="side" style="width:250px;border-right: none;">
+            <ng-scrollbar [track]="'vertical'">
+                <re-checkbox-filters 
+                    [checkboxFilters]="checkboxFilters"
+                    (selectedCheckbox)="onClickCheckbox($event)" 
+                    >
+                </re-checkbox-filters>
+            </ng-scrollbar>
+        </mat-drawer>
+        <mat-drawer-content class="container">
             <div class="container-title">
+                <a mat-button (click)="drawer.toggle()" *ngIf="checkboxFilters">
+                    <mat-icon>menu</mat-icon>
+                </a>
                 <re-search 
                     [searchTerm]="searchTerm$ | async" 
                     [filterMyConfigs]="filterMyConfigs$ | async" 
@@ -69,7 +81,6 @@
                     </span>
                 </ng-template>
             </div>
-            <mat-divider></mat-divider>
             <ag-grid-angular
                 #agGrid
                 id="myGrid"
@@ -82,6 +93,6 @@
                 [gridOptions]="gridOptions"
                 [getRowNodeId]="getRowNodeId"
             ></ag-grid-angular>
-        </div> 
-    </ng-scrollbar>
+        </mat-drawer-content> 
+    </mat-drawer-container>
 </block-ui>

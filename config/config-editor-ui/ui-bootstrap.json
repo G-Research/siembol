@@ -40,6 +40,36 @@
             "perConfigTestEnabled": true,
             "deploymentTestEnabled": true,
             "testCaseEnabled": true
+        },
+        "checkboxes": {
+            "platform": {
+                "linux": {
+                    "label": "sourcetype", 
+                    "values": [
+                        "aushape",
+                        "linuxaudit",
+                        "linuxlog",
+                        "journald",
+                        "falco"
+                    ]
+                },
+                "windows": {
+                    "label": "sourcetype", 
+                    "values": [
+                        "eventlogs",
+                        "sysmon",
+                        "powershell"
+                    ]
+                },
+                "kubernetes": {
+                    "label": "sourcetype", 
+                    "values": [ "k8s", "journald" ]
+                },
+                "openstack": {
+                    "label": "sourcetype", 
+                    "values": ["openstack"]
+                }  
+            }
         }
     },
     "correlationalert": {

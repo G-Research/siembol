@@ -13,17 +13,6 @@ const mockConfigsUnsorted = [
   { name: 'test4' },
 ];
 
-const mockConfigsFilter = [
-  { author: 'siembol', isReleased: false, name: 'test1', tags: ['test4'], version: 2, versionFlag: -1 },
-  { author: 'John', isReleased: true, name: 'parse_alert', tags: ['test2'], version: 2, versionFlag: 3 },
-  { author: 'siembol', isReleased: true, name: 'test3', tags: ['alert', 'Test4', 'test3'], version: 2, versionFlag: -1 },
-];
-
-const mockReleaseConfigsFilter = [
-  { author: 'John', isReleased: true, name: 'parse_alert', tags: ['test2'], version: 2, versionFlag: 3 },
-  { author: 'siembol', isReleased: true, name: 'test3', tags: ['alert', 'Test4', 'test3'], version: 2, versionFlag: -1 },
-];
-
 const mockRelease = {
   configs: [],
   releaseVersion:1,
@@ -115,54 +104,6 @@ describe('ConfigStoreStateBuilder', () => {
     });
   });
 
-  describe('computeFiltered', () => {
-    beforeEach(() => {
-      builder.configs(mockConfigsFilter as Config[]);
-      mockRelease.configs = mockReleaseConfigsFilter;
-      builder.release(mockRelease as Release);
-      builder.reorderConfigsByRelease();
-    });
-    it('should filter unreleased', () => {
-      builder.filterUnreleased(true);
-      builder.computeFiltered('siembol');
-      expect((builder['state'] as any).filteredConfigs).toEqual([mockConfigsFilter[0]]);
-      expect((builder['state'] as any).filteredRelease.configs).toEqual([]);
-    });
-    it('should filter upgradable', () => {
-      builder.filterUpgradable (true);
-      builder.computeFiltered('siembol');
-      expect((builder['state'] as any).filteredConfigs).toEqual([mockConfigsFilter[1]]);
-      expect((builder['state'] as any).filteredRelease.configs).toEqual([mockReleaseConfigsFilter[0]]);
-    });
-    it('should filter user configs', () => {
-      builder.filterMyConfigs(true);
-      builder.computeFiltered('siembol');
-      expect((builder['state'] as any).filteredConfigs).toEqual([mockConfigsFilter[2], mockConfigsFilter[0]]);
-      expect((builder['state'] as any).filteredRelease.configs).toEqual([mockReleaseConfigsFilter[1]]);
-    });
-    it('should filter for term', () => {
-      builder.searchTerm('alert');
-      builder.computeFiltered('siembol');
-      expect((builder['state'] as any).filteredConfigs).toEqual([mockConfigsFilter[1], mockConfigsFilter[2]]);
-      expect((builder['state'] as any).filteredRelease.configs).toEqual([
-        mockReleaseConfigsFilter[0],
-        mockReleaseConfigsFilter[1],
-      ]);
-    });
-    it('should filter for non existant term', () => {
-      builder.searchTerm('xyz');
-      builder.computeFiltered('siembol');
-      expect((builder['state'] as any).filteredConfigs).toEqual([]);
-      expect((builder['state'] as any).filteredRelease.configs).toEqual([]);
-    });
-    it('should filter for term not dependant on case', () => {
-      builder.searchTerm('test4');
-      builder.computeFiltered('siembol');
-      expect((builder['state'] as any).filteredConfigs).toEqual([mockConfigsFilter[2], mockConfigsFilter[0]]);
-      expect((builder['state'] as any).filteredRelease.configs).toEqual([mockReleaseConfigsFilter[1]]);
-    });
-  });
-
   it("should resetEditedTestCase", () => {
     builder.resetEditedTestCase();
     expect((builder['state'] as any).editedTestCase).toBeNull();
@@ -179,7 +120,6 @@ describe('ConfigStoreStateBuilder', () => {
     ];
     mockRelease.configs = mockConfigsSorted;
     builder.release(mockRelease as Release);
-    builder.computeFiltered("siembol");
     builder.moveConfigInRelease('test1', 4);
     expect((builder['state'] as any).release.configs).toEqual(mockConfigsMoved);
   })
@@ -193,8 +133,7 @@ describe('ConfigStoreStateBuilder', () => {
     ];
     mockRelease.configs = mockConfigsSorted;
     builder.release(mockRelease as Release);
-    builder.computeFiltered("siembol");
-    builder.removeConfigFromRelease(1);
+    builder.removeConfigFromRelease("test2");
     expect((builder['state'] as any).release.configs).toEqual(mockConfigsRemoved);
   })
 
@@ -210,8 +149,7 @@ describe('ConfigStoreStateBuilder', () => {
     mockRelease.configs = mockConfigsSorted;
     builder.release(mockRelease as Release);
     builder.reorderConfigsByRelease();
-    builder.computeFiltered("siembol");
-    builder.upgradeConfigInRelease(1);
+    builder.upgradeConfigInRelease("test2");
     expect((builder['state'] as any).release.configs).toEqual(mockConfigsUpgraded);
   })
 
@@ -225,8 +163,7 @@ describe('ConfigStoreStateBuilder', () => {
       builder.configs(mockConfigsSorted as Config[]);
       builder.release({configs: mockReleaseConfigs} as Release);
       builder.reorderConfigsByRelease();
-      builder.computeFiltered("siembol");
-      builder.addConfigToRelease(4);
+      builder.addConfigToRelease("test5");
       const state = builder.build();
       expect(state.release.configs).toEqual(mockConfigsSorted);
     })
@@ -238,7 +175,7 @@ describe('ConfigStoreStateBuilder', () => {
       config_name: 'config1', 
       releasedVersion: 2, 
       configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
-      labels_: [ 'generic', 'json_extractor' ],
+      labels: [ 'generic', 'json_extractor' ],
       testCasesCount: 0 ,
     },
     { 
@@ -247,11 +184,11 @@ describe('ConfigStoreStateBuilder', () => {
       config_name: 'config1_clone', 
       releasedVersion: 0, 
       configHistory: undefined, 
-      labels_: undefined, 
+      labels: undefined, 
       testCasesCount: 0,
     }];
     
-    const state = builder.computeFiltered("siembol").computeRowData().build();
+    const state = builder.build();
     expect(state.configRowData).toEqual(expectedRowData);
   })
 

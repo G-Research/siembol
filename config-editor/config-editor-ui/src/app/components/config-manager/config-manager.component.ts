@@ -13,11 +13,12 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ConfigManagerRow, Importers, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
 import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent, RowNode } from '@ag-grid-community/core';
+import { CheckboxConfig } from '@app/model/ui-metadata-map';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,13 +30,11 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   @BlockUI() blockUI: NgBlockUI;
   allConfigs$: Observable<Config[]>;
   configs: Config[];
-  filteredConfigs$: Observable<Config[]>;
   release$: Observable<Release>;
   release: Release;
   pullRequestPending$: Observable<PullRequestInfo>;
   releaseSubmitInFlight$: Observable<boolean>;
   searchTerm$: Observable<string>;
-  filteredRelease: Release;
   filteredRelease$: Observable<Release>;
   filterMyConfigs$: Observable<boolean>;
   filterUnreleased$: Observable<boolean>;
@@ -69,18 +68,18 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     onGridSizeChanged: (event: GridSizeChangedEvent) => {
       event.api.sizeColumnsToFit();
     }, 
-    onGridReady: (params) => {
+    onGridReady: (params: any) => {
       this.api = params.api;
     },
     isExternalFilterPresent: this.isExternalFilterPresent.bind(this),
    doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
   };
   api;
+  checkboxFilters: CheckboxConfig;
   private countChangesInRelease$ : Observable<number>;
   private rowMoveStartIndex: number;
 
   private ngUnsubscribe = new Subject<void>();
-  private filteredConfigs: Config[];
   private configStore: ConfigStoreService;
   private readonly PR_OPEN_MESSAGE = 'A pull request is already open';
 
@@ -97,14 +96,11 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore = editorService.configStore;
     this.allConfigs$ = this.configStore.sortedConfigs$;
 
-    this.filteredConfigs$ = this.configStore.filteredConfigs$;
-
     this.pullRequestPending$ = this.configStore.pullRequestPending$;
     this.releaseSubmitInFlight$ = this.configStore.releaseSubmitInFlight$;
     this.release$ = this.configStore.release$;
 
     this.searchTerm$ = this.configStore.searchTerm$;
-    this.filteredRelease$ = this.configStore.filteredRelease$;
     this.filterMyConfigs$ = this.configStore.filterMyConfigs$;
 
     this.filterUnreleased$ = this.configStore.filterUnreleased$;
@@ -116,6 +112,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
     this.rowData$ = this.configStore.configRowData$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
+
+    this.checkboxFilters = this.editorService.metaDataMap.checkboxes;
   }
 
   ngOnInit() {
@@ -125,13 +123,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.allConfigs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
       this.configs = cloneDeep(s);
     });
-
-    this.filteredConfigs$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => (this.filteredConfigs = s));
-
-    this.filteredRelease$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
-      this.filteredRelease = cloneDeep(s);
-    });
-
     this.releaseHistory$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(h => (this.releaseHistory = { fileHistory: h }));
@@ -147,14 +138,14 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onSearch(searchTerm: string) {
-    // this.configStore.updateSearchTerm(searchTerm);
+    this.configStore.updateSearchTerm(searchTerm);
     this.api.setQuickFilter(
       searchTerm
     );
   }
 
-  upgrade(index: number) {
-    this.configStore.upgradeConfigInRelease(index);
+  upgrade(name: string) {
+    this.configStore.upgradeConfigInRelease(name);
     this.configStore.incrementChangesInRelease();
   }
 
@@ -189,8 +180,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  addToRelease(id: number) {
-    this.configStore.addConfigToRelease(id);
+  addToRelease(name: string) {
+    this.configStore.addConfigToRelease(name);
     this.configStore.incrementChangesInRelease();
   }
 
@@ -199,8 +190,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
       { data: name, disableClose: true });
   }
 
-  onRemove(id: number) {
-    this.configStore.removeConfigFromRelease(id);
+  onRemove(name: string) {
+    this.configStore.removeConfigFromRelease(name);
     this.configStore.incrementChangesInRelease();
   }
 
@@ -235,6 +226,11 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.api.onFilterChanged();
   }
 
+  onClickCheckbox(event: CheckboxEvent) {
+    this.configStore.updateCheckboxFilters(event);
+    this.api.onFilterChanged();
+  }
+
   onSyncWithGit() {
     this.blockUI.start('loading store and releases');
     this.configStore.reloadStoreAndRelease().subscribe(() => {
@@ -256,9 +252,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.api.onFilterChanged();
   }
 
-  deleteConfigFromStore(index: number) {
+  deleteConfigFromStore(name: string) {
     this.blockUI.start('deleting config');
-    this.configStore.deleteConfig(this.filteredConfigs[index].name).subscribe(() => {
+    this.configStore.deleteConfig(name).subscribe(() => {
       this.blockUI.stop();
     });
     setTimeout(() => {

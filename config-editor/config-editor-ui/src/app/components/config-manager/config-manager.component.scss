@@ -3,9 +3,8 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
-    padding: 10px 30px;
+    padding: 10px 10px;
     height: calc(100vh - 64px);
-    width: 90%;
     &>mat-divider {
         margin: 0 40px;
     }
@@ -17,23 +16,7 @@
     margin-top: 15px;
     height: 100%;
     width: 100%;
-}
-
-::ng-deep .ag-row .ag-cell {
-    display: flex;
-    align-items: center;
-}
-
-::ng-deep .ag-row .ag-cell-wrapper {
-    width: 100%
-}
-
-::ng-deep .ag-cell-value {
-    width: 100%
-}
-
-::ng-deep .ag-cell-focus, .ag-cell {
-    border: none !important;
+    border-radius: 4px 4px 0 0;
 }
 
 .add-button {

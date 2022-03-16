@@ -71,7 +71,7 @@ export class LabelCellRendererComponent implements ICellRendererAngularComp {
 
   agInit(params: any): void {
     this.params = params;
-    this.labels = params.node.data.labels_;
+    this.labels = params.node.data.labels;
   }
 
   refresh(params: ICellRendererParams) {

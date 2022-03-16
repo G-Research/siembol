@@ -249,7 +249,7 @@ export interface ConfigManagerRow {
   version: number,
   releasedVersion: number,
   configHistory: FileHistory[],
-  labels_: string[],
+  labels: string[],
   testCasesCount: number,
 }
 
@@ -257,4 +257,14 @@ export enum ConfigStatus {
   UP_TO_DATE = "up-to-date",
   UPGRADABLE = "upgradable",
   UNRELEASED = "unreleased",
+}
+
+export interface CheckboxEvent {
+  checked: boolean,
+  title: string,
+  name: string,
+}
+
+export interface EnabledCheckboxFilters {
+  [type: string]: Record<string, boolean>;
 }

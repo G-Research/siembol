@@ -15,6 +15,7 @@ export interface UiMetadata {
   release: ReleaseConfig;
   unionType?: UnionType;
   disableEditingFeatures?: boolean;
+  checkboxes?: CheckboxConfig
 }
 
 export interface TestConfig {
@@ -32,4 +33,17 @@ export interface ReleaseConfig {
 export interface UnionType {
   unionPath: string;
   unionSelectorName: string;
+}
+
+export interface CheckboxConfig {
+  [type: string] : CheckboxGroup
+}
+
+export interface CheckboxGroup {
+  [type: string] : SingleCheckboxFilter
+}
+
+export interface SingleCheckboxFilter {
+  label: string,
+  values: string[],
 }
