@@ -312,7 +312,7 @@ export class ConfigStoreService {
           .updateTestCasesInConfigs()
           .detectOutdatedConfigs()
           .reorderConfigsByRelease()
-              .editedConfigByName(config.name)
+          .editedConfigByName(config.name)
           .computeRowData()
           .build();
         this.store.next(newState);
@@ -592,7 +592,7 @@ export class ConfigStoreService {
         .updateTestCasesInConfigs()
         .detectOutdatedConfigs()
         .reorderConfigsByRelease()
-          .editedConfigTestCases(testCaseMap[editedConfigName])
+        .editedConfigTestCases(testCaseMap[editedConfigName])
         .computeRowData()
         .build();
       this.store.next(newState);
@@ -613,7 +613,6 @@ export class ConfigStoreService {
       .build();
     this.store.next(newState);
   }
-
 
    isExternalFilterPresent(): boolean {
     const state = this.store.getValue();
