@@ -10,11 +10,13 @@ import java.util.Map;
 public class SiembolMetricsTestRegistrar implements SiembolMetricsRegistrar {
     private final Map<String, SiembolTestCounter> countersMap = new HashMap<>();
     private final Map<String, SiembolGauge> gaugesMap = new HashMap<>();
-    private static final String METRIC_ALREADY_EXISTS = "Metrics %s already exists with the name";
+    private static final String METRIC_ALREADY_EXISTS_MSG = "Metric %s already exists";
+    private static final String METRIC_DOES_NOT_EXIST_MSG = "Metric %s does not exist";
+
     @Override
     public SiembolCounter registerCounter(String name) {
         if (countersMap.containsKey(name)) {
-            throw new IllegalArgumentException(String.format(METRIC_ALREADY_EXISTS, name));
+            throw new IllegalArgumentException(String.format(METRIC_ALREADY_EXISTS_MSG, name));
         }
         var counter = new SiembolTestCounter();
         countersMap.put(name, counter);
@@ -24,7 +26,7 @@ public class SiembolMetricsTestRegistrar implements SiembolMetricsRegistrar {
     @Override
     public SiembolGauge registerGauge(String name) {
         if (countersMap.containsKey(name)) {
-            throw new IllegalArgumentException(String.format(METRIC_ALREADY_EXISTS, name));
+            throw new IllegalArgumentException(String.format(METRIC_ALREADY_EXISTS_MSG, name));
         }
         var gauge = new SiembolGauge();
         gaugesMap.put(name, gauge);
@@ -33,7 +35,7 @@ public class SiembolMetricsTestRegistrar implements SiembolMetricsRegistrar {
 
     public int getCounterValue(String name) {
         if (!countersMap.containsKey(name)) {
-            throw new IllegalArgumentException("Metrics with name %s does not exist");
+            throw new IllegalArgumentException(String.format(METRIC_DOES_NOT_EXIST_MSG, name));
         }
         return countersMap.get(name).getValue();
     }

@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 import uk.co.gresearch.siembol.response.common.*;
 import uk.co.gresearch.siembol.response.evaluators.fixed.FixedResultEvaluator;
 
@@ -119,7 +120,8 @@ public class RespondingCompilerImplTest {
 
     private RespondingCompilerImpl compiler;
     private RespondingCompilerImpl.Builder builder;
-    private MetricFactory metricFactory;
+    private SiembolMetricsTestRegistrar metricsTestRegistrar;
+
     private RespondingEvaluatorFactory evaluatorFactory;
     private RespondingResult evaluatorSchemaResult;
     private RespondingResult evaluatorTypeResult;
@@ -132,9 +134,9 @@ public class RespondingCompilerImplTest {
 
     @Before
     public void setUp() throws Exception {
-        metricFactory = new TestMetricFactory();
+        metricsTestRegistrar = new SiembolMetricsTestRegistrar();
         builder = new RespondingCompilerImpl.Builder()
-                .metricFactory(metricFactory);
+                .metricsRegistrar(metricsTestRegistrar);
         evaluatorTypeResult = RespondingResult.fromEvaluatorType("b_first_evaluator");
         evaluatorNextTypeResult = RespondingResult.fromEvaluatorType("a_second_evaluator");
 

@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 import uk.co.gresearch.siembol.response.common.*;
 
 import java.util.Arrays;
@@ -18,17 +20,17 @@ import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.N
 public class RulesEngineTest {
 
     private ResponseAlert alert;
-    Evaluable rule;
-    Evaluable ruleNext;
-    List<Evaluable> rules;
-    RulesEngine.Builder builder;
-    TestMetricFactory metricFactory;
-    RespondingResult ruleResult;
-    RespondingResultAttributes resultAttributes;
-    RespondingResultAttributes metadataAttributes;
-    RespondingResult ruleNextResult;
-    RespondingResultAttributes resultNextAttributes;
-    RulesEngine engine;
+    private Evaluable rule;
+    private Evaluable ruleNext;
+    private List<Evaluable> rules;
+    private RulesEngine.Builder builder;
+    private SiembolMetricsTestRegistrar metricsTestRegistrar;
+    private RespondingResult ruleResult;
+    private RespondingResultAttributes resultAttributes;
+    private RespondingResultAttributes metadataAttributes;
+    private RespondingResult ruleNextResult;
+    private RespondingResultAttributes resultNextAttributes;
+    private RulesEngine engine;
 
     @Before
     public void setUp() {
@@ -50,9 +52,9 @@ public class RulesEngineTest {
         rules = Arrays.asList(rule, ruleNext);
 
         metadataAttributes = new RespondingResultAttributes();
-        metricFactory = new TestMetricFactory();
+        metricsTestRegistrar = new SiembolMetricsTestRegistrar();
         builder = new RulesEngine.Builder()
-                .metricFactory(metricFactory)
+                .metricsRegistrar(metricsTestRegistrar.cachedRegistrar())
                 .metadata(metadataAttributes)
                 .rules(rules);
 
@@ -69,14 +71,14 @@ public class RulesEngineTest {
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -92,14 +94,14 @@ public class RulesEngineTest {
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -114,14 +116,14 @@ public class RulesEngineTest {
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(FILTERED, result.getAttributes().getResult());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -137,14 +139,14 @@ public class RulesEngineTest {
         Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(FILTERED, result.getAttributes().getResult());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -159,14 +161,14 @@ public class RulesEngineTest {
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -182,14 +184,14 @@ public class RulesEngineTest {
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }
@@ -206,14 +208,14 @@ public class RulesEngineTest {
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(NO_MATCH, result.getAttributes().getResult());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName()).getValue());
-        Assert.assertEquals(1, metricFactory
-                .getCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName()).getValue());
-        Assert.assertEquals(0, metricFactory
-                .getCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName()).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName()));
+        Assert.assertEquals(1, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName()));
+        Assert.assertEquals(0, metricsTestRegistrar
+                .getCounterValue(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName()));
         Assert.assertEquals(RespondingResult.StatusCode.OK, engine.getRulesMetadata().getStatusCode());
         Assert.assertEquals(metadataAttributes, engine.getRulesMetadata().getAttributes());
     }

@@ -1,5 +1,6 @@
 package uk.co.gresearch.siembol.response.stream.rest.application;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,12 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.plugin.core.OrderAwarePluginRegistry;
 import org.springframework.plugin.core.config.EnablePluginRegistries;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.spring.SpringMetricsRegistrar;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.ResponsePlugin;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
-import uk.co.gresearch.siembol.response.stream.rest.ResponseMetricFactory;
+
 import uk.co.gresearch.siembol.response.stream.ruleservice.*;
 
 import java.util.ArrayList;
@@ -24,7 +27,8 @@ public class ApplicationConfiguration implements DisposableBean {
     @Autowired
     private ResponseConfigurationProperties properties;
     @Autowired
-    private ResponseMetricFactory counterFactory;
+    private MeterRegistry springMeterRegistrar;
+
     @Autowired
     @Qualifier("responsePluginRegistry")
     private OrderAwarePluginRegistry<ResponsePlugin, String> pluginRegistry;
@@ -35,6 +39,7 @@ public class ApplicationConfiguration implements DisposableBean {
 
     @Bean
     RespondingCompiler respondingCompiler() throws Exception {
+        SiembolMetricsRegistrar metricsRegistrar =  new SpringMetricsRegistrar(springMeterRegistrar);
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>();
         evaluatorFactories.addAll(ProvidedEvaluators.getRespondingEvaluatorFactories(properties.getEvaluatorsProperties())
                 .getAttributes()
@@ -48,7 +53,7 @@ public class ApplicationConfiguration implements DisposableBean {
 
         return new RespondingCompilerImpl.Builder()
                 .addRespondingEvaluatorFactories(evaluatorFactories)
-                .metricFactory(counterFactory)
+                .metricsRegistrar(metricsRegistrar)
                 .build();
     }
 

@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 import uk.co.gresearch.siembol.response.common.*;
 import uk.co.gresearch.siembol.response.evaluators.fixed.FixedResultEvaluator;
 
@@ -20,18 +22,18 @@ public class ResponseRuleTest {
     private final int ruleVerion = 1;
     private final String fullRuleName = "Test_rule_v1";
 
-    private final String metchesMetricName = MetricNames.RULE_MATCHES.getNameWithSuffix(ruleName);
-    private final String errorMetricName = MetricNames.RULE_ERROR_MATCHES.getNameWithSuffix(ruleName);
-    private final String filteredMetricName = MetricNames.RULE_FILTERS.getNameWithSuffix(ruleName);
+    private final String metchesMetricName = SiembolMetrics.RESPONSE_RULE_MATCHED.getMetricName(ruleName);
+    private final String errorMetricName = SiembolMetrics.RESPONSE_RULE_ERROR_MATCH.getMetricName(ruleName);
+    private final String filteredMetricName = SiembolMetrics.RESPONSE_RULE_FILTERED.getMetricName(ruleName);
 
     private ResponseAlert alert;
-    Evaluable evaluator;
-    Evaluable evaluatorNext;
-    ResponseRule.Builder builder;
-    ResponseRule rule;
-    TestMetricFactory metricFactory;
-    RespondingResult evaluatorResult;
-    RespondingResultAttributes resultAttributes;
+    private Evaluable evaluator;
+    private Evaluable evaluatorNext;
+    private ResponseRule.Builder builder;
+    private ResponseRule rule;
+    private SiembolMetricsTestRegistrar metricsTestRegistrar;
+    private RespondingResult evaluatorResult;
+    private RespondingResultAttributes resultAttributes;
 
     @Before
     public void setUp() {
@@ -45,9 +47,9 @@ public class ResponseRuleTest {
         evaluator = Mockito.mock(Evaluable.class);
         when(evaluator.evaluate(alert)).thenReturn(evaluatorResult);
 
-        metricFactory = new TestMetricFactory();
+        metricsTestRegistrar = new SiembolMetricsTestRegistrar();
         builder = new ResponseRule.Builder()
-                .metricFactory(metricFactory)
+                .metricsRegistrar(metricsTestRegistrar.cachedRegistrar())
                 .ruleName(ruleName)
                 .ruleVersion(ruleVerion);
 
@@ -63,9 +65,9 @@ public class ResponseRuleTest {
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(NO_MATCH, result.getAttributes().getResult());
         Assert.assertEquals(2, result.getAttributes().getAlert().size());
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -83,9 +85,9 @@ public class ResponseRuleTest {
         Assert.assertNotNull(result.getAttributes());
         Assert.assertEquals(NO_MATCH, result.getAttributes().getResult());
         Assert.assertEquals(2, result.getAttributes().getAlert().size());
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -101,9 +103,9 @@ public class ResponseRuleTest {
                 .get(ResponseFields.FULL_RULE_NAME.toString()));
         Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
 
-        Assert.assertEquals(1, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -121,9 +123,9 @@ public class ResponseRuleTest {
                 .get(ResponseFields.FULL_RULE_NAME.toString()));
         Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
 
-        Assert.assertEquals(1, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -140,9 +142,9 @@ public class ResponseRuleTest {
                 .get(ResponseFields.FULL_RULE_NAME.toString()));
         Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
 
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(1, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -159,9 +161,9 @@ public class ResponseRuleTest {
         Assert.assertEquals(fullRuleName, result.getAttributes().getAlert()
                 .get(ResponseFields.FULL_RULE_NAME.toString()));
         Assert.assertEquals(ruleName, result.getAttributes().getAlert().get(ResponseFields.RULE_NAME.toString()));
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(1, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -174,9 +176,9 @@ public class ResponseRuleTest {
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(1, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -191,9 +193,9 @@ public class ResponseRuleTest {
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(1, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
 
@@ -207,9 +209,9 @@ public class ResponseRuleTest {
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(1, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test
@@ -224,9 +226,9 @@ public class ResponseRuleTest {
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getMessage());
-        Assert.assertEquals(0, metricFactory.getCounter(metchesMetricName).getValue());
-        Assert.assertEquals(1, metricFactory.getCounter(errorMetricName).getValue());
-        Assert.assertEquals(0, metricFactory.getCounter(filteredMetricName).getValue());
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(metchesMetricName));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(errorMetricName));
+        Assert.assertEquals(0, metricsTestRegistrar.getCounterValue(filteredMetricName));
     }
 
     @Test(expected = IllegalArgumentException.class)
