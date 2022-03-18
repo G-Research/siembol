@@ -39,6 +39,8 @@ public enum SiembolMetrics {
     RESPONSE_ENGINE_FILTERED("siembol_counter_response_engine_filtered_alerts"),
     RESPONSE_ENGINE_ERRORS("siembol_counter_response_engine_errors"),
     RESPONSE_ENGINE_NO_MATCHES("siembol_counter_response_engine_no_matches"),
+    RESPONSE_RULES_UPDATE("siembol_counter_response_rules_update"),
+    RESPONSE_RULES_UPDATE_ERROR("siembol_counter_response_rules_update_error"),
 
     TOPOLOGY_MANAGER_TOPOLOGY_KILLED("siembol_counter_topology_killed_%s_%s"),
     TOPOLOGY_MANAGER_TOPOLOGY_RELEASED("siembol_counter_topology_released_%s_%s"),

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.plugin.core.OrderAwarePluginRegistry;
 import org.springframework.plugin.core.config.EnablePluginRegistries;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
@@ -33,13 +34,16 @@ public class ApplicationConfiguration implements DisposableBean {
     @Qualifier("responsePluginRegistry")
     private OrderAwarePluginRegistry<ResponsePlugin, String> pluginRegistry;
 
-    private RespondingCompiler respondingCompiler;
     private RulesService streamService;
-    private RulesProvider rulesProvider;
 
-    @Bean
-    RespondingCompiler respondingCompiler() throws Exception {
-        SiembolMetricsRegistrar metricsRegistrar =  new SpringMetricsRegistrar(springMeterRegistrar);
+    @Bean("metricsRegistrar")
+    SiembolMetricsRegistrar metricsRegistrar() {
+        return new SpringMetricsRegistrar(springMeterRegistrar);
+    }
+
+    @Bean("respondingCompiler")
+    @DependsOn("metricsRegistrar")
+    RespondingCompiler respondingCompiler(@Autowired SiembolMetricsRegistrar metricsRegistrar) throws Exception {
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>();
         evaluatorFactories.addAll(ProvidedEvaluators.getRespondingEvaluatorFactories(properties.getEvaluatorsProperties())
                 .getAttributes()
@@ -58,22 +62,23 @@ public class ApplicationConfiguration implements DisposableBean {
     }
 
     @Bean
-    RulesService centrifugeService() throws Exception {
-        respondingCompiler = respondingCompiler();
-        rulesProvider = rulesProvider();
+    @DependsOn("rulesProvider")
+    RulesService centrifugeService(@Autowired RespondingCompiler respondingCompiler,
+                                   @Autowired RulesProvider rulesProvider) {
         streamService = properties.getInactiveStreamService()
                 ? new InactiveRulesService()
                 : new KafkaStreamRulesService(rulesProvider, properties);
         return streamService;
     }
 
-    @Bean
-    RulesProvider rulesProvider() throws Exception {
-        rulesProvider = properties.getInactiveStreamService()
+    @Bean("rulesProvider")
+    @DependsOn({"respondingCompiler", "metricsRegistrar"})
+    RulesProvider rulesProvider(
+            @Autowired RespondingCompiler respondingCompiler,
+            @Autowired SiembolMetricsRegistrar metricsRegistrar) throws Exception {
+        return properties.getInactiveStreamService()
                 ? () -> null :
-                new ZooKeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler);
-
-        return rulesProvider;
+                new ZooKeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler, metricsRegistrar);
     }
 
     @Override
