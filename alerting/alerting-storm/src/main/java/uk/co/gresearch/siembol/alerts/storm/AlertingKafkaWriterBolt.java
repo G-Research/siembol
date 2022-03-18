@@ -76,7 +76,7 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
                 LOG.debug(msg);
                 exceptions.add(msg);
                 counters.add(SiembolMetrics.ALERTING_ENGINE_RULE_PROTECTION.getMetricName());
-                counters.add(SiembolMetrics.ALERTING_RULE_PROTECTION.getMetricName(match.getFullRuleName()));
+                counters.add(SiembolMetrics.ALERTING_RULE_PROTECTION.getMetricName(match.getRuleName()));
                 continue;
             }
 
@@ -84,7 +84,7 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
                 LOG.debug(SEND_MSG_LOG, match.getAlertJson(), outputTopic);
                 messages.add(new KafkaWriterMessage(outputTopic, match.getAlertJson()));
                 counters.add(SiembolMetrics.ALERTING_ENGINE_MATCHES.getMetricName());
-                counters.add(SiembolMetrics.ALERTING_RULE_MATCHED.getMetricName(match.getFullRuleName()));
+                counters.add(SiembolMetrics.ALERTING_RULE_MATCHED.getMetricName(match.getRuleName()));
             }
 
             if (match.isCorrelationAlert()) {
@@ -99,7 +99,7 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
                         match.getCorrelationKey().get(),
                         match.getAlertJson()));
                 counters.add(SiembolMetrics.ALERTING_ENGINE_CORRELATION.getMetricName());
-                counters.add(SiembolMetrics.ALERTING_RULE_CORRELATION.getMetricName(match.getFullRuleName()));
+                counters.add(SiembolMetrics.ALERTING_RULE_CORRELATION.getMetricName(match.getRuleName()));
             }
         }
 

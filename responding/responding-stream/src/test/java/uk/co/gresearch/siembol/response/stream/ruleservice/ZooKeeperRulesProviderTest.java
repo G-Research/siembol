@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -45,7 +46,7 @@ public class ZooKeeperRulesProviderTest {
                """;
 
     private RespondingCompiler compiler;
-    private MetricFactory testMetricFactory;
+    private SiembolMetricsTestRegistrar metricsTestRegistrar;
     private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private ZooKeeperConnector rulesZooKeeperConnector;
     private ZooKeeperRulesProvider rulesProvider;
@@ -53,7 +54,7 @@ public class ZooKeeperRulesProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        testMetricFactory = new TestMetricFactory();
+        metricsTestRegistrar = new SiembolMetricsTestRegistrar();
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>(
                 ProvidedEvaluators.getRespondingEvaluatorFactories(new ProvidedEvaluatorsProperties())
                         .getAttributes()
@@ -61,7 +62,7 @@ public class ZooKeeperRulesProviderTest {
 
         compiler = new RespondingCompilerImpl.Builder()
                 .addRespondingEvaluatorFactories(evaluatorFactories)
-                .metricFactory(testMetricFactory)
+                .metricsRegistrar(metricsTestRegistrar.cachedRegistrar())
                 .build();
 
 

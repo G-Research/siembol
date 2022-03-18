@@ -137,7 +137,7 @@ public class AlertingKafkaWriterBoltTest {
         Assert.assertEquals(1,
                 metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_ENGINE_MATCHES.getMetricName()));
         Assert.assertEquals(1, metricsTestRegistrarFactory
-                .getCounterValue(SiembolMetrics.ALERTING_RULE_MATCHED.getMetricName("alert1_v1")));
+                .getCounterValue(SiembolMetrics.ALERTING_RULE_MATCHED.getMetricName("alert1")));
     }
 
     @Test
@@ -164,11 +164,11 @@ public class AlertingKafkaWriterBoltTest {
         Assert.assertEquals(1,
                 metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_ENGINE_MATCHES.getMetricName()));
         Assert.assertEquals(1, metricsTestRegistrarFactory
-                .getCounterValue(SiembolMetrics.ALERTING_RULE_MATCHED.getMetricName("alert1_v1")));
+                .getCounterValue(SiembolMetrics.ALERTING_RULE_MATCHED.getMetricName("alert1")));
         Assert.assertEquals(1, metricsTestRegistrarFactory
                 .getCounterValue(SiembolMetrics.ALERTING_ENGINE_RULE_PROTECTION.getMetricName()));
         Assert.assertEquals(1, metricsTestRegistrarFactory
-                .getCounterValue(SiembolMetrics.ALERTING_RULE_PROTECTION.getMetricName("alert1_v1")));
+                .getCounterValue(SiembolMetrics.ALERTING_RULE_PROTECTION.getMetricName("alert1")));
     }
 
     @Test
@@ -206,6 +206,6 @@ public class AlertingKafkaWriterBoltTest {
         Assert.assertEquals(1,
                 metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_ENGINE_CORRELATION.getMetricName()));
         Assert.assertEquals(1, metricsTestRegistrarFactory
-                .getCounterValue(SiembolMetrics.ALERTING_RULE_CORRELATION.getMetricName("alert1_v1")));
+                .getCounterValue(SiembolMetrics.ALERTING_RULE_CORRELATION.getMetricName("alert1")));
     }
 }
