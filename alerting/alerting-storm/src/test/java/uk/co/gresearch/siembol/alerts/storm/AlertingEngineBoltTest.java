@@ -249,7 +249,7 @@ public class AlertingEngineBoltTest {
     }
 
     @Test
-    public void upgradeOk() {
+    public void updateOk() {
         zooKeeperCallback.getValue().run();
         Assert.assertEquals(2,
                 metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()));
@@ -262,7 +262,7 @@ public class AlertingEngineBoltTest {
     }
 
     @Test
-    public void upgradeError() {
+    public void updateError() {
         when(zooKeeperConnector.getData()).thenReturn(Collections.singletonList("INVALID"));
         zooKeeperCallback.getValue().run();
         Assert.assertEquals(1,

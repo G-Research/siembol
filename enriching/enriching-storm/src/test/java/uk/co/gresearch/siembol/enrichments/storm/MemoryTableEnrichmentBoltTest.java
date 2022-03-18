@@ -132,8 +132,12 @@ public class MemoryTableEnrichmentBoltTest {
         memoryTableBolt = new MemoryTableEnrichmentBolt(attributes,
                 zooKeeperConnectorFactory,
                 fileSystemFactory,
-                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
+                metricsTestRegistrarFactory);
         memoryTableBolt.prepare(null, null, collector);
+
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table")));
     }
 
     @Test
@@ -285,7 +289,7 @@ public class MemoryTableEnrichmentBoltTest {
         memoryTableBolt = new MemoryTableEnrichmentBolt(attributes,
                 zooKeeperConnectorFactory,
                 fileSystemFactory,
-                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
+                metricsTestRegistrarFactory);
         memoryTableBolt.prepare(null, null, collector);
         Mockito.verify(fileSystem, times(0)).openInputStream(anyString());
     }
@@ -299,7 +303,7 @@ public class MemoryTableEnrichmentBoltTest {
         memoryTableBolt = new MemoryTableEnrichmentBolt(attributes,
                 zooKeeperConnectorFactory,
                 fileSystemFactory,
-                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
+                metricsTestRegistrarFactory);
         memoryTableBolt.prepare(null, null, collector);
         Mockito.verify(fileSystem, times(0)).openInputStream(anyString());
     }

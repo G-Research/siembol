@@ -126,7 +126,7 @@ public class ParsingApplicationBoltTest {
     private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         parsingAttributes = new ParsingApplicationFactoryAttributes();
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser);
 
@@ -272,7 +272,7 @@ public class ParsingApplicationBoltTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testWrongParserconfigInit() throws Exception {
+    public void testWrongParserconfigInit() {
         zooKeeperConnectorFactory = new TestingZooKeeperConnectorFactory();
         zooKeeperConnectorFactory.setData(parsersPath, "INVALID");
         parsingApplicationBolt = new ParsingApplicationBolt(attributes,
