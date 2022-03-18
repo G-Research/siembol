@@ -23,7 +23,7 @@ public enum SiembolMetrics {
     ALERTING_RULE_CORRELATION("siembol_counter_alerting_rule_for_correlation_matches_%s"),
     ALERTING_RULE_ERROR_MATCH("siembol_counter_alerting_rule_error_match_%s"),
     ALERTING_RULE_PROTECTION("siembol_counter_alerting_rule_protection_%s"),
-    ALERTING_ENGINE_MATCHES("siembol_counter_alerting_engine_rules_matches_%s"),
+    ALERTING_ENGINE_MATCHES("siembol_counter_alerting_engine_rules_matches"),
     ALERTING_ENGINE_ERROR_MATCHES("siembol_counter_alerting_engine_error_matches"),
     ALERTING_ENGINE_CORRELATION("siembol_counter_alerting_engine_rules_for_correlation_matches"),
     ALERTING_ENGINE_RULE_PROTECTION("siembol_counter_alerting_engine_rules_protection_matches"),
@@ -42,8 +42,8 @@ public enum SiembolMetrics {
     SIEMBOL_SYNC_RELEASE("siembol_counter_sync_release_%s"),
     SIEMBOL_SYNC_ADMIN_CONFIG("siembol_counter_sync_admin_config_%s"),
     SIEMBOL_SYNC_RULES_VERSION("siembol_counter_sync_config_version_%s"),
-    CONFIG_EDITOR_REST_RELEASE_PR_SERVICE("siembol_counter_topology_%s_%s_killed"),
-    CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_topology_%s_%s_killed");
+    CONFIG_EDITOR_REST_RELEASE_PR_SERVICE("siembol_counter_release_pr_%s"),
+    CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s");
 
     private final String formatStringName;
 
