@@ -2,11 +2,11 @@ package uk.co.gresearch.siembol.common.metrics;
 
 public enum SiembolMetrics {
     PARSING_CONFIGS_UPDATE("siembol_counter_parsing_configs_update"),
+    PARSING_CONFIGS_ERROR_UPDATE("siembol_counter_parsing_configs_error_update"),
     PARSING_CONFIGS_UPDATE_VERSION("siembol_gauge_parsing_configs_update"),
 
     PARSING_SOURCE_TYPE_PARSED_MESSAGES("siembol_counter_parsed_messages_%s"),
     PARSING_SOURCE_TYPE_FILTERED_MESSAGES("siembol_counter_filtered_messages_%s"),
-    PARSING_SOURCE_TYPE_ERROR_MESSAGES("siembol_counter_error_messages_%s"),
 
     PARSING_APP_PARSED_MESSAGES("siembol_counter_app_parsed_messages"),
     PARSING_APP_FILTERED_MESSAGES("siembol_counter_app_filtered_messages"),

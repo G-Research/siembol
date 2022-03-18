@@ -51,9 +51,8 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLE = "Invalid type in tuple";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
-    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zooKeeperAttributes;
     private final String parsingAppSpecification;
-    private final String parsingApplicationName;
 
 
     private OutputCollector collector;
@@ -65,17 +64,19 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                            ParsingApplicationFactoryAttributes parsingAttributes,
                            ZooKeeperConnectorFactory zooKeeperConnectorFactory,
-                           StormMetricsRegistrarFactory metricsFactory) throws Exception {
-        this.zookeperAttributes = attributes.getZookeeperAttributes();
+                           StormMetricsRegistrarFactory metricsFactory) {
+        this.zooKeeperAttributes = attributes.getZookeeperAttributes();
         this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
-        this.parsingApplicationName = parsingAttributes.getName();
         this.metricsFactory = metricsFactory;
     }
 
     public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
-                                  ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this(attributes, parsingAttributes, new ZooKeeperConnectorFactoryImpl(), new StormMetricsRegistrarFactoryImpl());
+                                  ParsingApplicationFactoryAttributes parsingAttributes) {
+        this(attributes,
+                parsingAttributes,
+                new ZooKeeperConnectorFactoryImpl(),
+                new StormMetricsRegistrarFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")
@@ -84,7 +85,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes);
             metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateParsers();
@@ -123,7 +124,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             LOG.info(PARSERS_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
-            return;
+            metricsRegistrar.registerCounter(SiembolMetrics.PARSING_CONFIGS_ERROR_UPDATE.getMetricName()).increment();
         }
     }
 
@@ -163,8 +164,6 @@ public class ParsingApplicationBolt extends BaseRichBolt {
                         case ERROR:
                             counters.add(SiembolMetrics.PARSING_APP_ERROR_MESSAGES
                                     .getMetricName());
-                            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_ERROR_MESSAGES
-                                    .getMetricName(result.getSourceType()));
                             break;
                     }
                 }));

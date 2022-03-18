@@ -88,7 +88,7 @@ public class StormParsingApplication {
     public static StormTopology createTopology(StormParsingApplicationAttributesDto stormAppAttributes,
                                                ParsingApplicationFactoryAttributes parsingAttributes,
                                                ZooKeeperConnectorFactory zooKeeperConnectorFactory,
-                                               StormMetricsRegistrarFactory metricsFactory) throws Exception {
+                                               StormMetricsRegistrarFactory metricsFactory) {
         stormAppAttributes.getStormAttributes().getKafkaSpoutProperties().getRawMap()
                 .put(GROUP_ID_CONFIG, stormAppAttributes.getGroupId(parsingAttributes.getName()));
         stormAppAttributes.getKafkaBatchWriterAttributes().getProducerProperties().getRawMap()
