@@ -16,6 +16,7 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
 import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
@@ -57,14 +58,14 @@ public class AlertingEngineBolt extends BaseRichBolt {
     private ZooKeeperCompositeConnector zooKeeperConnector;
     private SiembolMetricsRegistrar metricsRegistrar;
     private final ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
-    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zooKeeperAttributes;
     private final StormMetricsRegistrarFactory metricsFactory;
 
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes,
                        ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory,
                        StormMetricsRegistrarFactory metricsFactory) {
-        this.zookeperAttributes = attributes.getZookeperAttributes();
+        this.zooKeeperAttributes = attributes.getZookeperAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
         this.metricsFactory = metricsFactory;
     }
@@ -79,7 +80,7 @@ public class AlertingEngineBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(ENGINE_INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes);
             metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateRules();
@@ -106,10 +107,11 @@ public class AlertingEngineBolt extends BaseRichBolt {
             AlertingEngine engine = getAlertingEngine(rulesList);
             AlertingEngine.set(engine);
 
+            metricsRegistrar.registerCounter(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()).increment();
             LOG.info(ENGINE_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
-            return;
+            metricsRegistrar.registerCounter(SiembolMetrics.ALERTING_RULES_ERROR_UPDATE.getMetricName()).increment();
         }
     }
 

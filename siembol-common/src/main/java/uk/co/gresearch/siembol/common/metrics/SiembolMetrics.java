@@ -13,12 +13,16 @@ public enum SiembolMetrics {
     PARSING_APP_ERROR_MESSAGES("siembol_counter_app_error_messages"),
 
     ENRICHMENT_RULES_UPDATE("siembol_counter_enrichment_rules_update"),
+    ENRICHMENT_RULES_ERROR_UPDATE("siembol_counter_enrichment_rules_update"),
     ENRICHMENT_RULES_UPDATE_VERSION("siembol_gauge_enrichment_rules_update"),
     ENRICHMENT_RULE_APPLIED("siembol_counter_enrichment_rule_applied_%s"),
     ENRICHMENT_TABLE_APPLIED("siembol_counter_enrichment_table_applied_%s"),
     ENRICHMENT_TABLE_UPDATED("siembol_counter_enrichment_table_updated_%s"),
     ENRICHMENT_TABLE_UPDATE_ERROR("siembol_counter_enrichment_table_error_update_%s"),
 
+    ALERTING_RULES_UPDATE("siembol_counter_alerting_rules_update"),
+    ALERTING_RULES_ERROR_UPDATE("siembol_counter_alerting_rules_error_update"),
+    ALERTING_RULES_UPDATE_VERSION("siembol_gauge_enrichment_rules_update"),
     ALERTING_RULE_MATCHED("siembol_counter_alerting_rule_matches_%s"),
     ALERTING_RULE_CORRELATION("siembol_counter_alerting_rule_for_correlation_matches_%s"),
     ALERTING_RULE_ERROR_MATCH("siembol_counter_alerting_rule_error_match_%s"),

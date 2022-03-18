@@ -13,8 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
-import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperCompositeConnector;
@@ -28,9 +27,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class AlertingEngineBoltTest {
@@ -118,18 +115,19 @@ public class AlertingEngineBoltTest {
     private OutputCollector collector;
     private AlertingEngineBolt AlertingEngineBolt;
     private AlertingStormAttributesDto stormAttributes;
-    private ZooKeeperAttributesDto zookeperAttributes;
+    private ZooKeeperAttributesDto zooKeeperAttributes;
 
     private ZooKeeperCompositeConnector zooKeeperConnector;
     private ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
     private ArgumentCaptor<Values> argumentEmitCaptor;
+    private ArgumentCaptor<Runnable> zooKeeperCallback;
     private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
 
     @Before
     public void setUp() throws Exception {
         stormAttributes = new AlertingStormAttributesDto();
-        zookeperAttributes = new ZooKeeperAttributesDto();
-        stormAttributes.setZookeperAttributes(zookeperAttributes);
+        zooKeeperAttributes = new ZooKeeperAttributesDto();
+        stormAttributes.setZookeperAttributes(zooKeeperAttributes);
 
         tuple = Mockito.mock(Tuple.class);
         collector = Mockito.mock(OutputCollector.class);
@@ -137,8 +135,11 @@ public class AlertingEngineBoltTest {
         zooKeeperConnectorFactory = Mockito.mock(ZooKeeperCompositeConnectorFactory.class);
 
         zooKeeperConnector = Mockito.mock(ZooKeeperCompositeConnector.class);
-        when(zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes)).thenReturn(zooKeeperConnector);
+        when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes)).thenReturn(zooKeeperConnector);
         when(zooKeeperConnector.getData()).thenReturn(Collections.singletonList(simpleTestRules));
+
+        zooKeeperCallback = ArgumentCaptor.forClass(Runnable.class);
+        doNothing().when(zooKeeperConnector).addCacheListener(zooKeeperCallback.capture());
 
         when(tuple.getStringByField(eq(TupleFieldNames.EVENT.toString()))).thenReturn(event.trim());
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
@@ -147,8 +148,11 @@ public class AlertingEngineBoltTest {
 
         AlertingEngineBolt = new AlertingEngineBolt(stormAttributes,
                 zooKeeperConnectorFactory,
-                metricsTestRegistrarFactory::createSiembolMetricsRegistrar);
+                metricsTestRegistrarFactory);
         AlertingEngineBolt.prepare(null, null, collector);
+
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()));
     }
 
     @Test
@@ -160,7 +164,7 @@ public class AlertingEngineBoltTest {
         Assert.assertTrue(values.get(0) instanceof AlertMessages);
         Assert.assertTrue(values.get(1) instanceof ExceptionMessages);
 
-        AlertMessages alerts = (AlertMessages) values.get(0);
+        AlertMessages alerts = (AlertMessages)values.get(0);
         Assert.assertEquals(1, alerts.size());
         Assert.assertTrue(alerts.get(0).isVisibleAlert());
         Assert.assertEquals("siembol_alert_generic_v1", alerts.get(0).getFullRuleName());
@@ -182,6 +186,9 @@ public class AlertingEngineBoltTest {
 
     @Test
     public void testNoMatchRule() {
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()));
+
         when(tuple.getStringByField(eq(TupleFieldNames.EVENT.toString())))
                 .thenReturn(event.replaceAll("is_alert", "unknown"));
 
@@ -202,7 +209,7 @@ public class AlertingEngineBoltTest {
         Assert.assertTrue(values.get(0) instanceof AlertMessages);
         Assert.assertTrue(values.get(1) instanceof ExceptionMessages);
 
-        AlertMessages alerts = (AlertMessages) values.get(0);
+        AlertMessages alerts = (AlertMessages)values.get(0);
         Assert.assertEquals(1, alerts.size());
         Assert.assertTrue(alerts.get(0).isCorrelationAlert());
         Assert.assertFalse(alerts.get(0).isVisibleAlert());
@@ -236,8 +243,31 @@ public class AlertingEngineBoltTest {
         Assert.assertEquals(2, values.size());
         Assert.assertTrue(values.get(0) instanceof AlertMessages);
         Assert.assertTrue(values.get(1) instanceof ExceptionMessages);
-        Assert.assertTrue(((AlertMessages) values.get(0)).isEmpty());
-        Assert.assertEquals(1, ((ExceptionMessages) values.get(1)).size());
-        Assert.assertTrue(((ExceptionMessages) values.get(1)).get(0).contains("JsonParseException"));
+        Assert.assertTrue(((AlertMessages)values.get(0)).isEmpty());
+        Assert.assertEquals(1, ((ExceptionMessages)values.get(1)).size());
+        Assert.assertTrue(((ExceptionMessages)values.get(1)).get(0).contains("JsonParseException"));
+    }
+
+    @Test
+    public void upgradeOk() {
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(2,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()));
+
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(3,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()));
+        verify(zooKeeperConnector, times(3)).getData();
+
+    }
+
+    @Test
+    public void upgradeError() {
+        when(zooKeeperConnector.getData()).thenReturn(Collections.singletonList("INVALID"));
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_RULES_ERROR_UPDATE.getMetricName()));
     }
 }

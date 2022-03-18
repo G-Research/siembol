@@ -16,8 +16,6 @@ import uk.co.gresearch.siembol.alerts.storm.model.AlertMessage;
 import uk.co.gresearch.siembol.alerts.storm.model.AlertMessages;
 import uk.co.gresearch.siembol.alerts.storm.model.ExceptionMessages;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
-import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
-import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 
