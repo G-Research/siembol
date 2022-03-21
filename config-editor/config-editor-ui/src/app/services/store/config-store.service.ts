@@ -619,18 +619,7 @@ export class ConfigStoreService {
     return state.filterMyConfigs 
       || state.filterUnreleased 
       || state.filterUpgradable
-      || this.isCheckboxFilterPresent(state.enabledCheckboxFilters);
-  }
-
-  isCheckboxFilterPresent(filters: EnabledCheckboxFilters): boolean {
-    for (const checkboxGroup of Object.values(filters)) {
-      for (const checked of Object.values(checkboxGroup)) {
-        if (checked) {
-          return true;
-        }
-      }
-    }
-    return false;
+      || this.isGroupCheckboxFilterPresent(state.enabledCheckboxFilters);
   }
 
   doesExternalFilterPass(node: RowNode): boolean {
@@ -644,10 +633,21 @@ export class ConfigStoreService {
     if (state.filterUpgradable && (node.data.releasedVersion === node.data.version || node.data.releasedVersion === 0)) {
       return false;
     } 
-    return this.doExternalCheckboxesPass(node);
+    return this.doGroupCheckboxesPass(node);
   }
 
-  doExternalCheckboxesPass(node: RowNode): boolean {
+  private isGroupCheckboxFilterPresent(filters: EnabledCheckboxFilters): boolean {
+    for (const checkboxGroup of Object.values(filters)) {
+      for (const checked of Object.values(checkboxGroup)) {
+        if (checked) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private doGroupCheckboxesPass(node: RowNode): boolean {
     const state = this.store.getValue();
     for (const [groupTitle, checkboxes] of Object.entries(state.enabledCheckboxFilters)) {
       if (!this.doesGroupCheckboxFilterPass(groupTitle, checkboxes, node)) {
@@ -657,11 +657,7 @@ export class ConfigStoreService {
     return true;
   }
 
-  doesGroupCheckboxFilterPass(
-    groupTitle: string, 
-    checkboxes: Record<string, boolean>, 
-    node: RowNode
-  ): boolean {
+  private doesGroupCheckboxFilterPass(groupTitle: string, checkboxes: Record<string, boolean>, node: RowNode): boolean {
     for (const [checkBoxName, checked] of Object.entries(checkboxes)) {
       if (checked) {
         if (!this.doesSingleCheckboxFilterPass(groupTitle, checkBoxName, node)) {
@@ -673,7 +669,7 @@ export class ConfigStoreService {
   }
   
 
-  doesSingleCheckboxFilterPass(groupTitle: string, checkboxName: string, node: RowNode): boolean {
+  private doesSingleCheckboxFilterPass(groupTitle: string, checkboxName: string, node: RowNode): boolean {
     const filter = this.metaDataMap.checkboxes[groupTitle][checkboxName];
     for (const value of filter.values) {
       if (node.data.labels.find(l => l.toLowerCase() === filter.label + ":" + value)){

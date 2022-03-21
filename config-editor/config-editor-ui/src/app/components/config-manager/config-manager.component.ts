@@ -17,7 +17,7 @@ import { CheckboxEvent, ConfigManagerRow, Importers, Type } from '@app/model/con
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
-import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent, RowNode } from '@ag-grid-community/core';
+import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent, RowNode, GridApi } from '@ag-grid-community/core';
 import { CheckboxConfig } from '@app/model/ui-metadata-map';
 
 @Component({
@@ -55,7 +55,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   gridOptions = {
     tooltipShowDelay: 100,
     suppressMoveWhenRowDragging: true,
-    rowDragManaged:true,
+    rowDragManaged: true,
     rowSelection: 'single',
     suppressClickEdit: true,
     rowHeight: 50,
@@ -72,11 +72,11 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
       this.api = params.api;
     },
     isExternalFilterPresent: this.isExternalFilterPresent.bind(this),
-   doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
+    doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
   };
-  api;
+  api: GridApi;
   checkboxFilters: CheckboxConfig;
-  private countChangesInRelease$ : Observable<number>;
+  countChangesInRelease$ : Observable<number>;
   private rowMoveStartIndex: number;
 
   private ngUnsubscribe = new Subject<void>();
