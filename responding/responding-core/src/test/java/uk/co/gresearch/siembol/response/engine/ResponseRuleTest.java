@@ -22,9 +22,9 @@ public class ResponseRuleTest {
     private final int ruleVerion = 1;
     private final String fullRuleName = "Test_rule_v1";
 
-    private final String metchesMetricName = SiembolMetrics.RESPONSE_RULE_MATCHED.getMetricName(ruleName);
-    private final String errorMetricName = SiembolMetrics.RESPONSE_RULE_ERROR_MATCH.getMetricName(ruleName);
-    private final String filteredMetricName = SiembolMetrics.RESPONSE_RULE_FILTERED.getMetricName(ruleName);
+    private final String metchesMetricName = SiembolMetrics.RESPONSE_RULE_MATCHES.getMetricName(ruleName);
+    private final String errorMetricName = SiembolMetrics.RESPONSE_RULE_ERROR_MATCHES.getMetricName(ruleName);
+    private final String filteredMetricName = SiembolMetrics.RESPONSE_RULE_FILTERED_ALERTS.getMetricName(ruleName);
 
     private ResponseAlert alert;
     private Evaluable evaluator;

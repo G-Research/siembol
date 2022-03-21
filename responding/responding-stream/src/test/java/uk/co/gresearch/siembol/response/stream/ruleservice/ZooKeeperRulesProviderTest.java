@@ -138,6 +138,6 @@ public class ZooKeeperRulesProviderTest {
         Assert.assertEquals(1,
                 metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName()));
         Assert.assertEquals(1,
-                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_UPDATE_ERROR.getMetricName()));
+                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_ERROR_UPDATE.getMetricName()));
     }
 }

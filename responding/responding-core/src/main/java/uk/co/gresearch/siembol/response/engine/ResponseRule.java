@@ -126,13 +126,13 @@ public class ResponseRule implements Evaluable {
 
             fullRuleName = String.format(FULL_RULE_NAME_FORMAT_MSG, ruleName, ruleVersion);
             this.matchesCounter = metricsRegistrar
-                    .registerCounter(SiembolMetrics.RESPONSE_RULE_MATCHED.getMetricName(ruleName));
+                    .registerCounter(SiembolMetrics.RESPONSE_RULE_MATCHES.getMetricName(ruleName));
 
             this.filtersCounter = metricsRegistrar
-                    .registerCounter(SiembolMetrics.RESPONSE_RULE_FILTERED.getMetricName(ruleName));
+                    .registerCounter(SiembolMetrics.RESPONSE_RULE_FILTERED_ALERTS.getMetricName(ruleName));
 
             this.errorsCounter = metricsRegistrar
-                    .registerCounter(SiembolMetrics.RESPONSE_RULE_ERROR_MATCH.getMetricName(ruleName));
+                    .registerCounter(SiembolMetrics.RESPONSE_RULE_ERROR_MATCHES.getMetricName(ruleName));
 
             return new ResponseRule(this);
         }

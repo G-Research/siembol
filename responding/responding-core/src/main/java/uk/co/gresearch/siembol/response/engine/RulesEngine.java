@@ -106,9 +106,9 @@ public class RulesEngine implements ResponseEngine {
             }
 
             messagesCounter = metricsRegistrar
-                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_PROCESSED.getMetricName());
+                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_PROCESSED_ALERTS.getMetricName());
             filtersCounter = metricsRegistrar
-                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_FILTERED.getMetricName());
+                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_FILTERED_ALERTS.getMetricName());
             errorsCounter = metricsRegistrar
                     .registerCounter(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName());
             noMatchesCounter = metricsRegistrar

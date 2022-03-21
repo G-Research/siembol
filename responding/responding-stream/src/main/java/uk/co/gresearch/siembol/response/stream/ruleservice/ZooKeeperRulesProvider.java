@@ -51,7 +51,7 @@ public class ZooKeeperRulesProvider implements RulesProvider {
         LOG.info(INIT_START);
 
         this.updateCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName());
-        this.updateErrorCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_UPDATE_ERROR.getMetricName());
+        this.updateErrorCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_ERROR_UPDATE.getMetricName());
         this.respondingCompiler = respondingCompiler;
         zooKeeperConnector = factory.createZookeeperConnector(zookeperAttributes);
 
