@@ -32,13 +32,13 @@ export class ConfigSchemaService extends SchemaService {
     return this._schema;
   }
 
-  createDeploymentSchema(): JSONSchema7 {
+  createReleaseSchema(): JSONSchema7 {
     const depSchema = cloneDeep(this.originalSchema);
-    depSchema.properties[this.uiMetadata.deployment.config_array] = {};
-    delete depSchema.properties[this.uiMetadata.deployment.config_array];
-    delete depSchema.properties[this.uiMetadata.deployment.version];
+    depSchema.properties[this.uiMetadata.release.config_array] = {};
+    delete depSchema.properties[this.uiMetadata.release.config_array];
+    delete depSchema.properties[this.uiMetadata.release.version];
     depSchema.required = depSchema.required.filter(element => {
-      if (element !== this.uiMetadata.deployment.version && element !== this.uiMetadata.deployment.config_array) {
+      if (element !== this.uiMetadata.release.version && element !== this.uiMetadata.release.config_array) {
         return true;
       }
 

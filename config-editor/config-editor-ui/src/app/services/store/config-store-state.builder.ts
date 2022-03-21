@@ -1,10 +1,10 @@
 import { ConfigStoreState } from '@app/model/store-state';
 import { cloneDeep } from 'lodash';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
-import { Config, Deployment, FileHistory } from '../../model';
+import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig } from '@app/model/config-model';
+import { AdminConfig, ConfigManagerRow } from '@app/model/config-model';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -18,8 +18,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  deployment(deployment: Deployment) {
-    this.state.deployment = deployment;
+  release(release: Release) {
+    this.state.release = release;
     return this;
   }
 
@@ -28,22 +28,22 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  initialDeployment(deployment: Deployment) {
-    this.state.initialDeployment = cloneDeep(deployment);
+  initialRelease(release: Release) {
+    this.state.initialRelease = cloneDeep(release);
     return this;
   }
 
-  deploymentHistory(deploymentHistory: FileHistory[]) {
-    this.state.deploymentHistory = deploymentHistory;
+  releaseHistory(releaseHistory: FileHistory[]) {
+    this.state.releaseHistory = releaseHistory;
     return this;
   }
 
   detectOutdatedConfigs(): ConfigStoreStateBuilder {
     this.state.configs.forEach(config => {
-      const matchingConfig = this.state.deployment.configs.find(r => !r.isNew && r.name === config.name);
+      const matchingConfig = this.state.release.configs.find(r => !r.isNew && r.name === config.name);
       if (matchingConfig) {
-        config.isDeployed = true;
-        matchingConfig.isDeployed = true;
+        config.isReleased = true;
+        matchingConfig.isReleased = true;
         if (matchingConfig.version !== config.version) {
           config.versionFlag = config.version;
           matchingConfig.versionFlag = config.version;
@@ -52,7 +52,7 @@ export class ConfigStoreStateBuilder {
           matchingConfig.versionFlag = -1;
         }
       } else {
-        config.isDeployed = false;
+        config.isReleased = false;
         config.versionFlag = -1;
       }
     });
@@ -90,10 +90,10 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  reorderConfigsByDeployment(): ConfigStoreStateBuilder {
+  reorderConfigsByRelease(): ConfigStoreStateBuilder {
     let pos = 0;
     this.state.sortedConfigs = cloneDeep(this.state.configs);
-    for (const r of this.state.deployment.configs) {
+    for (const r of this.state.release.configs) {
       for (let i = pos; i < this.state.sortedConfigs.length; ++i) {
         if (this.state.sortedConfigs[i].name === r.name) {
           const tmp = this.state.sortedConfigs[pos];
@@ -114,25 +114,25 @@ export class ConfigStoreStateBuilder {
 
   computeFiltered(user: string): ConfigStoreStateBuilder {
     this.state.filteredConfigs = cloneDeep(this.state.sortedConfigs);
-    this.state.filteredDeployment = cloneDeep(this.state.deployment);
+    this.state.filteredRelease = cloneDeep(this.state.release);
 
-    if (this.state.filterUndeployed) {
-      this.state.filteredDeployment.configs = [];
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isDeployed);
+    if (this.state.filterUnreleased) {
+      this.state.filteredRelease.configs = [];
+      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isReleased);
     }
 
     if (this.state.filterUpgradable) {
-      this.state.filteredDeployment.configs = this.state.filteredDeployment.configs.filter(d => d.versionFlag > 0);
+      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(d => d.versionFlag > 0);
       this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.versionFlag > 0);
     }
 
     if (this.state.filterMyConfigs) {
-      this.state.filteredDeployment.configs = this.state.filteredDeployment.configs.filter(r => r.author === user);
+      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(r => r.author === user);
       this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.author === user);
     }
 
     if (this.state.searchTerm !== undefined && this.state.searchTerm !== '') {
-      this.state.filteredDeployment.configs = this.state.filteredDeployment.configs.filter(c => this.filterSearchTerm(c));
+      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(c => this.filterSearchTerm(c));
       this.state.filteredConfigs = this.state.filteredConfigs.filter(c => this.filterSearchTerm(c));
     }
 
@@ -144,8 +144,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  filterUndeployed(filterUndeployed: boolean): ConfigStoreStateBuilder {
-    this.state.filterUndeployed = filterUndeployed;
+  filterUnreleased(filterUnreleased: boolean): ConfigStoreStateBuilder {
+    this.state.filterUnreleased = filterUnreleased;
     return this;
   }
 
@@ -154,51 +154,43 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  addConfigToDeployment(filteredIndex: number) {
-    if (filteredIndex < this.state.filteredDeployment.configs.length) {
+  addConfigToRelease(filteredIndex: number) {
+    if (filteredIndex < this.state.filteredRelease.configs.length) {
       return this;
     }
 
     const configToAdd = cloneDeep(this.state.filteredConfigs[filteredIndex]);
-    this.state.deployment.configs.push(configToAdd);
+    this.state.release.configs.push(configToAdd);
     return this;
   }
 
-  addConfigToDeploymenInPosition(filteredConfigIndex: number, filteredDeploymentIndex: number) {
-    if (filteredConfigIndex < this.state.filteredDeployment.configs.length) {
-      return this.moveConfigInDeployment(filteredConfigIndex, filteredDeploymentIndex);
+  removeConfigFromRelease(filteredIndex: number) {
+    this.state.release.configs = this.state.release.configs.filter(
+      x => x.name !== this.state.filteredRelease.configs[filteredIndex].name
+    );
+    return this;
+  }
+
+  moveConfigInRelease(configName: string, filteredCurrentIndex: number) {
+    const previousIndex = this.state.release.configs.findIndex(
+      e => e.name === configName
+    );
+    const currentIndex = this.state.release.configs.findIndex(
+      e => e.name === this.state.filteredRelease.configs[filteredCurrentIndex]?.name
+    );
+    if (currentIndex === -1) {
+      return this;
     }
-
-    const configToAdd = cloneDeep(this.state.filteredConfigs[filteredConfigIndex]);
-    this.state.deployment.configs.push(configToAdd);
-    this.state.filteredDeployment.configs.push(configToAdd);
-    return this.moveConfigInDeployment(this.state.filteredDeployment.configs.length - 1, filteredDeploymentIndex);
-  }
-
-  removeConfigFromDeployment(filteredIndex: number) {
-    this.state.deployment.configs = this.state.deployment.configs.filter(
-      x => x.name !== this.state.filteredDeployment.configs[filteredIndex].name
-    );
+    moveItemInArray(this.state.release.configs, previousIndex, currentIndex);
     return this;
   }
 
-  moveConfigInDeployment(filteredPreviousIndex: number, filteredCurrentIndex: number) {
-    const previousIndex = this.state.deployment.configs.findIndex(
-      e => e.name === this.state.filteredDeployment.configs[filteredPreviousIndex].name
-    );
-    const currentIndex = this.state.deployment.configs.findIndex(
-      e => e.name === this.state.filteredDeployment.configs[filteredCurrentIndex].name
-    );
-    moveItemInArray(this.state.deployment.configs, previousIndex, currentIndex);
-    return this;
-  }
-
-  upgradeConfigInDeployment(filteredIndex: number) {
-    const configName = this.state.filteredDeployment.configs[filteredIndex].name;
-    const originalDeploymentIndex = this.state.deployment.configs.findIndex(d => d.name === configName);
+  upgradeConfigInRelease(filteredIndex: number) {
+    const configName = this.state.filteredRelease.configs[filteredIndex].name;
+    const originalReleaseIndex = this.state.release.configs.findIndex(d => d.name === configName);
 
     const configToUpgrade = this.state.configs.find(c => c.name === configName);
-    this.state.deployment.configs[originalDeploymentIndex] = cloneDeep(configToUpgrade);
+    this.state.release.configs[originalReleaseIndex] = cloneDeep(configToUpgrade);
     return this;
   }
 
@@ -229,6 +221,37 @@ export class ConfigStoreStateBuilder {
 
   build(): ConfigStoreState {
     return this.state;
+  }
+
+  incrementChangesInRelease() {
+    this.state.countChangesInRelease += 1;
+    return this;
+  }
+
+  resetChangesInRelease() {
+    this.state.countChangesInRelease = 0;
+    return this;
+  }
+
+  computeConfigManagerRowData() {
+    this.state.configManagerRowData = this.state.filteredConfigs.map(
+      (config: Config) => this.getRowFromConfig(config, this.state.filteredRelease)
+    );
+    return this;
+  }
+
+  private getRowFromConfig(config: Config, release: Release): ConfigManagerRow {
+    const releaseConfig = release.configs.find(x => x.name === config.name);
+    const releaseVersion = releaseConfig? releaseConfig.version : 0;
+    return ({
+      author: config.author, 
+      version: config.version, 
+      config_name: config.name, 
+      releasedVersion:  releaseVersion,
+      configHistory: config.fileHistory,
+      labels_: config.tags,
+      testCasesCount: config.testCases.length,
+    });
   }
 
   private filterSearchTerm(config: any) {

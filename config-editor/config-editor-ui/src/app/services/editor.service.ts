@@ -85,9 +85,9 @@ export class EditorService {
           )
         )
       )
-      .pipe(map(([configs, deployment, originalSchema, testCaseMap, testSpecSchema]) => {
-        if (configs && deployment && originalSchema && testCaseMap && testSpecSchema) {
-          configStore.initialise(configs, deployment, testCaseMap);
+      .pipe(map(([configs, release, originalSchema, testCaseMap, testSpecSchema]) => {
+        if (configs && release && originalSchema && testCaseMap && testSpecSchema) {
+          configStore.initialise(configs, release, testCaseMap);
           return {
             adminMode: false,
             configLoader,

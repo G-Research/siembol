@@ -1,7 +1,7 @@
 import { mockParserConfigData } from './configs';
 
 
-export const mockRelease =
+export const mockReleaseFiles =
 {
     files: [
         {
