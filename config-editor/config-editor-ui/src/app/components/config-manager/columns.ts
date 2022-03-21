@@ -16,7 +16,7 @@ const storeColumns = [
   },
   { 
     field: "author",
-    maxWidth: 120,
+    maxWidth: 125,
   },
   {
     field: "labels",

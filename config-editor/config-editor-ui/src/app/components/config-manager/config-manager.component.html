@@ -93,6 +93,9 @@
                 [gridOptions]="gridOptions"
                 [getRowNodeId]="getRowNodeId"
             ></ag-grid-angular>
+            <p class="grid-footer ag-theme-alpine-dark">
+                Filtered: {{ api?.getDisplayedRowCount()}} Total: {{(allConfigs$ | async).length}}
+            </p>
         </mat-drawer-content> 
     </mat-drawer-container>
 </block-ui>
