@@ -27,11 +27,16 @@ import { CheckboxConfig } from "@app/model/ui-metadata-map";
       padding: 10px 30px;
       outline: 2;
     }
-    mat-checkbox {
+    .mat-checkbox {
       display: block;
+      padding-left: 5px;
     }
-    mat-list {
-      margin: 5px 10px
+    .mat-list {
+      margin: 5px 10px;
+    }
+    .mat-subheader {
+      font-size: 20px;
+      padding: 0;
     }
     `,
   ],

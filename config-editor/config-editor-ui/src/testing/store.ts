@@ -17,9 +17,11 @@ export const mockStore: ConfigStoreState = {
   filterUpgradable: false,
   initialRelease: cloneDeep(mockRelease),
   releaseSubmitInFlight: false,
+  searchTerm: '',
   sortedConfigs: [cloneDeep(mockParserConfig), cloneDeep(mockParserConfigCloned)],
   testCaseMap: cloneDeep(mockTestCaseMap),
   pastedConfig: undefined,
-  configRowData: [],
+  configManagerRowData: [],
   countChangesInRelease: 0,
+  enabledCheckboxFilters: {},
 };

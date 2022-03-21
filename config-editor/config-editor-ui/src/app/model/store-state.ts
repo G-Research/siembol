@@ -19,6 +19,6 @@ export interface ConfigStoreState {
   adminConfig: AdminConfig;
   pastedConfig: any;
   countChangesInRelease: number;
-  configRowData: ConfigManagerRow[];
+  configManagerRowData: ConfigManagerRow[];
   enabledCheckboxFilters: EnabledCheckboxFilters;
 }

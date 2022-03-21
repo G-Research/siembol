@@ -110,7 +110,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.importers$ = this.configStore.importers$;
     this.useImporters = this.configService.useImporters;
 
-    this.rowData$ = this.configStore.configRowData$;
+    this.rowData$ = this.configStore.configManagerRowData$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
 
     this.checkboxFilters = this.editorService.metaDataMap.checkboxes;

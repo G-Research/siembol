@@ -212,8 +212,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  computeRowData() {
-    this.state.configRowData = this.state.sortedConfigs.map(
+  computeConfigManagerRowData() {
+    this.state.configManagerRowData = this.state.sortedConfigs.map(
       (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
