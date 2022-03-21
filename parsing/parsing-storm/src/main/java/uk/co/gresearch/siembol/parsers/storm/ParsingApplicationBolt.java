@@ -12,10 +12,15 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.storm.SiembolMetricsCounters;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
@@ -46,24 +51,32 @@ public class ParsingApplicationBolt extends BaseRichBolt {
     private static final String INVALID_TYPE_IN_TUPLE = "Invalid type in tuple";
 
     private final AtomicReference<ParsingApplicationParser> parsingApplicationParser = new AtomicReference<>();
-    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zooKeeperAttributes;
     private final String parsingAppSpecification;
+
 
     private OutputCollector collector;
     private ZooKeeperConnector zooKeeperConnector;
+    private SiembolMetricsRegistrar metricsRegistrar;
     private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private final StormMetricsRegistrarFactory metricsFactory;
 
     ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
                            ParsingApplicationFactoryAttributes parsingAttributes,
-                           ZooKeeperConnectorFactory zooKeeperConnectorFactory) throws Exception {
-        this.zookeperAttributes = attributes.getZookeeperAttributes();
+                           ZooKeeperConnectorFactory zooKeeperConnectorFactory,
+                           StormMetricsRegistrarFactory metricsFactory) {
+        this.zooKeeperAttributes = attributes.getZookeeperAttributes();
         this.parsingAppSpecification = parsingAttributes.getApplicationParserSpecification();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
+        this.metricsFactory = metricsFactory;
     }
 
     public ParsingApplicationBolt(StormParsingApplicationAttributesDto attributes,
-                                  ParsingApplicationFactoryAttributes parsingAttributes) throws Exception {
-        this(attributes, parsingAttributes, new ZooKeeperConnectorFactoryImpl());
+                                  ParsingApplicationFactoryAttributes parsingAttributes) {
+        this(attributes,
+                parsingAttributes,
+                new ZooKeeperConnectorFactoryImpl(),
+                new StormMetricsRegistrarFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")
@@ -72,12 +85,14 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes);
+            metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateParsers();
             if (parsingApplicationParser.get() == null) {
                 throw new IllegalStateException(ERROR_INIT_MESSAGE);
             }
+
             zooKeeperConnector.addCacheListener(this::updateParsers);
             LOG.info(INIT_COMPLETED);
         } catch (Exception e) {
@@ -104,12 +119,12 @@ public class ParsingApplicationBolt extends BaseRichBolt {
                 throw new IllegalStateException(errorMsg);
             }
 
+            metricsRegistrar.registerCounter(SiembolMetrics.PARSING_CONFIGS_UPDATE.getMetricName()).increment();
             parsingApplicationParser.set(result.getAttributes().getApplicationParser());
-
             LOG.info(PARSERS_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
-            return;
+            metricsRegistrar.registerCounter(SiembolMetrics.PARSING_CONFIGS_ERROR_UPDATE.getMetricName()).increment();
         }
     }
 
@@ -126,11 +141,37 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
         byte[] log = (byte[])logObj;
         ArrayList<ParsingApplicationResult> results = currentParser.parse(source, metadata, log);
-        if (!results.isEmpty()) {
-            KafkaWriterMessages kafkaWriterMessages = new KafkaWriterMessages();
-            results.forEach(x -> x.getMessages().forEach(y ->
-                    kafkaWriterMessages.add(new KafkaWriterMessage(x.getTopic(), y))));
-            collector.emit(tuple, new Values(kafkaWriterMessages));
+
+        var kafkaWriterMessages = new KafkaWriterMessages();
+        var counters = new SiembolMetricsCounters();
+        for (var result : results) {
+            if (ParsingApplicationResult.ResultType.FILTERED.equals(result.getResultType())) {
+                metricsRegistrar.registerCounter(
+                                SiembolMetrics.PARSING_SOURCE_TYPE_FILTERED_MESSAGES.getMetricName(result.getSourceType()))
+                        .increment();
+                metricsRegistrar.registerCounter(SiembolMetrics.PARSING_APP_FILTERED_MESSAGES.getMetricName())
+                        .increment();
+
+            } else {
+                results.forEach(x -> x.getMessages().forEach(y -> {
+                    kafkaWriterMessages.add(new KafkaWriterMessage(x.getTopic(), y));
+                    switch (result.getResultType()) {
+                        case PARSED:
+                            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                                    .getMetricName(result.getSourceType()));
+                            counters.add(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName());
+                            break;
+                        case ERROR:
+                            counters.add(SiembolMetrics.PARSING_APP_ERROR_MESSAGES
+                                    .getMetricName());
+                            break;
+                    }
+                }));
+            }
+        }
+
+        if (!kafkaWriterMessages.isEmpty()) {
+            collector.emit(tuple, new Values(kafkaWriterMessages, counters));
         }
 
         collector.ack(tuple);
@@ -138,6 +179,7 @@ public class ParsingApplicationBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields(ParsingApplicationTuples.PARSING_MESSAGES.toString()));
+        declarer.declare(new Fields(ParsingApplicationTuples.PARSING_MESSAGES.toString(),
+                ParsingApplicationTuples.COUNTERS.toString()));
     }
 }

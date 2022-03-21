@@ -1,5 +1,8 @@
 package uk.co.gresearch.siembol.response.engine;
 
+import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.testing.InactiveTestingLogger;
 import uk.co.gresearch.siembol.common.testing.TestingLogger;
 import uk.co.gresearch.siembol.response.common.*;
@@ -13,10 +16,10 @@ public class RulesEngine implements ResponseEngine {
     private static final String NO_RULE_MATCHES_THE_ALERT = "No rule matches the alert %s";
 
     private final List<? extends Evaluable> rules;
-    private final MetricCounter messagesCounter;
-    private final MetricCounter filtersCounter;
-    private final MetricCounter errorsCounter;
-    private final MetricCounter noMatchesCounter;
+    private final SiembolCounter messagesCounter;
+    private final SiembolCounter filtersCounter;
+    private final SiembolCounter errorsCounter;
+    private final SiembolCounter noMatchesCounter;
     private final TestingLogger logger;
     private final RespondingResultAttributes metadataAttributes;
 
@@ -68,15 +71,15 @@ public class RulesEngine implements ResponseEngine {
     public static class Builder {
         private List<? extends Evaluable> rules;
         private TestingLogger logger = new InactiveTestingLogger();
-        private MetricFactory metricFactory;
-        private MetricCounter messagesCounter;
-        private MetricCounter filtersCounter;
-        private MetricCounter errorsCounter;
-        private MetricCounter noMatchesCounter;
+        private SiembolMetricsRegistrar metricsRegistrar;
+        private SiembolCounter messagesCounter;
+        private SiembolCounter filtersCounter;
+        private SiembolCounter errorsCounter;
+        private SiembolCounter noMatchesCounter;
         private RespondingResultAttributes metadataAttributes;
 
-        public Builder metricFactory(MetricFactory metricFactory) {
-            this.metricFactory = metricFactory;
+        public Builder metricsRegistrar(SiembolMetricsRegistrar metricsRegistrar) {
+            this.metricsRegistrar = metricsRegistrar;
             return this;
         }
 
@@ -97,19 +100,19 @@ public class RulesEngine implements ResponseEngine {
 
         public RulesEngine build() {
             if (rules == null || rules.isEmpty()
-                    || metricFactory == null
+                    || metricsRegistrar == null
                     || metadataAttributes == null) {
                 throw new IllegalArgumentException(MISSING_ATTRIBUTES);
             }
 
-            messagesCounter = metricFactory.createCounter(MetricNames.ENGINE_PROCESSED_MESSAGES.getName(),
-                    MetricNames.ENGINE_PROCESSED_MESSAGES.getDescription());
-            filtersCounter = metricFactory.createCounter(MetricNames.ENGINE_FILTERED_MESSAGES.getName(),
-                    MetricNames.ENGINE_FILTERED_MESSAGES.getDescription());
-            errorsCounter = metricFactory.createCounter(MetricNames.ENGINE_ERROR_MESSAGES.getName(),
-                    MetricNames.ENGINE_ERROR_MESSAGES.getDescription());
-            noMatchesCounter = metricFactory.createCounter(MetricNames.ENGINE_NO_MATCH_MESSAGES.getName(),
-                    MetricNames.ENGINE_NO_MATCH_MESSAGES.getDescription());
+            messagesCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_PROCESSED_ALERTS.getMetricName());
+            filtersCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_FILTERED_ALERTS.getMetricName());
+            errorsCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_ERRORS.getMetricName());
+            noMatchesCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_ENGINE_NO_MATCHES.getMetricName());
 
             return new RulesEngine(this);
         }

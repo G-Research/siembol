@@ -22,6 +22,7 @@ public class AlertMessage implements Serializable {
     }
 
     private final String fullRuleName;
+    private final String ruleName;
     private final Number maxHourMatches;
     private final Number maxDayMatches;
     private final String alertJson;
@@ -33,6 +34,7 @@ public class AlertMessage implements Serializable {
         flags = EnumSet.noneOf(Flags.class);
         if (engineType.equals(AlertingEngineType.SIEMBOL_CORRELATION_ALERTS)) {
             fullRuleName = alert.get(AlertingFields.FULL_RULE_NAME.getCorrelationAlertingName()).toString();
+            ruleName = alert.get(AlertingFields.RULE_NAME.getCorrelationAlertingName()).toString();
             maxHourMatches = (Number)alert.get(AlertingFields.MAX_PER_HOUR_FIELD.getCorrelationAlertingName());
             maxDayMatches = (Number)alert.get(AlertingFields.MAX_PER_DAY_FIELD.getCorrelationAlertingName());
 
@@ -40,6 +42,7 @@ public class AlertMessage implements Serializable {
             flags.add(Flags.VISIBLE_ALERT);
         } else {
             fullRuleName = alert.get(AlertingFields.FULL_RULE_NAME.getAlertingName()).toString();
+            ruleName = alert.get(AlertingFields.RULE_NAME.getAlertingName()).toString();
             maxHourMatches = (Number)alert.get(AlertingFields.MAX_PER_HOUR_FIELD.getAlertingName());
             maxDayMatches = (Number)alert.get(AlertingFields.MAX_PER_DAY_FIELD.getAlertingName());
 
@@ -99,4 +102,7 @@ public class AlertMessage implements Serializable {
         return Optional.ofNullable(correlationKey);
     }
 
+    public String getRuleName() {
+        return ruleName;
+    }
 }

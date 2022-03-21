@@ -3,7 +3,11 @@ package uk.co.gresearch.siembol.response.stream.ruleservice;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -16,8 +20,8 @@ import uk.co.gresearch.siembol.response.model.ProvidedEvaluatorsProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
+import static org.mockito.Mockito.*;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
 import static uk.co.gresearch.siembol.response.common.ResponseEvaluationResult.MATCH;
 
@@ -45,15 +49,18 @@ public class ZooKeeperRulesProviderTest {
                """;
 
     private RespondingCompiler compiler;
-    private MetricFactory testMetricFactory;
+    private SiembolMetricsTestRegistrar metricsTestRegistrar;
+    private SiembolMetricsRegistrar cachedMetricsRegistrar;
     private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private ZooKeeperConnector rulesZooKeeperConnector;
+    private ArgumentCaptor<Runnable> zooKeeperCallback;
     private ZooKeeperRulesProvider rulesProvider;
     private ZooKeeperAttributesDto zooKeeperAttributes;
 
     @Before
     public void setUp() throws Exception {
-        testMetricFactory = new TestMetricFactory();
+        metricsTestRegistrar = new SiembolMetricsTestRegistrar();
+        cachedMetricsRegistrar = metricsTestRegistrar.cachedRegistrar();
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>(
                 ProvidedEvaluators.getRespondingEvaluatorFactories(new ProvidedEvaluatorsProperties())
                         .getAttributes()
@@ -61,7 +68,7 @@ public class ZooKeeperRulesProviderTest {
 
         compiler = new RespondingCompilerImpl.Builder()
                 .addRespondingEvaluatorFactories(evaluatorFactories)
-                .metricFactory(testMetricFactory)
+                .metricsRegistrar(cachedMetricsRegistrar)
                 .build();
 
 
@@ -72,7 +79,15 @@ public class ZooKeeperRulesProviderTest {
         when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes))
                 .thenReturn(rulesZooKeeperConnector);
         when(rulesZooKeeperConnector.getData()).thenReturn(testingRules);
-        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeeperAttributes, compiler);
+        zooKeeperCallback = ArgumentCaptor.forClass(Runnable.class);
+        doNothing().when(rulesZooKeeperConnector).addCacheListener(zooKeeperCallback.capture());
+
+        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory,
+                zooKeeperAttributes,
+                compiler,
+                cachedMetricsRegistrar);
+        Assert.assertEquals(1,
+                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName()));
 
     }
 
@@ -89,7 +104,10 @@ public class ZooKeeperRulesProviderTest {
     @Test(expected = java.lang.IllegalStateException.class)
     public void testInvalidRulesInit() throws Exception {
         when(rulesZooKeeperConnector.getData()).thenReturn("INVALID");
-        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory, zooKeeperAttributes, compiler);
+        rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory,
+                zooKeeperAttributes,
+                compiler,
+                cachedMetricsRegistrar);
     }
 
     @Test
@@ -98,5 +116,28 @@ public class ZooKeeperRulesProviderTest {
         RespondingResult result = rulesProvider.getEngine().evaluate(alert);
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertEquals(MATCH, result.getAttributes().getResult());
+    }
+
+    @Test
+    public void updateOk() {
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(2,
+                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName()));
+
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(3,
+                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName()));
+        verify(rulesZooKeeperConnector, times(3)).getData();
+
+    }
+
+    @Test
+    public void updateError() {
+        when(rulesZooKeeperConnector.getData()).thenReturn("INVALID");
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(1,
+                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName()));
+        Assert.assertEquals(1,
+                metricsTestRegistrar.getCounterValue(SiembolMetrics.RESPONSE_RULES_ERROR_UPDATE.getMetricName()));
     }
 }

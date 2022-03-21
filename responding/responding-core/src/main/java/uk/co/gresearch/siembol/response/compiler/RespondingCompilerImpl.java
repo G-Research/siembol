@@ -7,6 +7,7 @@ import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.UnionJsonType;
 import uk.co.gresearch.siembol.common.jsonschema.UnionJsonTypeOption;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.common.testing.StringTestingLogger;
 import uk.co.gresearch.siembol.common.testing.TestingLogger;
@@ -41,20 +42,20 @@ public class RespondingCompilerImpl implements RespondingCompiler {
     private final String rulesJsonSchemaStr;
     private final JsonSchemaValidator rulesSchemaValidator;
     private final JsonSchemaValidator testSpecificationValidator;
-    private final MetricFactory metricFactory;
+    private final SiembolMetricsRegistrar metricsRegistrar;
 
     public RespondingCompilerImpl(Builder builder) {
         this.respondingEvaluatorFactoriesMap = builder.respondingEvaluatorFactoriesMap;
         this.rulesJsonSchemaStr = builder.rulesJsonSchemaStr;
         this.rulesSchemaValidator = builder.rulesSchemaValidator;
-        this.metricFactory = builder.metricFactory;
+        this.metricsRegistrar = builder.metricsRegistrar;
         this.testSpecificationValidator = builder.testSpecificationValidator;
     }
 
     private ResponseRule createResponseRule(RuleDto ruleDto, TestingLogger logger) {
         ResponseRule.Builder builder = new ResponseRule.Builder();
         builder
-                .metricFactory(metricFactory)
+                .metricsRegistrar(metricsRegistrar)
                 .logger(logger)
                 .ruleName(ruleDto.getRuleName())
                 .ruleVersion(ruleDto.getRuleVersion());
@@ -97,7 +98,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             ResponseEngine responseEngine = new RulesEngine.Builder()
                     .metadata(metadataAttributes)
                     .rules(responseRules)
-                    .metricFactory(metricFactory)
+                    .metricsRegistrar(metricsRegistrar)
                     .testingLogger(logger)
                     .build();
 
@@ -221,10 +222,10 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         private String rulesJsonSchemaStr;
         private JsonSchemaValidator rulesSchemaValidator;
         private JsonSchemaValidator testSpecificationValidator;
-        private MetricFactory metricFactory;
+        private SiembolMetricsRegistrar metricsRegistrar;
 
-        public Builder metricFactory(MetricFactory metricFactory) {
-            this.metricFactory = metricFactory;
+        public Builder metricsRegistrar(SiembolMetricsRegistrar metricsRegistrar) {
+            this.metricsRegistrar = metricsRegistrar;
             return this;
         }
 
@@ -250,7 +251,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             testSpecificationValidator = new SiembolJsonSchemaValidator(ResponseTestSpecificationDto.class);
 
             respondingEvaluatorFactoriesMap.forEach((k, v) -> {
-                v.registerMetrics(metricFactory);
+                v.registerMetrics(metricsRegistrar);
             });
 
             List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorFactoriesMap.keySet().stream()

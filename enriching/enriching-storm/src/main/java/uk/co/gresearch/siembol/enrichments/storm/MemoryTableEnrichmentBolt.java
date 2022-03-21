@@ -19,10 +19,16 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
 import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.storm.SiembolMetricsCounters;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactoryImpl;
@@ -63,22 +69,27 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private final ZooKeeperAttributesDto zooKeeperAttributesDto;
     private final ZooKeeperConnectorFactory zooKeeperConnectorFactory;
     private final SiembolFileSystemFactory fileSystemFactory;
+    private final StormMetricsRegistrarFactory metricsFactory;
 
     private OutputCollector collector;
     private ZooKeeperConnector zooKeeperConnector;
+    private SiembolMetricsRegistrar metricsRegistrar;
 
     MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes,
                               ZooKeeperConnectorFactory zooKeeperConnectorFactory,
-                              SiembolFileSystemFactory fileSystemFactory) {
+                              SiembolFileSystemFactory fileSystemFactory,
+                              StormMetricsRegistrarFactory metricsFactory) {
         this.zooKeeperAttributesDto = attributes.getEnrichingTablesAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
         this.fileSystemFactory = fileSystemFactory;
+        this.metricsFactory = metricsFactory;
     }
 
     public MemoryTableEnrichmentBolt(StormEnrichmentAttributesDto attributes) {
         this(attributes,
                 new ZooKeeperConnectorFactoryImpl(),
-                SupportedFileSystem.fromUri(attributes.getEnrichingTablesUri()));
+                SupportedFileSystem.fromUri(attributes.getEnrichingTablesUri()),
+                new StormMetricsRegistrarFactoryImpl());
     }
 
     @Override
@@ -88,6 +99,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
         try {
             LOG.info(TABLES_INIT_START);
             zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributesDto);
+            metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateTables();
             if (enrichmentTables.isEmpty()) {
@@ -123,11 +135,17 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
                         var memoryTable = EnrichmentMemoryTable.fromJsonStream(is);
                         enrichmentTables.put(table.getName(), ImmutablePair.of(table.getPath(), memoryTable));
                         LOG.info(TABLE_INIT_COMPLETED, table.getName());
+                        metricsRegistrar
+                                .registerCounter(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName(table.getName()))
+                                .increment();
                     } catch (Exception e) {
                         LOG.error(TABLE_UPDATE_EXCEPTION_FORMAT,
                                 table.getName(),
                                 table.getPath(),
                                 ExceptionUtils.getStackTrace(e));
+                        metricsRegistrar.registerCounter(
+                                SiembolMetrics.ENRICHMENT_TABLE_UPDATE_ERROR.getMetricName(table.getName()))
+                                .increment();
                     }
                 }
             }
@@ -157,6 +175,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
         EnrichmentExceptions exceptions = (EnrichmentExceptions)exceptionsObj;
 
         EnrichmentPairs enrichments = new EnrichmentPairs();
+        SiembolMetricsCounters counters = new SiembolMetricsCounters();
 
         for (EnrichmentCommand command : commands) {
             var tablePair = enrichmentTables.get(command.getTableName());
@@ -165,9 +184,14 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
             }
 
             Optional<List<Pair<String, String>>> result = tablePair.getRight().getValues(command);
-            result.ifPresent(enrichments::addAll);
+            if (result.isPresent()) {
+                enrichments.addAll(result.get());
+                counters.add(SiembolMetrics.ENRICHMENT_RULE_APPLIED.getMetricName(command.getRuleName()));
+                counters.add(SiembolMetrics.ENRICHMENT_TABLE_APPLIED.getMetricName(command.getTableName()));
+            }
+
         }
-        collector.emit(tuple, new Values(event, enrichments, exceptions));
+        collector.emit(tuple, new Values(event, enrichments, exceptions, counters));
         collector.ack(tuple);
     }
 
@@ -175,6 +199,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields(EnrichmentTuples.EVENT.toString(),
                 EnrichmentTuples.ENRICHMENTS.toString(),
-                EnrichmentTuples.EXCEPTIONS.toString()));
+                EnrichmentTuples.EXCEPTIONS.toString(),
+                EnrichmentTuples.COUNTERS.toString()));
     }
 }

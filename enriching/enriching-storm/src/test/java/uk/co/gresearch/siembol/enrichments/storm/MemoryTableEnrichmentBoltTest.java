@@ -11,8 +11,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystem;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.common.storm.SiembolMetricsCounters;
 import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.enrichments.common.EnrichmentCommand;
 import uk.co.gresearch.siembol.enrichments.storm.common.*;
@@ -92,6 +95,7 @@ public class MemoryTableEnrichmentBoltTest {
     private SiembolFileSystemFactory fileSystemFactory;
     private SiembolFileSystem fileSystem;
     private ArgumentCaptor<Values> argumentEmitCaptor;
+    private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -123,8 +127,17 @@ public class MemoryTableEnrichmentBoltTest {
         when(fileSystem.openInputStream(eq("/siembol/tables/enrichment/different_test.json")))
                 .thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
 
-        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, fileSystemFactory);
+        metricsTestRegistrarFactory = new StormMetricsTestRegistrarFactoryImpl();
+
+        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes,
+                zooKeeperConnectorFactory,
+                fileSystemFactory,
+                metricsTestRegistrarFactory);
         memoryTableBolt.prepare(null, null, collector);
+
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table")));
     }
 
     @Test
@@ -132,32 +145,39 @@ public class MemoryTableEnrichmentBoltTest {
         memoryTableBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(3, values.size());
+        Assert.assertEquals(4, values.size());
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
+        Assert.assertTrue(values.get(3) instanceof SiembolMetricsCounters);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((SiembolMetricsCounters)values.get(3)).isEmpty());
+        var counters = (SiembolMetricsCounters)values.get(3);
+        Assert.assertTrue(counters.isEmpty());
     }
 
     @Test
-    public void testNoneMptyExceptionsEmptyCommands() {
+    public void testNonemptyExceptionsEmptyCommands() {
         exceptions.add("dummy1");
         exceptions.add("dummy2");
         memoryTableBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(3, values.size());
+        Assert.assertEquals(4, values.size());
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
+        Assert.assertTrue(values.get(3) instanceof SiembolMetricsCounters);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
-        EnrichmentExceptions exceptions = (EnrichmentExceptions) values.get(2);
+        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
+        EnrichmentExceptions exceptions = (EnrichmentExceptions)values.get(2);
         Assert.assertEquals(2, exceptions.size());
         Assert.assertEquals("dummy1", exceptions.get(0));
         Assert.assertEquals("dummy2", exceptions.get(1));
+        var counters = (SiembolMetricsCounters)values.get(3);
+        Assert.assertTrue(counters.isEmpty());
     }
 
     @Test
@@ -165,16 +185,20 @@ public class MemoryTableEnrichmentBoltTest {
         EnrichmentCommand command = new EnrichmentCommand();
         commands.add(command);
         command.setTableName("invalid");
+        command.setRuleName("test_rule");
         memoryTableBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(3, values.size());
+        Assert.assertEquals(4, values.size());
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
+        Assert.assertTrue(values.get(3) instanceof SiembolMetricsCounters);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        var counters = (SiembolMetricsCounters)values.get(3);
+        Assert.assertTrue(counters.isEmpty());
     }
 
     @Test
@@ -184,17 +208,23 @@ public class MemoryTableEnrichmentBoltTest {
         command.setTableName("test_table");
         command.setKey("1.2.3.1");
         command.setTags(new ArrayList<>(Arrays.asList(Pair.of("is_test", "true"))));
+        command.setRuleName("test_rule");
         memoryTableBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(3, values.size());
+        Assert.assertEquals(4, values.size());
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
+        Assert.assertTrue(values.get(3) instanceof SiembolMetricsCounters);
         Assert.assertEquals(event, values.get(0));
-        EnrichmentPairs enrichments = (EnrichmentPairs) values.get(1);
+        EnrichmentPairs enrichments = (EnrichmentPairs)values.get(1);
         Assert.assertEquals(1, enrichments.size());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        var counters = (SiembolMetricsCounters)values.get(3);
+        Assert.assertEquals(2, counters.size());
+        Assert.assertTrue(counters.contains(SiembolMetrics.ENRICHMENT_TABLE_APPLIED.getMetricName("test_table")));
+        Assert.assertTrue(counters.contains(SiembolMetrics.ENRICHMENT_RULE_APPLIED.getMetricName("test_rule")));
     }
 
     @Test
@@ -203,16 +233,19 @@ public class MemoryTableEnrichmentBoltTest {
         commands.add(command);
         command.setTableName("test_table");
         command.setKey("unknown");
+        command.setRuleName("test_rule");
         memoryTableBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
-        Assert.assertEquals(3, values.size());
+        Assert.assertEquals(4, values.size());
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentPairs);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
+        Assert.assertTrue(values.get(3) instanceof SiembolMetricsCounters);
         Assert.assertEquals(event, values.get(0));
-        Assert.assertTrue(((EnrichmentPairs) values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentPairs)values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertTrue(((SiembolMetricsCounters)values.get(3)).isEmpty());
     }
 
     @Test
@@ -222,6 +255,12 @@ public class MemoryTableEnrichmentBoltTest {
                 .openInputStream(eq("/siembol/tables/enrichment/test.json"));
         Mockito.verify(fileSystem, times(1))
                 .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table")));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table_2")));
     }
 
     @Test
@@ -233,6 +272,12 @@ public class MemoryTableEnrichmentBoltTest {
                 .openInputStream(eq("/siembol/tables/enrichment/different_test.json"));
         Mockito.verify(fileSystem, times(1))
                 .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
+        Assert.assertEquals(2,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table")));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table_2")));
     }
 
     @Test
@@ -241,7 +286,10 @@ public class MemoryTableEnrichmentBoltTest {
         when(fileSystemFactory.create()).thenReturn(fileSystem);
         when(fileSystem.openInputStream(anyString())).thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
         zooKeeperConnectorFactory.setData(zooKeeperPath, "{}");
-        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, fileSystemFactory);
+        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes,
+                zooKeeperConnectorFactory,
+                fileSystemFactory,
+                metricsTestRegistrarFactory);
         memoryTableBolt.prepare(null, null, collector);
         Mockito.verify(fileSystem, times(0)).openInputStream(anyString());
     }
@@ -252,7 +300,10 @@ public class MemoryTableEnrichmentBoltTest {
         fileSystem = Mockito.mock(SiembolFileSystem.class);
         when(fileSystemFactory.create()).thenReturn(fileSystem);
         when(fileSystem.openInputStream(anyString())).thenReturn(new ByteArrayInputStream(simpleOneField.getBytes()));
-        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, fileSystemFactory);
+        memoryTableBolt = new MemoryTableEnrichmentBolt(attributes,
+                zooKeeperConnectorFactory,
+                fileSystemFactory,
+                metricsTestRegistrarFactory);
         memoryTableBolt.prepare(null, null, collector);
         Mockito.verify(fileSystem, times(0)).openInputStream(anyString());
     }
@@ -269,6 +320,15 @@ public class MemoryTableEnrichmentBoltTest {
                 .openInputStream(eq("/siembol/tables/enrichment/different_test.json"));
         Mockito.verify(fileSystem, times(1))
                 .openInputStream(eq("/siembol/tables/enrichment/test2.json"));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table")));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATE_ERROR.getMetricName("test_table")));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory
+                        .getCounterValue(SiembolMetrics.ENRICHMENT_TABLE_UPDATED.getMetricName("test_table_2")));
     }
 
     @Test(expected = RuntimeException.class)

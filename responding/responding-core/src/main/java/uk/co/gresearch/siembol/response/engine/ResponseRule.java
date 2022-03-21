@@ -2,6 +2,9 @@ package uk.co.gresearch.siembol.response.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.testing.InactiveTestingLogger;
 import uk.co.gresearch.siembol.common.testing.TestingLogger;
 import uk.co.gresearch.siembol.response.common.*;
@@ -19,9 +22,9 @@ public class ResponseRule implements Evaluable {
     private final String ruleName;
     private final String fullRuleName;
     private final List<Evaluable> evaluators;
-    private final MetricCounter matchesCounter;
-    private final MetricCounter filtersCounter;
-    private final MetricCounter errorsCounter;
+    private final SiembolCounter matchesCounter;
+    private final SiembolCounter filtersCounter;
+    private final SiembolCounter errorsCounter;
     private final TestingLogger logger;
 
     private ResponseRule(Builder builder) {
@@ -82,15 +85,15 @@ public class ResponseRule implements Evaluable {
         private String ruleName;
         private String fullRuleName;
         private Integer ruleVersion;
-        private MetricFactory metricFactory;
-        private MetricCounter matchesCounter;
-        private MetricCounter filtersCounter;
-        private MetricCounter errorsCounter;
+        private SiembolMetricsRegistrar metricsRegistrar;
+        private SiembolCounter matchesCounter;
+        private SiembolCounter filtersCounter;
+        private SiembolCounter errorsCounter;
         private List<Evaluable> evaluators = new ArrayList<>();
         private TestingLogger logger = new InactiveTestingLogger();
 
-        public Builder metricFactory(MetricFactory metricFactory) {
-            this.metricFactory = metricFactory;
+        public Builder metricsRegistrar(SiembolMetricsRegistrar metricsRegistrar) {
+            this.metricsRegistrar = metricsRegistrar;
             return this;
         }
 
@@ -117,22 +120,19 @@ public class ResponseRule implements Evaluable {
         public ResponseRule build() {
             if (ruleName == null
                     || ruleVersion == null
-                    || metricFactory == null) {
+                    || metricsRegistrar == null) {
                 throw new IllegalArgumentException(MISSING_ATTRIBUTES);
             }
 
             fullRuleName = String.format(FULL_RULE_NAME_FORMAT_MSG, ruleName, ruleVersion);
-            this.matchesCounter = metricFactory.createCounter(
-                    MetricNames.RULE_MATCHES.getNameWithSuffix(ruleName),
-                    MetricNames.RULE_MATCHES.getDescription());
+            this.matchesCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_RULE_MATCHES.getMetricName(ruleName));
 
-            this.filtersCounter = metricFactory.createCounter(
-                    MetricNames.RULE_FILTERS.getNameWithSuffix(ruleName),
-                    MetricNames.RULE_FILTERS.getDescription());
+            this.filtersCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_RULE_FILTERED_ALERTS.getMetricName(ruleName));
 
-            this.errorsCounter = metricFactory.createCounter(
-                    MetricNames.RULE_ERROR_MATCHES.getNameWithSuffix(ruleName),
-                    MetricNames.RULE_ERROR_MATCHES.getDescription());
+            this.errorsCounter = metricsRegistrar
+                    .registerCounter(SiembolMetrics.RESPONSE_RULE_ERROR_MATCHES.getMetricName(ruleName));
 
             return new ResponseRule(this);
         }

@@ -15,6 +15,8 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormParsingApplicationAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
@@ -85,7 +87,8 @@ public class StormParsingApplication {
 
     public static StormTopology createTopology(StormParsingApplicationAttributesDto stormAppAttributes,
                                                ParsingApplicationFactoryAttributes parsingAttributes,
-                                               ZooKeeperConnectorFactory zooKeeperConnectorFactory) throws Exception {
+                                               ZooKeeperConnectorFactory zooKeeperConnectorFactory,
+                                               StormMetricsRegistrarFactory metricsFactory) {
         stormAppAttributes.getStormAttributes().getKafkaSpoutProperties().getRawMap()
                 .put(GROUP_ID_CONFIG, stormAppAttributes.getGroupId(parsingAttributes.getName()));
         stormAppAttributes.getKafkaBatchWriterAttributes().getProducerProperties().getRawMap()
@@ -98,13 +101,15 @@ public class StormParsingApplication {
                 parsingAttributes.getInputParallelism());
 
         builder.setBolt(parsingAttributes.getName(),
-                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zooKeeperConnectorFactory),
+                new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zooKeeperConnectorFactory, metricsFactory),
                 parsingAttributes.getParsingParallelism())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(KAFKA_WRITER,
                 new KafkaWriterBolt(stormAppAttributes.getKafkaBatchWriterAttributes(),
-                        ParsingApplicationTuples.PARSING_MESSAGES.toString()),
+                        ParsingApplicationTuples.PARSING_MESSAGES.toString(),
+                        ParsingApplicationTuples.COUNTERS.toString(),
+                        metricsFactory),
                 parsingAttributes.getOutputParallelism())
                 .localOrShuffleGrouping(parsingAttributes.getName());
 
@@ -132,7 +137,10 @@ public class StormParsingApplication {
         ParsingApplicationFactoryAttributes parsingAttributes = result.getAttributes();
         Config config = new Config();
         config.putAll(stormAttributes.getStormAttributes().getStormConfig().getRawMap());
-        StormTopology topology = createTopology(stormAttributes, parsingAttributes, new ZooKeeperConnectorFactoryImpl());
+        StormTopology topology = createTopology(stormAttributes,
+                parsingAttributes,
+                new ZooKeeperConnectorFactoryImpl(),
+                new StormMetricsRegistrarFactoryImpl());
         String topologyName = stormAttributes.getTopologyName(parsingAttributes.getName());
         LOG.info(SUBMIT_INFO_LOG, topologyName, stormAttributesStr, parsingAttributesStr);
         StormSubmitter.submitTopology(topologyName, config, topology);

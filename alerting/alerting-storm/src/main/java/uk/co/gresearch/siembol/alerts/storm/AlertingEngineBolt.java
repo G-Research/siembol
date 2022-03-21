@@ -16,6 +16,10 @@ import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.*;
 import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
@@ -30,8 +34,6 @@ import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static java.lang.Integer.min;
 
 public class AlertingEngineBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
@@ -54,17 +56,22 @@ public class AlertingEngineBolt extends BaseRichBolt {
 
     private OutputCollector collector;
     private ZooKeeperCompositeConnector zooKeeperConnector;
+    private SiembolMetricsRegistrar metricsRegistrar;
     private final ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory;
-    private final ZooKeeperAttributesDto zookeperAttributes;
+    private final ZooKeeperAttributesDto zooKeeperAttributes;
+    private final StormMetricsRegistrarFactory metricsFactory;
+
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes,
-                       ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory) {
-        this.zookeperAttributes = attributes.getZookeperAttributes();
+                       ZooKeeperCompositeConnectorFactory zooKeeperConnectorFactory,
+                       StormMetricsRegistrarFactory metricsFactory) {
+        this.zooKeeperAttributes = attributes.getZookeperAttributes();
         this.zooKeeperConnectorFactory = zooKeeperConnectorFactory;
+        this.metricsFactory = metricsFactory;
     }
 
     AlertingEngineBolt(AlertingStormAttributesDto attributes) {
-        this(attributes, new ZooKeeperCompositeConnectorFactoryImpl());
+        this(attributes, new ZooKeeperCompositeConnectorFactoryImpl(), new StormMetricsRegistrarFactoryImpl());
     }
 
     @SuppressWarnings("rawtypes")
@@ -73,7 +80,8 @@ public class AlertingEngineBolt extends BaseRichBolt {
         this.collector = outputCollector;
         try {
             LOG.info(ENGINE_INIT_START);
-            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zookeperAttributes);
+            zooKeeperConnector = zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes);
+            metricsRegistrar = metricsFactory.createSiembolMetricsRegistrar(topologyContext);
 
             updateRules();
             if (AlertingEngine.get() == null) {
@@ -99,10 +107,11 @@ public class AlertingEngineBolt extends BaseRichBolt {
             AlertingEngine engine = getAlertingEngine(rulesList);
             AlertingEngine.set(engine);
 
+            metricsRegistrar.registerCounter(SiembolMetrics.ALERTING_RULES_UPDATE.getMetricName()).increment();
             LOG.info(ENGINE_UPDATE_COMPLETED);
         } catch (Exception e) {
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
-            return;
+            metricsRegistrar.registerCounter(SiembolMetrics.ALERTING_RULES_ERROR_UPDATE.getMetricName()).increment();
         }
     }
 

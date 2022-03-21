@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
+import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterBolt;
 import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.StormHelper;
@@ -56,7 +58,8 @@ public class StormEnrichingApplication {
 
     public static StormTopology createTopology(StormEnrichmentAttributesDto attributes,
                                                ZooKeeperConnectorFactory zooKeeperConnectorFactory,
-                                               SiembolFileSystemFactory siembolFileSystemFactory) {
+                                               SiembolFileSystemFactory siembolFileSystemFactory,
+                                               StormMetricsRegistrarFactory metricsFactory) {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout(KAFKA_SPOUT,
@@ -64,12 +67,13 @@ public class StormEnrichingApplication {
                 attributes.getKafkaSpoutNumExecutors());
 
         builder.setBolt(ENRICHING_ENGINE_BOLT_NAME,
-                new EnrichmentEvaluatorBolt(attributes, zooKeeperConnectorFactory),
+                new EnrichmentEvaluatorBolt(attributes, zooKeeperConnectorFactory, metricsFactory),
                 attributes.getEnrichingEngineBoltNumExecutors())
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(MEMORY_ENRICHING_BOLT_NAME,
-                new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory, siembolFileSystemFactory),
+                new MemoryTableEnrichmentBolt(attributes, zooKeeperConnectorFactory,
+                        siembolFileSystemFactory, metricsFactory),
                 attributes.getMemoryEnrichingBoltNumExecutors())
                 .localOrShuffleGrouping(ENRICHING_ENGINE_BOLT_NAME);
 
@@ -80,7 +84,9 @@ public class StormEnrichingApplication {
 
         builder.setBolt(KAFKA_WRITER_BOLT_NAME,
                 new KafkaWriterBolt(attributes.getKafkaBatchWriterAttributes(),
-                        EnrichmentTuples.KAFKA_MESSAGES.toString()),
+                        EnrichmentTuples.KAFKA_MESSAGES.toString(),
+                        EnrichmentTuples.COUNTERS.toString(),
+                        metricsFactory),
                 attributes.getKafkaWriterBoltNumExecutors())
                 .localOrShuffleGrouping(MERGING_BOLT_NAME);
         return builder.createTopology();
@@ -101,7 +107,8 @@ public class StormEnrichingApplication {
         config.putAll(attributes.getStormAttributes().getStormConfig().getRawMap());
         StormTopology topology = createTopology(attributes,
                 new ZooKeeperConnectorFactoryImpl(),
-                SupportedFileSystem.fromUri(attributes.getEnrichingTablesUri()));
+                SupportedFileSystem.fromUri(attributes.getEnrichingTablesUri()),
+                new StormMetricsRegistrarFactoryImpl());
 
         LOG.info(SUBMIT_INFO_MSG, attributes.getTopologyName(), attributesStr);
         StormSubmitter.submitTopology(attributes.getTopologyName(), config, topology);
