@@ -96,7 +96,14 @@ export class AppService {
 
   getUiMetadataMap(serviceName: string): UiMetadata {
     const serviceType = this.userServicesMap.get(serviceName).type;
-    return this.config.uiMetadata[serviceType];
+    const uiMetadata = this.config.uiMetadata[serviceType];
+    const overwrite = uiMetadata["overwrite"];
+    if (overwrite && overwrite[serviceName]) {
+      for (const [key, value] of Object.entries(overwrite[serviceName])) {
+        uiMetadata[key] = value;
+      }
+    }
+    return uiMetadata;
   }
 
   getUserServiceRoles(serviceName: string): UserRole[] {

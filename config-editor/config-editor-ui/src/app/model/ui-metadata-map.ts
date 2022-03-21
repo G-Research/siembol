@@ -16,6 +16,7 @@ export interface UiMetadata {
   unionType?: UnionType;
   disableEditingFeatures?: boolean;
   checkboxes?: CheckboxConfig
+  overwrite?: any;
 }
 
 export interface TestConfig {
