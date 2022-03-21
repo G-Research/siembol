@@ -13,7 +13,7 @@ public enum SiembolMetrics {
     PARSING_APP_ERROR_MESSAGES("siembol_counter_app_error_messages"),
 
     ENRICHMENT_RULES_UPDATE("siembol_counter_enrichment_rules_update"),
-    ENRICHMENT_RULES_ERROR_UPDATE("siembol_counter_enrichment_rules_update"),
+    ENRICHMENT_RULES_ERROR_UPDATE("siembol_counter_enrichment_rules_error_update"),
     ENRICHMENT_RULES_UPDATE_VERSION("siembol_gauge_enrichment_rules_update"),
     ENRICHMENT_RULE_APPLIED("siembol_counter_enrichment_rule_applied_%s"),
     ENRICHMENT_TABLE_APPLIED("siembol_counter_enrichment_table_applied_%s"),

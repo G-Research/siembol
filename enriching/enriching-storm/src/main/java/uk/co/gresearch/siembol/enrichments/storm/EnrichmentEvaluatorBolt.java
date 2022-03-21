@@ -107,6 +107,7 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
             metricsRegistrar.registerCounter(SiembolMetrics.ENRICHMENT_RULES_UPDATE.getMetricName()).increment();
             LOG.info(ENGINE_UPDATE_COMPLETED);
         } catch (Exception e) {
+            metricsRegistrar.registerCounter(SiembolMetrics.ENRICHMENT_RULES_ERROR_UPDATE.getMetricName()).increment();
             LOG.error(UPDATE_EXCEPTION_LOG, ExceptionUtils.getStackTrace(e));
         }
     }

@@ -62,7 +62,7 @@ public class ApplicationConfiguration implements DisposableBean {
     }
 
     @Bean
-    @DependsOn("rulesProvider")
+    @DependsOn({"rulesProvider", "respondingCompiler"})
     RulesService centrifugeService(@Autowired RespondingCompiler respondingCompiler,
                                    @Autowired RulesProvider rulesProvider) {
         streamService = properties.getInactiveStreamService()
