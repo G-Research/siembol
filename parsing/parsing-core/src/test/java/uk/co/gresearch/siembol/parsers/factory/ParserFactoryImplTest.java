@@ -30,6 +30,7 @@ public class ParserFactoryImplTest {
                "format_timestamp"
              ],
              "attributes": {
+               "skip_empty_values" : true,
                "should_overwrite_fields": true,
                "should_remove_field": false,
                "time_formats": [
@@ -53,7 +54,7 @@ public class ParserFactoryImplTest {
      """;
 
     private final String message = """
-     {"timestamp":"2019-03-27 18:52:02.732 Z", "test field" : true, "test_field1" : "   message     ", "test_field2" : "   message     "}""";
+     {"timestamp":"2019-03-27 18:52:02.732 Z", "test field" : true, "test_field1" : "   message     ", "test_field2" : "   message     ", "empty" : ""}""";
 
     @Test
     public void testGetSchema() {
@@ -72,6 +73,7 @@ public class ParserFactoryImplTest {
         Assert.assertEquals(1553712722732L, parsed.get(0).get("timestamp"));
         Assert.assertEquals(true, parsed.get(0).get("test_field"));
         Assert.assertNull(parsed.get(0).get("source_type"));
+        Assert.assertNull(parsed.get(0).get("empty"));
     }
 
     @Test
