@@ -67,3 +67,15 @@ re-search {
     border-radius: 5px;
     font-size: 18px;
 }
+
+.mat-drawer-container {
+    z-index: auto;
+}
+
+.mat-drawer-content {
+    z-index: auto;
+}
+
+.mat-drawer-fixed {
+    position: absolute;
+}

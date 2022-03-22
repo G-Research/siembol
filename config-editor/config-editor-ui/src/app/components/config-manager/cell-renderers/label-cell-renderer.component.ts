@@ -1,13 +1,13 @@
-import { Component } from "@angular/core";
+import {  Component } from "@angular/core";
 import { ConfigStatus } from "@app/model/config-model";
 import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 import { ICellRendererParams } from '@ag-grid-community/core';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: "re-label-cell-renderer",
   styles: [`
     .labels_cell {
-      height: 30px;
       display: flex;
       width: 100%;
       padding: 3px 0;
@@ -39,10 +39,11 @@ import { ICellRendererParams } from '@ag-grid-community/core';
       align-items:top;
       display: flex;
       justify-content:flex-end;
-    }`,
+    }
+    `,
   ],
   template: `
-  <div class="labels_cell" #labels_cell [ngStyle]="{'height': height}">
+  <div [@grow]="labelsState" (@grow.done)="growDone()" id="container" class="labels_cell" #labels_cell>
     <div style="width:90%;">
       <div class="label-chip" [matTooltip]="label" *ngFor="let label of labels">
         <div class="label-text" *ngIf="label !== null || label !== ''">
@@ -51,22 +52,36 @@ import { ICellRendererParams } from '@ag-grid-community/core';
       </div>
     </div> 
     <div class="label-expand">
-      <a *ngIf="!expanded && checkOverflow(labels_cell)" (click)="expandDiv()" [title]="'expand labels'">
+      <a *ngIf="!expanded && checkOverflow(labels_cell)" (click)="toggleLabelsState()" [title]="'expand labels'">
         <mat-icon>expand_more</mat-icon>
       </a>
-      <a *ngIf="expanded" (click)="collapseDiv()" [title]="'collapse labels'">
+      <a *ngIf="expanded" (click)="toggleLabelsState()" [title]="'collapse labels'">
         <mat-icon>expand_less</mat-icon>
       </a>
     </div>
   </div>
   `,
+  animations: [
+    trigger('grow', [
+      state('out', style({
+        maxHeight: '800px',
+      })),
+      state('in', style({
+        overflow: 'hidden',
+        maxHeight: '30px',
+      })),
+      transition('in => out', animate('350ms ease-in')),
+      transition('out => in', animate('350ms ease-in')),
+    ]),
+  ],
 })
 export class LabelCellRendererComponent implements ICellRendererAngularComp {
   status: ConfigStatus;
   configStatusEnum = ConfigStatus;
   labels: string[];
   height = '30px';
-  expanded = false;
+  expanded = true;
+  labelsState = 'in';
   private params: any;
 
   agInit(params: any): void {
@@ -84,13 +99,11 @@ export class LabelCellRendererComponent implements ICellRendererAngularComp {
            element.offsetWidth < element.scrollWidth;
   }
 
-  expandDiv() {
-    this.height = 'auto';
-    this.expanded = true;
+  toggleLabelsState() {
+    this.labelsState = this.labelsState === 'out' ? 'in' : 'out';
   }
 
-  collapseDiv() {
-    this.height = '30px';
-    this.expanded = false;
+  growDone() {
+    this.expanded = !this.expanded;
   }
 }
