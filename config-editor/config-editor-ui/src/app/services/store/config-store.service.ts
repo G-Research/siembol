@@ -7,12 +7,11 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, CheckboxEvent, ConfigAndTestsToClone, ConfigToImport, EnabledCheckboxFilters, ExistingConfigError, Importers, Type } from '@app/model/config-model';
+import { AdminConfig, CheckboxEvent, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, Importers, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
 import { AppService } from '../app.service';
-import { RowNode } from '@ag-grid-community/core';
 
 const initialConfigStoreState: ConfigStoreState = {
   adminConfig: undefined,
@@ -33,6 +32,7 @@ const initialConfigStoreState: ConfigStoreState = {
   countChangesInRelease: 0,
   configManagerRowData: [],
   enabledCheckboxFilters: {},
+  isExternalFilterPresent: false,
 };
 
 const initialPullRequestState: PullRequestInfo = {
@@ -71,6 +71,7 @@ export class ConfigStoreService {
   public readonly importers$ = this.importers.asObservable();
   public readonly configManagerRowData$ = this.store.asObservable().pipe(map(x => x.configManagerRowData));
   public readonly countChangesInRelease$ = this.store.asObservable().pipe(map(x => x.countChangesInRelease));
+  public readonly isExternalFilterPresent$ = this.store.asObservable().pipe(map(x => x.isExternalFilterPresent));
 
   /*eslint-enable */
 
@@ -113,7 +114,7 @@ export class ConfigStoreService {
       .releaseHistory(release.releaseHistory)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -137,7 +138,7 @@ export class ConfigStoreService {
   updateSearchTerm(searchTerm: string) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .searchTerm(searchTerm)
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -146,7 +147,7 @@ export class ConfigStoreService {
   updateFilterMyConfigs(value: boolean) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .filterMyConfigs(value)
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -155,7 +156,7 @@ export class ConfigStoreService {
   updateFilterUpgradable(value: boolean) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .filterUpgradable(value)
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -164,7 +165,7 @@ export class ConfigStoreService {
   updateFilterUnreleased(value: boolean) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .filterUnreleased(value)      
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -173,7 +174,7 @@ export class ConfigStoreService {
   updateCheckboxFilters(event: CheckboxEvent) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .updateCheckboxFilters(event)      
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -184,7 +185,7 @@ export class ConfigStoreService {
       .addConfigToRelease(name)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -195,7 +196,7 @@ export class ConfigStoreService {
       .removeConfigFromRelease(name)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -206,7 +207,7 @@ export class ConfigStoreService {
       .upgradeConfigInRelease(name)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -216,7 +217,7 @@ export class ConfigStoreService {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .moveConfigInRelease(configName, filteredCurrentIndex)
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData()
+      .computeConfigManagerRowData(this.user, this.metaDataMap)
       .build();
 
     this.store.next(newState);
@@ -313,7 +314,7 @@ export class ConfigStoreService {
           .detectOutdatedConfigs()
           .reorderConfigsByRelease()
           .editedConfigByName(config.name)
-          .computeConfigManagerRowData()
+          .computeConfigManagerRowData(this.user, this.metaDataMap)
           .build();
         this.store.next(newState);
         this.configHistoryService.clear();
@@ -457,7 +458,7 @@ export class ConfigStoreService {
         .updateTestCasesInConfigs()
         .detectOutdatedConfigs()
         .reorderConfigsByRelease()
-        .computeConfigManagerRowData()
+        .computeConfigManagerRowData(this.user, this.metaDataMap)
         .build();
 
       this.store.next(newState);
@@ -470,7 +471,6 @@ export class ConfigStoreService {
         .testCaseMap(testCaseMap)
         .updateTestCasesInConfigs()
         .editedConfigByName(configName)
-        .computeConfigManagerRowData()
         .build();
 
       this.store.next(newState);
@@ -593,7 +593,7 @@ export class ConfigStoreService {
         .detectOutdatedConfigs()
         .reorderConfigsByRelease()
         .editedConfigTestCases(testCaseMap[editedConfigName])
-        .computeConfigManagerRowData()
+        .computeConfigManagerRowData(this.user, this.metaDataMap)
         .build();
       this.store.next(newState);
       return true;
@@ -612,71 +612,6 @@ export class ConfigStoreService {
       .resetChangesInRelease()
       .build();
     this.store.next(newState);
-  }
-
-   isExternalFilterPresent(): boolean {
-    const state = this.store.getValue();
-    return state.filterMyConfigs 
-      || state.filterUnreleased 
-      || state.filterUpgradable
-      || this.isGroupCheckboxFilterPresent(state.enabledCheckboxFilters);
-  }
-
-  doesExternalFilterPass(node: RowNode): boolean {
-    const state = this.store.getValue();
-    if (state.filterMyConfigs && node.data.author !== this.user) {
-      return false;
-    }
-    if (state.filterUnreleased && node.data.releasedVersion !== 0) {
-      return false;
-    }
-    if (state.filterUpgradable && (node.data.releasedVersion === node.data.version || node.data.releasedVersion === 0)) {
-      return false;
-    } 
-    return this.doGroupCheckboxesPass(node);
-  }
-
-  private isGroupCheckboxFilterPresent(filters: EnabledCheckboxFilters): boolean {
-    for (const checkboxGroup of Object.values(filters)) {
-      for (const checked of Object.values(checkboxGroup)) {
-        if (checked) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private doGroupCheckboxesPass(node: RowNode): boolean {
-    const state = this.store.getValue();
-    for (const [groupTitle, checkboxes] of Object.entries(state.enabledCheckboxFilters)) {
-      if (!this.doesGroupCheckboxFilterPass(groupTitle, checkboxes, node)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private doesGroupCheckboxFilterPass(groupTitle: string, checkboxes: Record<string, boolean>, node: RowNode): boolean {
-    for (const [checkBoxName, checked] of Object.entries(checkboxes)) {
-      if (checked) {
-        if (!this.doesSingleCheckboxFilterPass(groupTitle, checkBoxName, node)) {
-          return false;
-        }
-      }
-    }  
-    return true;
-  }
-  
-
-  private doesSingleCheckboxFilterPass(groupTitle: string, checkboxName: string, node: RowNode): boolean {
-    const filter = this.metaDataMap.checkboxes[groupTitle][checkboxName];
-    for (const value of filter.values) {
-      if (node.data.labels.find(l => l.toLowerCase() === filter.label + ":" + value)){
-        return true;
-      }
-    }
-    return false;
   }
 
   private updateReleaseSubmitInFlight(releaseSubmitInFlight: boolean) {

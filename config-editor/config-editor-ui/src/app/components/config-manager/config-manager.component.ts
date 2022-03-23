@@ -41,6 +41,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   filterUpgradable$: Observable<boolean>;
   releaseHistory$: Observable<FileHistory[]>;
   rowData$: Observable<ConfigManagerRow[]>;
+  isExternalFilterPresent$: Observable<boolean>;
+  isExternalFilterPresent: boolean;
   releaseHistory;
   disableEditingFeatures: boolean;
   importers$: Observable<Importers>;
@@ -71,8 +73,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     onGridReady: (params: any) => {
       this.api = params.api;
     },
-    isExternalFilterPresent: this.isExternalFilterPresent.bind(this),
-    doesExternalFilterPass: this.doesExternalFilterPass.bind(this),
+    isExternalFilterPresent: () => this.isExternalFilterPresent,
+    doesExternalFilterPass: (node: RowNode) => node.data.isFiltered,
   };
   api: GridApi;
   checkboxFilters: CheckboxConfig;
@@ -111,6 +113,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.useImporters = this.configService.useImporters;
 
     this.rowData$ = this.configStore.configManagerRowData$;
+    this.isExternalFilterPresent$ = this.configStore.isExternalFilterPresent$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
 
     this.checkboxFilters = this.editorService.metaDataMap.checkboxes;
@@ -130,6 +133,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.importers$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(i => {
       this.importers = i;
     });
+    this.isExternalFilterPresent$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
+      this.isExternalFilterPresent = cloneDeep(s);
+    });
+
   }
 
   ngOnDestroy() {
@@ -281,12 +288,4 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   getRowNodeId: GetRowNodeIdFunc = function (data) {
     return data.config_name;
   };
-
-  isExternalFilterPresent(): boolean {
-    return this.configStore.isExternalFilterPresent();
-  }
-
-  doesExternalFilterPass(node: RowNode): boolean {
-    return this.configStore.doesExternalFilterPass(node);
-  }
 }

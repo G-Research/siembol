@@ -21,4 +21,5 @@ export interface ConfigStoreState {
   countChangesInRelease: number;
   configManagerRowData: ConfigManagerRow[];
   enabledCheckboxFilters: EnabledCheckboxFilters;
+  isExternalFilterPresent: boolean;
 }

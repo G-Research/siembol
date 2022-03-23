@@ -251,6 +251,7 @@ export interface ConfigManagerRow {
   configHistory: FileHistory[],
   labels: string[],
   testCasesCount: number,
+  isFiltered: boolean,
 }
 
 export enum ConfigStatus {
