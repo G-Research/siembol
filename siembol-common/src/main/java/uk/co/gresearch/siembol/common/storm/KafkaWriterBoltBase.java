@@ -65,12 +65,17 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     }
 
     protected void writeMessages(List<KafkaWriterMessage> messages, List<String> countersNames, KafkaWriterAnchor anchor) {
-        anchor.acquire(messages.size());
         List<SiembolCounter> siembolCounters = countersNames.stream()
                 .map(x -> metricsRegistrar.registerCounter(x))
                 .collect(Collectors.toList());
         anchor.addSiembolCounters(siembolCounters);
-        messages.forEach(x -> writeMessage(x, anchor));
+
+        if (messages.isEmpty()) {
+            acknowledgeWithoutWriting(anchor);
+        } else {
+            anchor.acquire(messages.size());
+            messages.forEach(x -> writeMessage(x, anchor));
+        }
     }
 
     private Callback createProducerCallback(final KafkaWriterAnchor anchor) {
@@ -87,6 +92,13 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
                 }
             }
         };
+    }
+
+    private void acknowledgeWithoutWriting(KafkaWriterAnchor anchor) {
+        anchor.incrementSiembolCounters();
+        synchronized (collector) {
+            collector.ack(anchor.getTuple());
+        }
     }
 
     private void writeMessage(KafkaWriterMessage message, KafkaWriterAnchor anchor) {

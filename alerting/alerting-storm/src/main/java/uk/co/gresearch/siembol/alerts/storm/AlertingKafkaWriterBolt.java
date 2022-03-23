@@ -68,13 +68,19 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
             AlertingResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
             int hourlyMatches = matchesInfo.getAttributes().getHourlyMatches();
             int dailyMatches = matchesInfo.getAttributes().getDailyMatches();
+            boolean hourlyMatchesThreshold = match.getMaxHourMatches().intValue() < hourlyMatches;
+            boolean dailyMatchesThreshold = match.getMaxDayMatches().intValue() < dailyMatches;
 
-            if (match.getMaxHourMatches().intValue() < hourlyMatches
-                    || match.getMaxDayMatches().intValue() < dailyMatches) {
+            if (hourlyMatchesThreshold || dailyMatchesThreshold) {
                 String msg = String.format(RULE_PROTECTION_ERROR_MESSAGE,
                         match.getFullRuleName(), hourlyMatches, dailyMatches, match.getAlertJson());
                 LOG.debug(msg);
-                exceptions.add(msg);
+
+                if ((hourlyMatchesThreshold && isPowerOfTwo(hourlyMatches))
+                        || (dailyMatchesThreshold && isPowerOfTwo(dailyMatches))) {
+                    exceptions.add(msg);
+                }
+
                 counters.add(SiembolMetrics.ALERTING_ENGINE_RULE_PROTECTION.getMetricName());
                 counters.add(SiembolMetrics.ALERTING_RULE_PROTECTION.getMetricName(match.getRuleName()));
                 continue;
@@ -125,4 +131,9 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
         error.setMessage(errorMsg);
         return error.toString();
     }
+
+    private boolean isPowerOfTwo(int n) {
+        return (n & n - 1) == 0;
+    }
+
 }
