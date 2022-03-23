@@ -17,7 +17,7 @@ import { CheckboxEvent, ConfigManagerRow, Importers, Type } from '@app/model/con
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
-import { GetRowNodeIdFunc, RowDragEvent, GridSizeChangedEvent, RowNode, GridApi } from '@ag-grid-community/core';
+import { RowDragEvent, GridSizeChangedEvent, RowNode, GridApi, GetRowIdFunc } from '@ag-grid-community/core';
 import { CheckboxConfig } from '@app/model/ui-metadata-map';
 
 @Component({
@@ -285,7 +285,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  getRowNodeId: GetRowNodeIdFunc = function (data) {
-    return data.config_name;
+  getRowId: GetRowIdFunc = function (params) {
+    return params.data.config_name;
   };
 }

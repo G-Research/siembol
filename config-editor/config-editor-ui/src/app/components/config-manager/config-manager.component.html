@@ -1,6 +1,6 @@
 <block-ui>
     <mat-drawer-container autosize>
-        <mat-drawer #drawer mode="side" style="width:250px;border-right: none;">
+        <mat-drawer #drawer mode="side">
             <ng-scrollbar [track]="'vertical'">
                 <re-checkbox-filters 
                     [checkboxFilters]="checkboxFilters"
@@ -88,10 +88,9 @@
                 [columnDefs]="columnDefs"
                 [context]="context"
                 [defaultColDef]="defaultColDef"
-                [immutableData]="true"
                 [rowData]="(rowData$ | async)"
                 [gridOptions]="gridOptions"
-                [getRowNodeId]="getRowNodeId"
+                [getRowId]="getRowId"
             ></ag-grid-angular>
             <p class="grid-footer ag-theme-alpine-dark">
                 Filtered: {{ api?.getDisplayedRowCount()}} Total: {{(allConfigs$ | async).length}}

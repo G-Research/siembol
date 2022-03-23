@@ -1,4 +1,4 @@
-import {  Component } from "@angular/core";
+import { Component } from "@angular/core";
 import { ConfigStatus } from "@app/model/config-model";
 import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 import { ICellRendererParams } from '@ag-grid-community/core';
@@ -43,7 +43,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     `,
   ],
   template: `
-  <div [@grow]="labelsState" (@grow.done)="growDone()" id="container" class="labels_cell" #labels_cell>
+  <div [@grow]="labelsState" (@grow.done)="growDone()" class="labels_cell" #labels_cell>
     <div style="width:90%;">
       <div class="label-chip" [matTooltip]="label" *ngFor="let label of labels">
         <div class="label-text" *ngIf="label !== null || label !== ''">
@@ -64,7 +64,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
   animations: [
     trigger('grow', [
       state('out', style({
-        maxHeight: '800px',
+        maxHeight: '1500px',
       })),
       state('in', style({
         overflow: 'hidden',

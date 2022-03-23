@@ -24,4 +24,5 @@ export const mockStore: ConfigStoreState = {
   configManagerRowData: [],
   countChangesInRelease: 0,
   enabledCheckboxFilters: {},
+  isExternalFilterPresent: false,
 };

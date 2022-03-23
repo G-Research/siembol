@@ -3,6 +3,7 @@ import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { mockStore } from 'testing/store';
 import { cloneDeep } from 'lodash';
 import { Config, Release } from '@app/model';
+import { mockUiMetadataAlert } from 'testing/uiMetadataMap';
 
 
 const mockConfigsUnsorted = [
@@ -177,6 +178,7 @@ describe('ConfigStoreStateBuilder', () => {
       configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
       labels: [ 'generic', 'json_extractor' ],
       testCasesCount: 0 ,
+      isFiltered: true,
     },
     { 
       author: 'siembol', 
@@ -186,9 +188,10 @@ describe('ConfigStoreStateBuilder', () => {
       configHistory: undefined, 
       labels: undefined, 
       testCasesCount: 0,
+      isFiltered: true,
     }];
     
-    const state = builder.computeConfigManagerRowData().build();
+    const state = builder.computeConfigManagerRowData("siembol", mockUiMetadataAlert).build();
     expect(state.configManagerRowData).toEqual(expectedRowData);
   })
 
