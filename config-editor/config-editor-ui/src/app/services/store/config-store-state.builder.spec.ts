@@ -4,6 +4,7 @@ import { mockStore } from 'testing/store';
 import { cloneDeep } from 'lodash';
 import { Config, Release } from '@app/model';
 import { mockUiMetadataAlert } from 'testing/uiMetadataMap';
+import { ConfigStatus } from '@app/model/config-model';
 
 
 const mockConfigsUnsorted = [
@@ -179,6 +180,7 @@ describe('ConfigStoreStateBuilder', () => {
       labels: [ 'generic', 'json_extractor' ],
       testCasesCount: 0 ,
       isFiltered: true,
+      status: ConfigStatus.UP_TO_DATE,
     },
     { 
       author: 'siembol', 
@@ -189,9 +191,10 @@ describe('ConfigStoreStateBuilder', () => {
       labels: undefined, 
       testCasesCount: 0,
       isFiltered: true,
+      status: ConfigStatus.UNRELEASED,
     }];
     
-    const state = builder.computeConfigManagerRowData("siembol", mockUiMetadataAlert).build();
+    const state = builder.computeConfigManagerRowData().build();
     expect(state.configManagerRowData).toEqual(expectedRowData);
   })
 

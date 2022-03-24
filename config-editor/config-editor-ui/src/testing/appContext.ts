@@ -1,5 +1,5 @@
 import { AppContext } from '@app/services/app.service';
-import { UserRole, ServiceInfo } from '@app/model/config-model';
+import { UserRole, ServiceInfo, ConfigStatus } from '@app/model/config-model';
 import { cloneDeep } from 'lodash';
 import { mockTestCasesSchema } from './testCasesSchema';
 
@@ -43,6 +43,22 @@ export const mockAppContext = new AppContext();
 mockAppContext.user = 'siembol';
 mockAppContext.userServices= [mockUserInfoAlert, mockUserInfoParser];
 mockAppContext.userServicesMap = mockUserServicesMap;
+mockAppContext.commonFilters = {
+    "general": {
+      "my_edits": { 
+        "field": "author",
+        "pattern": "siembol", 
+      },
+      "unreleased": {
+        "field": "status",
+        "pattern": ConfigStatus.UNRELEASED,
+      },
+      "upgradable": {
+        "field": "status",
+        "pattern": ConfigStatus.UPGRADABLE,
+      },
+    }
+}
 
 export const mockAppContextNoAdmin = new AppContext();
 mockAppContextNoAdmin.user = 'siembol';

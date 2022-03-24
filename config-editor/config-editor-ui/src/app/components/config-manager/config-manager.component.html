@@ -1,9 +1,10 @@
 <block-ui>
     <mat-drawer-container autosize>
-        <mat-drawer #drawer mode="side">
+        <mat-drawer #drawer mode="side" opened>
             <ng-scrollbar [track]="'vertical'">
                 <re-checkbox-filters 
-                    [checkboxFilters]="checkboxFilters"
+                    [checkboxFilters]="serviceFilterConfig$ | async"
+                    [selectedCheckboxes]="serviceFilters$ | async" 
                     (selectedCheckbox)="onClickCheckbox($event)" 
                     >
                 </re-checkbox-filters>
@@ -11,18 +12,12 @@
         </mat-drawer>
         <mat-drawer-content class="container">
             <div class="container-title">
-                <a mat-button (click)="drawer.toggle()" *ngIf="checkboxFilters">
+                <a mat-button (click)="drawer.toggle()" *ngIf="serviceFilterConfig$ | async">
                     <mat-icon>menu</mat-icon>
                 </a>
                 <re-search 
                     [searchTerm]="searchTerm$ | async" 
-                    [filterMyConfigs]="filterMyConfigs$ | async" 
-                    [filterUnreleased]="filterUnreleased$ | async"
-                    [filterUpgradable]="filterUpgradable$ | async" 
-                    (searchTermChange)="onSearch($event)" 
-                    (myConfigsChange)="onFilterMine($event)"
-                    (unreleasedConfigsChange)="onFilterUnreleased($event)" 
-                    (updatedConfigsChange)="onFilterUpgradable($event)"
+                    (searchTermChange)="onSearch($event)"
                     >
                 </re-search>
                 <div class="add-button">
@@ -93,7 +88,7 @@
                 [getRowId]="getRowId"
             ></ag-grid-angular>
             <p class="grid-footer ag-theme-alpine-dark">
-                Filtered: {{ api?.getDisplayedRowCount()}} Total: {{(allConfigs$ | async).length}}
+                Filtered: {{ api?.getDisplayedRowCount()}}
             </p>
         </mat-drawer-content> 
     </mat-drawer-container>

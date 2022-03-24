@@ -1,6 +1,7 @@
 import { Config, Release, FileHistory } from '.';
 import { TestCaseMap, TestCaseWrapper } from './test-case';
-import { AdminConfig, ConfigManagerRow, EnabledCheckboxFilters } from './config-model';
+import { AdminConfig, ConfigManagerRow, ServiceFilters as ServiceFilters } from './config-model';
+import { FilterConfig } from './ui-metadata-map';
 
 export interface ConfigStoreState {
   configs: Config[];
@@ -9,9 +10,6 @@ export interface ConfigStoreState {
   releaseHistory: FileHistory[];
   sortedConfigs: Config[];
   searchTerm: string;
-  filterMyConfigs: boolean;
-  filterUnreleased: boolean;
-  filterUpgradable: boolean;
   releaseSubmitInFlight: boolean;
   editedConfig: Config;
   editedTestCase: TestCaseWrapper;
@@ -20,6 +18,8 @@ export interface ConfigStoreState {
   pastedConfig: any;
   countChangesInRelease: number;
   configManagerRowData: ConfigManagerRow[];
-  enabledCheckboxFilters: EnabledCheckboxFilters;
-  isExternalFilterPresent: boolean;
+  serviceFilters: ServiceFilters;
+  isAnyFilterPresent: boolean;
+  user: string;
+  serviceFilterConfig: FilterConfig;
 }

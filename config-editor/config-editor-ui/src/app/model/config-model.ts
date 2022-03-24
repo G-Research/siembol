@@ -251,6 +251,7 @@ export interface ConfigManagerRow {
   configHistory: FileHistory[],
   labels: string[],
   testCasesCount: number,
+  status: ConfigStatus,
   isFiltered: boolean,
 }
 
@@ -262,10 +263,9 @@ export enum ConfigStatus {
 
 export interface CheckboxEvent {
   checked: boolean,
-  title: string,
   name: string,
 }
 
-export interface EnabledCheckboxFilters {
-  [type: string]: Record<string, boolean>;
+export interface ServiceFilters {
+  [type: string]: boolean;
 }

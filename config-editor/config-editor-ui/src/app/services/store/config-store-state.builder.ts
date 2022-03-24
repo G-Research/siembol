@@ -4,8 +4,8 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, CheckboxEvent, ConfigManagerRow, EnabledCheckboxFilters } from '@app/model/config-model';
-import { UiMetadata } from '@app/model/ui-metadata-map';
+import { AdminConfig, CheckboxEvent, ConfigManagerRow, ConfigStatus, ServiceFilters } from '@app/model/config-model';
+import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -113,30 +113,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  filterMyConfigs(filterMyConfigs: boolean): ConfigStoreStateBuilder {
-    this.state.filterMyConfigs = filterMyConfigs;
-    return this;
-  }
-
-  filterUnreleased(filterUnreleased: boolean): ConfigStoreStateBuilder {
-    this.state.filterUnreleased = filterUnreleased;
-    return this;
-  }
-
-  filterUpgradable(filterUpgradable: boolean): ConfigStoreStateBuilder {
-    this.state.filterUpgradable = filterUpgradable;
-    return this;
-  }
-
   updateCheckboxFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
-    if (this.state.enabledCheckboxFilters[event.title] === undefined) {
-      this.state.enabledCheckboxFilters[event.title] = {};
-    }
-    if (event.checked) {
-      this.state.enabledCheckboxFilters[event.title][event.name] = true;
-    } else {
-      delete this.state.enabledCheckboxFilters[event.title][event.name];
-    }
+    this.state.serviceFilters[event.name] = event.checked;
     return this;
   }
 
@@ -213,87 +191,68 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  computeConfigManagerRowData(user: string, uiMetadata: UiMetadata) {
-    this.computeIsExternalFilterPresent();
+  user(user: string) {
+    this.state.user = user;
+    return this;
+  }
+
+  serviceFilterConfig(uiMetadata: UiMetadata, commonFilters: FilterConfig) {
+    this.state.serviceFilterConfig = { 
+      ...uiMetadata.checkboxes,
+      ...commonFilters,
+    };
+    return this;
+  }
+
+  computeConfigManagerRowData() {
+    this.computeIsServiceFilterPresent();
     this.state.configManagerRowData = this.state.sortedConfigs.map(
-      (config: Config) => this.getRowFromConfig(config, this.state.release, user, uiMetadata)
+      (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
   }
 
-  private computeIsExternalFilterPresent() {
-    this.state.isExternalFilterPresent = this.state.filterMyConfigs 
-      || this.state.filterUnreleased 
-      || this.state.filterUpgradable
-      || this.isGroupCheckboxFilterPresent(this.state.enabledCheckboxFilters);
+  private computeIsServiceFilterPresent() {
+    this.state.isAnyFilterPresent = this.isServiceFilterPresent(this.state.serviceFilters);
   }
 
-  private doesExternalFilterPass(node: ConfigManagerRow, user: string, uiMetadata: UiMetadata): boolean {
-    if (this.state.filterMyConfigs && node.author !== user) {
-      return false;
-    }
-    if (this.state.filterUnreleased && node.releasedVersion !== 0) {
-      return false;
-    }
-    if (this.state.filterUpgradable && (node.releasedVersion === node.version || node.releasedVersion === 0)) {
-      return false;
-    } 
-    return this.doGroupCheckboxesPass(node, uiMetadata);
-  }
-
-  private isGroupCheckboxFilterPresent(filters: EnabledCheckboxFilters): boolean {
-    for (const checkboxGroup of Object.values(filters)) {
-      for (const checked of Object.values(checkboxGroup)) {
-        if (checked) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private doGroupCheckboxesPass(node: ConfigManagerRow, uiMetadata: UiMetadata): boolean {
-    for (const [groupTitle, checkboxes] of Object.entries(this.state.enabledCheckboxFilters)) {
-      if (!this.doesGroupCheckboxFilterPass(groupTitle, checkboxes, node, uiMetadata)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private doesGroupCheckboxFilterPass(
-    groupTitle: string, 
-    checkboxes: Record<string, boolean>, 
-    node: ConfigManagerRow,
-    uiMetadata: UiMetadata
-  ): boolean {
-    for (const [checkBoxName, checked] of Object.entries(checkboxes)) {
+  private isServiceFilterPresent(filters: ServiceFilters): boolean {
+    for (const checked of Object.values(filters)) {
       if (checked) {
-        if (!this.doesSingleCheckboxFilterPass(groupTitle, checkBoxName, node, uiMetadata)) {
-          return false;
-        }
-      }
-    }  
-    return true;
-  }
-  
-
-  private doesSingleCheckboxFilterPass(
-    groupTitle: string, 
-    checkboxName: string, 
-    node: ConfigManagerRow,
-    uiMetadata: UiMetadata
-  ): boolean {
-    const filter = uiMetadata.checkboxes[groupTitle][checkboxName];
-    for (const value of filter.values) {
-      if (node.labels.find(l => l.toLowerCase() === filter.label + ":" + value)){
         return true;
       }
     }
     return false;
   }
 
-  private getRowFromConfig(config: Config, release: Release, user: string, uiMetadata: UiMetadata): ConfigManagerRow {
+  private doesAnyFilterPass(node: ConfigManagerRow): boolean {
+    return this.doFiltersPass(node);
+  }
+
+  private doFiltersPass(node: ConfigManagerRow): boolean {
+    for (const [name, checked] of Object.entries(this.state.serviceFilters)) {
+      if (checked && !this.doesSingleFilterPass(name, node)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private doesSingleFilterPass(
+    name: string, 
+    node: ConfigManagerRow
+  ): boolean {
+    const [groupName, filterName] = name.split('|', 2);
+    const filter = this.state.serviceFilterConfig[groupName][filterName];
+    const re = new RegExp(filter.pattern, 'i');
+    const value = node[filter.field];
+    if (value instanceof Array) {
+      return value.some(v => re.test(v));
+    }
+    return re.test(value);
+  }
+
+  private getRowFromConfig(config: Config, release: Release): ConfigManagerRow {
     const releaseConfig = release.configs.find(x => x.name === config.name);
     const releaseVersion = releaseConfig? releaseConfig.version : 0;
     const row = {
@@ -304,11 +263,23 @@ export class ConfigStoreStateBuilder {
       configHistory: config.fileHistory,
       labels: config.tags,
       testCasesCount: config.testCases.length,
+      status: this.getStatus(config.version, releaseVersion),
       isFiltered: true,
     };
-    if (this.state.isExternalFilterPresent) {
-      row.isFiltered = this.doesExternalFilterPass(row, user, uiMetadata);
+    if (this.state.isAnyFilterPresent) {
+      row.isFiltered = this.doesAnyFilterPass(row);
     }
     return row;
+  }
+
+  private getStatus(lastVersion: number, releasedVersion: number) {
+    switch(releasedVersion) {
+      case(0):
+        return ConfigStatus.UNRELEASED;
+      case(lastVersion):
+        return ConfigStatus.UP_TO_DATE;
+      default:
+        return ConfigStatus.UPGRADABLE;
+    }
   }
 }

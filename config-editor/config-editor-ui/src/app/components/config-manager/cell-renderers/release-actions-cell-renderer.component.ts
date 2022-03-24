@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { ConfigStatus } from "@app/model/config-model";
 import { ICellRendererAngularComp } from '@ag-grid-community/angular';
 import { ICellRendererParams } from '@ag-grid-community/core';
@@ -23,23 +23,16 @@ import { ICellRendererParams } from '@ag-grid-community/core';
   </span>
   `,
 })
-export class ReleaseActionsCellRendererComponent implements ICellRendererAngularComp, OnInit {
+export class ReleaseActionsCellRendererComponent implements ICellRendererAngularComp {
   status: ConfigStatus;
   configStatusEnum = ConfigStatus;
   releasedVersion: number;
   lastVersion: number;
   private params: any;
 
-  ngOnInit() {
-    this.updateStatus();
-  }
-
-  updateStatus() { 
-    this.status = this.getStatus();
-  }
-
   agInit(params: any): void {
     this.params = params;
+    this.updateValues();
   }
 
   removeConfigFromRelease() {
@@ -58,22 +51,16 @@ export class ReleaseActionsCellRendererComponent implements ICellRendererAngular
     this.params.context.componentParent.onViewDiff(this.params.node.id);
   }
 
+  updateValues() {
+    this.status = this.params.node.data.status;
+    this.releasedVersion = this.params.node.data.releasedVersion;
+    this.lastVersion = this.params.node.data.version;
+  }
+
   refresh(params: ICellRendererParams) {
     this.params = params;
-    this.updateStatus();
+    this.updateValues();
     return true
   }
 
-  private getStatus() {
-    this.releasedVersion = this.params.node.data.releasedVersion;
-    this.lastVersion = this.params.node.data.version;
-    switch(this.releasedVersion) {
-      case(0):
-        return ConfigStatus.UNRELEASED;
-      case(this.lastVersion):
-        return ConfigStatus.UP_TO_DATE;
-      default:
-        return ConfigStatus.UPGRADABLE;
-    }
-  }
 }

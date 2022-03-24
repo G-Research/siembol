@@ -1,18 +1,19 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { CheckboxEvent } from "@app/model/config-model";
-import { CheckboxConfig } from "@app/model/ui-metadata-map";
+import { CheckboxEvent, ServiceFilters } from "@app/model/config-model";
+import { FilterConfig } from "@app/model/ui-metadata-map";
 
 @Component({
   selector: "re-checkbox-filters",
   template: `
   <div class="container">
     <mat-list *ngFor="let checkboxFilter of checkboxFilters | keyvalue">
-      <span mat-subheader>{{ checkboxFilter.key | titlecase }}</span>
+      <span mat-subheader>{{ checkboxFilter.key.replace('_', ' ') | titlecase }}</span>
         <mat-checkbox 
         *ngFor="let singleCheckbox of checkboxFilter.value | keyvalue" 
+        [(ngModel)]="selectedCheckboxes[checkboxFilter.key + '|' + singleCheckbox.key]"
         (change)="clickCheckbox($event.checked, checkboxFilter.key, singleCheckbox.key)"
         >
-        {{ singleCheckbox.key | titlecase }}
+        {{ singleCheckbox.key.replace('_', ' ') | titlecase }}
         </mat-checkbox>
     </mat-list>
   </div>
@@ -38,14 +39,18 @@ import { CheckboxConfig } from "@app/model/ui-metadata-map";
       font-size: 20px;
       padding: 0;
     }
+    /* .mat-checkbox-layout {
+      color: #b5b5b5;
+    } */
     `,
   ],
 })
 export class CheckboxFiltersComponent {
-  @Input() checkboxFilters: CheckboxConfig;
+  @Input() checkboxFilters: FilterConfig;
+  @Input() selectedCheckboxes: ServiceFilters;
   @Output() readonly selectedCheckbox: EventEmitter<CheckboxEvent> = new EventEmitter<CheckboxEvent>();
 
-  clickCheckbox(event: boolean, title: string, name: string) {
-    this.selectedCheckbox.emit({ checked: event, title, name });
+  clickCheckbox(event: boolean, group_name: string, name: string) {
+    this.selectedCheckbox.emit({ checked: event, name: group_name + "|" + name });
   }
 }

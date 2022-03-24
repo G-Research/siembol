@@ -13,12 +13,12 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { CheckboxEvent, ConfigManagerRow, Importers, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, Importers, ServiceFilters, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
 import { RowDragEvent, GridSizeChangedEvent, RowNode, GridApi, GetRowIdFunc } from '@ag-grid-community/core';
-import { CheckboxConfig } from '@app/model/ui-metadata-map';
+import { FilterConfig } from '@app/model/ui-metadata-map';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,13 +36,12 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   releaseSubmitInFlight$: Observable<boolean>;
   searchTerm$: Observable<string>;
   filteredRelease$: Observable<Release>;
-  filterMyConfigs$: Observable<boolean>;
-  filterUnreleased$: Observable<boolean>;
-  filterUpgradable$: Observable<boolean>;
   releaseHistory$: Observable<FileHistory[]>;
   rowData$: Observable<ConfigManagerRow[]>;
-  isExternalFilterPresent$: Observable<boolean>;
-  isExternalFilterPresent: boolean;
+  isAnyFilterPresent$: Observable<boolean>;
+  isAnyFilterPresent: boolean;
+  serviceFilterConfig$: Observable<FilterConfig>;
+  serviceFilters$: Observable<ServiceFilters>;
   releaseHistory;
   disableEditingFeatures: boolean;
   importers$: Observable<Importers>;
@@ -56,6 +55,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   context: any;
   gridOptions = {
     tooltipShowDelay: 100,
+    suppressMovableColumns: true,
     suppressMoveWhenRowDragging: true,
     rowDragManaged: true,
     rowSelection: 'single',
@@ -73,11 +73,11 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     onGridReady: (params: any) => {
       this.api = params.api;
     },
-    isExternalFilterPresent: () => this.isExternalFilterPresent,
+    isExternalFilterPresent: () => this.isAnyFilterPresent,
     doesExternalFilterPass: (node: RowNode) => node.data.isFiltered,
   };
   api: GridApi;
-  checkboxFilters: CheckboxConfig;
+  checkboxFilters: FilterConfig;
   countChangesInRelease$ : Observable<number>;
   private rowMoveStartIndex: number;
 
@@ -103,20 +103,16 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.release$ = this.configStore.release$;
 
     this.searchTerm$ = this.configStore.searchTerm$;
-    this.filterMyConfigs$ = this.configStore.filterMyConfigs$;
-
-    this.filterUnreleased$ = this.configStore.filterUnreleased$;
-    this.filterUpgradable$ = this.configStore.filterUpgradable$;
 
     this.releaseHistory$ = this.configStore.releaseHistory$;
     this.importers$ = this.configStore.importers$;
     this.useImporters = this.configService.useImporters;
 
     this.rowData$ = this.configStore.configManagerRowData$;
-    this.isExternalFilterPresent$ = this.configStore.isExternalFilterPresent$;
+    this.isAnyFilterPresent$ = this.configStore.isAnyFilterPresent$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
-
-    this.checkboxFilters = this.editorService.metaDataMap.checkboxes;
+    this.serviceFilterConfig$ = this.configStore.serviceFilterConfig$;
+    this.serviceFilters$ = this.configStore.serviceFilters$;
   }
 
   ngOnInit() {
@@ -133,8 +129,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.importers$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(i => {
       this.importers = i;
     });
-    this.isExternalFilterPresent$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
-      this.isExternalFilterPresent = cloneDeep(s);
+    this.isAnyFilterPresent$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
+      this.isAnyFilterPresent = cloneDeep(s);
     });
 
   }
@@ -228,11 +224,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onFilterMine($event: boolean) {
-    this.configStore.updateFilterMyConfigs($event);
-    this.api.onFilterChanged();
-  }
-
   onClickCheckbox(event: CheckboxEvent) {
     this.configStore.updateCheckboxFilters(event);
     this.api.onFilterChanged();
@@ -247,16 +238,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.blockUI.stop();
     }, this.configService.blockingTimeout);
-  }
-
-  onFilterUpgradable($event: boolean) {
-    this.configStore.updateFilterUpgradable($event);
-    this.api.onFilterChanged();
-  }
-
-  onFilterUnreleased($event: boolean) {
-    this.configStore.updateFilterUnreleased($event);
-    this.api.onFilterChanged();
   }
 
   deleteConfigFromStore(name: string) {

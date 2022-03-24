@@ -20,9 +20,6 @@ const initialConfigStoreState: ConfigStoreState = {
   releaseHistory: [],
   editedConfig: null,
   editedTestCase: null,
-  filterMyConfigs: false,
-  filterUnreleased: false,
-  filterUpgradable: false,
   initialRelease: undefined,
   releaseSubmitInFlight: false,
   searchTerm: undefined,
@@ -31,8 +28,10 @@ const initialConfigStoreState: ConfigStoreState = {
   pastedConfig: undefined,
   countChangesInRelease: 0,
   configManagerRowData: [],
-  enabledCheckboxFilters: {},
-  isExternalFilterPresent: false,
+  serviceFilters: {},
+  isAnyFilterPresent: false,
+  serviceFilterConfig: undefined,
+  user: undefined,
 };
 
 const initialPullRequestState: PullRequestInfo = {
@@ -56,9 +55,6 @@ export class ConfigStoreService {
   public readonly release$ = this.store.asObservable().pipe(map(x => x.release));
   public readonly initialRelease$ = this.store.asObservable().pipe(map(x => x.initialRelease));
   public readonly searchTerm$ = this.store.asObservable().pipe(map(x => x.searchTerm));
-  public readonly filterMyConfigs$ = this.store.asObservable().pipe(map(x => x.filterMyConfigs));
-  public readonly filterUnreleased$ = this.store.asObservable().pipe(map(x => x.filterUnreleased));
-  public readonly filterUpgradable$ = this.store.asObservable().pipe(map(x => x.filterUpgradable));
   public readonly releaseHistory$ = this.store.asObservable().pipe(map(x => x.releaseHistory));
   public readonly editedConfig$ = this.store.asObservable().pipe(map(x => x.editedConfig));
   public readonly editedConfigTestCases$ = this.store.asObservable().pipe(map(x => x.editedConfig.testCases));
@@ -71,7 +67,9 @@ export class ConfigStoreService {
   public readonly importers$ = this.importers.asObservable();
   public readonly configManagerRowData$ = this.store.asObservable().pipe(map(x => x.configManagerRowData));
   public readonly countChangesInRelease$ = this.store.asObservable().pipe(map(x => x.countChangesInRelease));
-  public readonly isExternalFilterPresent$ = this.store.asObservable().pipe(map(x => x.isExternalFilterPresent));
+  public readonly isAnyFilterPresent$ = this.store.asObservable().pipe(map(x => x.isAnyFilterPresent));
+  public readonly serviceFilterConfig$ = this.store.asObservable().pipe(map(x => x.serviceFilterConfig));
+  public readonly serviceFilters$ = this.store.asObservable().pipe(map(x => x.serviceFilters));
 
   /*eslint-enable */
 
@@ -104,8 +102,16 @@ export class ConfigStoreService {
     this.configHistoryService = new ConfigHistoryService();
   }
 
-  initialise(configs: Config[], release: any, testCaseMap: TestCaseMap) {
+  initialise(
+    configs: Config[], 
+    release: any, 
+    testCaseMap: TestCaseMap, 
+    user: string,
+    uiMetadata: UiMetadata
+  ) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
+      .user(user)
+      .serviceFilterConfig(uiMetadata, this.appService.commonFilters)
       .testCaseMap(testCaseMap)
       .configs(configs)
       .updateTestCasesInConfigs()
@@ -114,7 +120,7 @@ export class ConfigStoreService {
       .releaseHistory(release.releaseHistory)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -138,34 +144,7 @@ export class ConfigStoreService {
   updateSearchTerm(searchTerm: string) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .searchTerm(searchTerm)
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
-      .build();
-
-    this.store.next(newState);
-  }
-
-  updateFilterMyConfigs(value: boolean) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .filterMyConfigs(value)
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
-      .build();
-
-    this.store.next(newState);
-  }
-
-  updateFilterUpgradable(value: boolean) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .filterUpgradable(value)
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
-      .build();
-
-    this.store.next(newState);
-  }
-
-  updateFilterUnreleased(value: boolean) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .filterUnreleased(value)      
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -174,7 +153,7 @@ export class ConfigStoreService {
   updateCheckboxFilters(event: CheckboxEvent) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .updateCheckboxFilters(event)      
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -185,7 +164,7 @@ export class ConfigStoreService {
       .addConfigToRelease(name)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -196,7 +175,7 @@ export class ConfigStoreService {
       .removeConfigFromRelease(name)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -207,7 +186,7 @@ export class ConfigStoreService {
       .upgradeConfigInRelease(name)
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -217,7 +196,7 @@ export class ConfigStoreService {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .moveConfigInRelease(configName, filteredCurrentIndex)
       .reorderConfigsByRelease()
-      .computeConfigManagerRowData(this.user, this.metaDataMap)
+      .computeConfigManagerRowData()
       .build();
 
     this.store.next(newState);
@@ -261,7 +240,7 @@ export class ConfigStoreService {
       testCaseMapFun
     ).pipe(map(([configs, release, testCaseMap]) => {
       if (configs && release && testCaseMap) {
-        this.initialise(configs, release, testCaseMap);
+        this.initialise(configs, release, testCaseMap, this.user, this.metaDataMap);
       }
     }));
   }
@@ -314,7 +293,7 @@ export class ConfigStoreService {
           .detectOutdatedConfigs()
           .reorderConfigsByRelease()
           .editedConfigByName(config.name)
-          .computeConfigManagerRowData(this.user, this.metaDataMap)
+          .computeConfigManagerRowData()
           .build();
         this.store.next(newState);
         this.configHistoryService.clear();
@@ -458,7 +437,7 @@ export class ConfigStoreService {
         .updateTestCasesInConfigs()
         .detectOutdatedConfigs()
         .reorderConfigsByRelease()
-        .computeConfigManagerRowData(this.user, this.metaDataMap)
+        .computeConfigManagerRowData()
         .build();
 
       this.store.next(newState);
@@ -593,7 +572,7 @@ export class ConfigStoreService {
         .detectOutdatedConfigs()
         .reorderConfigsByRelease()
         .editedConfigTestCases(testCaseMap[editedConfigName])
-        .computeConfigManagerRowData(this.user, this.metaDataMap)
+        .computeConfigManagerRowData()
         .build();
       this.store.next(newState);
       return true;
