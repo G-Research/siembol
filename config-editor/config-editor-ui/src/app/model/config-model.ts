@@ -269,3 +269,5 @@ export interface CheckboxEvent {
 export interface ServiceFilters {
   [type: string]: boolean;
 }
+
+export const FILTER_DELIMITER = '|';

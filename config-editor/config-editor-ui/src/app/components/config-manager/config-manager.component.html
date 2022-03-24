@@ -3,7 +3,7 @@
         <mat-drawer #drawer mode="side" opened>
             <ng-scrollbar [track]="'vertical'">
                 <re-checkbox-filters 
-                    [checkboxFilters]="serviceFilterConfig$ | async"
+                    [checkboxFilters]="serviceFilterConfig"
                     [selectedCheckboxes]="serviceFilters$ | async" 
                     (selectedCheckbox)="onClickCheckbox($event)" 
                     >
@@ -86,6 +86,7 @@
                 [rowData]="(rowData$ | async)"
                 [gridOptions]="gridOptions"
                 [getRowId]="getRowId"
+                (gridReady)="onGridReady($event)"
             ></ag-grid-angular>
             <p class="grid-footer ag-theme-alpine-dark">
                 Filtered: {{ api?.getDisplayedRowCount()}}

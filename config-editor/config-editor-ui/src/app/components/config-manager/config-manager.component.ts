@@ -4,7 +4,7 @@ import { EditorService } from '@services/editor.service';
 import { Config, Release, PullRequestInfo } from '@app/model';
 import { PopupService } from '@app/services/popup.service';
 import { cloneDeep } from 'lodash';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, first } from 'rxjs';
 import { skip, take, takeUntil } from 'rxjs/operators';
 import { ReleaseDialogComponent } from '../release-dialog/release-dialog.component';
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
@@ -40,7 +40,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   rowData$: Observable<ConfigManagerRow[]>;
   isAnyFilterPresent$: Observable<boolean>;
   isAnyFilterPresent: boolean;
-  serviceFilterConfig$: Observable<FilterConfig>;
+  serviceFilterConfig: FilterConfig;
   serviceFilters$: Observable<ServiceFilters>;
   releaseHistory;
   disableEditingFeatures: boolean;
@@ -70,14 +70,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     onGridSizeChanged: (event: GridSizeChangedEvent) => {
       event.api.sizeColumnsToFit();
     }, 
-    onGridReady: (params: any) => {
-      this.api = params.api;
-    },
     isExternalFilterPresent: () => this.isAnyFilterPresent,
     doesExternalFilterPass: (node: RowNode) => node.data.isFiltered,
   };
   api: GridApi;
-  checkboxFilters: FilterConfig;
   countChangesInRelease$ : Observable<number>;
   private rowMoveStartIndex: number;
 
@@ -111,7 +107,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.rowData$ = this.configStore.configManagerRowData$;
     this.isAnyFilterPresent$ = this.configStore.isAnyFilterPresent$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
-    this.serviceFilterConfig$ = this.configStore.serviceFilterConfig$;
     this.serviceFilters$ = this.configStore.serviceFilters$;
   }
 
@@ -132,7 +127,19 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.isAnyFilterPresent$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
       this.isAnyFilterPresent = cloneDeep(s);
     });
+    this.configStore.serviceFilterConfig$.pipe(first()).subscribe(s => {
+      this.serviceFilterConfig = cloneDeep(s);
+    });
+  }
 
+  onGridReady(params: any) {
+    this.api = params.api;
+    this.searchTerm$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(s => {
+      this.api.setQuickFilter(s);
+    });
+    this.serviceFilters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      this.api.onFilterChanged();
+    });
   }
 
   ngOnDestroy() {
@@ -142,9 +149,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onSearch(searchTerm: string) {
     this.configStore.updateSearchTerm(searchTerm);
-    this.api.setQuickFilter(
-      searchTerm
-    );
   }
 
   upgrade(name: string) {
@@ -225,8 +229,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClickCheckbox(event: CheckboxEvent) {
-    this.configStore.updateCheckboxFilters(event);
-    this.api.onFilterChanged();
+    this.configStore.updateServiceFilters(event);
   }
 
   onSyncWithGit() {

@@ -4,7 +4,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, CheckboxEvent, ConfigManagerRow, ConfigStatus, ServiceFilters } from '@app/model/config-model';
+import { AdminConfig, CheckboxEvent, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, ServiceFilters } from '@app/model/config-model';
 import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
 
 export class ConfigStoreStateBuilder {
@@ -113,7 +113,7 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  updateCheckboxFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
+  updateServiceFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
     this.state.serviceFilters[event.name] = event.checked;
     return this;
   }
@@ -205,15 +205,11 @@ export class ConfigStoreStateBuilder {
   }
 
   computeConfigManagerRowData() {
-    this.computeIsServiceFilterPresent();
+    this.state.isAnyFilterPresent = this.isServiceFilterPresent(this.state.serviceFilters);
     this.state.configManagerRowData = this.state.sortedConfigs.map(
       (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
-  }
-
-  private computeIsServiceFilterPresent() {
-    this.state.isAnyFilterPresent = this.isServiceFilterPresent(this.state.serviceFilters);
   }
 
   private isServiceFilterPresent(filters: ServiceFilters): boolean {
@@ -223,10 +219,6 @@ export class ConfigStoreStateBuilder {
       }
     }
     return false;
-  }
-
-  private doesAnyFilterPass(node: ConfigManagerRow): boolean {
-    return this.doFiltersPass(node);
   }
 
   private doFiltersPass(node: ConfigManagerRow): boolean {
@@ -242,7 +234,7 @@ export class ConfigStoreStateBuilder {
     name: string, 
     node: ConfigManagerRow
   ): boolean {
-    const [groupName, filterName] = name.split('|', 2);
+    const [groupName, filterName] = name.split(FILTER_DELIMITER, 2);
     const filter = this.state.serviceFilterConfig[groupName][filterName];
     const re = new RegExp(filter.pattern, 'i');
     const value = node[filter.field];
@@ -267,7 +259,7 @@ export class ConfigStoreStateBuilder {
       isFiltered: true,
     };
     if (this.state.isAnyFilterPresent) {
-      row.isFiltered = this.doesAnyFilterPass(row);
+      row.isFiltered = this.doFiltersPass(row);;
     }
     return row;
   }

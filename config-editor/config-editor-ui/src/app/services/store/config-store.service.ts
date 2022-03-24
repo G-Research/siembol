@@ -150,9 +150,9 @@ export class ConfigStoreService {
     this.store.next(newState);
   }
 
-  updateCheckboxFilters(event: CheckboxEvent) {
+  updateServiceFilters(event: CheckboxEvent) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .updateCheckboxFilters(event)      
+      .updateServiceFilters(event)      
       .computeConfigManagerRowData()
       .build();
 
