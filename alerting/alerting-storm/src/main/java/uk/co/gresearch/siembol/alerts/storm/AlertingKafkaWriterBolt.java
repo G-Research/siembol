@@ -68,16 +68,17 @@ public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
             AlertingResult matchesInfo = ruleProtection.incrementRuleMatches(match.getFullRuleName());
             int hourlyMatches = matchesInfo.getAttributes().getHourlyMatches();
             int dailyMatches = matchesInfo.getAttributes().getDailyMatches();
-            boolean hourlyMatchesThreshold = match.getMaxHourMatches().intValue() < hourlyMatches;
-            boolean dailyMatchesThreshold = match.getMaxDayMatches().intValue() < dailyMatches;
+            int hourlyMatchesDiffWithMax = hourlyMatches - match.getMaxHourMatches().intValue();
+            int dailyMatchesDiffWithMax = dailyMatches - match.getMaxDayMatches().intValue();
 
-            if (hourlyMatchesThreshold || dailyMatchesThreshold) {
+            if (hourlyMatchesDiffWithMax > 0 || dailyMatchesDiffWithMax > 0) {
                 String msg = String.format(RULE_PROTECTION_ERROR_MESSAGE,
                         match.getFullRuleName(), hourlyMatches, dailyMatches, match.getAlertJson());
                 LOG.debug(msg);
 
-                if ((hourlyMatchesThreshold && isPowerOfTwo(hourlyMatches))
-                        || (dailyMatchesThreshold && isPowerOfTwo(dailyMatches))) {
+                if ((hourlyMatchesDiffWithMax > 0  && isPowerOfTwo(hourlyMatchesDiffWithMax))
+                        || (dailyMatchesDiffWithMax > 0 && isPowerOfTwo(dailyMatchesDiffWithMax))) {
+                    //NOTE: sending message about an alert filtered by rule protection is sampled exponentially
                     exceptions.add(msg);
                 }
 

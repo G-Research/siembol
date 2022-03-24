@@ -142,7 +142,11 @@ public class AlertingKafkaWriterBoltTest {
     public void testAlertMessageReachProtectionThreshold() throws Exception {
         AlertMessage alert = new AlertMessage(AlertingEngineType.SIEMBOL_ALERTS, alertMap, AlertMessageStr);
         AlertMessages.add(alert);
-        AlertMessages.add(alert);
+        AlertMessages.add(alert);//#1 protection
+        AlertMessages.add(alert);//#2 protection
+        AlertMessages.add(alert);//#3 protection
+        AlertMessages.add(alert);//#4 protection
+        AlertMessages.add(alert);//#5 protection
         writerBolt.execute(tuple);
         List<String> outputAlert = kafkaRule.helper().consumeStrings("alerts", 1)
                 .get(10, TimeUnit.SECONDS);
@@ -150,10 +154,10 @@ public class AlertingKafkaWriterBoltTest {
         Assert.assertEquals(1, outputAlert.size());
         Assert.assertEquals(AlertMessageStr.trim(), outputAlert.get(0).trim());
 
-        List<String> outputExceptions = kafkaRule.helper().consumeStrings("errors", 1)
+        List<String> outputExceptions = kafkaRule.helper().consumeStrings("errors", 3)
                 .get(10, TimeUnit.SECONDS);
         Assert.assertNotNull(outputExceptions);
-        Assert.assertEquals(1, outputExceptions.size());
+        Assert.assertEquals(3, outputExceptions.size());
         Map<String, Object> parsedException = JSON_MAP_READER.readValue(outputExceptions.get(0));
         Assert.assertEquals("siembol_alerts", parsedException.get("failed_sensor_type"));
         Assert.assertEquals("alerting_error", parsedException.get("error_type"));
@@ -163,9 +167,9 @@ public class AlertingKafkaWriterBoltTest {
                 metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ALERTING_ENGINE_MATCHES.getMetricName()));
         Assert.assertEquals(1, metricsTestRegistrarFactory
                 .getCounterValue(SiembolMetrics.ALERTING_RULE_MATCHES.getMetricName("alert1")));
-        Assert.assertEquals(1, metricsTestRegistrarFactory
+        Assert.assertEquals(5, metricsTestRegistrarFactory
                 .getCounterValue(SiembolMetrics.ALERTING_ENGINE_RULE_PROTECTION.getMetricName()));
-        Assert.assertEquals(1, metricsTestRegistrarFactory
+        Assert.assertEquals(5, metricsTestRegistrarFactory
                 .getCounterValue(SiembolMetrics.ALERTING_RULE_PROTECTION.getMetricName("alert1")));
     }
 
