@@ -8,6 +8,7 @@ import { UiMetadata } from '@app/model/ui-metadata-map';
 import { map, mergeMap } from 'rxjs/operators';
 import { ServiceContextMap } from '@app/model/app-config';
 import { ServiceContext } from './editor.service';
+import { cloneDeep } from 'lodash';
 
 export class AppContext {
   user: string;
@@ -96,7 +97,14 @@ export class AppService {
 
   getUiMetadataMap(serviceName: string): UiMetadata {
     const serviceType = this.userServicesMap.get(serviceName).type;
-    return this.config.uiMetadata[serviceType];
+    const uiMetadata = cloneDeep(this.config.uiMetadata[serviceType]);
+    const override = uiMetadata["override"];
+    if (override && override[serviceName]) {
+      for (const [key, value] of Object.entries(override[serviceName])) {
+        uiMetadata[key] = value;
+      }
+    }
+    return uiMetadata;
   }
 
   getUserServiceRoles(serviceName: string): UserRole[] {

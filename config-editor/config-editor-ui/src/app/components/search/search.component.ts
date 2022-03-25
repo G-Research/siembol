@@ -12,14 +12,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 export class SearchComponent implements OnInit {
   @ViewChild('searchBox', { static: true }) searchBox;
   @Input() searchTerm: string;
-  @Input() filterMyConfigs: boolean;
-  @Input() filterUnreleased: boolean;
-  @Input() filterUpgradable: boolean;
   @Output() readonly searchTermChange: EventEmitter<string> = new EventEmitter<string>();
-  @Output() readonly myConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() readonly unreleasedConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() readonly updatedConfigsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  debouncer: Subject<string> = new Subject<string>();
+ debouncer: Subject<string> = new Subject<string>();
 
   myConfigs = true;
 
@@ -39,17 +33,5 @@ export class SearchComponent implements OnInit {
   onClearSearch() {
     this.onSearch('');
     this.searchTerm = '';
-  }
-
-  clickMyConfigs($event: boolean) {
-      this.myConfigsChange.emit($event);
-  }
-
-  clickNotReleased($event: boolean) {
-      this.unreleasedConfigsChange.emit($event);
-  }
-
-  clickUpdatedConfigs($event: boolean) {
-      this.updatedConfigsChange.emit($event);
   }
 }

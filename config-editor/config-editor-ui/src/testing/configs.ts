@@ -73,7 +73,6 @@ export const mockParserConfigMin: Config =
     ],
     version: 2,
     versionFlag: -1,
-
 };
 
 export const mockParserConfig: Config =

@@ -249,8 +249,10 @@ export interface ConfigManagerRow {
   version: number,
   releasedVersion: number,
   configHistory: FileHistory[],
-  labels_: string[],
+  labels: string[],
   testCasesCount: number,
+  status: ConfigStatus,
+  isFiltered: boolean,
 }
 
 export enum ConfigStatus {
@@ -258,3 +260,14 @@ export enum ConfigStatus {
   UPGRADABLE = "upgradable",
   UNRELEASED = "unreleased",
 }
+
+export interface CheckboxEvent {
+  checked: boolean,
+  name: string,
+}
+
+export interface ServiceFilters {
+  [type: string]: boolean;
+}
+
+export const FILTER_DELIMITER = '|';

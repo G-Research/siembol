@@ -147,7 +147,6 @@ export class TestStoreService {
           .updateTestCasesInConfigs()
           .detectOutdatedConfigs()
           .reorderConfigsByRelease()
-          .computeFiltered(this.user)
           .editedTestCase(submittedTestCase)
           .editedTestCaseResult(testCaseWrapper.testCaseResult)
           .editedConfigTestCases(editedConfigTestCases)

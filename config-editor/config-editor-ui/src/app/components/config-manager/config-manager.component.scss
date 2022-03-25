@@ -3,9 +3,8 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
-    padding: 10px 30px;
+    padding: 10px 10px;
     height: calc(100vh - 64px);
-    width: 90%;
     &>mat-divider {
         margin: 0 40px;
     }
@@ -17,23 +16,6 @@
     margin-top: 15px;
     height: 100%;
     width: 100%;
-}
-
-::ng-deep .ag-row .ag-cell {
-    display: flex;
-    align-items: center;
-}
-
-::ng-deep .ag-row .ag-cell-wrapper {
-    width: 100%
-}
-
-::ng-deep .ag-cell-value {
-    width: 100%
-}
-
-::ng-deep .ag-cell-focus, .ag-cell {
-    border: none !important;
 }
 
 .add-button {
@@ -76,4 +58,29 @@ re-search {
 .refresh-button {
     margin: 0;
     padding: 0;
+}
+
+.grid-footer {
+    text-align: right;
+    padding: 5px 10px 3px;
+    background: #444444;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.mat-drawer-container {
+    z-index: auto;
+}
+
+.mat-drawer-content {
+    z-index: auto;
+}
+
+.mat-drawer-fixed {
+    position: absolute;
+}
+
+.mat-drawer {
+    width:220px;
+    border-right: none;
 }

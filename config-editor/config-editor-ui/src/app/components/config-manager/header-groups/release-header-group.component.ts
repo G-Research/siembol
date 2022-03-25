@@ -14,7 +14,8 @@ import { Component } from '@angular/core';
       [popperPlacement]="'left-start'"
       [popperHideOnScroll]="true"
       [popperDisableStyle]="true"
-      [popperAppendTo]="'body'">
+      [popperAppendTo]="'body'"
+      >
       <popper-content #fileHistory>
           <re-change-history [history]="this.params.context.componentParent.releaseHistory.fileHistory"></re-change-history>
       </popper-content>

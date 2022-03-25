@@ -4,7 +4,8 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, ConfigManagerRow } from '@app/model/config-model';
+import { AdminConfig, CheckboxEvent, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, ServiceFilters } from '@app/model/config-model';
+import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -112,61 +113,20 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  computeFiltered(user: string): ConfigStoreStateBuilder {
-    this.state.filteredConfigs = cloneDeep(this.state.sortedConfigs);
-    this.state.filteredRelease = cloneDeep(this.state.release);
-
-    if (this.state.filterUnreleased) {
-      this.state.filteredRelease.configs = [];
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => !r.isReleased);
-    }
-
-    if (this.state.filterUpgradable) {
-      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(d => d.versionFlag > 0);
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.versionFlag > 0);
-    }
-
-    if (this.state.filterMyConfigs) {
-      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(r => r.author === user);
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(r => r.author === user);
-    }
-
-    if (this.state.searchTerm !== undefined && this.state.searchTerm !== '') {
-      this.state.filteredRelease.configs = this.state.filteredRelease.configs.filter(c => this.filterSearchTerm(c));
-      this.state.filteredConfigs = this.state.filteredConfigs.filter(c => this.filterSearchTerm(c));
-    }
-
+  updateServiceFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
+    this.state.serviceFilters[event.name] = event.checked;
     return this;
   }
 
-  filterMyConfigs(filterMyConfigs: boolean): ConfigStoreStateBuilder {
-    this.state.filterMyConfigs = filterMyConfigs;
-    return this;
-  }
-
-  filterUnreleased(filterUnreleased: boolean): ConfigStoreStateBuilder {
-    this.state.filterUnreleased = filterUnreleased;
-    return this;
-  }
-
-  filterUpgradable(filterUpgradable: boolean): ConfigStoreStateBuilder {
-    this.state.filterUpgradable = filterUpgradable;
-    return this;
-  }
-
-  addConfigToRelease(filteredIndex: number) {
-    if (filteredIndex < this.state.filteredRelease.configs.length) {
-      return this;
-    }
-
-    const configToAdd = cloneDeep(this.state.filteredConfigs[filteredIndex]);
+  addConfigToRelease(name: string) {
+    const configToAdd = cloneDeep(this.state.configs.find(c => c.name === name));
     this.state.release.configs.push(configToAdd);
     return this;
   }
 
-  removeConfigFromRelease(filteredIndex: number) {
+  removeConfigFromRelease(name: string) {
     this.state.release.configs = this.state.release.configs.filter(
-      x => x.name !== this.state.filteredRelease.configs[filteredIndex].name
+      x => x.name !== name
     );
     return this;
   }
@@ -176,7 +136,7 @@ export class ConfigStoreStateBuilder {
       e => e.name === configName
     );
     const currentIndex = this.state.release.configs.findIndex(
-      e => e.name === this.state.filteredRelease.configs[filteredCurrentIndex]?.name
+      e => e.name === this.state.release.configs[filteredCurrentIndex]?.name
     );
     if (currentIndex === -1) {
       return this;
@@ -185,10 +145,8 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  upgradeConfigInRelease(filteredIndex: number) {
-    const configName = this.state.filteredRelease.configs[filteredIndex].name;
+  upgradeConfigInRelease(configName: string) {
     const originalReleaseIndex = this.state.release.configs.findIndex(d => d.name === configName);
-
     const configToUpgrade = this.state.configs.find(c => c.name === configName);
     this.state.release.configs[originalReleaseIndex] = cloneDeep(configToUpgrade);
     return this;
@@ -233,31 +191,106 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
+  user(user: string) {
+    this.state.user = user;
+    return this;
+  }
+
+  serviceFilterConfig(uiMetadata: UiMetadata) {
+    this.state.serviceFilterConfig = { 
+      ...uiMetadata.checkboxes,
+      ...this.getCommonFilters(),
+    };
+    return this;
+  }
+
   computeConfigManagerRowData() {
-    this.state.configManagerRowData = this.state.filteredConfigs.map(
-      (config: Config) => this.getRowFromConfig(config, this.state.filteredRelease)
+    this.state.isAnyFilterPresent = this.isServiceFilterPresent(this.state.serviceFilters);
+    this.state.configManagerRowData = this.state.sortedConfigs.map(
+      (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
+  }
+
+  private isServiceFilterPresent(filters: ServiceFilters): boolean {
+    for (const checked of Object.values(filters)) {
+      if (checked) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private evaluateFilters(node: ConfigManagerRow): boolean {
+    for (const [name, checked] of Object.entries(this.state.serviceFilters)) {
+      if (checked && !this.evaluateSingleFilter(name, node)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private evaluateSingleFilter(
+    name: string, 
+    node: ConfigManagerRow
+  ): boolean {
+    const [groupName, filterName] = name.split(FILTER_DELIMITER, 2);
+    const filter = this.state.serviceFilterConfig[groupName][filterName];
+    const re = new RegExp(filter.pattern, 'i');
+    const value = node[filter.field];
+    if (value instanceof Array) {
+      return value.some(v => re.test(v));
+    }
+    return re.test(value);
   }
 
   private getRowFromConfig(config: Config, release: Release): ConfigManagerRow {
     const releaseConfig = release.configs.find(x => x.name === config.name);
     const releaseVersion = releaseConfig? releaseConfig.version : 0;
-    return ({
+    const row = {
       author: config.author, 
       version: config.version, 
       config_name: config.name, 
       releasedVersion:  releaseVersion,
       configHistory: config.fileHistory,
-      labels_: config.tags,
+      labels: config.tags,
       testCasesCount: config.testCases.length,
-    });
+      status: this.getStatus(config.version, releaseVersion),
+      isFiltered: true,
+    };
+    if (this.state.isAnyFilterPresent) {
+      row.isFiltered = this.evaluateFilters(row);;
+    }
+    return row;
   }
 
-  private filterSearchTerm(config: any) {
-    const lowerCaseSearchTerm = this.state.searchTerm.toLowerCase();
-    return config.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-           config.author.toLowerCase().startsWith(lowerCaseSearchTerm) ||
-           config.tags === undefined ? true : config.tags.join(' ').toLowerCase().includes(lowerCaseSearchTerm)
+  private getStatus(lastVersion: number, releasedVersion: number) {
+    switch(releasedVersion) {
+      case(0):
+        return ConfigStatus.UNRELEASED;
+      case(lastVersion):
+        return ConfigStatus.UP_TO_DATE;
+      default:
+        return ConfigStatus.UPGRADABLE;
+    }
+  }
+
+  private getCommonFilters(): FilterConfig {
+    return {
+      "general": {
+        "my_edits": { 
+          "field": "author",
+          "pattern": this.state.user, 
+        },
+        "unreleased": {
+          "field": "status",
+          "pattern": ConfigStatus.UNRELEASED,
+        },
+        "upgradable": {
+          "field": "status",
+          "pattern": ConfigStatus.UPGRADABLE,
+        },
+      },
+    }
   }
 }
