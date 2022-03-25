@@ -43,22 +43,6 @@ export const mockAppContext = new AppContext();
 mockAppContext.user = 'siembol';
 mockAppContext.userServices= [mockUserInfoAlert, mockUserInfoParser];
 mockAppContext.userServicesMap = mockUserServicesMap;
-mockAppContext.commonFilters = {
-    "general": {
-      "my_edits": { 
-        "field": "author",
-        "pattern": "siembol", 
-      },
-      "unreleased": {
-        "field": "status",
-        "pattern": ConfigStatus.UNRELEASED,
-      },
-      "upgradable": {
-        "field": "status",
-        "pattern": ConfigStatus.UPGRADABLE,
-      },
-    }
-}
 
 export const mockAppContextNoAdmin = new AppContext();
 mockAppContextNoAdmin.user = 'siembol';

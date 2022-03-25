@@ -111,7 +111,7 @@ export class ConfigStoreService {
   ) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .user(user)
-      .serviceFilterConfig(uiMetadata, this.appService.commonFilters)
+      .serviceFilterConfig(uiMetadata)
       .testCaseMap(testCaseMap)
       .configs(configs)
       .updateTestCasesInConfigs()

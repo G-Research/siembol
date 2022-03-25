@@ -196,10 +196,10 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  serviceFilterConfig(uiMetadata: UiMetadata, commonFilters: FilterConfig) {
+  serviceFilterConfig(uiMetadata: UiMetadata) {
     this.state.serviceFilterConfig = { 
       ...uiMetadata.checkboxes,
-      ...commonFilters,
+      ...this.getCommonFilters(),
     };
     return this;
   }
@@ -221,16 +221,16 @@ export class ConfigStoreStateBuilder {
     return false;
   }
 
-  private doFiltersPass(node: ConfigManagerRow): boolean {
+  private evaluateFilters(node: ConfigManagerRow): boolean {
     for (const [name, checked] of Object.entries(this.state.serviceFilters)) {
-      if (checked && !this.doesSingleFilterPass(name, node)) {
+      if (checked && !this.evaluateSingleFilter(name, node)) {
         return false;
       }
     }
     return true;
   }
 
-  private doesSingleFilterPass(
+  private evaluateSingleFilter(
     name: string, 
     node: ConfigManagerRow
   ): boolean {
@@ -259,7 +259,7 @@ export class ConfigStoreStateBuilder {
       isFiltered: true,
     };
     if (this.state.isAnyFilterPresent) {
-      row.isFiltered = this.doFiltersPass(row);;
+      row.isFiltered = this.evaluateFilters(row);;
     }
     return row;
   }
@@ -272,6 +272,25 @@ export class ConfigStoreStateBuilder {
         return ConfigStatus.UP_TO_DATE;
       default:
         return ConfigStatus.UPGRADABLE;
+    }
+  }
+
+  private getCommonFilters(): FilterConfig {
+    return {
+      "general": {
+        "my_edits": { 
+          "field": "author",
+          "pattern": this.state.user, 
+        },
+        "unreleased": {
+          "field": "status",
+          "pattern": ConfigStatus.UNRELEASED,
+        },
+        "upgradable": {
+          "field": "status",
+          "pattern": ConfigStatus.UPGRADABLE,
+        },
+      },
     }
   }
 }

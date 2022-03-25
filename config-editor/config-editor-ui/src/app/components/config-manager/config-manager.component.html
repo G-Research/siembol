@@ -12,7 +12,7 @@
         </mat-drawer>
         <mat-drawer-content class="container">
             <div class="container-title">
-                <a mat-button (click)="drawer.toggle()" *ngIf="serviceFilterConfig$ | async">
+                <a mat-button (click)="drawer.toggle()" *ngIf="serviceFilterConfig">
                     <mat-icon>menu</mat-icon>
                 </a>
                 <re-search 

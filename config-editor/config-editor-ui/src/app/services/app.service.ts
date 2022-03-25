@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '@app/services/app-config.service';
-import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, UserRole, SchemaInfo, Application, applications, ConfigStatus } from '@app/model/config-model';
+import { ServiceInfo, RepositoryLinks, RepositoryLinksWrapper, UserInfo, UserRole, SchemaInfo, Application, applications } from '@app/model/config-model';
 import { Observable, throwError, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { JSONSchema7 } from 'json-schema';
 import { HttpClient } from '@angular/common/http';
-import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
+import { UiMetadata } from '@app/model/ui-metadata-map';
 import { map, mergeMap } from 'rxjs/operators';
 import { ServiceContextMap } from '@app/model/app-config';
 import { ServiceContext } from './editor.service';
@@ -18,7 +18,6 @@ export class AppContext {
   repositoryLinks: { [name: string]: RepositoryLinks };
   isAdminOfAnyService: boolean;
   serviceContextMap: ServiceContextMap = {};
-  commonFilters: FilterConfig;
   get serviceNames() {
     return Array.from(this.userServicesMap.keys()).sort();
   }
@@ -57,9 +56,6 @@ export class AppService {
   }
   get isAdminOfAnyService() {
     return this.appContext.isAdminOfAnyService;
-  }
-  get commonFilters() {
-    return this.appContext.commonFilters;
   }
 
   constructor(private config: AppConfigService, private http: HttpClient) {}
@@ -202,27 +198,7 @@ export class AppService {
           throwError(`unsupported service type ${service.type} in UI metadata`);
         }
       });
-      ret.commonFilters = this.getCommonFilters(ret.user);
       return ret;
     }));
-  }
-
-  private getCommonFilters(user: string): FilterConfig {
-    return {
-      "general": {
-        "my_edits": { 
-          "field": "author",
-          "pattern": user, 
-        },
-        "unreleased": {
-          "field": "status",
-          "pattern": ConfigStatus.UNRELEASED,
-        },
-        "upgradable": {
-          "field": "status",
-          "pattern": ConfigStatus.UPGRADABLE,
-        },
-      },
-    }
   }
 }

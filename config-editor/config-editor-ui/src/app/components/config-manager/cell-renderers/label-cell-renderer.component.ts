@@ -70,8 +70,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
         overflow: 'hidden',
         maxHeight: '30px',
       })),
-      transition('in => out', animate('350ms ease-in')),
-      transition('out => in', animate('350ms ease-in')),
     ]),
   ],
 })
