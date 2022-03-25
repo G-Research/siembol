@@ -35,4 +35,5 @@ public class KafkaWriterMessage implements Serializable {
     public ProducerRecord<String, String> getProducerRecord() {
         return key == null ? new ProducerRecord<>(topic, message) : new ProducerRecord<>(topic, key, message);
     }
+
 }

@@ -15,6 +15,8 @@ export interface UiMetadata {
   release: ReleaseConfig;
   unionType?: UnionType;
   disableEditingFeatures?: boolean;
+  checkboxes?: FilterConfig
+  override?: Record<string, any>;
 }
 
 export interface TestConfig {
@@ -32,4 +34,17 @@ export interface ReleaseConfig {
 export interface UnionType {
   unionPath: string;
   unionSelectorName: string;
+}
+
+export interface FilterConfig {
+  [type: string] : FilterGroup
+}
+
+export interface FilterGroup {
+  [type: string] : SingleFilter
+}
+
+export interface SingleFilter {
+  field: string,
+  pattern: string,
 }

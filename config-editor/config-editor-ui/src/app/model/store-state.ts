@@ -1,6 +1,7 @@
 import { Config, Release, FileHistory } from '.';
 import { TestCaseMap, TestCaseWrapper } from './test-case';
-import { AdminConfig, ConfigManagerRow } from './config-model';
+import { AdminConfig, ConfigManagerRow, ServiceFilters as ServiceFilters } from './config-model';
+import { FilterConfig } from './ui-metadata-map';
 
 export interface ConfigStoreState {
   configs: Config[];
@@ -8,12 +9,7 @@ export interface ConfigStoreState {
   initialRelease: Release;
   releaseHistory: FileHistory[];
   sortedConfigs: Config[];
-  filteredConfigs: Config[];
-  filteredRelease: Release;
   searchTerm: string;
-  filterMyConfigs: boolean;
-  filterUnreleased: boolean;
-  filterUpgradable: boolean;
   releaseSubmitInFlight: boolean;
   editedConfig: Config;
   editedTestCase: TestCaseWrapper;
@@ -22,4 +18,8 @@ export interface ConfigStoreState {
   pastedConfig: any;
   countChangesInRelease: number;
   configManagerRowData: ConfigManagerRow[];
+  serviceFilters: ServiceFilters;
+  isAnyFilterPresent: boolean;
+  user: string;
+  serviceFilterConfig: FilterConfig;
 }

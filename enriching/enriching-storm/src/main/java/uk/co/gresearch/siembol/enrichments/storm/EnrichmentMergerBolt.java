@@ -14,6 +14,7 @@ import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessages;
+import uk.co.gresearch.siembol.common.storm.SiembolMetricsCounters;
 import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluatorLibrary;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentTuples;
 import uk.co.gresearch.siembol.enrichments.storm.common.EnrichmentPairs;
@@ -64,12 +65,21 @@ public class EnrichmentMergerBolt extends BaseRichBolt {
         }
         EnrichmentExceptions exceptions = (EnrichmentExceptions)exceptionsObj;
 
+        Object countersObj = tuple.getValueByField(EnrichmentTuples.COUNTERS.toString());
+        if (!(countersObj instanceof SiembolMetricsCounters)) {
+            LOG.error(INVALID_TYPE_IN_TUPLES);
+            throw new IllegalArgumentException(INVALID_TYPE_IN_TUPLES);
+        }
+
+        var counters = new SiembolMetricsCounters();
+        counters.addAll((SiembolMetricsCounters)countersObj);
+
         try {
             event = EnrichmentEvaluatorLibrary.mergeEnrichments(event,
                     enrichments,
                     Optional.of(SiembolMessageFields.ENRICHING_TIME.toString()));
         } catch (Exception e) {
-            LOG.error(MERGING_ERROR, event, enrichments.toString());
+            LOG.error(MERGING_ERROR, event, enrichments);
             exceptions.add(ErrorMessage.createErrorMessage(e, ErrorType.ENRICHMENT_ERROR).toString());
         }
 
@@ -77,12 +87,12 @@ public class EnrichmentMergerBolt extends BaseRichBolt {
         KafkaWriterMessages messages = new KafkaWriterMessages();
         messages.add(new KafkaWriterMessage(outputTopic, event));
         exceptions.forEach(x -> messages.add(new KafkaWriterMessage(errorTopic, x)));
-        collector.emit(tuple, new Values(messages));
+        collector.emit(tuple, new Values(messages, counters));
         collector.ack(tuple);
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields(EnrichmentTuples.KAFKA_MESSAGES.toString()));
+        declarer.declare(new Fields(EnrichmentTuples.KAFKA_MESSAGES.toString(), EnrichmentTuples.COUNTERS.toString()));
     }
 }

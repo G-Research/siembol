@@ -41,5 +41,52 @@ body {
 }
 
 @import "@ag-grid-community/core/dist/styles/ag-grid.css";
-@import "@ag-grid-community/core/dist/styles/ag-theme-alpine-dark.css";
+@import "@ag-grid-community/core/dist/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin.scss";
+
+
+.ag-theme-alpine-dark {
+  @include ag-theme-alpine-dark ((
+    background-color: #444444,
+    odd-row-background-color: ag-derived(background-color, $mix: #303030 60% ),
+    header-background-color: ag-derived(background-color, $mix: #303030 60% ),
+    font-family: (Roboto, "Helvetica Neue", sans-serif),
+  ));
+  font-size: 15px;
+
+  .ag-root-wrapper {
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.3), 0px 1px 1px 0px rgba(0,0,0,0.18), 0px 1px 3px 0px rgba(0,0,0,0.14);
+  }
+
+  .ag-cell-focus, .ag-cell {
+    border: none !important;
+  }
+
+  .ag-row .ag-cell {
+    display: flex;
+    align-items: center;
+  }
+  
+  .ag-row .ag-cell-wrapper {
+    width: 100%
+  }
+  
+  .ag-cell-value {
+    width: 100%
+  }
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #868686;
+  transition: all 0.2s ease-in-out;
+  border-radius: 99px;
+}
+
+
+
 

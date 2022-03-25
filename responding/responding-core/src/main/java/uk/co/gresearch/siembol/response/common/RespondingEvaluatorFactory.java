@@ -1,5 +1,7 @@
 package uk.co.gresearch.siembol.response.common;
 
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+
 /**
  * Responding evaluator factory
  * - creates evaluator instances
@@ -43,11 +45,11 @@ public interface RespondingEvaluatorFactory {
     }
 
     /**
-     * Register metric factory that can be used for creating metrics
+     * Register metric factory that can be used for registering metrics
      *
      * @return RespondingResult with OK status code on success or ERROR status code with message otherwise
      */
-    default RespondingResult registerMetrics(MetricFactory metricFactory) {
+    default RespondingResult registerMetrics(SiembolMetricsRegistrar metricRegistrar) {
         return new RespondingResult(RespondingResult.StatusCode.OK, new RespondingResultAttributes());
     }
 }

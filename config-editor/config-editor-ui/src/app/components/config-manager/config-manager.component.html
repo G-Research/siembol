@@ -1,10 +1,24 @@
 <block-ui>
-    <ng-scrollbar [track]="'all'" class="scrollbar">
-        <div class="container">
+    <mat-drawer-container autosize>
+        <mat-drawer #drawer mode="side" opened>
+            <ng-scrollbar [track]="'vertical'">
+                <re-checkbox-filters 
+                    [checkboxFilters]="serviceFilterConfig"
+                    [selectedCheckboxes]="serviceFilters$ | async" 
+                    (selectedCheckbox)="onClickCheckbox($event)" 
+                    >
+                </re-checkbox-filters>
+            </ng-scrollbar>
+        </mat-drawer>
+        <mat-drawer-content class="container">
             <div class="container-title">
-                <re-search [searchTerm]="searchTerm$ | async" [filterMyConfigs]="filterMyConfigs$ | async" [filterUnreleased]="filterUnreleased$ | async"
-                    [filterUpgradable]="filterUpgradable$ | async" (searchTermChange)="onSearch($event)" (myConfigsChange)="onFilterMine($event)"
-                    (unreleasedConfigsChange)="onFilterUnreleased($event)" (updatedConfigsChange)="onFilterUpgradable($event)">
+                <a mat-button (click)="drawer.toggle()" *ngIf="serviceFilterConfig">
+                    <mat-icon>menu</mat-icon>
+                </a>
+                <re-search 
+                    [searchTerm]="searchTerm$ | async" 
+                    (searchTermChange)="onSearch($event)"
+                    >
                 </re-search>
                 <div class="add-button">
                     <a mat-button color="primary" title="Create Config" (click)="onClickCreate()">
@@ -62,7 +76,6 @@
                     </span>
                 </ng-template>
             </div>
-            <mat-divider></mat-divider>
             <ag-grid-angular
                 #agGrid
                 id="myGrid"
@@ -70,11 +83,14 @@
                 [columnDefs]="columnDefs"
                 [context]="context"
                 [defaultColDef]="defaultColDef"
-                [immutableData]="true"
                 [rowData]="(rowData$ | async)"
                 [gridOptions]="gridOptions"
-                [getRowNodeId]="getRowNodeId"
+                [getRowId]="getRowId"
+                (gridReady)="onGridReady($event)"
             ></ag-grid-angular>
-        </div> 
-    </ng-scrollbar>
+            <p class="grid-footer ag-theme-alpine-dark">
+                Filtered: {{ api?.getDisplayedRowCount()}}
+            </p>
+        </mat-drawer-content> 
+    </mat-drawer-container>
 </block-ui>

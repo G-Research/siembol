@@ -85,19 +85,25 @@ public abstract class ParsingApplicationParser implements Serializable {
                     ? JSON_READER.readValue(metadata.trim())
                     : null;
 
-
             long timestamp = timeProvider.getCurrentTimeInMs();
             for (ParserResult parserResult : parseInternally(source, metadata, message)) {
+                var currentResult = new ParsingApplicationResult(parserResult.getSourceType());
                 if (parserResult.getException() != null) {
-                    ret.add(new ParsingApplicationResult(
-                            errorTopic,
-                            getErrorMessage(parserResult.getException(), parserResult.getSourceType(), message)));
+                    currentResult.setResultType(ParsingApplicationResult.ResultType.ERROR);
+                    currentResult.setTopic(errorTopic);
+                    currentResult.setMessage(getErrorMessage(
+                            parserResult.getException(), parserResult.getSourceType(), message));
+                    ret.add(currentResult);
                     continue;
                 }
 
-                List<Map<String, Object>> parsed = parserResult.getParsedMessages();
+                currentResult.setTopic(parserResult.getTopic());
+
+                var parsed = parserResult.getParsedMessages();
                 parsed.removeIf(Map::isEmpty);
                 if (parsed.isEmpty()) {
+                    currentResult.setResultType(ParsingApplicationResult.ResultType.FILTERED);
+                    ret.add(currentResult);
                     continue;
                 }
 
@@ -123,12 +129,19 @@ public abstract class ParsingApplicationParser implements Serializable {
                             }
                         })
                         .collect(Collectors.toCollection(ArrayList::new));
-                ret.add(new ParsingApplicationResult(parserResult.getTopic(), serialised));
+                currentResult.setMessages(serialised);
+                currentResult.setResultType(ParsingApplicationResult.ResultType.PARSED);
+                ret.add(currentResult);
             }
+
             return ret;
         } catch (Exception e) {
             LOG.debug(ERROR_MESSAGE, name, new String(message), metadata, ExceptionUtils.getMessage(e));
-            ret.add(new ParsingApplicationResult(errorTopic, getErrorMessage(e, sourceType, message)));
+            var errorResult = new ParsingApplicationResult(sourceType);
+            errorResult.setTopic(errorTopic);
+            errorResult.setMessage(getErrorMessage(e, sourceType, message));
+            errorResult.setResultType(ParsingApplicationResult.ResultType.ERROR);
+            ret.add(errorResult);
             return ret;
         }
     }

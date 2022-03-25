@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class EnrichmentCommand implements Serializable {
     private static final long serialVersionUID = 1L;
+    private String ruleName;
     private String tableName;
     private String key;
     private ArrayList<Pair<String, String>> tags;
@@ -61,5 +62,13 @@ public class EnrichmentCommand implements Serializable {
             }
         }
         throw new IllegalArgumentException();
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 }

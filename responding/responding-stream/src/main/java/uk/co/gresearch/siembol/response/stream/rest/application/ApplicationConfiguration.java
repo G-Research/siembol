@@ -1,18 +1,22 @@
 package uk.co.gresearch.siembol.response.stream.rest.application;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.plugin.core.OrderAwarePluginRegistry;
 import org.springframework.plugin.core.config.EnablePluginRegistries;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
+import uk.co.gresearch.siembol.common.metrics.spring.SpringMetricsRegistrar;
 import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.ResponsePlugin;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompiler;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
-import uk.co.gresearch.siembol.response.stream.rest.ResponseMetricFactory;
+
 import uk.co.gresearch.siembol.response.stream.ruleservice.*;
 
 import java.util.ArrayList;
@@ -24,17 +28,22 @@ public class ApplicationConfiguration implements DisposableBean {
     @Autowired
     private ResponseConfigurationProperties properties;
     @Autowired
-    private ResponseMetricFactory counterFactory;
+    private MeterRegistry springMeterRegistrar;
+
     @Autowired
     @Qualifier("responsePluginRegistry")
     private OrderAwarePluginRegistry<ResponsePlugin, String> pluginRegistry;
 
-    private RespondingCompiler respondingCompiler;
     private RulesService streamService;
-    private RulesProvider rulesProvider;
 
-    @Bean
-    RespondingCompiler respondingCompiler() throws Exception {
+    @Bean("metricsRegistrar")
+    SiembolMetricsRegistrar metricsRegistrar() {
+        return new SpringMetricsRegistrar(springMeterRegistrar);
+    }
+
+    @Bean("respondingCompiler")
+    @DependsOn("metricsRegistrar")
+    RespondingCompiler respondingCompiler(@Autowired SiembolMetricsRegistrar metricsRegistrar) throws Exception {
         List<RespondingEvaluatorFactory> evaluatorFactories = new ArrayList<>();
         evaluatorFactories.addAll(ProvidedEvaluators.getRespondingEvaluatorFactories(properties.getEvaluatorsProperties())
                 .getAttributes()
@@ -48,27 +57,28 @@ public class ApplicationConfiguration implements DisposableBean {
 
         return new RespondingCompilerImpl.Builder()
                 .addRespondingEvaluatorFactories(evaluatorFactories)
-                .metricFactory(counterFactory)
+                .metricsRegistrar(metricsRegistrar)
                 .build();
     }
 
     @Bean
-    RulesService centrifugeService() throws Exception {
-        respondingCompiler = respondingCompiler();
-        rulesProvider = rulesProvider();
+    @DependsOn({"rulesProvider", "respondingCompiler"})
+    RulesService centrifugeService(@Autowired RespondingCompiler respondingCompiler,
+                                   @Autowired RulesProvider rulesProvider) {
         streamService = properties.getInactiveStreamService()
                 ? new InactiveRulesService()
                 : new KafkaStreamRulesService(rulesProvider, properties);
         return streamService;
     }
 
-    @Bean
-    RulesProvider rulesProvider() throws Exception {
-        rulesProvider = properties.getInactiveStreamService()
+    @Bean("rulesProvider")
+    @DependsOn({"respondingCompiler", "metricsRegistrar"})
+    RulesProvider rulesProvider(
+            @Autowired RespondingCompiler respondingCompiler,
+            @Autowired SiembolMetricsRegistrar metricsRegistrar) throws Exception {
+        return properties.getInactiveStreamService()
                 ? () -> null :
-                new ZooKeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler);
-
-        return rulesProvider;
+                new ZooKeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler, metricsRegistrar);
     }
 
     @Override

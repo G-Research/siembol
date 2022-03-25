@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.enrichments.storm;
 
-
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
@@ -9,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
+import uk.co.gresearch.siembol.common.metrics.test.StormMetricsTestRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
@@ -17,7 +18,8 @@ import uk.co.gresearch.siembol.enrichments.storm.common.*;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class EnrichmentEvaluatorBoltTest {
     private final String event = """
@@ -65,12 +67,14 @@ public class EnrichmentEvaluatorBoltTest {
 
     private Tuple tuple;
     private OutputCollector collector;
-    EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
-    ZooKeeperAttributesDto zooKeeperAttributes;
-    StormEnrichmentAttributesDto attributes;
-    ZooKeeperConnector zooKeeperConnector;
-    ZooKeeperConnectorFactory zooKeeperConnectorFactory;
-    ArgumentCaptor<Values> argumentEmitCaptor;
+    private EnrichmentEvaluatorBolt enrichmentEvaluatorBolt;
+    private ZooKeeperAttributesDto zooKeeperAttributes;
+    private StormEnrichmentAttributesDto attributes;
+    private ArgumentCaptor<Runnable> zooKeeperCallback;
+    private ZooKeeperConnector zooKeeperConnector;
+    private ZooKeeperConnectorFactory zooKeeperConnectorFactory;
+    private ArgumentCaptor<Values> argumentEmitCaptor;
+    private StormMetricsTestRegistrarFactoryImpl metricsTestRegistrarFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -83,16 +87,25 @@ public class EnrichmentEvaluatorBoltTest {
         argumentEmitCaptor = ArgumentCaptor.forClass(Values.class);
         zooKeeperConnectorFactory = Mockito.mock(ZooKeeperConnectorFactory.class);
 
-
         zooKeeperConnector = Mockito.mock(ZooKeeperConnector.class);
         when(zooKeeperConnectorFactory.createZookeeperConnector(zooKeeperAttributes)).thenReturn(zooKeeperConnector);
         when(zooKeeperConnector.getData()).thenReturn(testRules);
 
+        zooKeeperCallback = ArgumentCaptor.forClass(Runnable.class);
+        doNothing().when(zooKeeperConnector).addCacheListener(zooKeeperCallback.capture());
+
         when(tuple.getStringByField(eq(EnrichmentTuples.EVENT.toString()))).thenReturn(event);
         when(collector.emit(eq(tuple), argumentEmitCaptor.capture())).thenReturn(new ArrayList<>());
 
-        enrichmentEvaluatorBolt = new EnrichmentEvaluatorBolt(attributes, zooKeeperConnectorFactory);
+        metricsTestRegistrarFactory = new StormMetricsTestRegistrarFactoryImpl();
+
+        enrichmentEvaluatorBolt = new EnrichmentEvaluatorBolt(attributes,
+                zooKeeperConnectorFactory,
+                metricsTestRegistrarFactory);
         enrichmentEvaluatorBolt.prepare(null, null, collector);
+
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ENRICHMENT_RULES_UPDATE.getMetricName()));
     }
 
     @Test
@@ -105,13 +118,13 @@ public class EnrichmentEvaluatorBoltTest {
         Assert.assertTrue(values.get(1) instanceof EnrichmentCommands);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
         Assert.assertEquals(event, values.get(0));
-        EnrichmentCommands commands = (EnrichmentCommands) values.get(1);
+        EnrichmentCommands commands = (EnrichmentCommands)values.get(1);
         Assert.assertEquals(1, commands.size());
         Assert.assertEquals("tmp_string", commands.get(0).getKey());
         Assert.assertEquals("tmp_string", commands.get(0).getKey());
         Assert.assertEquals(1, commands.get(0).getTags().size());
         Assert.assertEquals(1, commands.get(0).getEnrichmentFields().size());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
     }
 
     @Test
@@ -124,8 +137,8 @@ public class EnrichmentEvaluatorBoltTest {
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentCommands);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
-        Assert.assertTrue(((EnrichmentCommands) values.get(1)).isEmpty());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).isEmpty());
+        Assert.assertTrue(((EnrichmentCommands)values.get(1)).isEmpty());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).isEmpty());
     }
 
     @Test
@@ -138,9 +151,32 @@ public class EnrichmentEvaluatorBoltTest {
         Assert.assertTrue(values.get(0) instanceof String);
         Assert.assertTrue(values.get(1) instanceof EnrichmentCommands);
         Assert.assertTrue(values.get(2) instanceof EnrichmentExceptions);
-        Assert.assertTrue(((EnrichmentCommands) values.get(1)).isEmpty());
-        Assert.assertFalse(((EnrichmentExceptions) values.get(2)).isEmpty());
-        Assert.assertEquals(1, ((EnrichmentExceptions) values.get(2)).size());
-        Assert.assertTrue(((EnrichmentExceptions) values.get(2)).get(0).contains("JsonParseException"));
+        Assert.assertTrue(((EnrichmentCommands)values.get(1)).isEmpty());
+        Assert.assertFalse(((EnrichmentExceptions)values.get(2)).isEmpty());
+        Assert.assertEquals(1, ((EnrichmentExceptions)values.get(2)).size());
+        Assert.assertTrue(((EnrichmentExceptions)values.get(2)).get(0).contains("JsonParseException"));
+    }
+
+    @Test
+    public void updateOk() {
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(2,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ENRICHMENT_RULES_UPDATE.getMetricName()));
+
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(3,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ENRICHMENT_RULES_UPDATE.getMetricName()));
+        verify(zooKeeperConnector, times(3)).getData();
+
+    }
+
+    @Test
+    public void updateError() {
+        when(zooKeeperConnector.getData()).thenReturn("INVALID");
+        zooKeeperCallback.getValue().run();
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.ENRICHMENT_RULES_UPDATE.getMetricName()));
+        Assert.assertEquals(1, metricsTestRegistrarFactory
+                .getCounterValue(SiembolMetrics.ENRICHMENT_RULES_ERROR_UPDATE.getMetricName()));
     }
 }

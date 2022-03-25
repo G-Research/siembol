@@ -8,6 +8,7 @@ import static uk.co.gresearch.siembol.parsers.extractors.ParserExtractor.ParserE
 public abstract class ParserExtractor  {
     private static final String EMPTY_MSG_FOR_EXTRACTION_MSG = "Empty message for extraction";
     private static final String DUPLICATE_FORMAT_MSG = "duplicate_%s_%d";
+    private static final String EMPTY_STRING = "";
 
     public enum ParserExtractorFlags {
         SHOULD_REMOVE_FIELD,
@@ -155,6 +156,10 @@ public abstract class ParserExtractor  {
             String message = (String)current.get(field);
             Map<String, Object> parsed = extractor.extract(message);
             for (String key : parsed.keySet()) {
+                if (extractor.shouldSkipEmptyValues() && EMPTY_STRING.equals(parsed.get(key))) {
+                    continue;
+                }
+
                 if (current.putIfAbsent(key, parsed.get(key)) != null) {
                     String currentName = key;
                     if(!extractor.shouldOverwiteFields()) {
@@ -168,6 +173,7 @@ public abstract class ParserExtractor  {
             if (extractor.shouldRemoveField()) {
                 current.remove(field);
             }
+
         }
         return current;
     }

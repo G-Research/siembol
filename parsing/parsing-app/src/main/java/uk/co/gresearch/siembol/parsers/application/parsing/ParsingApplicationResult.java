@@ -4,18 +4,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ParsingApplicationResult implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private final String topic;
-    private final ArrayList<String> messages;
-
-    public ParsingApplicationResult(String topic, ArrayList<String> messages) {
-        this.topic = topic;
-        this.messages = messages;
+    public enum ResultType implements Serializable {
+        PARSED,
+        ERROR,
+        FILTERED
     }
-    public ParsingApplicationResult(String topic, String message) {
-        this.topic = topic;
-        messages = new ArrayList<>();
-        messages.add(message);
+    private static final long serialVersionUID = 1L;
+    private final String sourceType;
+    private String topic;
+    private ArrayList<String> messages;
+    private ResultType resultType = ResultType.PARSED;
+
+    public ParsingApplicationResult(String sourceType) {
+        this.sourceType = sourceType;
     }
 
     public String getTopic() {
@@ -26,4 +27,28 @@ public class ParsingApplicationResult implements Serializable {
         return messages;
     }
 
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setMessages(ArrayList<String> messages) {
+        this.messages = messages;
+    }
+
+    public void setMessage(String message) {
+        this.messages = new ArrayList<>();
+        this.messages.add(message);
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public ResultType getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(ResultType resultType) {
+        this.resultType = resultType;
+    }
 }

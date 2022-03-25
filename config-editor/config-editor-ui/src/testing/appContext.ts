@@ -1,5 +1,5 @@
 import { AppContext } from '@app/services/app.service';
-import { UserRole, ServiceInfo } from '@app/model/config-model';
+import { UserRole, ServiceInfo, ConfigStatus } from '@app/model/config-model';
 import { cloneDeep } from 'lodash';
 import { mockTestCasesSchema } from './testCasesSchema';
 

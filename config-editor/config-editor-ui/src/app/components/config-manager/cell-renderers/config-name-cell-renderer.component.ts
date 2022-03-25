@@ -19,6 +19,7 @@ import { ICellRendererParams } from '@ag-grid-community/core';
     .column-fixed {
       display: inline-block;
       padding-right: 20px;
+      max-width: 100%;
     }
   `,
   ],
