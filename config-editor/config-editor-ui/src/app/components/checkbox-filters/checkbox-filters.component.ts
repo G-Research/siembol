@@ -39,8 +39,8 @@ import { FilterConfig } from "@app/model/ui-metadata-map";
       font-size: 18px;
       padding: 0;
     }
-    .mat-checkbox-layout {
-      font-size: 16px;
+    ::ng-deep .mat-checkbox-layout .mat-checkbox-label {
+      font-size: 16px !important;
     }
     `,
   ],

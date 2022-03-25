@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash';
 import { Config, Release } from '@app/model';
 import { mockUiMetadataAlert } from 'testing/uiMetadataMap';
 import { ConfigStatus } from '@app/model/config-model';
+import { mockAppContext } from 'testing/appContext';
 
 
 const mockConfigsUnsorted = [
@@ -19,6 +20,19 @@ const mockRelease = {
   configs: [],
   releaseVersion:1,
 };
+
+const mockCustomFilter = {
+  "test_group": {
+    "box1": {
+      "field": "labels",
+      "pattern": "json_extractor",
+    },
+    "box2": {
+      "field": "labels",
+      "pattern": "test(3|4)",
+    },
+  },
+}
 
 describe('ConfigStoreStateBuilder', () => {
   let builder: ConfigStoreStateBuilder;
@@ -170,34 +184,6 @@ describe('ConfigStoreStateBuilder', () => {
       expect(state.release.configs).toEqual(mockConfigsSorted);
     })
 
-  it("should compute row data", () => {
-    const expectedRowData = [{ 
-      author: 'siembol', 
-      version: 2, 
-      config_name: 'config1', 
-      releasedVersion: 2, 
-      configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
-      labels: [ 'generic', 'json_extractor' ],
-      testCasesCount: 0 ,
-      isFiltered: true,
-      status: ConfigStatus.UP_TO_DATE,
-    },
-    { 
-      author: 'siembol', 
-      version: 0, 
-      config_name: 'config1_clone', 
-      releasedVersion: 0, 
-      configHistory: undefined, 
-      labels: undefined, 
-      testCasesCount: 0,
-      isFiltered: true,
-      status: ConfigStatus.UNRELEASED,
-    }];
-    
-    const state = builder.computeConfigManagerRowData().build();
-    expect(state.configManagerRowData).toEqual(expectedRowData);
-  })
-
   it("should increment changes in release", () => {
     const state1 = builder
       .incrementChangesInRelease()
@@ -210,4 +196,192 @@ describe('ConfigStoreStateBuilder', () => {
       .build()
     expect(state2.countChangesInRelease).toEqual(0);
   })
+
+  describe('serviceFilterConfig', () => {
+    it("should set serviceFilterConfig with only common filters", () => {
+      const mockServiceFilterConfig = mockAppContext.commonFilters;
+      const state = builder.serviceFilterConfig(mockUiMetadataAlert,mockAppContext.commonFilters).build();
+      expect(state.serviceFilterConfig).toEqual(mockServiceFilterConfig);
+    })
+
+    it("should set serviceFilterConfig with both common and custom filters", () => {
+      const mockServiceFilterConfig = {
+          ...mockAppContext.commonFilters,
+          ...mockCustomFilter,
+      }
+      const mockUiMetadataAlertWithCheckboxes = cloneDeep(mockUiMetadataAlert);
+      mockUiMetadataAlertWithCheckboxes.checkboxes = mockCustomFilter;
+      const state = builder.serviceFilterConfig(mockUiMetadataAlertWithCheckboxes,mockAppContext.commonFilters).build()
+      expect(state.serviceFilterConfig).toEqual(mockServiceFilterConfig);
+    })
+  });
+
+  describe('computeConfigManagerRowData', () => {
+    it("should compute row data", () => {
+      const expectedRowData = [{ 
+        author: 'siembol', 
+        version: 2, 
+        config_name: 'config1', 
+        releasedVersion: 2, 
+        configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
+        labels: [ 'generic', 'json_extractor' ],
+        testCasesCount: 0 ,
+        isFiltered: true,
+        status: ConfigStatus.UP_TO_DATE,
+      },
+      { 
+        author: 'siembol', 
+        version: 0, 
+        config_name: 'config1_clone', 
+        releasedVersion: 0, 
+        configHistory: undefined, 
+        labels: undefined, 
+        testCasesCount: 0,
+        isFiltered: true,
+        status: ConfigStatus.UNRELEASED,
+      }];
+      
+      const state = builder.computeConfigManagerRowData().build();
+      expect(state.isAnyFilterPresent).toEqual(false);
+      expect(state.configManagerRowData).toEqual(expectedRowData);
+    })
+
+    it("should compute row data with filtered upgradable rows", () => {
+      const expectedRowData = [{ 
+        author: 'siembol', 
+        version: 2, 
+        config_name: 'config1', 
+        releasedVersion: 2, 
+        configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
+        labels: [ 'generic', 'json_extractor' ],
+        testCasesCount: 0 ,
+        isFiltered: false,
+        status: ConfigStatus.UP_TO_DATE,
+      },
+      { 
+        author: 'siembol', 
+        version: 0, 
+        config_name: 'config1_clone', 
+        releasedVersion: 0, 
+        configHistory: undefined, 
+        labels: undefined, 
+        testCasesCount: 0,
+        isFiltered: false,
+        status: ConfigStatus.UNRELEASED,
+      }];
+      
+      const state = builder
+        .serviceFilterConfig(mockUiMetadataAlert,mockAppContext.commonFilters)
+        .updateServiceFilters({checked: true, name: "general|upgradable"})
+        .computeConfigManagerRowData()
+        .build();
+      
+      expect(state.isAnyFilterPresent).toEqual(true);
+      expect(state.configManagerRowData).toEqual(expectedRowData);
+    })
+
+    it("should compute row data with filtered unreleased rows", () => {
+      const expectedRowData = [{ 
+        author: 'siembol', 
+        version: 2, 
+        config_name: 'config1', 
+        releasedVersion: 2, 
+        configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
+        labels: [ 'generic', 'json_extractor' ],
+        testCasesCount: 0 ,
+        isFiltered: false,
+        status: ConfigStatus.UP_TO_DATE,
+      },
+      { 
+        author: 'siembol', 
+        version: 0, 
+        config_name: 'config1_clone', 
+        releasedVersion: 0, 
+        configHistory: undefined, 
+        labels: undefined, 
+        testCasesCount: 0,
+        isFiltered: true,
+        status: ConfigStatus.UNRELEASED,
+      }];
+      
+      const state = builder
+        .serviceFilterConfig(mockUiMetadataAlert,mockAppContext.commonFilters)
+        .updateServiceFilters({checked: true, name: "general|unreleased"})
+        .computeConfigManagerRowData()
+        .build();
+      
+      expect(state.isAnyFilterPresent).toEqual(true);
+      expect(state.configManagerRowData).toEqual(expectedRowData);
+    })
+
+    it("should compute row data with filtered author rows", () => {
+      const expectedRowData = [{ 
+        author: 'siembol', 
+        version: 2, 
+        config_name: 'config1', 
+        releasedVersion: 2, 
+        configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
+        labels: [ 'generic', 'json_extractor' ],
+        testCasesCount: 0 ,
+        isFiltered: true,
+        status: ConfigStatus.UP_TO_DATE,
+      },
+      { 
+        author: 'siembol', 
+        version: 0, 
+        config_name: 'config1_clone', 
+        releasedVersion: 0, 
+        configHistory: undefined, 
+        labels: undefined, 
+        testCasesCount: 0,
+        isFiltered: true,
+        status: ConfigStatus.UNRELEASED,
+      }];
+      
+      const state = builder
+        .serviceFilterConfig(mockUiMetadataAlert,mockAppContext.commonFilters)
+        .updateServiceFilters({checked: true, name: "general|my_edits"})
+        .computeConfigManagerRowData()
+        .build();
+      
+      expect(state.isAnyFilterPresent).toEqual(true);
+      expect(state.configManagerRowData).toEqual(expectedRowData);
+    })
+
+    it("should compute row data with filtered rows by labels", () => {
+      const mockUiMetadataAlertWithCheckboxes = cloneDeep(mockUiMetadataAlert);
+      mockUiMetadataAlertWithCheckboxes.checkboxes = mockCustomFilter;
+      const expectedRowData = [{ 
+        author: 'siembol', 
+        version: 2, 
+        config_name: 'config1', 
+        releasedVersion: 2, 
+        configHistory: [{ added: 2, author: 'siembol', date: '2021-03-12T16:26:08', removed: 2 }],
+        labels: [ 'generic', 'json_extractor' ],
+        testCasesCount: 0 ,
+        isFiltered: true,
+        status: ConfigStatus.UP_TO_DATE,
+      },
+      { 
+        author: 'siembol', 
+        version: 0, 
+        config_name: 'config1_clone', 
+        releasedVersion: 0, 
+        configHistory: undefined, 
+        labels: undefined, 
+        testCasesCount: 0,
+        isFiltered: false,
+        status: ConfigStatus.UNRELEASED,
+      }];
+      
+      const state = builder
+        .serviceFilterConfig(mockUiMetadataAlertWithCheckboxes,mockAppContext.commonFilters)
+        .updateServiceFilters({checked: true, name: "test_group|box1"})
+        .computeConfigManagerRowData()
+        .build();
+      
+      expect(state.isAnyFilterPresent).toEqual(true);
+      expect(state.configManagerRowData).toEqual(expectedRowData);
+    })
+  });
 });
