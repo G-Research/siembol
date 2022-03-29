@@ -263,7 +263,13 @@ export enum ConfigStatus {
 
 export interface CheckboxEvent {
   checked: boolean,
-  name: string,
+  groupName: string,
+  filterName: string,
+}
+
+export interface Filters {
+  groupName: string,
+  filterName: string,
 }
 
 export interface ServiceFilters {

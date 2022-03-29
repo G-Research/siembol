@@ -10,10 +10,10 @@ import { ReleaseDialogComponent } from '../release-dialog/release-dialog.compone
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/store/config-store.service';
-import { Router } from '@angular/router';
+import { Router, Params } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { CheckboxEvent, ConfigManagerRow, Importers, ServiceFilters, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, Filters, Importers, ServiceFilters, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
@@ -76,6 +76,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
   api: GridApi;
   countChangesInRelease$ : Observable<number>;
+  currentFilters: Filters[] = [];
+  currentSearchTerm: string;
   private rowMoveStartIndex: number;
 
   private ngUnsubscribe = new Subject<void>();
@@ -131,6 +133,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.serviceFilterConfig$.pipe(first()).subscribe(s => {
       this.serviceFilterConfig = cloneDeep(s);
     });
+    this.searchTerm$.pipe(first()).subscribe(s => {
+      this.currentSearchTerm = s;
+    });
   }
 
   onGridReady(params: any) {
@@ -149,7 +154,10 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onSearch(searchTerm: string) {
-    this.configStore.updateSearchTerm(searchTerm);
+    this.currentSearchTerm = searchTerm;
+    this.router.navigate([this.editorService.serviceName], {
+      queryParams: this.getQueryParams(),
+    });
   }
 
   upgrade(name: string) {
@@ -230,7 +238,38 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClickCheckbox(event: CheckboxEvent) {
-    this.configStore.updateServiceFilters(event);
+    this.setCurrentFilters(event);
+    this.router.navigate([this.editorService.serviceName], {
+      queryParams: this.getQueryParams(),
+    });
+  }
+
+  getQueryParams(): Params {
+    const params = new URLSearchParams();
+    for (const filter of this.currentFilters) {
+      if (filter.groupName in params) {
+        params[filter.groupName].push(filter.filterName);
+      } else {
+        params[filter.groupName] = [filter.filterName];
+      }
+    }
+    if (this.currentSearchTerm) {
+      params["searchTerm"] = this.currentSearchTerm;
+    }
+    return params;
+  }
+  
+  setCurrentFilters(event: CheckboxEvent) {
+    if (event.checked === true) {
+      this.currentFilters.push({
+        groupName: event.groupName,
+        filterName: event.filterName,
+      });
+    } else {
+      this.currentFilters = this.currentFilters.filter(
+        obj => obj.groupName !== event.groupName || obj.filterName !== event.filterName
+      );
+    }
   }
 
   onSyncWithGit() {

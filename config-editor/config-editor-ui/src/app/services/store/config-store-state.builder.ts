@@ -4,8 +4,9 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, CheckboxEvent, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, ServiceFilters } from '@app/model/config-model';
+import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, ServiceFilters } from '@app/model/config-model';
 import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
+import { ParamMap } from '@angular/router';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -113,8 +114,16 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  updateServiceFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
-    this.state.serviceFilters[event.name] = event.checked;
+  updateServiceFilters(params: ParamMap): ConfigStoreStateBuilder {
+    this.state.serviceFilters = {};
+    params.keys.forEach(key => {
+      if (key !== "searchTerm") {
+        params.getAll(key).forEach(filter => {
+          const filterName = key + FILTER_DELIMITER + filter;
+          this.state.serviceFilters[filterName] = true;
+        })
+      }
+    })
     return this;
   }
 
