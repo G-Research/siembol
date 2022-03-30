@@ -29,7 +29,7 @@ const initialConfigStoreState: ConfigStoreState = {
   pastedConfig: undefined,
   countChangesInRelease: 0,
   configManagerRowData: [],
-  serviceFilters: {},
+  serviceFilters: [],
   isAnyFilterPresent: false,
   serviceFilterConfig: undefined,
   user: undefined,
@@ -586,11 +586,9 @@ export class ConfigStoreService {
   }
 
   updateSearchTermAndFilters(params: ParamMap) {
-    const filters = cloneDeep(params);
-    delete filters.searchTerm;
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .searchTerm(params.get("searchTerm"))
-      .updateServiceFilters(filters)   
+      .updateServiceFilters(params)   
       .computeConfigManagerRowData()
       .build();
 

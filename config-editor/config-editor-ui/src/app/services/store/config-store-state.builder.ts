@@ -4,7 +4,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, ServiceFilters } from '@app/model/config-model';
+import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER } from '@app/model/config-model';
 import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
 import { ParamMap } from '@angular/router';
 
@@ -115,12 +115,12 @@ export class ConfigStoreStateBuilder {
   }
 
   updateServiceFilters(params: ParamMap): ConfigStoreStateBuilder {
-    this.state.serviceFilters = {};
+    this.state.serviceFilters = [];
     params.keys.forEach(key => {
       if (key !== "searchTerm") {
         params.getAll(key).forEach(filter => {
           const filterName = key + FILTER_DELIMITER + filter;
-          this.state.serviceFilters[filterName] = true;
+          this.state.serviceFilters.push(filterName);
         })
       }
     })
@@ -221,7 +221,7 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  private isServiceFilterPresent(filters: ServiceFilters): boolean {
+  private isServiceFilterPresent(filters: string[]): boolean {
     for (const checked of Object.values(filters)) {
       if (checked) {
         return true;
@@ -231,8 +231,8 @@ export class ConfigStoreStateBuilder {
   }
 
   private evaluateFilters(node: ConfigManagerRow): boolean {
-    for (const [name, checked] of Object.entries(this.state.serviceFilters)) {
-      if (checked && !this.evaluateSingleFilter(name, node)) {
+    for (const name of this.state.serviceFilters) {
+      if (!this.evaluateSingleFilter(name, node)) {
         return false;
       }
     }

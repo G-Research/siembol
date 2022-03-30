@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { CheckboxEvent, FILTER_DELIMITER, ServiceFilters } from "@app/model/config-model";
+import { CheckboxEvent, FILTER_DELIMITER } from "@app/model/config-model";
 import { FilterConfig } from "@app/model/ui-metadata-map";
 
 @Component({
@@ -10,7 +10,7 @@ import { FilterConfig } from "@app/model/ui-metadata-map";
       <span mat-subheader>{{ checkboxFilter.key.replace('_', ' ') | titlecase }}</span>
         <mat-checkbox 
         *ngFor="let singleCheckbox of checkboxFilter.value | keyvalue" 
-        [ngModel]="selectedCheckboxes[this.getName(checkboxFilter.key, singleCheckbox.key)]"
+        [ngModel]="selectedCheckboxes.includes(this.getName(checkboxFilter.key, singleCheckbox.key))"
         (change)="clickCheckbox($event.checked, checkboxFilter.key, singleCheckbox.key)"
         >
         {{ singleCheckbox.key.replace('_', ' ') | titlecase }}
@@ -47,14 +47,14 @@ import { FilterConfig } from "@app/model/ui-metadata-map";
 })
 export class CheckboxFiltersComponent {
   @Input() checkboxFilters: FilterConfig;
-  @Input() selectedCheckboxes: ServiceFilters; // ngmodel modifying store?
+  @Input() selectedCheckboxes: string[]; // ngmodel modifying store?
   @Output() readonly selectedCheckbox: EventEmitter<CheckboxEvent> = new EventEmitter<CheckboxEvent>();
 
-  clickCheckbox(event: boolean, groupName: string, filterName: string) {
-    this.selectedCheckbox.emit({ checked: event, groupName, filterName});
+  clickCheckbox(event: boolean, groupName: string, checkboxName: string) {
+    this.selectedCheckbox.emit({ checked: event, groupName, checkboxName});
   }
 
   getName(group_name: string, name: string): string  {
-    return group_name.concat(FILTER_DELIMITER, name);
+    return group_name.concat(FILTER_DELIMITER, name)
   }
 }

@@ -10,10 +10,10 @@ import { ReleaseDialogComponent } from '../release-dialog/release-dialog.compone
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/store/config-store.service';
-import { Router, Params } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { CheckboxEvent, ConfigManagerRow, Filters, Importers, ServiceFilters, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, Importers, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
@@ -41,7 +41,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   isAnyFilterPresent$: Observable<boolean>;
   isAnyFilterPresent: boolean;
   serviceFilterConfig: FilterConfig;
-  serviceFilters$: Observable<ServiceFilters>;
+  serviceFilters$: Observable<string[]>;
   releaseHistory;
   disableEditingFeatures: boolean;
   importers$: Observable<Importers>;
@@ -76,8 +76,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
   api: GridApi;
   countChangesInRelease$ : Observable<number>;
-  currentFilters: Filters[] = [];
-  currentSearchTerm: string;
+  currentParams: ParamMap;
   private rowMoveStartIndex: number;
 
   private ngUnsubscribe = new Subject<void>();
@@ -89,6 +88,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
+    private route: ActivatedRoute,
     private configService: AppConfigService
   ) {
     this.context = { componentParent: this };
@@ -133,9 +133,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.serviceFilterConfig$.pipe(first()).subscribe(s => {
       this.serviceFilterConfig = cloneDeep(s);
     });
-    this.searchTerm$.pipe(first()).subscribe(s => {
-      this.currentSearchTerm = s;
-    });
+    this.route.queryParamMap.subscribe(params => {
+      this.currentParams = params;
+    })
   }
 
   onGridReady(params: any) {
@@ -154,9 +154,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onSearch(searchTerm: string) {
-    this.currentSearchTerm = searchTerm;
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: this.getQueryParams(),
+      queryParams: { searchTerm },
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -238,38 +238,31 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   }
 
   onClickCheckbox(event: CheckboxEvent) {
-    this.setCurrentFilters(event);
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: this.getQueryParams(),
+      queryParams: this.getLatestParams(event),
     });
   }
-
-  getQueryParams(): Params {
-    const params = new URLSearchParams();
-    for (const filter of this.currentFilters) {
-      if (filter.groupName in params) {
-        params[filter.groupName].push(filter.filterName);
-      } else {
-        params[filter.groupName] = [filter.filterName];
-      }
-    }
-    if (this.currentSearchTerm) {
-      params["searchTerm"] = this.currentSearchTerm;
-    }
-    return params;
-  }
   
-  setCurrentFilters(event: CheckboxEvent) {
-    if (event.checked === true) {
-      this.currentFilters.push({
-        groupName: event.groupName,
-        filterName: event.filterName,
-      });
-    } else {
-      this.currentFilters = this.currentFilters.filter(
-        obj => obj.groupName !== event.groupName || obj.filterName !== event.filterName
-      );
+  getLatestParams(event: CheckboxEvent): any {
+    const result = {};
+    this.currentParams.keys.forEach(key => {
+      if (key === event.groupName) {
+        if (event.checked === true) {
+          result[key] = cloneDeep(this.currentParams.getAll(key));
+          result[key].push(event.checkboxName);
+        } else {
+          result[key] = this.currentParams.getAll(key).filter(
+            name => name !== event.checkboxName
+          );
+        }
+      } else {
+        result[key] = this.currentParams.getAll(key);
+      }
+    });
+    if (!result[event.groupName] && event.checked === true) {
+      result[event.groupName] = [event.checkboxName];
     }
+    return result;
   }
 
   onSyncWithGit() {

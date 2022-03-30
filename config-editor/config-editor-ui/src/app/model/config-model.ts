@@ -264,16 +264,7 @@ export enum ConfigStatus {
 export interface CheckboxEvent {
   checked: boolean,
   groupName: string,
-  filterName: string,
-}
-
-export interface Filters {
-  groupName: string,
-  filterName: string,
-}
-
-export interface ServiceFilters {
-  [type: string]: boolean;
+  checkboxName: string,
 }
 
 export const FILTER_DELIMITER = '|';
