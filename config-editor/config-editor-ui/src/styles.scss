@@ -46,9 +46,9 @@ body {
 
 .ag-theme-alpine-dark {
   @include ag-theme-alpine-dark ((
-    background-color: #444444,
-    odd-row-background-color: ag-derived(background-color, $mix: #303030 60% ),
-    header-background-color: ag-derived(background-color, $mix: #303030 60% ),
+    background-color: ag-derived(odd-row-background-color, $mix: #303030 60% ),
+    odd-row-background-color: #444444,
+    header-background-color: #444444,
     font-family: (Roboto, "Helvetica Neue", sans-serif),
   ));
   font-size: 15px;

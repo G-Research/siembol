@@ -268,3 +268,11 @@ export interface CheckboxEvent {
 }
 
 export const FILTER_DELIMITER = '|';
+
+export interface SearchHistory {
+  [type: string]: ServiceSearchHistory[];
+}
+
+export interface ServiceSearchHistory {
+  [type: string]: string[] | string;
+}

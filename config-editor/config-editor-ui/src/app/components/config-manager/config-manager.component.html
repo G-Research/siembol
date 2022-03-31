@@ -18,6 +18,7 @@
                 <re-search 
                     [searchTerm]="searchTerm$ | async" 
                     (searchTermChange)="onSearch($event)"
+                    (saveSearch)="onSaveSearch()"
                     >
                 </re-search>
                 <div class="add-button">
@@ -76,6 +77,9 @@
                     </span>
                 </ng-template>
             </div>
+            <re-search-history [searchHistory]="searchHistory">
+                
+            </re-search-history>
             <ag-grid-angular
                 #agGrid
                 id="myGrid"

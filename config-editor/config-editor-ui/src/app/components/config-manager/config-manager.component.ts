@@ -13,12 +13,13 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { CheckboxEvent, ConfigManagerRow, Importers, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, Importers, ServiceSearchHistory, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
 import { RowDragEvent, GridSizeChangedEvent, RowNode, GridApi, GetRowIdFunc } from '@ag-grid-community/core';
 import { FilterConfig } from '@app/model/ui-metadata-map';
+import { SearchHistoryService } from '@app/services/store/search-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,6 +78,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   api: GridApi;
   countChangesInRelease$ : Observable<number>;
   currentParams: ParamMap;
+  searchHistory: ServiceSearchHistory[];
   private rowMoveStartIndex: number;
 
   private ngUnsubscribe = new Subject<void>();
@@ -89,7 +91,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private editorService: EditorService,
     private router: Router,
     private route: ActivatedRoute,
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private searchHistoryService: SearchHistoryService
   ) {
     this.context = { componentParent: this };
 
@@ -111,6 +114,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.isAnyFilterPresent$ = this.configStore.isAnyFilterPresent$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
     this.serviceFilters$ = this.configStore.serviceFilters$;
+    this.searchHistory = this.searchHistoryService.getServiceSearchHistory(this.editorService.serviceName);
   }
 
   ngOnInit() {
@@ -155,7 +159,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onSearch(searchTerm: string) {
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: { searchTerm },
+      queryParams: { searchTerm: searchTerm !== ''? searchTerm: undefined },
       queryParamsHandling: 'merge',
     });
   }
@@ -305,4 +309,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   getRowId: GetRowIdFunc = function (params) {
     return params.data.config_name;
   };
+
+  onSaveSearch() {
+    this.searchHistoryService.addToSearchHistory(this.currentParams, this.editorService.serviceName);
+    this.searchHistory = this.searchHistoryService.getServiceSearchHistory(this.editorService.serviceName);
+  }
 }

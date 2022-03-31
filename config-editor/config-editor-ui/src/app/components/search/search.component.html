@@ -5,5 +5,8 @@
         <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="onClearSearch()">
             <mat-icon>close</mat-icon>
         </button>
+        <button mat-button matSuffix mat-icon-button title="Save Search" (click)="onSaveSearch()">
+            <mat-icon>save</mat-icon>
+        </button>
     </mat-form-field>
 </div>

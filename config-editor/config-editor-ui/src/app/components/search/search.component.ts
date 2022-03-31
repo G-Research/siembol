@@ -13,8 +13,8 @@ export class SearchComponent implements OnInit {
   @ViewChild('searchBox', { static: true }) searchBox;
   @Input() searchTerm: string;
   @Output() readonly searchTermChange: EventEmitter<string> = new EventEmitter<string>();
- debouncer: Subject<string> = new Subject<string>();
-
+  @Output() readonly saveSearch: EventEmitter<void> = new EventEmitter<void>();
+  debouncer: Subject<string> = new Subject<string>();
   myConfigs = true;
 
   ngOnInit(): void {
@@ -33,5 +33,9 @@ export class SearchComponent implements OnInit {
   onClearSearch() {
     this.onSearch('');
     this.searchTerm = '';
+  }
+
+  onSaveSearch() {
+    this.saveSearch.emit();
   }
 }

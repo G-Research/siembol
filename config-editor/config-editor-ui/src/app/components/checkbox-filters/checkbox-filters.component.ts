@@ -47,7 +47,7 @@ import { FilterConfig } from "@app/model/ui-metadata-map";
 })
 export class CheckboxFiltersComponent {
   @Input() checkboxFilters: FilterConfig;
-  @Input() selectedCheckboxes: string[]; // ngmodel modifying store?
+  @Input() selectedCheckboxes: string[];
   @Output() readonly selectedCheckbox: EventEmitter<CheckboxEvent> = new EventEmitter<CheckboxEvent>();
 
   clickCheckbox(event: boolean, groupName: string, checkboxName: string) {

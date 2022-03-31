@@ -214,20 +214,11 @@ export class ConfigStoreStateBuilder {
   }
 
   computeConfigManagerRowData() {
-    this.state.isAnyFilterPresent = this.isServiceFilterPresent(this.state.serviceFilters);
+    this.state.isAnyFilterPresent = this.state.serviceFilters.length > 0;
     this.state.configManagerRowData = this.state.sortedConfigs.map(
       (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
-  }
-
-  private isServiceFilterPresent(filters: string[]): boolean {
-    for (const checked of Object.values(filters)) {
-      if (checked) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private evaluateFilters(node: ConfigManagerRow): boolean {

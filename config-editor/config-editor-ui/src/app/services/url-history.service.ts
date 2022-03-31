@@ -29,6 +29,7 @@ export class UrlHistoryService {
       this.appService.isHomePath(item) ||
       this.appService.authenticationService.isCallbackUrl(item) ||
       this.appService.isNewConfig(item)
+      // need to exclude search + filter or trim?
     ) {
       return history;
     }
