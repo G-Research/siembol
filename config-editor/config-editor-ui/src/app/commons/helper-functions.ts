@@ -27,7 +27,6 @@ export function parseUrl(path: string): UrlInfo {
 
   const service = paths[0];
   const mode = paths[1] === 'admin' ? 'admin' : '';
-  
   const configName = url.searchParams.get('configName');
   const testCaseName = url.searchParams.get('testCaseName');
 

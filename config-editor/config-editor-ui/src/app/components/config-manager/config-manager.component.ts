@@ -250,17 +250,19 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   getLatestParams(event: CheckboxEvent): any {
     const result = {};
     this.currentParams.keys.forEach(key => {
-      if (key === event.groupName) {
-        if (event.checked === true) {
-          result[key] = cloneDeep(this.currentParams.getAll(key));
-          result[key].push(event.checkboxName);
+      if (Object.keys(this.serviceFilterConfig).includes(key)) {
+        if (key === event.groupName) {
+          if (event.checked === true) {
+            result[key] = cloneDeep(this.currentParams.getAll(key));
+            result[key].push(event.checkboxName);
+          } else {
+            result[key] = this.currentParams.getAll(key).filter(
+              name => name !== event.checkboxName
+            );
+          }
         } else {
-          result[key] = this.currentParams.getAll(key).filter(
-            name => name !== event.checkboxName
-          );
+          result[key] = this.currentParams.getAll(key);
         }
-      } else {
-        result[key] = this.currentParams.getAll(key);
       }
     });
     if (!result[event.groupName] && event.checked === true) {

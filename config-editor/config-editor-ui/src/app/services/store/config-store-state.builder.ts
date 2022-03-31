@@ -117,7 +117,7 @@ export class ConfigStoreStateBuilder {
   updateServiceFilters(params: ParamMap): ConfigStoreStateBuilder {
     this.state.serviceFilters = [];
     params.keys.forEach(key => {
-      if (key !== "searchTerm") {
+      if (Object.keys(this.state.serviceFilterConfig).includes(key)) {
         params.getAll(key).forEach(filter => {
           const filterName = key + FILTER_DELIMITER + filter;
           this.state.serviceFilters.push(filterName);
