@@ -276,3 +276,8 @@ export interface SearchHistory {
 export interface ServiceSearchHistory {
   [type: string]: string[] | string;
 }
+
+export interface ParsedUrl {
+  rawUrl: string,
+  labels: UrlInfo
+}

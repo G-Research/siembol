@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AppConfigService } from '@app/services/app-config.service';
+import { parseUrl } from '@app/commons/helper-functions'
+import { ParsedUrl } from '@app/model/config-model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,16 +26,20 @@ export class UrlHistoryService {
     return history ? JSON.parse(history) : [];
   }
 
+  getHistoryParsedPreviousUrls(): ParsedUrl[] {
+    const listUrls = this.getHistoryPreviousUrls();
+    return listUrls.map(url => ({ rawUrl: url, labels: parseUrl(url)}));
+  }
+
   private add(item: string, history: string[]): string[] {
     if (
       this.appService.isHomePath(item) ||
       this.appService.authenticationService.isCallbackUrl(item) ||
       this.appService.isNewConfig(item)
-      // need to exclude search + filter or trim?
     ) {
       return history;
     }
-    history.push(item);
+    history.push(this.trimSearchFromPath(item));
     return this.crop(this.removeOldestDuplicates(history));
   }
 
@@ -46,5 +52,14 @@ export class UrlHistoryService {
       history.shift();
     }
     return history;
+  }
+
+  private trimSearchFromPath(path: string): string {
+    const url = new URL(path, location.origin);
+    const paths = url.pathname.substring(1).split('/');
+    if (paths.length === 1) {
+      path = path.split("?", 2)[0];
+    }
+    return path;
   }
 }
