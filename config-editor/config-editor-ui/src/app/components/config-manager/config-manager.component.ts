@@ -19,7 +19,7 @@ import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
 import { RowDragEvent, GridSizeChangedEvent, RowNode, GridApi, GetRowIdFunc } from '@ag-grid-community/core';
 import { FilterConfig } from '@app/model/ui-metadata-map';
-import { SearchHistoryService } from '@app/services/store/search-history.service';
+import { SearchHistoryService } from '@app/services/search-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -159,7 +159,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onSearch(searchTerm: string) {
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: { searchTerm: searchTerm !== ''? searchTerm: undefined },
+      queryParams: { search: searchTerm !== ''? searchTerm: undefined },
       queryParamsHandling: 'merge',
     });
   }
@@ -243,32 +243,22 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onClickCheckbox(event: CheckboxEvent) {
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: this.getLatestParams(event),
+      queryParams: { filter: this.getLatestFilters(event) },
+      queryParamsHandling: 'merge',
     });
   }
   
-  getLatestParams(event: CheckboxEvent): any {
-    const result = {};
-    this.currentParams.keys.forEach(key => {
-      if (Object.keys(this.serviceFilterConfig).includes(key)) {
-        if (key === event.groupName) {
-          if (event.checked === true) {
-            result[key] = cloneDeep(this.currentParams.getAll(key));
-            result[key].push(event.checkboxName);
-          } else {
-            result[key] = this.currentParams.getAll(key).filter(
-              name => name !== event.checkboxName
-            );
-          }
-        } else {
-          result[key] = this.currentParams.getAll(key);
-        }
+  getLatestFilters(event: CheckboxEvent): any {
+    const filters = [];
+    this.currentParams.getAll("filter").forEach(filter => {
+      if (filter !== event.name || event.checked === true) {
+        filters.push(filter);
       }
     });
-    if (!result[event.groupName] && event.checked === true) {
-      result[event.groupName] = [event.checkboxName];
+    if (!filters[event.name] && event.checked === true) {
+      filters.push(event.name);
     }
-    return result;
+    return filters;
   }
 
   onSyncWithGit() {

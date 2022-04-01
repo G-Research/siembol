@@ -51,7 +51,7 @@ export class CheckboxFiltersComponent {
   @Output() readonly selectedCheckbox: EventEmitter<CheckboxEvent> = new EventEmitter<CheckboxEvent>();
 
   clickCheckbox(event: boolean, groupName: string, checkboxName: string) {
-    this.selectedCheckbox.emit({ checked: event, groupName, checkboxName});
+    this.selectedCheckbox.emit({ checked: event, name: this.getName(groupName, checkboxName)});
   }
 
   getName(group_name: string, name: string): string  {

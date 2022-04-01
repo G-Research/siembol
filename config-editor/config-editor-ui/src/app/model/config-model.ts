@@ -263,8 +263,7 @@ export enum ConfigStatus {
 
 export interface CheckboxEvent {
   checked: boolean,
-  groupName: string,
-  checkboxName: string,
+  name: string
 }
 
 export const FILTER_DELIMITER = '|';

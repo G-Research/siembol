@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash';
 import { Config, Release } from '@app/model';
 import { mockUiMetadataAlert } from 'testing/uiMetadataMap';
 import { ConfigStatus } from '@app/model/config-model';
+import { convertToParamMap } from '@angular/router';
 
 
 const mockConfigsUnsorted = [
@@ -288,7 +289,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlert)
-        .updateServiceFilters({checked: true, name: "general|upgradable"})
+        .updateServiceFilters(convertToParamMap({"filter":"general|upgradable"}))
         .computeConfigManagerRowData()
         .build();
       
@@ -322,7 +323,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlert)
-        .updateServiceFilters({checked: true, name: "general|unreleased"})
+        .updateServiceFilters(convertToParamMap({"filter": "general|unreleased"}))
         .computeConfigManagerRowData()
         .build();
       
@@ -356,7 +357,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlert)
-        .updateServiceFilters({checked: true, name: "general|my_edits"})
+        .updateServiceFilters(convertToParamMap({"filter": "general|my_edits"}))
         .computeConfigManagerRowData()
         .build();
       
@@ -392,10 +393,11 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlertWithCheckboxes)
-        .updateServiceFilters({checked: true, name: "test_group|box1"})
+        .updateServiceFilters(convertToParamMap({"filter":"test_group|box1", "hj":"test"}))
         .computeConfigManagerRowData()
         .build();
       
+      expect(state.serviceFilters).toEqual(["test_group|box1"])
       expect(state.isAnyFilterPresent).toEqual(true);
       expect(state.configManagerRowData).toEqual(expectedRowData);
     })
@@ -428,11 +430,11 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlertWithCheckboxes)
-        .updateServiceFilters({checked: true, name: "test_group|box1"})
-        .updateServiceFilters({checked: true, name: "test_group|box2"})
+        .updateServiceFilters(convertToParamMap({"filter":["test_group|box1","test_group|box2"]}))
         .computeConfigManagerRowData()
         .build();
       
+      expect(state.serviceFilters).toEqual(["test_group|box1", "test_group|box2"])
       expect(state.isAnyFilterPresent).toEqual(true);
       expect(state.configManagerRowData).toEqual(expectedRowData);
     })
