@@ -50,7 +50,7 @@
         <kafka_version>3.1.0</kafka_version>
         <kafka_junit_version>4.2.1</kafka_junit_version>
         <spark_version>2.2.0</spark_version>
-        <hadoop_version>3.3.1</hadoop_version>
+        <hadoop_version>3.3.2</hadoop_version>
         <json_schema_validator_version>2.2.14</json_schema_validator_version>
         <json_schema_core_version>1.2.14</json_schema_core_version>
         <spring_boot_version>2.6.6</spring_boot_version>
