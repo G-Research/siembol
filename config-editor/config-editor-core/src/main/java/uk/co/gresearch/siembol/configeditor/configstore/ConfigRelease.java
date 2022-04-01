@@ -83,6 +83,7 @@ public class ConfigRelease {
         }
 
         if (pullRequest.getAttributes().getPendingPullRequest()) {
+            //TODO: open ui error
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
                     String.format(PENDING_PR_ERROR_MSG,
                             configType.getReleaseName(),

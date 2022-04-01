@@ -92,6 +92,7 @@ public class ConfigItems {
                 || !checkVersion(configInfo)) {
             String msg = String.format(INVALID_CONFIG_VERSION, configInfo.getOldVersion(), configInfo.getName());
             LOG.info(msg);
+            //TODO: compute uiError
             return ConfigEditorResult.fromMessage(BAD_REQUEST, msg);
         }
 
