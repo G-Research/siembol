@@ -42,7 +42,7 @@
         <jackson_version>2.13.2</jackson_version>
         <junit_version>4.13.2</junit_version>
         <mockito_version>4.4.0</mockito_version>
-        <shade_version>3.2.4</shade_version>
+        <shade_version>3.3.0</shade_version>
         <curator_version>5.2.0</curator_version>
         <curator_test_version>2.13.0</curator_test_version>
         <storm_version>2.4.0</storm_version>
