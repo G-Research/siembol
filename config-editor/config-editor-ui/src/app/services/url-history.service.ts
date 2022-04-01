@@ -44,7 +44,7 @@ export class UrlHistoryService {
       }
     }
     const params = Object.fromEntries(newUrl.searchParams.entries());
-    return {rawUrl: newUrl.toString(), labels: { service, mode, ...params }};
+    return {rawUrl: newUrl.pathname + newUrl.search, labels: { service, mode, ...params }};
   }
 
   private add(item: string, history: string[]): string[] {
@@ -55,7 +55,7 @@ export class UrlHistoryService {
     ) {
       return history;
     }
-    history.push(this.trimSearchFromPath(item));
+    history.push(item);
     return this.crop(this.removeOldestDuplicates(history));
   }
 
@@ -68,14 +68,5 @@ export class UrlHistoryService {
       history.shift();
     }
     return history;
-  }
-
-  private trimSearchFromPath(path: string): string {
-    const url = new URL(path, location.origin);
-    const paths = url.pathname.substring(1).split('/');
-    if (paths.length === 1) {
-      path = path.split("?", 2)[0];
-    }
-    return path;
   }
 }
