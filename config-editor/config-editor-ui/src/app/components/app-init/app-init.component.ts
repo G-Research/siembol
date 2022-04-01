@@ -15,6 +15,7 @@ import { UserRole } from '@app/model/config-model';
 import { cloneDeep } from 'lodash';
 import { HomeViewComponent } from '../home-view/home-view.component';
 import { ManagementViewComponent } from '../management-view/management-view.component';
+import { SearchGuard } from '@app/guards/search.guard';
 
 @Component({
     template: '',
@@ -24,10 +25,16 @@ export class AppInitComponent implements OnInit, OnDestroy {
 
     private readonly configRoutes: Routes = [
         {
-            path: '',
             component: ConfigManagerComponent,
+            path: '',
             canActivate: [AuthGuard, EditorServiceGuard],
             runGuardsAndResolvers: 'always',
+            children: [{
+                path: '',
+                canActivate: [SearchGuard],
+                component: ConfigManagerComponent,
+                runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+            }],
         },
         {
             component: EditorViewComponent,
@@ -37,7 +44,7 @@ export class AppInitComponent implements OnInit, OnDestroy {
                 path: '',
                 component: EditorViewComponent,
                 canActivate: [ConfigEditGuard],
-                runGuardsAndResolvers: 'paramsOrQueryParamsChange'
+                runGuardsAndResolvers: 'paramsOrQueryParamsChange',
             }],
             runGuardsAndResolvers: 'paramsOrQueryParamsChange',
         }]

@@ -83,6 +83,7 @@ import { ModuleRegistry } from '@ag-grid-community/core';
 import { ConfigNameCellRendererComponent } from './components/config-manager/cell-renderers/config-name-cell-renderer.component';
 import { StoreHeaderGroupComponent } from './components/config-manager/header-groups/store-header-group.component';
 import { CheckboxFiltersComponent } from './components/checkbox-filters/checkbox-filters.component';
+import { SearchHistoryComponent } from './components/search-history/search-history.component';
 
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
@@ -110,6 +111,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
   bootstrap: [AppComponent],
   declarations: [
     CheckboxFiltersComponent,
+    SearchHistoryComponent,
     StoreHeaderGroupComponent,
     ReleaseHeaderGroupComponent,
     LabelCellRendererComponent,

@@ -263,11 +263,21 @@ export enum ConfigStatus {
 
 export interface CheckboxEvent {
   checked: boolean,
-  name: string,
-}
-
-export interface ServiceFilters {
-  [type: string]: boolean;
+  name: string
 }
 
 export const FILTER_DELIMITER = '|';
+
+export interface ServiceSearchHistory {
+  [type: string]: string[] | string;
+}
+
+export interface HistoryUrl {
+  rawUrl: string,
+  labels: UrlInfo
+}
+
+export const FILTER_PARAM_KEY =  "filter"
+export const SEARCH_PARAM_KEY =  "search"
+
+export const HISTORY_PARAMS = ['configName', 'testCaseName'];

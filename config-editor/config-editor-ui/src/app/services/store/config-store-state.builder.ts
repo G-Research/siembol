@@ -4,7 +4,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, CheckboxEvent, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, ServiceFilters } from '@app/model/config-model';
+import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER } from '@app/model/config-model';
 import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
 
 export class ConfigStoreStateBuilder {
@@ -113,8 +113,11 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  updateServiceFilters(event: CheckboxEvent): ConfigStoreStateBuilder {
-    this.state.serviceFilters[event.name] = event.checked;
+  updateServiceFilters(filters: string[]): ConfigStoreStateBuilder {
+    this.state.serviceFilters = [];
+    filters.forEach(filter => {
+      this.state.serviceFilters.push(filter)
+    })
     return this;
   }
 
@@ -205,25 +208,16 @@ export class ConfigStoreStateBuilder {
   }
 
   computeConfigManagerRowData() {
-    this.state.isAnyFilterPresent = this.isServiceFilterPresent(this.state.serviceFilters);
+    this.state.isAnyFilterPresent = this.state.serviceFilters.length > 0;
     this.state.configManagerRowData = this.state.sortedConfigs.map(
       (config: Config) => this.getRowFromConfig(config, this.state.release)
     );
     return this;
   }
 
-  private isServiceFilterPresent(filters: ServiceFilters): boolean {
-    for (const checked of Object.values(filters)) {
-      if (checked) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private evaluateFilters(node: ConfigManagerRow): boolean {
-    for (const [name, checked] of Object.entries(this.state.serviceFilters)) {
-      if (checked && !this.evaluateSingleFilter(name, node)) {
+    for (const name of this.state.serviceFilters) {
+      if (!this.evaluateSingleFilter(name, node)) {
         return false;
       }
     }

@@ -71,3 +71,4 @@ describe('UrlHistoryService', () => {
     expect(service.getHistoryPreviousUrls()).toHaveSize(5);
   }));
 });
+
