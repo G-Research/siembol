@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AppConfigService } from '@app/services/app-config.service';
-import { parseUrl } from '@app/commons/helper-functions'
-import { ParsedUrl } from '@app/model/config-model';
+import { HistoryUrl, HISTORY_PARAMS } from '@app/model/config-model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,9 +25,26 @@ export class UrlHistoryService {
     return history ? JSON.parse(history) : [];
   }
 
-  getHistoryParsedPreviousUrls(): ParsedUrl[] {
+  getPreviousUrls(): HistoryUrl[] {
     const listUrls = this.getHistoryPreviousUrls();
-    return listUrls.map(url => ({ rawUrl: url, labels: parseUrl(url)}));
+    return listUrls.map(url => this.getHistoryUrl(url));
+  }
+
+  private getHistoryUrl(path: string): HistoryUrl {
+    const url = new URL(path, location.origin);
+    const paths = url.pathname.substring(1).split('/');
+  
+    const service = paths[0];
+    const mode = paths[1] === 'admin' ? 'admin' : '';
+
+    const newUrl = new URL(url.pathname, location.origin);
+    for (const param of HISTORY_PARAMS) {
+      if (url.searchParams.get(param)) {
+        newUrl.searchParams.append(param, url.searchParams.get(param));
+      }
+    }
+    const params = Object.fromEntries(newUrl.searchParams.entries());
+    return {rawUrl: newUrl.toString(), labels: { service, mode, ...params }};
   }
 
   private add(item: string, history: string[]): string[] {

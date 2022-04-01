@@ -10,16 +10,15 @@ import { ReleaseDialogComponent } from '../release-dialog/release-dialog.compone
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/store/config-store.service';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router  } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { CheckboxEvent, ConfigManagerRow, Importers, ServiceSearchHistory, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, ServiceSearchHistory, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
 import { RowDragEvent, GridSizeChangedEvent, RowNode, GridApi, GetRowIdFunc } from '@ag-grid-community/core';
 import { FilterConfig } from '@app/model/ui-metadata-map';
-import { SearchHistoryService } from '@app/services/search-history.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,7 +76,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
   api: GridApi;
   countChangesInRelease$ : Observable<number>;
-  currentParams: ParamMap;
   searchHistory: ServiceSearchHistory[];
   private rowMoveStartIndex: number;
 
@@ -90,9 +88,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private route: ActivatedRoute,
-    private configService: AppConfigService,
-    private searchHistoryService: SearchHistoryService
+    private configService: AppConfigService
   ) {
     this.context = { componentParent: this };
 
@@ -114,7 +110,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.isAnyFilterPresent$ = this.configStore.isAnyFilterPresent$;
     this.countChangesInRelease$ = this.configStore.countChangesInRelease$;
     this.serviceFilters$ = this.configStore.serviceFilters$;
-    this.searchHistory = this.searchHistoryService.getServiceSearchHistory(this.editorService.serviceName);
+    this.searchHistory = this.editorService.searchHistoryService.getSearchHistory();
   }
 
   ngOnInit() {
@@ -137,9 +133,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.serviceFilterConfig$.pipe(first()).subscribe(s => {
       this.serviceFilterConfig = cloneDeep(s);
     });
-    this.route.queryParamMap.subscribe(params => {
-      this.currentParams = params;
-    })
   }
 
   onGridReady(params: any) {
@@ -159,7 +152,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onSearch(searchTerm: string) {
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: { search: searchTerm !== ''? searchTerm: undefined },
+      queryParams: { [SEARCH_PARAM_KEY]: searchTerm !== ''? searchTerm: undefined },
       queryParamsHandling: 'merge',
     });
   }
@@ -243,22 +236,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onClickCheckbox(event: CheckboxEvent) {
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: { filter: this.getLatestFilters(event) },
+      queryParams: { [FILTER_PARAM_KEY]: this.editorService.getLatestFilters(event) },
       queryParamsHandling: 'merge',
     });
-  }
-  
-  getLatestFilters(event: CheckboxEvent): any {
-    const filters = [];
-    this.currentParams.getAll("filter").forEach(filter => {
-      if (filter !== event.name || event.checked === true) {
-        filters.push(filter);
-      }
-    });
-    if (!filters[event.name] && event.checked === true) {
-      filters.push(event.name);
-    }
-    return filters;
   }
 
   onSyncWithGit() {
@@ -303,7 +283,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
 
   onSaveSearch() {
-    this.searchHistoryService.addToSearchHistory(this.currentParams, this.editorService.serviceName);
-    this.searchHistory = this.searchHistoryService.getServiceSearchHistory(this.editorService.serviceName);
+    this.searchHistory = this.editorService.onSaveSearch();
   }
 }

@@ -6,7 +6,6 @@ import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
 import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER } from '@app/model/config-model';
 import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
-import { ParamMap } from '@angular/router';
 
 export class ConfigStoreStateBuilder {
   private state: ConfigStoreState;
@@ -114,9 +113,9 @@ export class ConfigStoreStateBuilder {
     return this;
   }
 
-  updateServiceFilters(params: ParamMap): ConfigStoreStateBuilder {
+  updateServiceFilters(filters: string[]): ConfigStoreStateBuilder {
     this.state.serviceFilters = [];
-    params.getAll("filter").forEach(filter => {
+    filters.forEach(filter => {
       this.state.serviceFilters.push(filter)
     })
     return this;

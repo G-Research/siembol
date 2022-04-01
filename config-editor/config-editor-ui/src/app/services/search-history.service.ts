@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+import { ParamMap, Params } from '@angular/router';
+import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
 import { AppConfigService } from '@app/services/app-config.service';
 import { isEqual } from 'lodash';
 
@@ -10,37 +11,44 @@ export class SearchHistoryService {
   private readonly maxSize: number;
   private readonly SEARCH_HISTORY_KEY: string;
 
-  constructor(private appService: AppConfigService) {
-    this.SEARCH_HISTORY_KEY = 'siembol_search_history-' + this.appService.environment;
+  constructor(private appService: AppConfigService, serviceName: string) {
+    this.SEARCH_HISTORY_KEY = 'siembol_search_history-' + serviceName + '-' + this.appService.environment;
     this.maxSize = this.appService.searchMaxSize;
   }
 
-  getServiceSearchHistory(serviceName: string) {
-    return this.getSearchHistory()[serviceName];
-  }
-
-  addToSearchHistory(search: any, serviceName: string) {
-    const history = this.getSearchHistory();
-    let serviceHistory = history[serviceName]? history[serviceName] : [];
-    const paramsWithoutEmpty = this.removeEmptyParams(search.params);
-    if (Object.keys(paramsWithoutEmpty).length > 0) {
-      serviceHistory.push(paramsWithoutEmpty);
-      serviceHistory = this.crop(this.removeOldestDuplicates(serviceHistory));
-      history[serviceName] = serviceHistory;
+  addToSearchHistory(search: ParamMap): ServiceSearchHistory[] {
+    let history = this.getSearchHistory();
+    const parsedParams = this.parseParams(search);
+    if (Object.keys(parsedParams).length > 0) {
+      history.push(parsedParams);
+      history = this.crop(this.removeOldestDuplicates(history));
       localStorage.setItem(this.SEARCH_HISTORY_KEY, JSON.stringify(history));
     }
+    return history;
   }
 
-  private getSearchHistory() {
+  getSearchHistory(): ServiceSearchHistory[] {
     const history = localStorage.getItem(this.SEARCH_HISTORY_KEY);
-    return history ? JSON.parse(history) : {};
+    return history ? JSON.parse(history) : [];
   }
 
-  private removeEmptyParams(params: Params) {
-    return Object.fromEntries(Object.entries(params).filter(([_, v]) => v.length > 0));
+  private parseParams(params: ParamMap): Params {
+    const result = {};
+    for (const param of params.getAll(FILTER_PARAM_KEY)) {
+      const [groupName, filterName] = param.split(FILTER_DELIMITER, 2);
+      if (!result[groupName]) {
+        result[groupName] = [];
+      }
+      result[groupName].push(filterName);
+    }
+    const search = params.get(SEARCH_PARAM_KEY);
+    if (search && search !== '') {
+      result[SEARCH_PARAM_KEY] = search;
+    }
+    return result;
   }
   
-  private removeOldestDuplicates(history: string[]): string[] {
+  private removeOldestDuplicates(history: ServiceSearchHistory[]): ServiceSearchHistory[] {
     return history.filter((value, index) => 
       index === history.map(obj => this.areParamsEqual(obj, value)).lastIndexOf(true)
     );
@@ -63,7 +71,7 @@ export class SearchHistoryService {
     })
   }
 
-  private crop(history: string[]): string[] {
+  private crop(history: ServiceSearchHistory[]): ServiceSearchHistory[] {
     while (history.length > this.maxSize) {
       history.shift();
     }

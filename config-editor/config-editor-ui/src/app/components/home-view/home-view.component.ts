@@ -3,7 +3,7 @@ import { UrlHistoryService } from '@app/services/url-history.service';
 import { AppConfigService } from '@app/services/app-config.service';
 import { Router } from '@angular/router';
 import { HelpLink } from '@app/model/app-config';
-import { ParsedUrl, ServiceInfo } from '@app/model/config-model';
+import { HistoryUrl, ServiceInfo } from '@app/model/config-model';
 import { AppService } from '@app/services/app.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { AppService } from '@app/services/app.service';
     templateUrl: './home-view.component.html',  
 })
 export class HomeViewComponent implements OnInit {
-    history: ParsedUrl[];
+    history: HistoryUrl[];
     root: string;
     homeHelpLinks: HelpLink[];
     userServices: ServiceInfo[];
@@ -27,7 +27,7 @@ export class HomeViewComponent implements OnInit {
         this.userServices = this.appService.userServices;
         this.root = this.appConfigService.serviceRoot.slice(0, -1);
         this.homeHelpLinks = this.appConfigService.homeHelpLinks;
-        this.history = this.historyService.getHistoryParsedPreviousUrls();
+        this.history = this.historyService.getPreviousUrls();
     }
 
     routeTo(url: string) {

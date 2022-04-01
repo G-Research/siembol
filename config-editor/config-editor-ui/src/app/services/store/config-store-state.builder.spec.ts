@@ -289,7 +289,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlert)
-        .updateServiceFilters(convertToParamMap({"filter":"general|upgradable"}))
+        .updateServiceFilters(["general|upgradable"])
         .computeConfigManagerRowData()
         .build();
       
@@ -323,7 +323,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlert)
-        .updateServiceFilters(convertToParamMap({"filter": "general|unreleased"}))
+        .updateServiceFilters(["general|unreleased"])
         .computeConfigManagerRowData()
         .build();
       
@@ -357,7 +357,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlert)
-        .updateServiceFilters(convertToParamMap({"filter": "general|my_edits"}))
+        .updateServiceFilters(["general|my_edits"])
         .computeConfigManagerRowData()
         .build();
       
@@ -393,7 +393,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlertWithCheckboxes)
-        .updateServiceFilters(convertToParamMap({"filter":"test_group|box1", "hj":"test"}))
+        .updateServiceFilters(["test_group|box1"])
         .computeConfigManagerRowData()
         .build();
       
@@ -430,7 +430,7 @@ describe('ConfigStoreStateBuilder', () => {
       
       const state = builder
         .serviceFilterConfig(mockUiMetadataAlertWithCheckboxes)
-        .updateServiceFilters(convertToParamMap({"filter":["test_group|box1","test_group|box2"]}))
+        .updateServiceFilters(["test_group|box1","test_group|box2"])
         .computeConfigManagerRowData()
         .build();
       

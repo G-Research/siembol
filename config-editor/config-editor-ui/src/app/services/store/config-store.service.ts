@@ -7,7 +7,7 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, Importers, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
@@ -587,8 +587,8 @@ export class ConfigStoreService {
 
   updateSearchTermAndFilters(params: ParamMap) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
-      .searchTerm(params.get("searchTerm"))
-      .updateServiceFilters(params)   
+      .searchTerm(params.get(SEARCH_PARAM_KEY))
+      .updateServiceFilters(params.getAll(FILTER_PARAM_KEY))   
       .computeConfigManagerRowData()
       .build();
 

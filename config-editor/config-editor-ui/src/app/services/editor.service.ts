@@ -10,6 +10,9 @@ import { AppService } from './app.service';
 import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
+import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { SearchHistoryService } from './search-history.service';
 
 export class ServiceContext {
   metaDataMap: UiMetadata;
@@ -20,12 +23,14 @@ export class ServiceContext {
   serviceName: string;
   testSpecificationSchema?: JSONSchema7;
   adminMode: boolean;
+  searchHistoryService?: SearchHistoryService;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class EditorService {
+  private currentParams: ParamMap;
   private serviceContext: ServiceContext = new ServiceContext();
   private serviceNameSubject = new BehaviorSubject<string>(null);
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -56,7 +61,20 @@ export class EditorService {
     return this.serviceContext.testSpecificationSchema;
   }
 
-  constructor(private http: HttpClient, private config: AppConfigService, private appService: AppService) {}
+  get searchHistoryService() {
+    return this.serviceContext.searchHistoryService;
+  }
+
+  constructor(
+    private http: HttpClient, 
+    private config: AppConfigService, 
+    private appService: AppService,
+    private route: ActivatedRoute
+  ) {
+    this.route.queryParamMap.subscribe(params => {
+      this.currentParams = params;
+    })
+  }
 
   setServiceContext(serviceContext: ServiceContext): boolean {
     this.serviceContext = serviceContext;
@@ -96,6 +114,7 @@ export class EditorService {
             metaDataMap,
             serviceName,
             testSpecificationSchema: testSpecSchema,
+            searchHistoryService: new SearchHistoryService(this.config, serviceName),
           };
         }
         throwError(() => 'Can not load service');
@@ -123,6 +142,23 @@ export class EditorService {
         }
         throwError(() => 'Can not load admin service');
       }));
+  }
+
+  getLatestFilters(event: CheckboxEvent): any {
+    const filters = [];
+    this.currentParams.getAll(FILTER_PARAM_KEY).forEach(filter => {
+      if (filter !== event.name || event.checked === true) {
+        filters.push(filter);
+      }
+    });
+    if (!filters[event.name] && event.checked === true) {
+      filters.push(event.name);
+    }
+    return filters;
+  }
+
+  onSaveSearch(): ServiceSearchHistory[] {
+    return this.serviceContext.searchHistoryService.addToSearchHistory(this.currentParams);
   }
 
   private initialiseContext(
