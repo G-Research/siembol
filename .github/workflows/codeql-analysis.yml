@@ -73,7 +73,7 @@ jobs:
         java-version: '13'
     - name: Cache Maven packages
       if: ${{ matrix.language == 'java' }} 
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       with:
         path: ~/.m2
         key: maven-${{ hashFiles('**/pom.xml') }}
