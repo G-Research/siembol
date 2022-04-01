@@ -10,7 +10,7 @@ import { ReleaseDialogComponent } from '../release-dialog/release-dialog.compone
 import { JsonViewerComponent } from '../json-viewer/json-viewer.component';
 import { FileHistory } from '../../model';
 import { ConfigStoreService } from '../../services/store/config-store.service';
-import { Router  } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router  } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
 import { CheckboxEvent, ConfigManagerRow, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, ServiceSearchHistory, Type } from '@app/model/config-model';
@@ -78,6 +78,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   countChangesInRelease$ : Observable<number>;
   searchHistory: ServiceSearchHistory[];
   private rowMoveStartIndex: number;
+  private currentParams: ParamMap;
 
   private ngUnsubscribe = new Subject<void>();
   private configStore: ConfigStoreService;
@@ -88,7 +89,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     private snackbar: PopupService,
     private editorService: EditorService,
     private router: Router,
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private route: ActivatedRoute
   ) {
     this.context = { componentParent: this };
 
@@ -133,6 +135,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     this.configStore.serviceFilterConfig$.pipe(first()).subscribe(s => {
       this.serviceFilterConfig = cloneDeep(s);
     });
+    this.route.queryParamMap.subscribe(params => {
+      this.currentParams = params;
+    })
   }
 
   onGridReady(params: any) {
@@ -236,7 +241,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onClickCheckbox(event: CheckboxEvent) {
     this.router.navigate([this.editorService.serviceName], {
-      queryParams: { [FILTER_PARAM_KEY]: this.editorService.getLatestFilters(event) },
+      queryParams: { [FILTER_PARAM_KEY]: this.editorService.getLatestFilters(event, this.currentParams) },
       queryParamsHandling: 'merge',
     });
   }
@@ -283,6 +288,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
 
   onSaveSearch() {
-    this.searchHistory = this.editorService.onSaveSearch();
+    this.searchHistory = this.editorService.onSaveSearch(this.currentParams);
   }
 }

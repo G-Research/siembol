@@ -11,8 +11,8 @@ import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
 import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
-import { ActivatedRoute, ParamMap } from '@angular/router';
 import { SearchHistoryService } from './search-history.service';
+import { ParamMap } from '@angular/router';
 
 export class ServiceContext {
   metaDataMap: UiMetadata;
@@ -30,7 +30,6 @@ export class ServiceContext {
   providedIn: 'root',
 })
 export class EditorService {
-  private currentParams: ParamMap;
   private serviceContext: ServiceContext = new ServiceContext();
   private serviceNameSubject = new BehaviorSubject<string>(null);
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -68,13 +67,8 @@ export class EditorService {
   constructor(
     private http: HttpClient, 
     private config: AppConfigService, 
-    private appService: AppService,
-    private route: ActivatedRoute
-  ) {
-    this.route.queryParamMap.subscribe(params => {
-      this.currentParams = params;
-    })
-  }
+    private appService: AppService
+  ) {}
 
   setServiceContext(serviceContext: ServiceContext): boolean {
     this.serviceContext = serviceContext;
@@ -144,9 +138,9 @@ export class EditorService {
       }));
   }
 
-  getLatestFilters(event: CheckboxEvent): any {
+  getLatestFilters(event: CheckboxEvent, currentParams: ParamMap): any {
     const filters = [];
-    this.currentParams.getAll(FILTER_PARAM_KEY).forEach(filter => {
+    currentParams.getAll(FILTER_PARAM_KEY).forEach(filter => {
       if (filter !== event.name || event.checked === true) {
         filters.push(filter);
       }
@@ -157,8 +151,8 @@ export class EditorService {
     return filters;
   }
 
-  onSaveSearch(): ServiceSearchHistory[] {
-    return this.serviceContext.searchHistoryService.addToSearchHistory(this.currentParams);
+  onSaveSearch(currentParams: ParamMap): ServiceSearchHistory[] {
+    return this.serviceContext.searchHistoryService.addToSearchHistory(currentParams);
   }
 
   private initialiseContext(
