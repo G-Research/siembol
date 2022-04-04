@@ -14,19 +14,19 @@ export class UrlHistoryService {
     this.max_size = this.appService.historyMaxSize;
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        const history = this.add(event.url, this.getHistoryPreviousUrls());
+        const history = this.add(event.url, this.getHistoryOfUrls());
         localStorage.setItem(this.HISTORY_KEY, JSON.stringify(history));
       }
     });
   }
 
-  getHistoryPreviousUrls(): string[] {
+  getHistoryOfUrls(): string[] {
     const history = localStorage.getItem(this.HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   }
 
-  getPreviousUrls(): HistoryUrl[] {
-    const listUrls = this.getHistoryPreviousUrls();
+  getParsedPreviousUrls(): HistoryUrl[] {
+    const listUrls = this.getHistoryOfUrls();
     return listUrls.map(url => this.getHistoryUrl(url));
   }
 

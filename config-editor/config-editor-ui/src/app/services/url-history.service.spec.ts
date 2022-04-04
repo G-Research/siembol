@@ -3,6 +3,7 @@ import { AppConfigService } from '@app/services/app-config.service';
 import { TestBed, inject } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NavigationEnd, Router } from '@angular/router';
+import { HistoryUrl } from '@app/model/config-model';
 
 export class MockAuth {
   // eslint-disable-next-line no-unused-vars
@@ -49,15 +50,15 @@ describe('UrlHistoryService', () => {
 
   it('should have one url', inject([UrlHistoryService], (service: UrlHistoryService) => {
     TestBed.get(Router).events.next(new NavigationEnd(1, 'url', 'url'));
-    expect(service.getHistoryPreviousUrls()).toContain('url');
-    expect(service.getHistoryPreviousUrls()).toHaveSize(1);
+    expect(service.getHistoryOfUrls()).toContain('url');
+    expect(service.getHistoryOfUrls()).toHaveSize(1);
   }));
 
   it('should ignore duplicate urls', inject([UrlHistoryService], (service: UrlHistoryService) => {
     TestBed.get(Router).events.next(new NavigationEnd(1, 'url', 'url'));
     TestBed.get(Router).events.next(new NavigationEnd(1, 'url', 'url'));
-    expect(service.getHistoryPreviousUrls()).toContain('url');
-    expect(service.getHistoryPreviousUrls()).toHaveSize(1);
+    expect(service.getHistoryOfUrls()).toContain('url');
+    expect(service.getHistoryOfUrls()).toHaveSize(1);
   }));
 
   it('should crop oldest', inject([UrlHistoryService], (service: UrlHistoryService) => {
@@ -67,8 +68,18 @@ describe('UrlHistoryService', () => {
     TestBed.get(Router).events.next(new NavigationEnd(1, 'url4', 'url'));
     TestBed.get(Router).events.next(new NavigationEnd(1, 'url5', 'url'));
     TestBed.get(Router).events.next(new NavigationEnd(1, 'url6', 'url'));
-    expect(service.getHistoryPreviousUrls()).not.toContain('url');
-    expect(service.getHistoryPreviousUrls()).toHaveSize(5);
+    expect(service.getHistoryOfUrls()).not.toContain('url');
+    expect(service.getHistoryOfUrls()).toHaveSize(5);
+  }));
+
+  it('should parse history', inject([UrlHistoryService], (service: UrlHistoryService) => {
+    TestBed.get(Router).events.next(new NavigationEnd(1, 'test-service?configName=test&testCaseName=testCase&random=test', 'url'));
+    const parsedUrl: HistoryUrl = { 
+      rawUrl: '/test-service?configName=test&testCaseName=testCase', 
+      labels: { configName: "test", testCaseName: "testCase", service: "test-service", mode: ''},
+    };
+    expect(service.getParsedPreviousUrls()[0]).toEqual(parsedUrl);
+    expect(service.getParsedPreviousUrls()).toHaveSize(1);
   }));
 });
 
