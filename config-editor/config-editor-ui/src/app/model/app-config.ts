@@ -23,6 +23,7 @@ export interface AppConfig {
   homeHelpLinks?: HelpLink[];
   managementLinks?: HelpLink[];
   historyMaxSize?: number;
+  searchMaxSize?: number;
   blockingTimeout?: number;
   useImporters?: boolean;
 }

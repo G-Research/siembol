@@ -1,4 +1,3 @@
-import { UrlInfo } from '@app/model/config-model';
 import { isEqual } from 'lodash';
 
 export function copyTextToClipboard(text: string): boolean {
@@ -19,18 +18,6 @@ export function copyTextToClipboard(text: string): boolean {
   document.body.removeChild(textArea);
 
   return success;
-}
-
-export function parseUrl(path: string): UrlInfo {
-  const url = new URL(path, location.origin);
-  const paths = url.pathname.substring(1).split('/');
-
-  const service = paths[0];
-  const mode = paths[1] === 'admin' ? 'admin' : '';
-  const configName = url.searchParams.get('configName');
-  const testCaseName = url.searchParams.get('testCaseName');
-
-  return { service, mode, configName, testCaseName };
 }
 
 export function replacer(key, value) {

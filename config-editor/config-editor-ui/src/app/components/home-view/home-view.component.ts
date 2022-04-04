@@ -3,9 +3,8 @@ import { UrlHistoryService } from '@app/services/url-history.service';
 import { AppConfigService } from '@app/services/app-config.service';
 import { Router } from '@angular/router';
 import { HelpLink } from '@app/model/app-config';
-import { ServiceInfo } from '@app/model/config-model';
+import { HistoryUrl, ServiceInfo } from '@app/model/config-model';
 import { AppService } from '@app/services/app.service';
-import { parseUrl } from '@app/commons/helper-functions'
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +13,7 @@ import { parseUrl } from '@app/commons/helper-functions'
     templateUrl: './home-view.component.html',  
 })
 export class HomeViewComponent implements OnInit {
-    history: string[];
+    history: HistoryUrl[];
     root: string;
     homeHelpLinks: HelpLink[];
     userServices: ServiceInfo[];
@@ -24,15 +23,11 @@ export class HomeViewComponent implements OnInit {
                 private appService: AppService,
                 private router: Router) { }
     
-    get parseUrl() {
-        return parseUrl;
-   }
-
     ngOnInit() {
         this.userServices = this.appService.userServices;
         this.root = this.appConfigService.serviceRoot.slice(0, -1);
         this.homeHelpLinks = this.appConfigService.homeHelpLinks;
-        this.history = this.historyService.getHistoryPreviousUrls();
+        this.history = this.historyService.getPreviousUrls();
     }
 
     routeTo(url: string) {
@@ -42,6 +37,4 @@ export class HomeViewComponent implements OnInit {
     openLink(link: string) {
         window.open(link, "_blank");
     }
-
-    
 }

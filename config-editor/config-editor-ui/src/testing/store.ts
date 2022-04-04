@@ -20,7 +20,7 @@ export const mockStore: ConfigStoreState = {
   pastedConfig: undefined,
   configManagerRowData: [],
   countChangesInRelease: 0,
-  serviceFilters: {},
+  serviceFilters: [],
   isAnyFilterPresent: false,
   serviceFilterConfig: {},
   user: "siembol",

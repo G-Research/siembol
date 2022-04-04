@@ -107,6 +107,10 @@ export class AppConfigService {
     return this._config.historyMaxSize ? this._config.historyMaxSize : 5;
   }
 
+  get searchMaxSize(): number {
+    return this._config.searchMaxSize ? this._config.searchMaxSize : 5;
+  }
+
   get blockingTimeout(): number {
     return this._config.blockingTimeout ? this._config.blockingTimeout : 30000;
   }

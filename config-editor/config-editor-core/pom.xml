@@ -9,13 +9,13 @@
     <parent>
         <groupId>uk.co.gresearch.siembol</groupId>
         <artifactId>config-editor</artifactId>
-        <version>2.4.3-SNAPSHOT</version>
+        <version>2.4.5-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
             <groupId>uk.co.gresearch.siembol</groupId>
             <artifactId>siembol-common</artifactId>
-            <version>2.4.3-SNAPSHOT</version>
+            <version>2.4.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.0.0.202111291000-r</version>
+            <version>6.1.0.202203080745-r</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.mylyn.github</groupId>
