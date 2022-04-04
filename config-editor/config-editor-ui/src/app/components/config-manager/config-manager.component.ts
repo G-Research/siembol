@@ -290,4 +290,8 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   onSaveSearch() {
     this.searchHistory = this.editorService.onSaveSearch(this.currentParams);
   }
+
+  onDeleteSearch(search: ServiceSearchHistory) {
+    this.searchHistory = this.editorService.onDeleteSearch(search);
+  }
 }

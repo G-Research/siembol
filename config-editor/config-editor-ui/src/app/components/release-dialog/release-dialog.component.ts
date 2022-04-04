@@ -1,6 +1,6 @@
 import { UiMetadata } from '../../model/ui-metadata-map';
 
-import { Component, Inject, TemplateRef } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, Inject, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { FormGroup } from '@angular/forms';
@@ -22,7 +22,7 @@ import { ReleaseWrapper, TestingType } from '@app/model/config-model';
   styleUrls: ['release-dialog.component.scss'],
   templateUrl: 'release-dialog.component.html',
 })
-export class ReleaseDialogComponent {
+export class ReleaseDialogComponent implements AfterViewChecked {
   newRelease: Release;
   newContent: ConfigData;
   initContent: ConfigData;
@@ -38,14 +38,13 @@ export class ReleaseDialogComponent {
   uiMetadata: UiMetadata;
   extrasData = {};
   testingType = TestingType.RELEASE_TESTING;
-
-
   testEnabled = false;
   options: FormlyFormOptions = { formState: {} };
 
   field: FormlyFieldConfig;
   form: FormGroup = new FormGroup({});
 
+  private isDiffReduced = false;
   private readonly OUTDATED_RELEASE_MESSAGE = `Old version detected, latest release 
         have now been reloaded. Please prepare your release again.`;
   private readonly INVALID_MESSAGE = 'Release is invalid.';
@@ -58,6 +57,7 @@ export class ReleaseDialogComponent {
     private service: EditorService,
     private formlyJsonSchema: FormlyJsonschema,
     private appService: AppService,
+    private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: Release
   ) {
     this.serviceName = service.serviceName;
@@ -161,6 +161,15 @@ export class ReleaseDialogComponent {
   onCompareResults(diffResults: DiffResults) {
     if (!diffResults.hasDiff) {
       this.hasChanged = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    const showDiffs = document.getElementById("showDiffs");
+    if (showDiffs && !this.isDiffReduced && !showDiffs["checked"]) {
+      this.isDiffReduced = true;
+      showDiffs.click();
+      this.cd.detectChanges();
     }
   }
 }

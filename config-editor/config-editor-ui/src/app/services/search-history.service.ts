@@ -32,6 +32,15 @@ export class SearchHistoryService {
     return history ? JSON.parse(history) : [];
   }
 
+  deleteSavedSearch(search: ServiceSearchHistory): ServiceSearchHistory[] {
+    const history = this.getSearchHistory();
+    const nextHistory = history.filter(value =>
+      JSON.stringify(value) !== JSON.stringify(search)
+    );
+    localStorage.setItem(this.SEARCH_HISTORY_KEY, JSON.stringify(nextHistory));
+    return nextHistory;
+  }
+
   private parseParams(params: ParamMap): Params {
     const result = {};
     if (params.getAll(FILTER_PARAM_KEY).length > 0) {

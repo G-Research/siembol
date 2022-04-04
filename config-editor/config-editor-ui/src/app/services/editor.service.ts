@@ -155,6 +155,10 @@ export class EditorService {
     return this.serviceContext.searchHistoryService.addToSearchHistory(currentParams);
   }
 
+  onDeleteSearch(search: ServiceSearchHistory): ServiceSearchHistory[] {
+    return this.serviceContext.searchHistoryService.deleteSavedSearch(search);
+  }
+
   private initialiseContext(
     serviceName: string
   ): [UiMetadata, string, ConfigLoaderService, ConfigStoreService] {

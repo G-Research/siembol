@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from "@app/model/config-model";
 
@@ -13,6 +13,7 @@ import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHist
         *ngFor="let search of searchHistory.slice().reverse()">
         <mat-expansion-panel [expanded]="false" (click)="routeTo(search)" [hideToggle]="true">
           <mat-expansion-panel-header #panelH (click)="panelH._toggle()">
+            <div class="labels">
               <div *ngFor="let param of parseSearchHistory(search) | keyvalue">
                 <div *ngIf="param.value" class="tag-chip">
                         <div class="tag-text">
@@ -20,6 +21,10 @@ import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHist
                         </div>   
                 </div>
               </div>
+            </div>
+            <button mat-button matSuffix mat-icon-button aria-label="Delete" (click)="onDeleteSavedSearch(search)">
+              <mat-icon style="font-size:20px;">close</mat-icon>
+            </button>
           </mat-expansion-panel-header>
         </mat-expansion-panel>
       </ng-container>
@@ -30,6 +35,9 @@ import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHist
   </mat-expansion-panel>
   `,
   styles: [`
+    .labels {
+      display:flex
+    }
     .tag-chip {
       display: inline-block;
       margin: 0 auto;
@@ -55,10 +63,16 @@ import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHist
   .mat-expansion-panel {
     margin-bottom: 10px;
   }
+  ::ng-deep .mat-content {
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+  }
   `],
 })
 export class SearchHistoryComponent {
   @Input() searchHistory: ServiceSearchHistory[];
+  @Output() readonly searchDeletion: EventEmitter<ServiceSearchHistory> = new EventEmitter<ServiceSearchHistory>();
 
   constructor(
     private router: Router,
@@ -86,5 +100,9 @@ export class SearchHistoryComponent {
       }
     }
     return result;
+  }
+
+  onDeleteSavedSearch(search: ServiceSearchHistory) {
+    this.searchDeletion.emit(search);
   }
 }
