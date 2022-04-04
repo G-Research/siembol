@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
-import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
+import { FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
 import { AppConfigService } from '@app/services/app-config.service';
 import { isEqual } from 'lodash';
 
@@ -27,23 +27,18 @@ export class SearchHistoryService {
     return history;
   }
 
-  getSearchHistory(): ServiceSearchHistory[] {
+  getSearchHistory() : ServiceSearchHistory[] {
     const history = localStorage.getItem(this.SEARCH_HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   }
 
   private parseParams(params: ParamMap): Params {
     const result = {};
-    for (const param of params.getAll(FILTER_PARAM_KEY)) {
-      const [groupName, filterName] = param.split(FILTER_DELIMITER, 2);
-      if (!result[groupName]) {
-        result[groupName] = [];
-      }
-      result[groupName].push(filterName);
+    if (params.getAll(FILTER_PARAM_KEY).length > 0) {
+      result[FILTER_PARAM_KEY] = params.getAll(FILTER_PARAM_KEY);
     }
-    const search = params.get(SEARCH_PARAM_KEY);
-    if (search && search !== '') {
-      result[SEARCH_PARAM_KEY] = search;
+    if (params.get(SEARCH_PARAM_KEY)) {
+      result[SEARCH_PARAM_KEY] = params.get(SEARCH_PARAM_KEY);
     }
     return result;
   }

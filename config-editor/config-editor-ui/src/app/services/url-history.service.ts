@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AppConfigService } from '@app/services/app-config.service';
-import { HistoryUrl, HISTORY_PARAMS } from '@app/model/config-model';
+import { FILTER_PARAM_KEY, HistoryUrl, HISTORY_PARAMS, SEARCH_PARAM_KEY } from '@app/model/config-model';
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +51,8 @@ export class UrlHistoryService {
     if (
       this.appService.isHomePath(item) ||
       this.appService.authenticationService.isCallbackUrl(item) ||
-      this.appService.isNewConfig(item)
+      this.appService.isNewConfig(item) ||
+      this.isSearchQuery(item)
     ) {
       return history;
     }
@@ -68,5 +69,13 @@ export class UrlHistoryService {
       history.shift();
     }
     return history;
+  }
+
+  private isSearchQuery(path: string): boolean {
+    const url = new URL(path, location.origin);
+    if (url.searchParams.get(FILTER_PARAM_KEY) || url.searchParams.get(SEARCH_PARAM_KEY)) {
+      return true;
+    }
+    return false;
   }
 }

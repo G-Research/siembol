@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ServiceSearchHistory } from "@app/model/config-model";
+import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from "@app/model/config-model";
 
 @Component({
   selector: "re-search-history",
@@ -13,7 +13,7 @@ import { ServiceSearchHistory } from "@app/model/config-model";
         *ngFor="let search of searchHistory.slice().reverse()">
         <mat-expansion-panel [expanded]="false" (click)="routeTo(search)" [hideToggle]="true">
           <mat-expansion-panel-header #panelH (click)="panelH._toggle()">
-              <div *ngFor="let param of search | keyvalue">
+              <div *ngFor="let param of parseSearchHistory(search) | keyvalue">
                 <div *ngIf="param.value" class="tag-chip">
                         <div class="tag-text">
                         {{param.key | titlecase}}: {{param.value}}
@@ -72,5 +72,19 @@ export class SearchHistoryComponent {
         relativeTo: this.route,
         queryParams: params,
       });
+  }
+
+  parseSearchHistory(searchHistory: ServiceSearchHistory): ServiceSearchHistory {
+    const result = { [SEARCH_PARAM_KEY]: searchHistory[SEARCH_PARAM_KEY]};
+    if (searchHistory[FILTER_PARAM_KEY]){
+      for (const param of searchHistory[FILTER_PARAM_KEY]) {
+        const [groupName, filterName] = param.split(FILTER_DELIMITER, 2);
+        if (!result[groupName]) {
+          result[groupName] = [];
+        }
+        result[groupName].push(filterName);
+      }
+    }
+    return result;
   }
 }
