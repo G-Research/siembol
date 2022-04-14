@@ -87,7 +87,7 @@ public class ZooKeeperConnectorTest {
     }
 
     @Test
-    public void addListenerJsonDataOK() throws Exception {
+    public void setJsonDataOK() throws Exception {
         final String path = "/c/d/e/f";
         var zooKeeperConnector = new ZooKeeperConnectorImpl.Builder()
                 .zkServer(TESTING_SERVER.getConnectString())
