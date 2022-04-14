@@ -1,5 +1,9 @@
 package uk.co.gresearch.siembol.common.zookeeper;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.*;
@@ -50,7 +54,13 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
 
     @Override
     public void setData(String data) throws Exception {
-        client.setData().forPath(this.path, data.getBytes(UTF_8));
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode json = objectMapper.readValue(data, JsonNode.class);
+            client.setData().forPath(this.path, objectMapper.writeValueAsBytes(json));
+        } catch (JsonParseException e) {
+            client.setData().forPath(this.path, data.getBytes(UTF_8));
+        }
     }
 
     @Override

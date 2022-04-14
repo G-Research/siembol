@@ -12,6 +12,24 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ZooKeeperConnectorTest {
     private static TestingServer TESTING_SERVER;
 
+    private final String testJson = """
+        {
+            "rules_version" :1,
+            "tags" : [ { "tag_name" : "detection_source", "tag_value" : "siembol_alerts" } ],
+            "rules" : [ {
+                    "rule_name" : "test_rule",
+                    "rule_version" : 1,
+                    "rule_author" : "dummy",
+                    "rule_protection" : {
+                    "max_per_hour" : 100,
+                    "max_per_day" : 10000
+                }
+            }]
+        }
+    """;
+
+    private final String testJsonOneLine = "{\"rules_version\":1,\"tags\":[{\"tag_name\":\"detection_source\",\"tag_value\":\"siembol_alerts\"}],\"rules\":[{\"rule_name\":\"test_rule\",\"rule_version\":1,\"rule_author\":\"dummy\",\"rule_protection\":{\"max_per_hour\":100,\"max_per_day\":10000}}]}";
+
     @BeforeClass
     public static void setUp() throws Exception {
         TESTING_SERVER =  new TestingServer();
@@ -64,6 +82,22 @@ public class ZooKeeperConnectorTest {
         Thread.sleep(1000);
         Assert.assertEquals("changed", zooKeeperConnector.getData());
         Assert.assertTrue(called.get());
+        zooKeeperConnector.close();
+        Thread.sleep(1000);
+    }
+
+    @Test
+    public void addListenerJsonDataOK() throws Exception {
+        final String path = "/c/d/e/f";
+        var zooKeeperConnector = new ZooKeeperConnectorImpl.Builder()
+                .zkServer(TESTING_SERVER.getConnectString())
+                .path(path)
+                .initValueIfNotExists("dummy_value")
+                .build();
+        zooKeeperConnector.initialise();
+        zooKeeperConnector.setData(testJson);
+        Thread.sleep(1000);
+        Assert.assertEquals(testJsonOneLine, zooKeeperConnector.getData());
         zooKeeperConnector.close();
         Thread.sleep(1000);
     }
