@@ -41,6 +41,7 @@ public interface ConfigSchemaService extends HealthCheckable {
 
     default ConfigEditorResult importConfig(UserInfo user, String importerName, String importerAttributes, String configToImport) {
         if (!getConfigImporters().containsKey(importerName)) {
+            //TODO: ui error unknown importer name
             return  ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
                     String.format(UNKNOWN_CONFIG_IMPORTER_MSG, importerName));
         }
@@ -48,12 +49,14 @@ public interface ConfigSchemaService extends HealthCheckable {
         ConfigEditorResult importResult =  getConfigImporters().get(importerName)
                 .importConfig(user, importerAttributes, configToImport);
         if (importResult.getStatusCode() != OK) {
+            //TODO: ui error wrong importing specification
             return importResult;
         }
 
         ConfigEditorResult validationResult = validateConfiguration(
                 importResult.getAttributes().getImportedConfiguration());
         if (validationResult.getStatusCode() != OK) {
+            //TODO: ui error invalid config after import
             return validationResult;
         }
 
@@ -63,6 +66,8 @@ public interface ConfigSchemaService extends HealthCheckable {
     default ConfigEditorResult getTestSchema() {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
+
+    //validateTestSpecification
 
     default ConfigEditorResult testConfiguration(String configuration, String testSpecification ) {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);

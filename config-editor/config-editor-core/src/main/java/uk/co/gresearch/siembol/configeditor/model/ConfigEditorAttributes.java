@@ -8,7 +8,6 @@ import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -86,9 +85,11 @@ public class ConfigEditorAttributes {
 
     private String configImporterAttributesSchema;
 
-    private String title;
+    @JsonProperty("title")
+    private String errorTitle;
 
-    private String resolution;
+    @JsonProperty("resolution")
+    private String errorResolution;
 
     @JsonIgnore
     private EnrichmentTablesUpdateDto enrichmentTablesUpdate;
@@ -328,24 +329,32 @@ public class ConfigEditorAttributes {
         this.enrichmentTablesUpdate = enrichmentTablesUpdate;
     }
 
-    public String getTitle() {
-        return title;
+    public String getErrorTitle() {
+        return errorTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setErrorTitleIfNotPresent(String title) {
+        this.errorTitle = this.errorTitle != null ? this.errorTitle : title;
+    }
+
+    public void setMessageIfNotPresent(String message) {
+        this.message = this.message != null ? this.message : message;
+    }
+
+    public void setErrorResolutionIfNotPresent(String errorResolution) {
+        this.errorResolution= this.errorResolution != null ? this.errorResolution : errorResolution;
     }
 
     public void setUiErrorMessage(UiErrorMessages errorMessage) {
-        title = errorMessage.getTitle();
-        resolution = errorMessage.getResolution();
+        errorTitle = errorMessage.getTitle();
+        errorResolution = errorMessage.getResolution();
     }
 
-    public String getResolution() {
-        return resolution;
+    public String getErrorResolution() {
+        return errorResolution;
     }
 
-    public void setResolution(String resolution) {
-        this.resolution = resolution;
+    public void setErrorResolution(String errorResolution) {
+        this.errorResolution = errorResolution;
     }
 }
