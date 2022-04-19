@@ -91,8 +91,8 @@ public class EnrichmentCompilerTest {
                    }
                  }
                ]
-             }
-             """;
+            }
+            """;
 
 
     private final String testRulesEnrichingFieldsOnly = """
@@ -125,8 +125,8 @@ public class EnrichmentCompilerTest {
                    }
                  }
                ]
-             }
-             """;
+            }
+            """;
 
 
     private final String testRulesMissingTagsAndEnrichingFields = """
@@ -153,9 +153,8 @@ public class EnrichmentCompilerTest {
                    }
                  }
                ]
-             }
-                
-             """;
+            }
+            """;
 
     private final String testRule = """
             {
@@ -188,8 +187,8 @@ public class EnrichmentCompilerTest {
                    }
                  ]
                }
-             }
-             """;
+            }
+            """;
 
     private final String testSpecification = """
             {

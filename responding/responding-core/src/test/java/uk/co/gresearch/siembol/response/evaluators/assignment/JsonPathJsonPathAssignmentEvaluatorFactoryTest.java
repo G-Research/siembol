@@ -12,8 +12,8 @@ public class JsonPathJsonPathAssignmentEvaluatorFactoryTest {
        "assignment_type": "match_always",
        "field_name": "new_field",
        "json_path": "$..a"
-     }
-     """;
+    }
+    """;
 
     private JsonPathAssignmentEvaluatorFactory factory;
 

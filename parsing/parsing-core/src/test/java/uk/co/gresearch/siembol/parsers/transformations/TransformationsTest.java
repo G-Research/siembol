@@ -87,8 +87,8 @@ public class TransformationsTest {
           "including_fields": ["timestamp", "trim_field"]
          }
        }
-     }
-     """;
+    }
+    """;
 
 
     private final String transformationChomp = """
@@ -99,8 +99,8 @@ public class TransformationsTest {
           "including_fields": ["timestamp", "chomp_field"]
          }
        }
-     }
-     """;
+    }
+    """;
 
     private final String transformationDelete = """
     {
@@ -111,8 +111,8 @@ public class TransformationsTest {
            "excluding_fields": ["timestamp"]
          }
        }
-     }
-     """;
+    }
+    """;
 
     private final String transformationRename = """
     {
@@ -129,8 +129,8 @@ public class TransformationsTest {
          }
          ]
        }
-     }
-     """;
+    }
+    """;
 
     private final String transformationFieldNameUpperCase = """
     {
@@ -138,8 +138,8 @@ public class TransformationsTest {
        "attributes": {
           "case_type" : "uppercase"
        }
-     }
-     """;
+    }
+    """;
 
     private final String transformationFieldLowerCase = """
     {
@@ -147,8 +147,8 @@ public class TransformationsTest {
        "attributes": {
           "case_type" : "lowercase"
        }
-     }
-     """;
+    }
+    """;
 
     private final String transformationLowerCase = """
     {
@@ -158,8 +158,8 @@ public class TransformationsTest {
           "including_fields": ["timestamp", "chomp_field"]
          }
        }
-     }
-     """;
+    }
+    """;
 
     private final String transformationUpperCase = """
     {
@@ -169,12 +169,12 @@ public class TransformationsTest {
           "including_fields": ["timestamp", "chomp_field"]
          }
        }
-     }
-     """;
+    }
+    """;
 
     private final String  message = """
-     {"timestamp":12345, "test field a" : "true", "trim_field" : "   message     ", "dummy field" : "abc", "chomp_field" : "message\\n"}
-     """;
+    {"timestamp":12345, "test field a" : "true", "trim_field" : "   message     ", "dummy field" : "abc", "chomp_field" : "message\\n"}
+    """;
 
     @Test
     public void testGoodReplace() throws IOException {

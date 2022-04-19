@@ -27,8 +27,8 @@ public class EnrichmentTablesProviderTest {
                    "path": "/siembol/tables/enrichment/dns.json"
                  }
                ]
-             }
-             """;
+            }
+            """;
 
     private final String tablesUpdateServiceB = """
             {
@@ -46,8 +46,8 @@ public class EnrichmentTablesProviderTest {
                    "path": "/siembol/tables/enrichment/ioc.json"
                  }
                ]
-             }
-             """;
+            }
+            """;
 
     private Map<String, ZooKeeperConnector> zooKeeperConnectorMap;
 

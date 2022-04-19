@@ -73,6 +73,7 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
         this(attributes, new ZooKeeperConnectorFactoryImpl(), new StormMetricsRegistrarFactoryImpl());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

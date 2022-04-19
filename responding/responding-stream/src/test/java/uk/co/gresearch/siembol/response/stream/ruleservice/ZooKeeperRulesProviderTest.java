@@ -46,7 +46,7 @@ public class ZooKeeperRulesProviderTest {
                 }
               ]
             }
-               """;
+            """;
 
     private RespondingCompiler compiler;
     private SiembolMetricsTestRegistrar metricsTestRegistrar;

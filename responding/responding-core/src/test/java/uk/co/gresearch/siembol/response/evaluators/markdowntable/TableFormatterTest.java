@@ -32,7 +32,7 @@ public class TableFormatterTest {
             |    syslog_hostname    | mail_logs_syslog: |
             | siembol:metadat:topic |    metasonport    |
             |       is_alert        |       true        |
-             """;
+            """;
 
     private final String resultEmptyTable = """
             #### Test table
