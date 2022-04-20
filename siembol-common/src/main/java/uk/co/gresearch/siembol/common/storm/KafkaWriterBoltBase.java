@@ -44,6 +44,7 @@ public abstract class KafkaWriterBoltBase extends BaseRichBolt {
         this.metricsFactory = metricsFactory;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

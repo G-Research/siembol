@@ -32,8 +32,8 @@ public class ParsingApplicationFactoryImplTest {
            "output_topic": "output"
          }
        }
-     }
-     """;
+    }
+    """;
 
     private final String simpleRoutingApplicationParser = """
      {

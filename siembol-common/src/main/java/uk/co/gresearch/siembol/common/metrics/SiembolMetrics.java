@@ -57,7 +57,7 @@ public enum SiembolMetrics {
         this.formatStringName = formatStringName;
     }
 
-    public String getMetricName(String... args) {
+    public String getMetricName(Object... args) {
         return String.format(formatStringName, args);
     }
 }

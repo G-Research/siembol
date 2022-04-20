@@ -76,8 +76,8 @@ public class GetParsingAppStormTopologyActionTest {
                    }
                  }
                ]
-             }
-             """;
+            }
+            """;
 
     private final String adminConfigNoOverriddenApplications = """
             {
@@ -107,8 +107,8 @@ public class GetParsingAppStormTopologyActionTest {
                    "num.workers": 1
                  }
                }
-             }
-             """;
+            }
+            """;
 
     private final String release = """
             {
@@ -159,8 +159,8 @@ public class GetParsingAppStormTopologyActionTest {
                    }
                  }
                ]
-             }
-             """;
+            }
+            """;
 
     private ConfigServiceHelper serviceHelper;
     private GetParsingAppStormTopologyAction getStormTopologyAction;

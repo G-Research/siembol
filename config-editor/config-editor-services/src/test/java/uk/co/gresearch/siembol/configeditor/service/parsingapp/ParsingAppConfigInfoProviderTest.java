@@ -31,8 +31,8 @@ public class ParsingAppConfigInfoProviderTest {
                    "output_topic": "output"
                  }
                }
-             }
-             """;
+            }
+            """;
 
     private final String simpleSingleApplicationParserNew = """
             {
@@ -86,8 +86,8 @@ public class ParsingAppConfigInfoProviderTest {
                         }
                     }
                    ]
-             }
-             """;
+            }
+            """;
 
     static String user = "unknown@secret.net";
     private final ConfigInfoProvider infoProvider = ParsingAppConfigInfoProvider.create();
