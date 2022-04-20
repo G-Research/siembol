@@ -7,9 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.*;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 
 import java.io.IOException;
@@ -25,7 +23,6 @@ public class ConfigItems {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Trying Initialise a git repository: {}";
     private static final String INIT_COMPLETED = "Initialisation of a git repository completed";
-    private static final String INVALID_CONFIG_VERSION = "Invalid config version %d in config %s";
     private static final String INIT_ERROR_MSG = "Problem during initialisation of config items";
     private static final String UPDATE_INIT_LOG_MSG = "User {} requested to add/update {} name: {} to version: {}";
     private static final String DELETE_FILES_LOG_MSG = "User {} requested to delete files: {}";
@@ -90,10 +87,12 @@ public class ConfigItems {
 
         if (shouldBeNew != configInfo.isNewConfig()
                 || !checkVersion(configInfo)) {
-            String msg = String.format(INVALID_CONFIG_VERSION, configInfo.getOldVersion(), configInfo.getName());
+            String msg = shouldBeNew ? ErrorMessages.CONFIG_ITEM_ALREADY_EXISTS.getMessage(configInfo.getName())
+                    : ErrorMessages.CONFIG_ITEM_UNEXPECTED_VERSION.getMessage(configInfo.getName());
             LOG.info(msg);
-            //TODO: compute uiError
-            return ConfigEditorResult.fromMessage(BAD_REQUEST, msg);
+            var result = ConfigEditorResult.fromMessage(BAD_REQUEST, msg);
+            result.getAttributes().setErrorResolutionIfNotPresent(ErrorResolution.CONCURENT_USERS.getResolution());
+            return result;
         }
 
         ConfigEditorResult result = gitRepository.transactCopyAndCommit(configInfo,

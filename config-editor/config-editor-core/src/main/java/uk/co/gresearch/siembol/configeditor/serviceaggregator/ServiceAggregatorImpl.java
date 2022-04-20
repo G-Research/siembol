@@ -275,7 +275,7 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                         .gitAdminConfigRepo(adminConfigRepo.getLeft())
                         .adminConfigPullRequestService(adminConfigPullRequestService);
             }
-            return builder.build();
+            return builder.build().withErrorMessage();
         }
     }
 }
