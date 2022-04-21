@@ -25,9 +25,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     private static final int SLEEP_TIME_MS = 100;
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String EMPTY_GET_DATA_MSG = "Trying to read form empty cache from zk path: %s";
     private static final String INIT_TIMEOUT_MSG = "Initialisation of zk path: %s exceeded timeout ";
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String NON_JSON_DATA_MSG = "Data set in zk path: {} is not JSON";
+    private static final ObjectMapper JSON_READER = new ObjectMapper();
 
     private final CuratorFramework client;
     private final CuratorCache cache;
@@ -56,9 +58,10 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     @Override
     public void setData(String data) throws Exception {
         try {
-            var json = this.objectMapper.readValue(data, JsonNode.class);
-            client.setData().forPath(this.path, this.objectMapper.writeValueAsBytes(json));
+            var json = JSON_READER.readValue(data, JsonNode.class);
+            client.setData().forPath(this.path, JSON_READER.writeValueAsBytes(json));
         } catch (JsonParseException e) {
+            LOG.warn(NON_JSON_DATA_MSG, this.path);
             client.setData().forPath(this.path, data.getBytes(UTF_8));
         }
     }
@@ -89,7 +92,6 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     }
 
     public static class Builder {
-        private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
         private static final String WRONG_ATTRIBUTES_LOG_MSG = "Missing ZooKeeper connector attributes, zkServer: {}, " +
                 "path: {}, baseSleepTimeMs: {}, maxRetries: {}";
         private static final String WRONG_ATTRIBUTES_EXCEPTION_MSG = "Missing required parameters to initialise " +
