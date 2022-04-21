@@ -18,8 +18,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
 
 public class ParsingAppConfigSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -51,7 +50,7 @@ public class ParsingAppConfigSchemaService extends ConfigSchemaServiceAbstract {
         ConfigEditorResult.StatusCode statusCode =
                 factoryResult.getStatusCode() == ParsingApplicationFactoryResult.StatusCode.OK
                         ? OK
-                        : ERROR;
+                        : BAD_REQUEST;
 
         return new ConfigEditorResult(statusCode, attr);
     }

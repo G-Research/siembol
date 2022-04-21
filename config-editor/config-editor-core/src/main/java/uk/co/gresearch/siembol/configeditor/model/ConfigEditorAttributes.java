@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.configeditor.model;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
-import uk.co.gresearch.siembol.common.error.UiErrorMessages;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
 import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
@@ -343,11 +342,6 @@ public class ConfigEditorAttributes {
 
     public void setErrorResolutionIfNotPresent(String errorResolution) {
         this.errorResolution= this.errorResolution != null ? this.errorResolution : errorResolution;
-    }
-
-    public void setUiErrorMessage(UiErrorMessages errorMessage) {
-        errorTitle = errorMessage.getTitle();
-        errorResolution = errorMessage.getResolution();
     }
 
     public String getErrorResolution() {

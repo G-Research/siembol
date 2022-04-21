@@ -8,7 +8,7 @@ public enum ErrorMessages {
     GENERIC_WRONG_REQUEST("The request is invalid"),
     VALIDATION_GENERIC("Attempt to validate changes failed"),
     TESTING_GENERIC("Attempt to test configuration failed");
-    
+
     private final String message;
 
     ErrorMessages(String message) {

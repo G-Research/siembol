@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
 
 public class ParserConfigSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory
@@ -106,7 +105,7 @@ public class ParserConfigSchemaService extends ConfigSchemaServiceAbstract {
     public ConfigEditorResult testConfiguration(String config, String testSpecification) {
         SiembolResult validationResult  = testSchemaValidator.validate(testSpecification);
         if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
-            return ConfigEditorResult.fromMessage(ERROR, validationResult.getAttributes().getMessage());
+            return ConfigEditorResult.fromMessage(BAD_REQUEST, validationResult.getAttributes().getMessage());
         }
 
         try {
@@ -124,7 +123,7 @@ public class ParserConfigSchemaService extends ConfigSchemaServiceAbstract {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         ConfigEditorResult.StatusCode statusCode = parserResult.getStatusCode() == ParserFactoryResult.StatusCode.OK
                 ? OK
-                : ConfigEditorResult.StatusCode.ERROR;
+                : ConfigEditorResult.StatusCode.BAD_REQUEST;
 
         attr.setMessage(parserResult.getAttributes().getMessage());
         return new ConfigEditorResult(statusCode, attr);
@@ -135,11 +134,10 @@ public class ParserConfigSchemaService extends ConfigSchemaServiceAbstract {
         if (parserFactoryResult.getStatusCode() != ParserFactoryResult.StatusCode.OK
                 || parserFactoryResult.getAttributes().getParserResult() == null) {
             attr.setMessage(parserFactoryResult.getAttributes().getMessage());
-            return new ConfigEditorResult(ConfigEditorResult.StatusCode.ERROR, attr);
+            return new ConfigEditorResult(BAD_REQUEST, attr);
         }
 
         ParserResult result = parserFactoryResult.getAttributes().getParserResult();
-        attr.setTestResultComplete(true);
         try {
             String testOutput = result.getException() == null
                     ? JSON_WRITER_MESSAGES.writeValueAsString(result.getParsedMessages())

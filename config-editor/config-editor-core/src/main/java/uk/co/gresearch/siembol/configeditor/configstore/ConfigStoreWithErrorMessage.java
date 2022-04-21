@@ -11,8 +11,6 @@ import uk.co.gresearch.siembol.configeditor.model.ErrorTitles;
 import java.util.function.Supplier;
 
 public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigStore> implements ConfigStore {
-
-
     public ConfigStoreWithErrorMessage(ConfigStore service) {
         super(service);
     }

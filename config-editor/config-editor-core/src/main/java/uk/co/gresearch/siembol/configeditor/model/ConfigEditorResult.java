@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.co.gresearch.siembol.common.error.UiErrorMessages;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
 import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
@@ -56,15 +55,6 @@ public class ConfigEditorResult {
                                                  String message) {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         attr.setMessage(message);
-        return new ConfigEditorResult(statusCode, attr);
-    }
-
-    public static ConfigEditorResult fromMessage(StatusCode statusCode,
-                                                 String message,
-                                                 UiErrorMessages uiErrorMessage) {
-        ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        attr.setMessage(message);
-        attr.setUiErrorMessage(uiErrorMessage);
         return new ConfigEditorResult(statusCode, attr);
     }
 
