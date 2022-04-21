@@ -8,7 +8,9 @@ public enum ErrorTitles {
     CREATE_RELEASE_PR("Problem during creating release PR in git repository"),
     CREATE_ADMIN_CONFIG_PR("Problem during creating admin config PR in git repository"),
     DELETE_CONFIG("Problem during deleting config %s in git repository"),
-    DELETE_TEST_CASE("Problem during deleting test case %s in git repository");
+    DELETE_TEST_CASE("Problem during deleting test case %s in git repository"),
+    VALIDATION_GENERIC("Validation failure"),
+    TESTING_GENERIC("Testing failure");
 
     private final String title;
 

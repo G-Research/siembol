@@ -187,7 +187,10 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                 throw new IllegalArgumentException(SERVICE_ALREADY_REGISTERED);
             }
 
-            ServiceAggregatorService current = new ServiceAggregatorService(name, type, configStore, schemaService);
+            ServiceAggregatorService current = new ServiceAggregatorService(name,
+                    type,
+                    configStore.withErrorMessage(),
+                    schemaService.withErrorMessage());
             serviceMap.put(name, current);
             return this;
         }
@@ -275,7 +278,7 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                         .gitAdminConfigRepo(adminConfigRepo.getLeft())
                         .adminConfigPullRequestService(adminConfigPullRequestService);
             }
-            return builder.build().withErrorMessage();
+            return builder.build();
         }
     }
 }

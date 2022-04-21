@@ -91,7 +91,7 @@ public class ConfigItems {
                     : ErrorMessages.CONFIG_ITEM_UNEXPECTED_VERSION.getMessage(configInfo.getName());
             LOG.info(msg);
             var result = ConfigEditorResult.fromMessage(BAD_REQUEST, msg);
-            result.getAttributes().setErrorResolutionIfNotPresent(ErrorResolution.CONCURENT_USERS.getResolution());
+            result.getAttributes().setErrorResolutionIfNotPresent(ErrorResolutions.CONCURRENT_USERS.getResolution());
             return result;
         }
 

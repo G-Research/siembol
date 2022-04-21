@@ -1,146 +1,133 @@
 package uk.co.gresearch.siembol.configeditor.configstore;
 
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.configeditor.common.ServiceWithErrorMessage;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ErrorMessages;
-import uk.co.gresearch.siembol.configeditor.model.ErrorResolution;
+import uk.co.gresearch.siembol.configeditor.model.ErrorResolutions;
 import uk.co.gresearch.siembol.configeditor.model.ErrorTitles;
 
 import java.util.function.Supplier;
 
-public class ConfigStoreWithErrorMessage implements ConfigStore {
-    private final ConfigStore configStore;
+public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigStore> implements ConfigStore {
 
-    public ConfigStoreWithErrorMessage(ConfigStore configStore) {
-        this.configStore = configStore;
+
+    public ConfigStoreWithErrorMessage(ConfigStore service) {
+        super(service);
     }
 
     @Override
     public ConfigEditorResult addTestCase(UserInfo user, String testCase) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.addTestCase(user, testCase);
+        Supplier<ConfigEditorResult> fun = () -> service.addTestCase(user, testCase);
         return executeInternally(fun, ErrorTitles.ADD_TEST_CASE.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult updateTestCase(UserInfo user, String testCase) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.updateTestCase(user, testCase);
+        Supplier<ConfigEditorResult> fun = () -> service.updateTestCase(user, testCase);
         return executeInternally(fun, ErrorTitles.UPDATE_TEST_CASE.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult deleteTestCase(UserInfo user, String configName, String testCaseName) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.deleteTestCase(user, configName, testCaseName);
+        Supplier<ConfigEditorResult> fun = () -> service.deleteTestCase(user, configName, testCaseName);
         return executeInternally(fun, ErrorTitles.DELETE_TEST_CASE.getTitle(testCaseName),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult getTestCases() {
-        return configStore.getTestCases();
+        return service.getTestCases();
     }
 
     @Override
     public ConfigEditorResult addConfig(UserInfo user, String newConfig) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.addConfig(user, newConfig);
+        Supplier<ConfigEditorResult> fun = () -> service.addConfig(user, newConfig);
         return executeInternally(fun, ErrorTitles.ADD_CONFIG.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult updateConfig(UserInfo user, String configToUpdate) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.addConfig(user, configToUpdate);
+        Supplier<ConfigEditorResult> fun = () -> service.addConfig(user, configToUpdate);
         return executeInternally(fun, ErrorTitles.UPDATE_CONFIG.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult deleteConfig(UserInfo user, String configName) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.addConfig(user, configName);
+        Supplier<ConfigEditorResult> fun = () -> service.addConfig(user, configName);
         return executeInternally(fun, ErrorTitles.DELETE_CONFIG.getTitle(configName),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult getConfigs() {
-        return configStore.getConfigs();
+        return service.getConfigs();
     }
 
     @Override
     public ConfigEditorResult getConfigsReleaseFromCache() {
-        return configStore.getConfigsReleaseFromCache();
+        return service.getConfigsReleaseFromCache();
     }
 
     @Override
     public ConfigEditorResult getConfigsRelease() {
-        return configStore.getConfigsRelease();
+        return service.getConfigsRelease();
     }
 
     @Override
     public ConfigEditorResult getConfigsReleaseStatus() {
-        return configStore.getConfigsReleaseStatus();
+        return service.getConfigsReleaseStatus();
     }
 
     @Override
     public ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.submitConfigsRelease(user, rulesRelease);
+        Supplier<ConfigEditorResult> fun = () -> service.submitConfigsRelease(user, rulesRelease);
         return executeInternally(fun, ErrorTitles.CREATE_RELEASE_PR.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult getAdminConfigFromCache() {
-        return configStore.getAdminConfigFromCache();
+        return service.getAdminConfigFromCache();
     }
 
     @Override
     public ConfigEditorResult getAdminConfig() {
-        return configStore.getAdminConfig();
+        return service.getAdminConfig();
     }
 
     @Override
     public ConfigEditorResult getAdminConfigStatus() {
-        return configStore.getAdminConfigStatus();
+        return service.getAdminConfigStatus();
     }
 
     @Override
     public ConfigEditorResult submitAdminConfig(UserInfo user, String adminConfig) {
-        Supplier<ConfigEditorResult> fun = () -> configStore.submitAdminConfig(user, adminConfig);
+        Supplier<ConfigEditorResult> fun = () -> service.submitAdminConfig(user, adminConfig);
         return executeInternally(fun, ErrorTitles.CREATE_ADMIN_CONFIG_PR.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
-                ErrorResolution.GENERIC_BAD_REQUEST.getResolution());
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
     public ConfigEditorResult getRepositories() {
-        return configStore.getRepositories();
+        return service.getRepositories();
     }
 
     @Override
     public Health checkHealth() {
-        return configStore.checkHealth();
-    }
-
-    private ConfigEditorResult executeInternally(Supplier<ConfigEditorResult> supplier,
-                                                 String title,
-                                                 String message,
-                                                 String resolution) {
-        var ret = supplier.get();
-        if (ret.getStatusCode() == ConfigEditorResult.StatusCode.BAD_REQUEST) {
-            var attributes = ret.getAttributes();
-            attributes.setErrorTitleIfNotPresent(title);
-            attributes.setMessageIfNotPresent(message);
-            attributes.setErrorResolutionIfNotPresent(resolution);
-        }
-        return ret;
+        return service.checkHealth();
     }
 }
