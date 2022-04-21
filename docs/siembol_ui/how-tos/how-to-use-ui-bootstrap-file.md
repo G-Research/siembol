@@ -1,6 +1,6 @@
 # How to use the ui-bootstrap file
 
-The `ui-bootstrap.json` file contains config about each service type. 
+The `ui-bootstrap.json` file contains config about each service type. Click [here](/config/config-editor-ui/ui-bootstrap.json) to see the default file provided.
 
 ## Schema paths
 This config file provides paths/keys of various variables in the schema of the service type provided by the backend. The possible keys are: 
