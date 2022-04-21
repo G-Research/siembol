@@ -29,7 +29,7 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     private static final String EMPTY_GET_DATA_MSG = "Trying to read form empty cache from zk path: %s";
     private static final String INIT_TIMEOUT_MSG = "Initialisation of zk path: %s exceeded timeout ";
     private static final String NON_JSON_DATA_MSG = "Data set in zk path: {} is not JSON";
-    private static final ObjectMapper JSON_READER = new ObjectMapper();
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     private final CuratorFramework client;
     private final CuratorCache cache;
@@ -58,8 +58,8 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     @Override
     public void setData(String data) throws Exception {
         try {
-            var json = JSON_READER.readValue(data, JsonNode.class);
-            client.setData().forPath(this.path, JSON_READER.writeValueAsBytes(json));
+            var json = JSON_MAPPER.readValue(data, JsonNode.class);
+            client.setData().forPath(this.path, JSON_MAPPER.writeValueAsBytes(json));
         } catch (JsonParseException e) {
             LOG.warn(NON_JSON_DATA_MSG, this.path);
             client.setData().forPath(this.path, data.getBytes(UTF_8));
