@@ -4,6 +4,7 @@ import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigImporterDto;
+import uk.co.gresearch.siembol.configeditor.model.ErrorMessages;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,6 @@ import java.util.stream.Collectors;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public interface ConfigSchemaService extends HealthCheckable {
-    String UNKNOWN_CONFIG_IMPORTER_MSG = "Unknown config importer: %s";
     String NOT_IMPLEMENTED_MSG = "Not implemented";
     String SCHEMA_INIT_ERROR = "Error during computing json schema";
 
@@ -41,22 +41,19 @@ public interface ConfigSchemaService extends HealthCheckable {
 
     default ConfigEditorResult importConfig(UserInfo user, String importerName, String importerAttributes, String configToImport) {
         if (!getConfigImporters().containsKey(importerName)) {
-            //TODO: ui error unknown importer name
             return  ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
-                    String.format(UNKNOWN_CONFIG_IMPORTER_MSG, importerName));
+                    ErrorMessages.UNKNOWN_CONFIG_IMPORTER.getMessage(importerName));
         }
 
         ConfigEditorResult importResult =  getConfigImporters().get(importerName)
                 .importConfig(user, importerAttributes, configToImport);
         if (importResult.getStatusCode() != OK) {
-            //TODO: ui error wrong importing specification
             return importResult;
         }
 
         ConfigEditorResult validationResult = validateConfiguration(
                 importResult.getAttributes().getImportedConfiguration());
         if (validationResult.getStatusCode() != OK) {
-            //TODO: ui error invalid config after import
             return validationResult;
         }
 
@@ -66,8 +63,6 @@ public interface ConfigSchemaService extends HealthCheckable {
     default ConfigEditorResult getTestSchema() {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
-
-    //validateTestSpecification
 
     default ConfigEditorResult testConfiguration(String configuration, String testSpecification ) {
         return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);

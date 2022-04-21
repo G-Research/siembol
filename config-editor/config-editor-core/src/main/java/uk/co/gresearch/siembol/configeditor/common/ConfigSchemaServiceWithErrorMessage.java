@@ -57,7 +57,11 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
                                            String importerName,
                                            String importerAttributes,
                                            String configToImport) {
-        return ConfigSchemaService.super.importConfig(user, importerName, importerAttributes, configToImport);
+        Supplier<ConfigEditorResult> fun = () -> service.importConfig(user,
+                importerName, importerAttributes, configToImport);
+        return executeInternally(fun, ErrorTitles.IMPORTING_CONFIG_GENERIC.getTitle(),
+                ErrorMessages.GENERIC_CONFIG_IMPORTER.getMessage(importerName),
+                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
     @Override
@@ -98,4 +102,5 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
     public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
         return service.getAdminConfigTopologyName(configuration);
     }
+
 }
