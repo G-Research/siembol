@@ -14,7 +14,7 @@ This config file provides paths/keys of various variables in the schema of the s
 - `description`: config description key
 
 ## Labels function
-It also provides the a key to define a javascript function that will return the labels for the service. This is done through the `labelsFunc` key. 
+It also provides a key to define a javascript function that will return the labels for the service. This is done through the `labelsFunc` key. 
 
 ## Testing
 You can also enable and disable testing through these keys:
