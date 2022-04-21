@@ -88,7 +88,7 @@ public class ZooKeeperConnectorTest {
 
     @Test
     public void setJsonDataOK() throws Exception {
-        final String path = "/c/d/e/f";
+        final String path = "/c/d/f";
         var zooKeeperConnector = new ZooKeeperConnectorImpl.Builder()
                 .zkServer(TESTING_SERVER.getConnectString())
                 .path(path)
@@ -98,6 +98,22 @@ public class ZooKeeperConnectorTest {
         zooKeeperConnector.setData(testJson);
         Thread.sleep(1000);
         Assert.assertEquals(testJsonOneLine, zooKeeperConnector.getData());
+        zooKeeperConnector.close();
+        Thread.sleep(1000);
+    }
+
+    @Test
+    public void setNotJsonDataOK() throws Exception {
+        final String path = "/c/d/g";
+        var zooKeeperConnector = new ZooKeeperConnectorImpl.Builder()
+                .zkServer(TESTING_SERVER.getConnectString())
+                .path(path)
+                .initValueIfNotExists("dummy_value")
+                .build();
+        zooKeeperConnector.initialise();
+        zooKeeperConnector.setData("test string");
+        Thread.sleep(1000);
+        Assert.assertEquals("test string", zooKeeperConnector.getData());
         zooKeeperConnector.close();
         Thread.sleep(1000);
     }
