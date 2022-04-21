@@ -106,7 +106,7 @@ public class ParserConfigSchemaServiceTest {
         Mockito.when(parserFactory.validateConfigurations(anyString())).thenReturn(parserFactoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parserFactory, times(1)).validateConfigurations(testConfigs);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -118,7 +118,7 @@ public class ParserConfigSchemaServiceTest {
         Mockito.when(parserFactory.validateConfiguration(anyString())).thenReturn(parserFactoryResult);
         ConfigEditorResult ret = parserConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parserFactory, times(1)).validateConfiguration(testConfig);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -129,7 +129,6 @@ public class ParserConfigSchemaServiceTest {
         ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logUtf8);
         Mockito.verify(parserFactory, times(1)).test(testConfig, null, testLog.getBytes());
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getTestResultComplete());
     }
 
     @Test
@@ -141,7 +140,6 @@ public class ParserConfigSchemaServiceTest {
                 null,
                 testLog.getBytes());
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getTestResultComplete());
     }
 
     @Test
@@ -173,7 +171,7 @@ public class ParserConfigSchemaServiceTest {
         Mockito.verify(parserFactory, times(1)).test(testConfig,
                 null,
                 testLog.getBytes());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -189,7 +187,6 @@ public class ParserConfigSchemaServiceTest {
                 null,
                 testLog.getBytes());
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getTestResultComplete());
         Assert.assertTrue(ret.getAttributes().getTestResultOutput().contains("dummy"));
         Assert.assertTrue(ret.getAttributes().getTestResultRawOutput().contains("dummy"));
     }

@@ -35,7 +35,9 @@ public class ServiceAggregatorImplTest {
     public void setUp() {
         authProvider = Mockito.mock(AuthorisationProvider.class);
         store = Mockito.mock(ConfigStore.class);
+        when(store.withErrorMessage()).thenCallRealMethod();
         schemaService = Mockito.mock(ConfigSchemaService.class);
+        when(schemaService.withErrorMessage()).thenCallRealMethod();
         when(schemaService.getAdminConfigurationSchema()).thenReturn(
                 new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, new ConfigEditorAttributes()));
         builder = new ServiceAggregatorImpl.Builder(authProvider);
@@ -63,7 +65,6 @@ public class ServiceAggregatorImplTest {
         List<ConfigStore> configStores =  serviceAggregator.getConfigStoreServices();
         Assert.assertNotNull(configStores);
         Assert.assertEquals(3, configStores.size());
-        configStores.forEach(x -> Assert.assertEquals(store, x));
     }
 
     @Test
@@ -72,7 +73,6 @@ public class ServiceAggregatorImplTest {
         List<ConfigSchemaService> configSchemaServices =  serviceAggregator.getConfigSchemaServices();
         Assert.assertNotNull(configSchemaServices);
         Assert.assertEquals(3, configSchemaServices.size());
-        configSchemaServices.forEach(x -> Assert.assertEquals(schemaService, x));
     }
 
     @Test
@@ -115,7 +115,6 @@ public class ServiceAggregatorImplTest {
         ConfigStore userStore = serviceAggregator.getConfigStore(user, "a");
         Mockito.verify(authProvider, times(1))
                 .getUserAuthorisation(eq(user), eq("a"));
-        Assert.assertEquals(userStore, store);
     }
 
     @Test
@@ -126,7 +125,6 @@ public class ServiceAggregatorImplTest {
         ConfigSchemaService userSchemaService = serviceAggregator.getConfigSchema(user, "a");
         Mockito.verify(authProvider, times(1))
                 .getUserAuthorisation(eq(user), eq("a"));
-        Assert.assertEquals(userSchemaService, schemaService);
     }
 
     @Test(expected = uk.co.gresearch.siembol.configeditor.common.AuthorisationException.class)

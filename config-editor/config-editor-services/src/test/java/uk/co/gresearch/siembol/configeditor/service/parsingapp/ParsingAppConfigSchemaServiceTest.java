@@ -90,7 +90,7 @@ public class ParsingAppConfigSchemaServiceTest {
         Mockito.when(parsingAppFactory.validateConfigurations(anyString())).thenReturn(factoryResult);
         ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parsingAppFactory, times(1)).validateConfigurations(testConfigs);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -101,7 +101,7 @@ public class ParsingAppConfigSchemaServiceTest {
         Mockito.when(parsingAppFactory.validateConfiguration(anyString())).thenReturn(factoryResult);
         ConfigEditorResult ret = parsingAppConfigSchemaService.validateConfiguration(testConfig);
         Mockito.verify(parsingAppFactory, times(1)).validateConfiguration(testConfig);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 

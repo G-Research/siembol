@@ -46,9 +46,6 @@ public class ConfigEditorAttributes {
     @JsonProperty("test_result_output")
     private String testResultOutput;
 
-    @JsonProperty("test_result_complete")
-    private Boolean testResultComplete;
-
     @JsonProperty("test_case_result")
     private ConfigEditorTestCaseResult testCaseResult;
 
@@ -184,14 +181,6 @@ public class ConfigEditorAttributes {
 
     public void setTestResultOutput(String testResultOutput) {
         this.testResultOutput = testResultOutput;
-    }
-
-    public Boolean getTestResultComplete() {
-        return testResultComplete;
-    }
-
-    public void setTestResultComplete(Boolean testResultComplete) {
-        this.testResultComplete = testResultComplete;
     }
 
     public List<ConfigEditorService> getServices() {

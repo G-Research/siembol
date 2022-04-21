@@ -101,7 +101,7 @@ public class EnrichmentSchemaServiceTest {
         Mockito.when(compiler.validateConfigurations(anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(compiler, times(1)).validateConfigurations(testConfigs);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -112,7 +112,7 @@ public class EnrichmentSchemaServiceTest {
         Mockito.when(compiler.validateConfiguration(anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.validateConfiguration(testConfigs);
         Mockito.verify(compiler, times(1)).validateConfiguration(testConfigs);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -124,7 +124,6 @@ public class EnrichmentSchemaServiceTest {
         ConfigEditorResult ret = enrichmentsSchemaService.testConfiguration(testConfig, testSpecification);
         Mockito.verify(compiler, times(1)).testConfiguration(testConfig, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getTestResultComplete());
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(testResult, ret.getAttributes().getTestResultOutput());
         Assert.assertEquals(testRawResult, ret.getAttributes().getTestResultRawOutput());
@@ -138,7 +137,6 @@ public class EnrichmentSchemaServiceTest {
         ConfigEditorResult ret = enrichmentsSchemaService.testConfigurations(testConfigs, testSpecification);
         Mockito.verify(compiler, times(1)).testConfigurations(testConfigs, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getTestResultComplete());
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(testResult, ret.getAttributes().getTestResultOutput());
         Assert.assertEquals(testRawResult, ret.getAttributes().getTestResultRawOutput());
@@ -151,7 +149,7 @@ public class EnrichmentSchemaServiceTest {
         Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.testConfiguration(testConfig, testSpecification);
         Mockito.verify(compiler, times(1)).testConfiguration(testConfig, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 
@@ -162,7 +160,7 @@ public class EnrichmentSchemaServiceTest {
         Mockito.when(compiler.testConfigurations(anyString(), anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.testConfigurations(testConfigs, testSpecification);
         Mockito.verify(compiler, times(1)).testConfigurations(testConfigs, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }
 

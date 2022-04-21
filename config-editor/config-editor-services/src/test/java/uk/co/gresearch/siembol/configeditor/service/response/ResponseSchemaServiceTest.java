@@ -298,7 +298,6 @@ public class ResponseSchemaServiceTest {
         Assert.assertNotNull(result.getAttributes().getTestResultOutput());
         Assert.assertNotNull(result.getAttributes().getTestResultRawOutput());
         Assert.assertEquals("dummy", result.getAttributes().getTestResultOutput());
-        Assert.assertTrue(result.getAttributes().getTestResultComplete());
     }
 
     @Test
