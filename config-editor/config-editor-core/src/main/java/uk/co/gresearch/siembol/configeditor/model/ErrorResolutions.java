@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
 public enum ErrorResolutions {
-    GENERIC_BAD_REQUEST("Try to inspect error message and try to fix and reply your request"),
+    GENERIC_BAD_REQUEST("Try to inspect error message and try to fix and replay your request"),
     CONCURRENT_USERS("Siembol UI can be used by multiple users in parallel. " +
             "Try to reload UI, modify and replay your request"),
     VALIDATION("Try to inspect error message and modify your changes. " +
