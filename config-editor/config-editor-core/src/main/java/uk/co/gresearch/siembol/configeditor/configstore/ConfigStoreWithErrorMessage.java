@@ -54,7 +54,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
 
     @Override
     public ConfigEditorResult updateConfig(UserInfo user, String configToUpdate) {
-        Supplier<ConfigEditorResult> fun = () -> service.addConfig(user, configToUpdate);
+        Supplier<ConfigEditorResult> fun = () -> service.updateConfig(user, configToUpdate);
         return executeInternally(fun, ErrorTitles.UPDATE_CONFIG.getTitle(),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
@@ -62,7 +62,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
 
     @Override
     public ConfigEditorResult deleteConfig(UserInfo user, String configName) {
-        Supplier<ConfigEditorResult> fun = () -> service.addConfig(user, configName);
+        Supplier<ConfigEditorResult> fun = () -> service.deleteConfig(user, configName);
         return executeInternally(fun, ErrorTitles.DELETE_CONFIG.getTitle(configName),
                 ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());

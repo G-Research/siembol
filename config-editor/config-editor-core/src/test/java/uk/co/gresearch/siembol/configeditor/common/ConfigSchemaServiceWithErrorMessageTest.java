@@ -15,9 +15,9 @@ public class ConfigSchemaServiceWithErrorMessageTest {
     private ConfigSchemaService serviceWithErrorMessage;
     private ConfigEditorResult result;
     private ConfigEditorAttributes attributes;
-    private String configuration = "dummy config";
-    private String testSpecification = "dummy config";
-    private String configurations = "dummy configs";
+    private final String configuration = "dummy config";
+    private final String testSpecification = "dummy config";
+    private final String configurations = "dummy configs";
     private UserInfo user;
 
     @Before
