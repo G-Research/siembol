@@ -19,7 +19,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult addTestCase(UserInfo user, String testCase) {
         Supplier<ConfigEditorResult> fun = () -> service.addTestCase(user, testCase);
         return executeInternally(fun, ErrorTitles.ADD_TEST_CASE.getTitle(),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -27,7 +27,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult updateTestCase(UserInfo user, String testCase) {
         Supplier<ConfigEditorResult> fun = () -> service.updateTestCase(user, testCase);
         return executeInternally(fun, ErrorTitles.UPDATE_TEST_CASE.getTitle(),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -35,7 +35,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult deleteTestCase(UserInfo user, String configName, String testCaseName) {
         Supplier<ConfigEditorResult> fun = () -> service.deleteTestCase(user, configName, testCaseName);
         return executeInternally(fun, ErrorTitles.DELETE_TEST_CASE.getTitle(testCaseName),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -48,7 +48,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult addConfig(UserInfo user, String newConfig) {
         Supplier<ConfigEditorResult> fun = () -> service.addConfig(user, newConfig);
         return executeInternally(fun, ErrorTitles.ADD_CONFIG.getTitle(),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -56,7 +56,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult updateConfig(UserInfo user, String configToUpdate) {
         Supplier<ConfigEditorResult> fun = () -> service.updateConfig(user, configToUpdate);
         return executeInternally(fun, ErrorTitles.UPDATE_CONFIG.getTitle(),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -64,7 +64,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult deleteConfig(UserInfo user, String configName) {
         Supplier<ConfigEditorResult> fun = () -> service.deleteConfig(user, configName);
         return executeInternally(fun, ErrorTitles.DELETE_CONFIG.getTitle(configName),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -92,7 +92,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease) {
         Supplier<ConfigEditorResult> fun = () -> service.submitConfigsRelease(user, rulesRelease);
         return executeInternally(fun, ErrorTitles.CREATE_RELEASE_PR.getTitle(),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
@@ -115,7 +115,7 @@ public class ConfigStoreWithErrorMessage extends ServiceWithErrorMessage<ConfigS
     public ConfigEditorResult submitAdminConfig(UserInfo user, String adminConfig) {
         Supplier<ConfigEditorResult> fun = () -> service.submitAdminConfig(user, adminConfig);
         return executeInternally(fun, ErrorTitles.CREATE_ADMIN_CONFIG_PR.getTitle(),
-                ErrorMessages.GENERIC_WRONG_REQUEST.getMessage(),
+                ErrorMessages.GENERIC_BAD_REQUEST.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 

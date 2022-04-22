@@ -114,6 +114,20 @@ public class ConfigEditorResult {
     }
 
     public ResponseEntity<ConfigEditorAttributes> toResponseEntity() {
+        switch (this.statusCode) {
+            case ERROR:
+                attributes.setErrorTitleIfNotPresent(ErrorTitles.GENERIC_INTERNAL_ERROR.getTitle());
+                attributes.setMessageIfNotPresent(ErrorMessages.GENERIC_INTERNAL_ERROR.getMessage());
+                attributes.setErrorResolutionIfNotPresent(ErrorResolutions.GENERIC_INTERNAL_ERROR.getResolution());
+            break;
+            case BAD_REQUEST:
+                attributes.setErrorTitleIfNotPresent(ErrorTitles.GENERIC_BAD_REQUEST.getTitle());
+                attributes.setMessageIfNotPresent(ErrorMessages.GENERIC_BAD_REQUEST.getMessage());
+                attributes.setErrorResolutionIfNotPresent(ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
+            break;
+            default:
+        }
+        
         return new ResponseEntity<>(this.attributes, this.statusCode.getHttpStatus());
     }
 }

@@ -11,7 +11,9 @@ public enum ErrorTitles {
     DELETE_TEST_CASE("Problem during deleting test case %s in git repository"),
     VALIDATION_GENERIC("Validation failure"),
     TESTING_GENERIC("Testing failure"),
-    IMPORTING_CONFIG_GENERIC("Importing configuration failed");
+    IMPORTING_CONFIG_GENERIC("Importing configuration failed"),
+    GENERIC_BAD_REQUEST("Invalid request"),
+    GENERIC_INTERNAL_ERROR("Internal server error");
 
     private final String title;
 

@@ -106,6 +106,10 @@ public class ConfigEditorAttributes {
         this.message = message;
     }
 
+    public void setMessageIfNotPresent(String message) {
+        this.message = this.message != null ? this.message : message;
+    }
+
     public String getRulesSchema() {
         return rulesSchema;
     }
@@ -321,16 +325,12 @@ public class ConfigEditorAttributes {
         return errorTitle;
     }
 
+    public void setErrorTitle(String errorTitle) {
+        this.errorTitle = errorTitle;
+    }
+
     public void setErrorTitleIfNotPresent(String title) {
         this.errorTitle = this.errorTitle != null ? this.errorTitle : title;
-    }
-
-    public void setMessageIfNotPresent(String message) {
-        this.message = this.message != null ? this.message : message;
-    }
-
-    public void setErrorResolutionIfNotPresent(String errorResolution) {
-        this.errorResolution= this.errorResolution != null ? this.errorResolution : errorResolution;
     }
 
     public String getErrorResolution() {
@@ -339,5 +339,9 @@ public class ConfigEditorAttributes {
 
     public void setErrorResolution(String errorResolution) {
         this.errorResolution = errorResolution;
+    }
+
+    public void setErrorResolutionIfNotPresent(String errorResolution) {
+        this.errorResolution = this.errorResolution != null ? this.errorResolution : errorResolution;
     }
 }

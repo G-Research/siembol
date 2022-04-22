@@ -80,7 +80,7 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
     @Override
     public ConfigEditorResult testConfigurations(String configurations, String event) {
         Supplier<ConfigEditorResult> fun = () -> service.testConfigurations(configurations, event);
-        return executeInternally(fun, ErrorTitles.VALIDATION_GENERIC.getTitle(),
+        return executeInternally(fun, ErrorTitles.TESTING_GENERIC.getTitle(),
                 ErrorMessages.VALIDATION_GENERIC.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
@@ -102,5 +102,4 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
     public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
         return service.getAdminConfigTopologyName(configuration);
     }
-
 }
