@@ -11,7 +11,7 @@ import uk.co.gresearch.siembol.response.evaluators.sleep.SleepEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.throttling.AlertThrottlingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.model.ProvidedEvaluatorsProperties;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
@@ -39,7 +39,7 @@ public enum ProvidedEvaluators {
 
     public static RespondingResult getRespondingEvaluatorFactories(
             ProvidedEvaluatorsProperties properties) throws Exception {
-        List<RespondingEvaluatorFactory> factories = Arrays.asList(
+        List<RespondingEvaluatorFactory> factories =  new ArrayList<>(List.of(
                 new FixedResultEvaluatorFactory(),
                 new MatchingEvaluatorFactory(),
                 new JsonPathAssignmentEvaluatorFactory(),
@@ -47,7 +47,7 @@ public enum ProvidedEvaluators {
                 new ArrayTableFormatterEvaluatorFactory(),
                 new ArrayReducerEvaluatorFactory(),
                 new AlertThrottlingEvaluatorFactory(),
-                new SleepEvaluatorFactory());
+                new SleepEvaluatorFactory()));
 
         if (properties != null && properties.getKafkaWriter() != null) {
                 factories.add(new KafkaWriterEvaluatorFactory(properties.getKafkaWriter()));
