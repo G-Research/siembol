@@ -1,4 +1,4 @@
-# For most projects, this workflow file will not need changing; you simply need
+﻿# For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
 # You may wish to alter this file to override the set of languages analyzed,
@@ -65,12 +65,12 @@ jobs:
     #    uses a compiled language
 
     # java build
-    - name: Set up JDK 13
+    - name: Set up JDK 17
       if: ${{ matrix.language == 'java' }} 
       uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
-        java-version: '13'
+        java-version: '17'
     - name: Cache Maven packages
       if: ${{ matrix.language == 'java' }} 
       uses: actions/cache@v3.0.1

@@ -41,4 +41,8 @@ public interface ConfigStore extends HealthCheckable {
     ConfigEditorResult getRepositories();
 
     Health checkHealth();
+
+    default ConfigStore withErrorMessage() {
+        return new ConfigStoreWithErrorMessage(this);
+    }
 }

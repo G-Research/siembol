@@ -68,7 +68,6 @@ public class ResponseSchemaService extends ConfigSchemaServiceAbstract {
             ConfigEditorResult configEditorResult = fromRespondingResult(result);
             if (configEditorResult.getStatusCode() == ConfigEditorResult.StatusCode.OK) {
                 configEditorResult.getAttributes().setTestResultOutput(result.getAttributes().getMessage());
-                configEditorResult.getAttributes().setTestResultComplete(true);
                 result.getAttributes().setMessage(null);
                 configEditorResult.getAttributes()
                         .setTestResultRawOutput(ATTRIBUTES_WRITER.writeValueAsString(result.getAttributes()));

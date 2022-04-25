@@ -7,7 +7,6 @@ import uk.co.gresearch.siembol.common.model.EnrichmentTablesUpdateDto;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -47,9 +46,6 @@ public class ConfigEditorAttributes {
     @JsonProperty("test_result_output")
     private String testResultOutput;
 
-    @JsonProperty("test_result_complete")
-    private Boolean testResultComplete;
-
     @JsonProperty("test_case_result")
     private ConfigEditorTestCaseResult testCaseResult;
 
@@ -82,7 +78,14 @@ public class ConfigEditorAttributes {
     @JsonProperty("imported_configuration")
     @JsonRawValue
     private String importedConfiguration;
+
     private String configImporterAttributesSchema;
+
+    @JsonProperty("title")
+    private String errorTitle;
+
+    @JsonProperty("resolution")
+    private String errorResolution;
 
     @JsonIgnore
     private EnrichmentTablesUpdateDto enrichmentTablesUpdate;
@@ -101,6 +104,10 @@ public class ConfigEditorAttributes {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setMessageIfNotPresent(String message) {
+        this.message = this.message != null ? this.message : message;
     }
 
     public String getRulesSchema() {
@@ -178,14 +185,6 @@ public class ConfigEditorAttributes {
 
     public void setTestResultOutput(String testResultOutput) {
         this.testResultOutput = testResultOutput;
-    }
-
-    public Boolean getTestResultComplete() {
-        return testResultComplete;
-    }
-
-    public void setTestResultComplete(Boolean testResultComplete) {
-        this.testResultComplete = testResultComplete;
     }
 
     public List<ConfigEditorService> getServices() {
@@ -320,5 +319,29 @@ public class ConfigEditorAttributes {
 
     public void setEnrichmentTablesUpdate(EnrichmentTablesUpdateDto enrichmentTablesUpdate) {
         this.enrichmentTablesUpdate = enrichmentTablesUpdate;
+    }
+
+    public String getErrorTitle() {
+        return errorTitle;
+    }
+
+    public void setErrorTitle(String errorTitle) {
+        this.errorTitle = errorTitle;
+    }
+
+    public void setErrorTitleIfNotPresent(String title) {
+        this.errorTitle = this.errorTitle != null ? this.errorTitle : title;
+    }
+
+    public String getErrorResolution() {
+        return errorResolution;
+    }
+
+    public void setErrorResolution(String errorResolution) {
+        this.errorResolution = errorResolution;
+    }
+
+    public void setErrorResolutionIfNotPresent(String errorResolution) {
+        this.errorResolution = this.errorResolution != null ? this.errorResolution : errorResolution;
     }
 }

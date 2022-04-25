@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
@@ -156,7 +157,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         try {
             specificationDto = TEST_SPECIFICATION_READER.readValue(testSpecification);
         } catch (IOException e) {
-            return ConfigEditorResult.fromException(e);
+            return ConfigEditorResult.fromException(BAD_REQUEST, e);
         }
         return fromAlertingTestResult(alertingCompiler.testRule(rule, specificationDto.getEventContent()));
     }
@@ -167,7 +168,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         try {
             specificationDto = TEST_SPECIFICATION_READER.readValue(testSpecification);
         } catch (IOException e) {
-            return ConfigEditorResult.fromException(e);
+            return ConfigEditorResult.fromException(BAD_REQUEST, e);
         }
         return fromAlertingTestResult(alertingCompiler.testRules(rule, specificationDto.getEventContent()));
     }
@@ -188,7 +189,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
         ConfigEditorResult.StatusCode statusCode = alertingResult.getStatusCode() == AlertingResult.StatusCode.OK
                 ? OK
-                : ConfigEditorResult.StatusCode.ERROR;
+                : ConfigEditorResult.StatusCode.BAD_REQUEST;
 
         attr.setMessage(alertingResult.getAttributes().getMessage());
         attr.setException(alertingResult.getAttributes().getException());
@@ -209,7 +210,6 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
                     TESTING_ERROR);
         }
 
-        attr.setTestResultComplete(true);
         attr.setTestResultOutput(alertingResult.getAttributes().getMessage());
         AlertingAttributes alertingAttributes = new AlertingAttributes();
         alertingAttributes.setOutputEvents(alertingResult.getAttributes().getOutputEvents());

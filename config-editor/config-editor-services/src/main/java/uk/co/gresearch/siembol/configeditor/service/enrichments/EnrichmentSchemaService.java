@@ -48,24 +48,12 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
 
     @Override
     public ConfigEditorResult testConfiguration(String configuration, String testSpecification) {
-        ConfigEditorResult ret = fromEnrichmentResult(compiler.testConfiguration(configuration, testSpecification));
-        if (ret.getStatusCode() == ConfigEditorResult.StatusCode.ERROR) {
-            return ret;
-        }
-
-        ret.getAttributes().setTestResultComplete(true);
-        return ret;
+        return fromEnrichmentResult(compiler.testConfiguration(configuration, testSpecification));
     }
 
     @Override
     public ConfigEditorResult testConfigurations(String configurations, String testSpecification) {
-        ConfigEditorResult ret = fromEnrichmentResult(compiler.testConfigurations(configurations, testSpecification));
-        if (ret.getStatusCode() == ConfigEditorResult.StatusCode.ERROR) {
-            return ret;
-        }
-
-        ret.getAttributes().setTestResultComplete(true);
-        return ret;
+        return fromEnrichmentResult(compiler.testConfigurations(configurations, testSpecification));
     }
 
     @Override
@@ -89,7 +77,7 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
         ConfigEditorResult.StatusCode statusCode =
                 enrichmentResultresult.getStatusCode() == EnrichmentResult.StatusCode.OK
                         ? ConfigEditorResult.StatusCode.OK
-                        : ConfigEditorResult.StatusCode.ERROR;
+                        : ConfigEditorResult.StatusCode.BAD_REQUEST;
         return new ConfigEditorResult(statusCode, attr);
     }
 

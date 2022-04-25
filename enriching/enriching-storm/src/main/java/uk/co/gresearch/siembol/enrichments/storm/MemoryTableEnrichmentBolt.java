@@ -92,6 +92,7 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
                 new StormMetricsRegistrarFactoryImpl());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;

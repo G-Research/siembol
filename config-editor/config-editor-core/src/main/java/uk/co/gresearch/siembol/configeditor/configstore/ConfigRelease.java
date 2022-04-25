@@ -8,6 +8,8 @@ import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.git.ReleasePullRequestService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.model.ErrorMessages;
+import uk.co.gresearch.siembol.configeditor.model.ErrorResolutions;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -19,8 +21,6 @@ import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.Stat
 public class ConfigRelease {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String SUBMIT_INIT_LOG_MSG = "User: {} trying to release {} version: {}";
-    private static final String PENDING_PR_ERROR_MSG = "Can not release %s because PR %s is pending";
-    private static final String WRONG_VERSION_ERROR_MSG = "Can not release %s version %d from version %d";
     private static final String SUBMIT_COMPLETED_LOG_MSG = "Prepared {} PR in the branch name: {} PR: {}";
     private static final String CONFIG_IN_RELEASE = "Config %s is in the current release";
     private static final String NOT_INITIALISED_ERROR_MSG = "The release was not initialised";
@@ -83,10 +83,12 @@ public class ConfigRelease {
         }
 
         if (pullRequest.getAttributes().getPendingPullRequest()) {
-            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
-                    String.format(PENDING_PR_ERROR_MSG,
+            var ret = ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
+                    ErrorMessages.PR_PENDING.getMessage(
                             configType.getReleaseName(),
                             pullRequest.getAttributes().getPullRequestUrl()));
+            ret.getAttributes().setErrorResolutionIfNotPresent(ErrorResolutions.CONCURRENT_USERS.getResolution());
+            return ret;
         }
 
         ConfigEditorResult currentRelease = getConfigsRelease();
@@ -95,11 +97,14 @@ public class ConfigRelease {
         }
 
         if (currentRelease.getAttributes().getReleaseVersion(configType) != newReleaseInfo.getOldVersion()) {
-            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
-                    String.format(WRONG_VERSION_ERROR_MSG,
+
+            var ret = ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.BAD_REQUEST,
+                    ErrorMessages.PR_UNEXPECTED_VERSION.getMessage(
                             configType.getReleaseName(),
                             newReleaseInfo.getVersion(),
                             currentRelease.getAttributes().getReleaseVersion(configType)));
+            ret.getAttributes().setErrorResolutionIfNotPresent(ErrorResolutions.CONCURRENT_USERS.getResolution());
+            return ret;
         }
 
         ConfigEditorResult createBranchResult = gitRepository.transactCopyAndCommit(newReleaseInfo,

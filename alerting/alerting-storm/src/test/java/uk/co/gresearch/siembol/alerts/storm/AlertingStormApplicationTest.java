@@ -54,7 +54,7 @@ public class AlertingStormApplicationTest {
                       ]
               }]
             }
-             """;
+            """;
 
     private final String goodAlert = """
             {
@@ -63,7 +63,7 @@ public class AlertingStormApplicationTest {
               "dummy_field_int" : 1,
               "dummy_field_boolean" : false
             }
-             """;
+            """;
 
     private final String testConfig = """
             {

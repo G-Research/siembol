@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.health.Status;
 import uk.co.gresearch.siembol.common.model.StormTopologiesDto;
+import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
 import uk.co.gresearch.siembol.common.testing.TestingZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
@@ -18,6 +18,9 @@ import uk.co.gresearch.siembol.deployment.storm.model.StormResponseDto;
 import uk.co.gresearch.siembol.deployment.storm.model.TopologyManagerInfoDto;
 import uk.co.gresearch.siembol.deployment.storm.providers.KubernetesProvider;
 import uk.co.gresearch.siembol.deployment.storm.providers.StormProvider;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static uk.co.gresearch.siembol.deployment.storm.model.TopologyStateDto.*;
@@ -146,7 +149,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -172,7 +175,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -199,7 +202,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -226,7 +229,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -253,7 +256,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -280,7 +283,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -306,7 +309,7 @@ public class TopologyManagerServiceImplTests {
         StormTopologiesDto savedState = READER.readValue(savedZookeeper.getData());
 
         Assert.assertTrue(
-                EqualsBuilder.reflectionEquals(desiredState.getTopologies(), savedState.getTopologies())
+                compareTopologies(desiredState.getTopologies(), savedState.getTopologies())
         );
         Assert.assertEquals(Status.UP, service.checkHealth().getStatus());
     }
@@ -373,5 +376,22 @@ public class TopologyManagerServiceImplTests {
         Assert.assertNull(info.getTopologies());
         Assert.assertEquals(Status.DOWN, service.checkHealth().getStatus());
     }
+
+    private static boolean compareTopologies(List<StormTopologyDto> topologies1, List<StormTopologyDto> topologies2) {
+        if (topologies1 == null
+                || topologies2 == null
+                || topologies1.size() != topologies2.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < topologies1.size(); i++) {
+            if (!EqualsBuilder.reflectionEquals(topologies1.get(i), topologies2.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
 

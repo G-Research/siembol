@@ -55,8 +55,8 @@ public class AlertingKafkaWriterBoltTest {
                  "security.protocol": "PLAINTEXT",
                  "client.id": "test_producer"
                }
-             }
-             """;
+            }
+            """;
 
     private final String AlertMessageStr = """
             {
