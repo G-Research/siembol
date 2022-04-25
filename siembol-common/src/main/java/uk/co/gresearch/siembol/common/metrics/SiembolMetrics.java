@@ -22,7 +22,7 @@ public enum SiembolMetrics {
 
     ALERTING_RULES_UPDATE("siembol_counter_alerting_rules_update"),
     ALERTING_RULES_ERROR_UPDATE("siembol_counter_alerting_rules_error_update"),
-    ALERTING_RULES_UPDATE_VERSION("siembol_gauge_enrichment_rules_update"),
+    ALERTING_RULES_UPDATE_VERSION("siembol_gauge_alerting_rules_update"),
     ALERTING_RULE_MATCHES("siembol_counter_alerting_rule_matches_%s"),
     ALERTING_RULE_CORRELATION_MATCHES("siembol_counter_alerting_rule_for_correlation_matches_%s"),
     ALERTING_RULE_ERROR_MATCHES("siembol_counter_alerting_rule_error_match_%s"),
