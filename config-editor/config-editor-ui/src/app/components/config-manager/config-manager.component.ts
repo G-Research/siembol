@@ -61,7 +61,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     rowSelection: 'single',
     suppressClickEdit: true,
     rowHeight: 50,
-    animateRows:true,
     onRowDragEnter: (event: RowDragEvent) => {
       this.rowMoveStartIndex = event.node.rowIndex;
     },
