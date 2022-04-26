@@ -77,7 +77,7 @@
                     </span>
                 </ng-template>
             </div>
-            <re-search-history [searchHistory]="searchHistory"></re-search-history>
+            <re-search-history [searchHistory]="searchHistory" (searchDeletion)="onDeleteSearch($event)"></re-search-history>
             <ag-grid-angular
                 #agGrid
                 id="myGrid"

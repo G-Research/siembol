@@ -5,7 +5,6 @@ import { cloneDeep } from 'lodash';
 import { Config, Release } from '@app/model';
 import { mockUiMetadataAlert } from 'testing/uiMetadataMap';
 import { ConfigStatus } from '@app/model/config-model';
-import { convertToParamMap } from '@angular/router';
 
 
 const mockConfigsUnsorted = [

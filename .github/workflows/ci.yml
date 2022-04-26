@@ -209,14 +209,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup Node.js 12.x
+      - name: Setup Node.js 16.x
         uses: actions/setup-node@v3
         with:
-          node-version: 12.22.5
+          node-version: 16.x
           cache: npm
           cache-dependency-path: config-editor/config-editor-ui/package-lock.json
       - name: Install NPM packages
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       - name: Testing
         run: npm run test-ci
       - name: Generate build-info.json

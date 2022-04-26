@@ -16,7 +16,7 @@
         [left]="(initContent === undefined ? newContent : initContent)"
         [right]="newContent"
         [loading]="true"
-        [hideMatchingLines]="false"
+        [hideMatchingLines]="true"
         [format]="'SideBySide'"
         [showToolbar]="true"
         (compareResults)="onCompareResults($event)">
