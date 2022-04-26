@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ParamMap, Params } from '@angular/router';
-import { FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
+import { FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearch } from '@app/model/config-model';
 import { AppConfigService } from '@app/services/app-config.service';
 import { isEqual } from 'lodash';
 
@@ -16,7 +16,7 @@ export class SearchHistoryService {
     this.maxSize = this.appService.searchMaxSize;
   }
 
-  addToSearchHistory(search: ParamMap): ServiceSearchHistory[] {
+  addToSearchHistory(search: ParamMap): ServiceSearch[] {
     let history = this.getSearchHistory();
     const parsedParams = this.parseParams(search);
     if (Object.keys(parsedParams).length > 0) {
@@ -27,12 +27,12 @@ export class SearchHistoryService {
     return history;
   }
 
-  getSearchHistory() : ServiceSearchHistory[] {
+  getSearchHistory(): ServiceSearch[] {
     const history = localStorage.getItem(this.SEARCH_HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   }
 
-  deleteSavedSearch(search: ServiceSearchHistory): ServiceSearchHistory[] {
+  deleteSavedSearch(search: ServiceSearch): ServiceSearch[] {
     const history = this.getSearchHistory();
     const nextHistory = history.filter(value =>
       JSON.stringify(value) !== JSON.stringify(search)
@@ -52,7 +52,7 @@ export class SearchHistoryService {
     return result;
   }
   
-  private removeOldestDuplicates(history: ServiceSearchHistory[]): ServiceSearchHistory[] {
+  private removeOldestDuplicates(history: ServiceSearch[]): ServiceSearch[] {
     return history.filter((value, index) => 
       index === history.map(obj => this.areParamsEqual(obj, value)).lastIndexOf(true)
     );
@@ -75,7 +75,7 @@ export class SearchHistoryService {
     })
   }
 
-  private crop(history: ServiceSearchHistory[]): ServiceSearchHistory[] {
+  private crop(history: ServiceSearch[]): ServiceSearch[] {
     while (history.length > this.maxSize) {
       history.shift();
     }

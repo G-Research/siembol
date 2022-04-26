@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHistory } from "@app/model/config-model";
+import { ServiceSearch } from "@app/model/config-model";
+import { parseSearchParams } from "@app/commons/helper-functions";
 
 @Component({
   selector: "re-search-history",
@@ -14,7 +15,7 @@ import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHist
         <mat-expansion-panel [expanded]="false" (click)="routeTo(search)" [hideToggle]="true">
           <mat-expansion-panel-header #panelH (click)="panelH._toggle()">
             <div class="labels">
-              <div *ngFor="let param of parseSearchHistory(search) | keyvalue">
+              <div *ngFor="let param of parseSearchParams(search) | keyvalue">
                 <div *ngIf="param.value" class="tag-chip">
                         <div class="tag-text">
                         {{param.key | titlecase}}: {{param.value}}
@@ -71,8 +72,8 @@ import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearchHist
   `],
 })
 export class SearchHistoryComponent {
-  @Input() searchHistory: ServiceSearchHistory[];
-  @Output() readonly searchDeletion: EventEmitter<ServiceSearchHistory> = new EventEmitter<ServiceSearchHistory>();
+  @Input() searchHistory: ServiceSearch[];
+  @Output() readonly searchDeletion: EventEmitter<ServiceSearch> = new EventEmitter<ServiceSearch>();
 
   constructor(
     private router: Router,
@@ -88,21 +89,11 @@ export class SearchHistoryComponent {
       });
   }
 
-  parseSearchHistory(searchHistory: ServiceSearchHistory): ServiceSearchHistory {
-    const result = { [SEARCH_PARAM_KEY]: searchHistory[SEARCH_PARAM_KEY]};
-    if (searchHistory[FILTER_PARAM_KEY]){
-      for (const param of searchHistory[FILTER_PARAM_KEY]) {
-        const [groupName, filterName] = param.split(FILTER_DELIMITER, 2);
-        if (!result[groupName]) {
-          result[groupName] = [];
-        }
-        result[groupName].push(filterName);
-      }
-    }
-    return result;
+  onDeleteSavedSearch(search: ServiceSearch) {
+    this.searchDeletion.emit(search);
   }
 
-  onDeleteSavedSearch(search: ServiceSearchHistory) {
-    this.searchDeletion.emit(search);
+  parseSearchParams(serviceSearch: ServiceSearch) {
+    return parseSearchParams(serviceSearch);
   }
 }

@@ -165,6 +165,7 @@ export class ReleaseDialogComponent implements AfterViewChecked {
   }
 
   ngAfterViewChecked() {
+    // note: hack before the ngx-text-diff library is not maintained and has some bugs. Review library for updates.
     const showDiffs = document.getElementById("showDiffs");
     if (showDiffs && !this.isDiffReduced && !showDiffs["checked"]) {
       this.isDiffReduced = true;
