@@ -19,6 +19,7 @@ public class ServiceWithErrorMessage<T> {
         if (ret.getStatusCode() == ConfigEditorResult.StatusCode.BAD_REQUEST) {
             var attributes = ret.getAttributes();
             attributes.setErrorTitleIfNotPresent(title);
+            attributes.setMessageIfNotPresent(attributes.getException());
             attributes.setMessageIfNotPresent(message);
             attributes.setErrorResolutionIfNotPresent(resolution);
         }

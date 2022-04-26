@@ -66,7 +66,7 @@ public class ParsingApplicationFactoryImplTest {
            },
            "parsers": [
            {
-             "routing_field_pattern": "secret",
+             "routing_field_pattern": "^secret$",
              "parser_properties": {
                "parser_name": "single",
                "output_topic": "out_secret"
@@ -307,6 +307,15 @@ public class ParsingApplicationFactoryImplTest {
         Assert.assertNotNull(result.getAttributes().getApplicationParser());
         Assert.assertEquals(ParsingApplicationTypeDto.ROUTER_PARSING,
                 result.getAttributes().getApplicationType());
+    }
+
+    @Test
+    public void testCreatingRoutingInvalidPattern() {
+        ParsingApplicationFactoryResult result = factory.create(
+                simpleRoutingApplicationParser.replace("^secret$", "^?(<invalid"),
+                testParsersConfigs);
+        Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
     }
 
     @Test
