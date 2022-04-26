@@ -92,7 +92,7 @@ public class ParserFactoryImpl implements ParserFactory {
             return new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, attributes);
 
         } catch (Exception e) {
-            String message = String.format("Exception during parser creation : %s", ExceptionUtils.getStackTrace(e));
+            String message = String.format("Error during parser compilation: %s", ExceptionUtils.getStackTrace(e));
             return ParserFactoryResult.fromErrorMessage(message);
         }
     }
@@ -405,15 +405,12 @@ public class ParserFactoryImpl implements ParserFactory {
             return Optional.empty();
         }
 
-        try {
-            ArrayList<ParserExtractor> ret = new ArrayList<>();
-            for (ParserExtractorDto extractor : parserConfig.getParserExtractors()) {
-                ret.add(createParserExtractor(extractor));
-            }
-            return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
-        } catch (Exception e) {
-            return Optional.empty();
+        ArrayList<ParserExtractor> ret = new ArrayList<>();
+        for (ParserExtractorDto extractor : parserConfig.getParserExtractors()) {
+            ret.add(createParserExtractor(extractor));
         }
+        return Optional.of(ret);
+
     }
 
     private String wrapParserConfigToParsersConfig(String configStr) throws IOException {
@@ -430,18 +427,14 @@ public class ParserFactoryImpl implements ParserFactory {
             return Optional.empty();
         }
 
-        try {
-            ArrayList<Transformation> ret = new ArrayList<>();
-            for (TransformationDto transformation : parserConfig.getParserTransformations()) {
-                ret.add(transformationFactory.create(transformation));
-            }
 
-            return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
-        } catch (Exception e) {
-            LOG.error(String.format("Exception %s during initialisation of parser transformation",
-                    ExceptionUtils.getStackTrace(e)));
-            return Optional.empty();
+        ArrayList<Transformation> ret = new ArrayList<>();
+        for (TransformationDto transformation : parserConfig.getParserTransformations()) {
+            ret.add(transformationFactory.create(transformation));
         }
+
+        return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
+
     }
 
     private SiembolParser createSyslogParser(SyslogParserConfigDto syslogConfig,

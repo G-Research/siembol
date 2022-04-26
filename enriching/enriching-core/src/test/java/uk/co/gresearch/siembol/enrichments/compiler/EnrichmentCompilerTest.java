@@ -165,7 +165,7 @@ public class EnrichmentCompilerTest {
                "source_type": "*",
                "matchers": [
                  {
-                   "matcher_type": "IS_IN_SET",
+                   "matcher_type": "REGEX_MATCH",
                    "is_negated": false,
                    "field": "is_alert",
                    "data": "true"
@@ -285,6 +285,14 @@ public class EnrichmentCompilerTest {
     }
 
     @Test
+    public void validateRuleInvalidRegex() {
+        EnrichmentResult result = enrichmentCompiler.validateConfiguration(
+                testRule.replaceAll( "true", "(?<"));
+        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
+    }
+
+    @Test
     public void validateRuleMissingRequiredFields() {
         EnrichmentResult result = enrichmentCompiler.validateConfiguration(testRule.replace("table_mapping",
                 "unknown"));
@@ -368,5 +376,13 @@ public class EnrichmentCompilerTest {
         Assert.assertNotNull(result.getAttributes().getMessage());
         Assert.assertTrue(result.getAttributes().getMessage().contains("Both enriching fields and tags are empty"));
 
+    }
+
+    @Test
+    public void testingRuleInvalidRegex() {
+        EnrichmentResult result = enrichmentCompiler.testConfiguration(
+                testRule.replaceAll( "true", "(?<"), testSpecification);
+        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
     }
 }

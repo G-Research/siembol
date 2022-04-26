@@ -39,6 +39,21 @@ public class ParserFactoryImplTest {
                  }
                ]
              }
+           },
+           {
+             "extractor_type": "pattern_extractor",
+             "name": "pattern",
+             "field": "dummy_field",
+             "attributes": {
+               "skip_empty_values" : true,
+               "should_overwrite_fields": false,
+               "should_remove_field": false,
+               "should_match_pattern": true,
+               "dot_all_regex_flag": true,
+               "regular_expressions" : [
+                    "^(?<test_match>).*$"
+               ]
+             }
            }
          ],
          "transformations": [
@@ -90,6 +105,14 @@ public class ParserFactoryImplTest {
     }
 
     @Test
+    public void testValidationInvalidPatternExtractor() {
+        ParserFactoryResult result = factory.validateConfiguration(simpleGenericParser.replace("<test_match>",
+                "<test_match"));
+        Assert.assertSame(ParserFactoryResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("No variables found"));
+    }
+
+    @Test
     public void testTestingGood() {
         ParserFactoryResult result = factory.test(simpleGenericParser, null, message.getBytes());
         Assert.assertSame(result.getStatusCode(), ParserFactoryResult.StatusCode.OK);
@@ -97,5 +120,13 @@ public class ParserFactoryImplTest {
         Assert.assertEquals(1553712722732L, parsed.get(0).get("timestamp"));
         Assert.assertEquals(true, parsed.get(0).get("test_field"));
         Assert.assertEquals("test", parsed.get(0).get(SiembolMessageFields.SENSOR_TYPE.toString()));
+    }
+
+    @Test
+    public void testTestingInvalidPatternExtractor() {
+        ParserFactoryResult result = factory.test(simpleGenericParser.replace("<test_match>",
+                "<test_match"), null, message.getBytes());
+        Assert.assertSame(ParserFactoryResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("No variables found"));
     }
 }
