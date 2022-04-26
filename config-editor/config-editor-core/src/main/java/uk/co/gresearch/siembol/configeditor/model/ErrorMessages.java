@@ -10,7 +10,8 @@ public enum ErrorMessages {
     TESTING_GENERIC("Attempt to test configuration failed"),
     UNKNOWN_CONFIG_IMPORTER("Unknown config importer: %s"),
     GENERIC_CONFIG_IMPORTER("Problem with importing configuration in %s"),
-    GENERIC_INTERNAL_ERROR("Siembol UI internal error");
+    GENERIC_INTERNAL_ERROR("Siembol UI internal error"),
+    UNEXPECTED_TEST_RESULT("Unexpected configuration testing result");
 
     private final String message;
 

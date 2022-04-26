@@ -185,7 +185,7 @@ public class AlertingRuleSchemaServiceTest {
         Mockito.when(alertingCompiler.testRules(testRules, testEvent.trim())).thenReturn(alertingResult);
         ConfigEditorResult ret = alertingRuleSchemaService.testConfigurations(testRules, testSpecification);
         verify(alertingCompiler, times(1)).testRules(testRules, testEvent.trim());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
         Assert.assertEquals("exception", ret.getAttributes().getException());
     }
@@ -198,7 +198,7 @@ public class AlertingRuleSchemaServiceTest {
         Mockito.when(alertingCompiler.testRule(testRule, testEvent.trim())).thenReturn(alertingResult);
         ConfigEditorResult ret = alertingRuleSchemaService.testConfiguration(testRule, testSpecification);
         verify(alertingCompiler, times(1)).testRule(testRule, testEvent.trim());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
         Assert.assertEquals("exception", ret.getAttributes().getException());
     }

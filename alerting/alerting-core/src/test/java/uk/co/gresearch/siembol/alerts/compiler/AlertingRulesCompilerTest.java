@@ -190,6 +190,13 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
+    public void validationRuleInvalidRegex() {
+        AlertingResult ret = compiler.validateRule(alertRule.replace("<sensor>", "<sensor"));
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getException().contains("PatternSyntaxException"));
+    }
+
+    @Test
     public void validationRuleInvalidJson() {
         AlertingResult ret = compiler.validateRule("INVALID JSON");
         Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
@@ -217,6 +224,12 @@ public class AlertingRulesCompilerTest {
         AlertingResult ret = compiler.testRule("INVALID JSON", goodAlert);
         Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getException().contains("JsonParseException"));
+    }
+    @Test
+    public void testingRuleInvalidRegex() {
+        AlertingResult ret = compiler.testRule(alertRule.replace("<sensor>", "<sensor"), goodAlert);
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getException().contains("PatternSyntaxException"));
     }
 
     @Test
