@@ -268,7 +268,7 @@ export interface CheckboxEvent {
 
 export const FILTER_DELIMITER = '|';
 
-export interface ServiceSearchHistory {
+export interface ServiceSearch {
   [type: string]: string[] | string;
 }
 

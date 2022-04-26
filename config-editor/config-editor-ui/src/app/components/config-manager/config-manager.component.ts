@@ -13,7 +13,7 @@ import { ConfigStoreService } from '../../services/store/config-store.service';
 import { ActivatedRoute, ParamMap, Router  } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { CheckboxEvent, ConfigManagerRow, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, ServiceSearchHistory, Type } from '@app/model/config-model';
+import { CheckboxEvent, ConfigManagerRow, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, ServiceSearch, Type } from '@app/model/config-model';
 import { ImporterDialogComponent } from '../importer-dialog/importer-dialog.component';
 import { CloneDialogComponent } from '../clone-dialog/clone-dialog.component';
 import { configManagerColumns } from './columns';
@@ -61,7 +61,6 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
     rowSelection: 'single',
     suppressClickEdit: true,
     rowHeight: 50,
-    animateRows:true,
     onRowDragEnter: (event: RowDragEvent) => {
       this.rowMoveStartIndex = event.node.rowIndex;
     },
@@ -76,7 +75,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
   };
   api: GridApi;
   countChangesInRelease$ : Observable<number>;
-  searchHistory: ServiceSearchHistory[];
+  searchHistory: ServiceSearch[];
   private rowMoveStartIndex: number;
   private currentParams: ParamMap;
 
@@ -289,5 +288,9 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onSaveSearch() {
     this.searchHistory = this.editorService.onSaveSearch(this.currentParams);
+  }
+
+  onDeleteSearch(search: ServiceSearch) {
+    this.searchHistory = this.editorService.onDeleteSearch(search);
   }
 }

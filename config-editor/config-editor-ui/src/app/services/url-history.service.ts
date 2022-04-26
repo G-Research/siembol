@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AppConfigService } from '@app/services/app-config.service';
-import { HistoryUrl, HISTORY_PARAMS } from '@app/model/config-model';
+import { FILTER_PARAM_KEY, HistoryUrl, HISTORY_PARAMS, SEARCH_PARAM_KEY } from '@app/model/config-model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,19 +14,19 @@ export class UrlHistoryService {
     this.max_size = this.appService.historyMaxSize;
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        const history = this.add(event.url, this.getHistoryPreviousUrls());
+        const history = this.add(event.url, this.getHistoryOfUrls());
         localStorage.setItem(this.HISTORY_KEY, JSON.stringify(history));
       }
     });
   }
 
-  getHistoryPreviousUrls(): string[] {
+  getHistoryOfUrls(): string[] {
     const history = localStorage.getItem(this.HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   }
 
-  getPreviousUrls(): HistoryUrl[] {
-    const listUrls = this.getHistoryPreviousUrls();
+  getParsedPreviousUrls(): HistoryUrl[] {
+    const listUrls = this.getHistoryOfUrls();
     return listUrls.map(url => this.getHistoryUrl(url));
   }
 
@@ -51,7 +51,8 @@ export class UrlHistoryService {
     if (
       this.appService.isHomePath(item) ||
       this.appService.authenticationService.isCallbackUrl(item) ||
-      this.appService.isNewConfig(item)
+      this.appService.isNewConfig(item) ||
+      this.isSearchQuery(item)
     ) {
       return history;
     }
@@ -68,5 +69,13 @@ export class UrlHistoryService {
       history.shift();
     }
     return history;
+  }
+
+  private isSearchQuery(path: string): boolean {
+    const url = new URL(path, location.origin);
+    if (url.searchParams.get(FILTER_PARAM_KEY) || url.searchParams.get(SEARCH_PARAM_KEY)) {
+      return true;
+    }
+    return false;
   }
 }

@@ -1,5 +1,9 @@
 package uk.co.gresearch.siembol.common.zookeeper;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.*;
@@ -21,8 +25,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     private static final int SLEEP_TIME_MS = 100;
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String EMPTY_GET_DATA_MSG = "Trying to read form empty cache from zk path: %s";
     private static final String INIT_TIMEOUT_MSG = "Initialisation of zk path: %s exceeded timeout ";
+    private static final String NON_JSON_DATA_MSG = "Data set in zk path: {} is not JSON";
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     private final CuratorFramework client;
     private final CuratorCache cache;
@@ -50,7 +57,13 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
 
     @Override
     public void setData(String data) throws Exception {
-        client.setData().forPath(this.path, data.getBytes(UTF_8));
+        try {
+            var json = JSON_MAPPER.readValue(data, JsonNode.class);
+            client.setData().forPath(this.path, JSON_MAPPER.writeValueAsBytes(json));
+        } catch (JsonParseException e) {
+            LOG.warn(NON_JSON_DATA_MSG, this.path);
+            client.setData().forPath(this.path, data.getBytes(UTF_8));
+        }
     }
 
     @Override
@@ -79,7 +92,6 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     }
 
     public static class Builder {
-        private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
         private static final String WRONG_ATTRIBUTES_LOG_MSG = "Missing ZooKeeper connector attributes, zkServer: {}, " +
                 "path: {}, baseSleepTimeMs: {}, maxRetries: {}";
         private static final String WRONG_ATTRIBUTES_EXCEPTION_MSG = "Missing required parameters to initialise " +

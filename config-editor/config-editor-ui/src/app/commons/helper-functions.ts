@@ -1,3 +1,4 @@
+import { FILTER_DELIMITER, FILTER_PARAM_KEY, SEARCH_PARAM_KEY, ServiceSearch } from '@app/model/config-model';
 import { isEqual } from 'lodash';
 
 export function copyTextToClipboard(text: string): boolean {
@@ -26,4 +27,18 @@ export function replacer(key, value) {
 
 export function areJsonEqual(config1: any, config2: any) {
   return isEqual(config1, config2);
+}
+
+export function parseSearchParams(search: ServiceSearch): ServiceSearch {
+  const result = { [SEARCH_PARAM_KEY]: search[SEARCH_PARAM_KEY]};
+  if (search[FILTER_PARAM_KEY]){
+    for (const param of search[FILTER_PARAM_KEY]) {
+      const [groupName, filterName] = param.split(FILTER_DELIMITER, 2);
+      if (!result[groupName]) {
+        result[groupName] = [];
+      }
+      result[groupName].push(filterName);
+    }
+  }
+  return result;
 }

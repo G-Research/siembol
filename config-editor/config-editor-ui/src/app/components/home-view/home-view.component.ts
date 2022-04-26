@@ -27,7 +27,7 @@ export class HomeViewComponent implements OnInit {
         this.userServices = this.appService.userServices;
         this.root = this.appConfigService.serviceRoot.slice(0, -1);
         this.homeHelpLinks = this.appConfigService.homeHelpLinks;
-        this.history = this.historyService.getPreviousUrls();
+        this.history = this.historyService.getParsedPreviousUrls();
     }
 
     routeTo(url: string) {

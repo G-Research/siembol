@@ -10,7 +10,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     .labels_cell {
       display: flex;
       width: 100%;
-      padding: 3px 0;
     }
     .label-chip {
       display: inline-block;
@@ -68,7 +67,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
       })),
       state('in', style({
         overflow: 'hidden',
-        maxHeight: '30px',
+        maxHeight: '40px',
       })),
     ]),
   ],
@@ -77,7 +76,6 @@ export class LabelCellRendererComponent implements ICellRendererAngularComp {
   status: ConfigStatus;
   configStatusEnum = ConfigStatus;
   labels: string[];
-  height = '30px';
   expanded = true;
   labelsState = 'in';
   private params: any;

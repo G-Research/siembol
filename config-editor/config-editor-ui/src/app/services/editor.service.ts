@@ -10,7 +10,7 @@ import { AppService } from './app.service';
 import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
-import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearchHistory } from '@app/model/config-model';
+import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearch } from '@app/model/config-model';
 import { SearchHistoryService } from './search-history.service';
 import { ParamMap } from '@angular/router';
 
@@ -151,8 +151,12 @@ export class EditorService {
     return filters;
   }
 
-  onSaveSearch(currentParams: ParamMap): ServiceSearchHistory[] {
+  onSaveSearch(currentParams: ParamMap): ServiceSearch[] {
     return this.serviceContext.searchHistoryService.addToSearchHistory(currentParams);
+  }
+
+  onDeleteSearch(search: ServiceSearch): ServiceSearch[] {
+    return this.serviceContext.searchHistoryService.deleteSavedSearch(search);
   }
 
   private initialiseContext(
