@@ -11,6 +11,7 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
@@ -27,8 +28,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
 
 public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
     private static final ObjectReader TEST_CASE_READER =
@@ -42,7 +42,7 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
         this.jsonSchemaValidator = new SiembolJsonSchemaValidator(TestCaseDto.class);
         String schemaStr = jsonSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();
         Optional<String> patchedSchema = ConfigEditorUtils.patchJsonSchema(schemaStr, uiLayout.getTestCaseLayout());
-        if (!patchedSchema.isPresent()) {
+        if (patchedSchema.isEmpty()) {
             throw new IllegalArgumentException(EMPTY_PATCHED_UI_SCHEMA);
         }
         testCaseSchema = patchedSchema.get();
@@ -101,7 +101,7 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
             TestCaseDto testCase = TEST_CASE_READER.readValue(testCaseJson);
             List<ConfigEditorAssertionResult> assertionResults = testCase.getAssertions()
                     .stream()
-                    .filter(x -> x.getActive())
+                    .filter(TestAssertionDto::getActive)
                     .map(x -> evaluateResult(context, x))
                     .collect(Collectors.toList());
 
@@ -119,7 +119,7 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
             testCaseResult.setFailedAssertions(numFailures);
             testCaseResult.setAssertionResults(assertionResults);
         } catch (Exception e) {
-            return ConfigEditorResult.fromException(e);
+            return ConfigEditorResult.fromMessage(BAD_REQUEST, ExceptionUtils.getStackTrace(e));
         }
 
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
@@ -131,12 +131,12 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
     public ConfigEditorResult validate(String testCase) {
         SiembolResult validationResult = jsonSchemaValidator.validate(testCase);
         if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
-            return ConfigEditorResult.fromMessage(ERROR, validationResult.getAttributes().getMessage());
+            return ConfigEditorResult.fromMessage(BAD_REQUEST, validationResult.getAttributes().getMessage());
         }
 
-        ConfigEditorResult emptyJsonEvaluation = evaluate(EMPTY_VALIDATION_JSON, testCase);
-        if (emptyJsonEvaluation.getStatusCode() != OK) {
-            return ConfigEditorResult.fromMessage(ERROR, emptyJsonEvaluation.getAttributes().getException());
+        var emptyJsonEvaluationResult = evaluate(EMPTY_VALIDATION_JSON, testCase);
+        if (emptyJsonEvaluationResult.getStatusCode() != OK) {
+            return emptyJsonEvaluationResult;
         }
         return new ConfigEditorResult(OK, new ConfigEditorAttributes());
     }

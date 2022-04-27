@@ -9,8 +9,7 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorTestCaseResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
+import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
 
 public class TestCaseEvaluatorImplTest {
     private final String testResult = """
@@ -29,7 +28,7 @@ public class TestCaseEvaluatorImplTest {
                "version": 1,
                "author": "john",
                "config_name": "syslog",
-               "description": "unitest test case",
+               "description": "unit test test case",
                "test_specification": {
                  "secret": true
                },
@@ -60,7 +59,7 @@ public class TestCaseEvaluatorImplTest {
                "version": 1,
                "author": "john",
                "config_name": "syslog",
-               "description": "unitest test case",
+               "description": "unit test test case",
                "test_specification": {
                  "secret": true
                },
@@ -91,7 +90,7 @@ public class TestCaseEvaluatorImplTest {
                "version": 1,
                "author": "john",
                "config_name": "syslog",
-               "description": "unitest test case",
+               "description": "unit test test case",
                "test_specification": {
                  "secret": true
                },
@@ -122,7 +121,7 @@ public class TestCaseEvaluatorImplTest {
                "version": 1,
                "author": "john",
                "config_name": "syslog",
-               "description": "unitest test case",
+               "description": "unit test test case",
                "test_specification": {
                  "secret": true
                },
@@ -145,7 +144,7 @@ public class TestCaseEvaluatorImplTest {
                "version": 1,
                "author": "john",
                "config_name": "syslog",
-               "description": "unitest test case",
+               "description": "unit test test case",
                "test_specification": {
                  "secret": true
                },
@@ -295,9 +294,16 @@ public class TestCaseEvaluatorImplTest {
     }
 
     @Test
+    public void evaluateInvalidJson() {
+        ConfigEditorResult result = testCaseEvaluator.evaluate(testResult, "INVALID");
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("Unrecognized token 'INVALID'"));
+    }
+
+    @Test
     public void validateInvalidJson() {
         ConfigEditorResult result = testCaseEvaluator.validate("INVALID");
-        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("Unrecognized token 'INVALID'"));
     }
 
@@ -305,7 +311,7 @@ public class TestCaseEvaluatorImplTest {
     public void validateMissingRequiredField() {
         ConfigEditorResult result = testCaseEvaluator.validate(simpleTestCaseString.replace("test_case_name",
                 "unsupported_name"));
-        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage()
                 .contains("missing required properties ([\"test_case_name\"]"));
     }
@@ -314,7 +320,16 @@ public class TestCaseEvaluatorImplTest {
     public void validateInvalidJsonPath() {
         ConfigEditorResult result = testCaseEvaluator.validate(simpleTestCaseString.replace("$.a",
                 "$$"));
-        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage()
+                .contains("InvalidPathException"));
+    }
+
+    @Test
+    public void evaluateInvalidJsonPath() {
+        ConfigEditorResult result = testCaseEvaluator.evaluate(testResult, simpleTestCaseString.replace("$.a",
+                "$$"));
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage()
                 .contains("InvalidPathException"));
     }
@@ -323,7 +338,16 @@ public class TestCaseEvaluatorImplTest {
     public void validateInvalidRegexPattern() {
         ConfigEditorResult result = testCaseEvaluator.validate(simpleTestCaseString.replace("^.*mp$",
                 "["));
-        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage()
+                .contains("PatternSyntaxException"));
+    }
+
+    @Test
+    public void evaluateInvalidRegexPattern() {
+        ConfigEditorResult result = testCaseEvaluator.evaluate(testResult, simpleTestCaseString.replace("^.*mp$",
+                "["));
+        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage()
                 .contains("PatternSyntaxException"));
     }
@@ -335,6 +359,7 @@ public class TestCaseEvaluatorImplTest {
         testCaseEvaluator = new TestCaseEvaluatorImpl(uiLayout);
     }
 
+    @Test
     public void validUiConfigLayout() throws Exception {
         ConfigEditorUiLayout uiLayout = new ConfigEditorUiLayout();
         testCaseEvaluator = new TestCaseEvaluatorImpl(uiLayout);
