@@ -80,7 +80,7 @@ public class ConfigEditorConfiguration implements DisposableBean {
     @Bean("testCaseEvaluator")
     TestCaseEvaluator testCaseEvaluator() throws Exception {
         ConfigEditorUiLayout uiLayout = ConfigEditorUtils.readUiLayoutFile(properties.getTestCasesUiConfigFileName());
-        return new TestCaseEvaluatorImpl(uiLayout);
+        return new TestCaseEvaluatorImpl(uiLayout).withErrorMessage();
     }
 
     @Bean("stormApplicationProvider")
