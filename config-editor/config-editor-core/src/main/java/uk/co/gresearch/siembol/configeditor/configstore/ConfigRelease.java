@@ -102,7 +102,7 @@ public class ConfigRelease {
                     ErrorMessages.PR_UNEXPECTED_VERSION.getMessage(
                             configType.getReleaseName(),
                             newReleaseInfo.getVersion(),
-                            currentRelease.getAttributes().getReleaseVersion(configType)));
+                            currentRelease.getAttributes().getReleaseVersion(configType) + 1));
             ret.getAttributes().setErrorResolutionIfNotPresent(ErrorResolutions.CONCURRENT_USERS.getResolution());
             return ret;
         }

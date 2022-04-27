@@ -34,22 +34,18 @@ public class ResponseHttpProvider {
         return RESULT_READER.readValue(json);
     }
 
-    private RespondingResult get(ResponseApplicationPaths path) {
-        try {
-            LOG.debug("sending get request to response instance, path: {}", path.getName());
-            String json = this.httpProvider.get(path.getName());
-            LOG.debug("receiving response from the response instance: {} ", json);
-            return RESULT_READER.readValue(json);
-        } catch (Exception e) {
-            return RespondingResult.fromException(e);
-        }
+    private RespondingResult get(ResponseApplicationPaths path) throws Exception {
+        LOG.debug("sending get request to response instance, path: {}", path.getName());
+        String json = this.httpProvider.get(path.getName());
+        LOG.debug("receiving response from the response instance: {} ", json);
+        return RESULT_READER.readValue(json);
     }
 
     public ResponseHttpProvider(HttpProvider httpProvider) {
         this.httpProvider = httpProvider;
     }
 
-    public RespondingResult getRulesSchema(ConfigEditorUiLayout uiLayout) {
+    public RespondingResult getRulesSchema(ConfigEditorUiLayout uiLayout) throws Exception {
         RespondingResult result = get(ResponseApplicationPaths.GET_SCHEMA);
         if (result.getStatusCode() != RespondingResult.StatusCode.OK
                 || uiLayout.getConfigLayout() == null
@@ -57,17 +53,15 @@ public class ResponseHttpProvider {
             return result;
         }
 
-        try {
-            Optional<String> enrichedSchema = ConfigEditorUtils
-                    .patchJsonSchema(result.getAttributes().getRulesSchema(), uiLayout.getConfigLayout());
-            result.getAttributes().setRulesSchema(enrichedSchema.get());
-            return result;
-        } catch (Exception e) {
-            return RespondingResult.fromException(e);
-        }
+
+        Optional<String> enrichedSchema = ConfigEditorUtils
+                .patchJsonSchema(result.getAttributes().getRulesSchema(), uiLayout.getConfigLayout());
+        result.getAttributes().setRulesSchema(enrichedSchema.get());
+        return result;
+
     }
 
-    public RespondingResult getTestSchema(ConfigEditorUiLayout uiLayout) {
+    public RespondingResult getTestSchema(ConfigEditorUiLayout uiLayout) throws Exception {
         RespondingResult result = get(ResponseApplicationPaths.GET_TEST_SCHEMA);
         if (result.getStatusCode() != RespondingResult.StatusCode.OK
                 || uiLayout.getConfigLayout() == null
@@ -75,14 +69,11 @@ public class ResponseHttpProvider {
             return result;
         }
 
-        try {
-            Optional<String> enrichedSchema = ConfigEditorUtils
-                    .patchJsonSchema(result.getAttributes().getTestSpecificationSchema(), uiLayout.getTestLayout());
-            result.getAttributes().setTestSpecificationSchema(enrichedSchema.get());
-            return result;
-        } catch (Exception e) {
-            return RespondingResult.fromException(e);
-        }
+        Optional<String> enrichedSchema = ConfigEditorUtils
+                .patchJsonSchema(result.getAttributes().getTestSpecificationSchema(), uiLayout.getTestLayout());
+        result.getAttributes().setTestSpecificationSchema(enrichedSchema.get());
+        return result;
+
     }
 
     public RespondingResult validateRules(String rules) throws Exception {

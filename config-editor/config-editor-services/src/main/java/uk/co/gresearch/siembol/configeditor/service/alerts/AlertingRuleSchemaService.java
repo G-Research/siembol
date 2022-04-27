@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
@@ -21,6 +22,7 @@ import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingRulesCompiler;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
+import uk.co.gresearch.siembol.configeditor.model.ErrorMessages;
 import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaRuleImporter;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
@@ -50,7 +52,6 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
             .readerFor(AlertingStormAttributesDto.class);
 
     private static final String SCHEMA_INIT_ERROR = "Error during computing rules schema";
-    private static final String TESTING_ERROR = "Unexpected rule testing service result";
     private static final String SIGMA_IMPORTER_NAME = "sigma";
     private final AlertingCompiler alertingCompiler;
 
@@ -202,12 +203,12 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         if (alertingResult.getStatusCode() != AlertingResult.StatusCode.OK) {
             attr.setMessage(alertingResult.getAttributes().getMessage());
             attr.setException(alertingResult.getAttributes().getException());
-            return new ConfigEditorResult(ConfigEditorResult.StatusCode.ERROR, attr);
+            return new ConfigEditorResult(BAD_REQUEST, attr);
         }
 
         if (alertingResult.getAttributes().getMessage() == null) {
             return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR,
-                    TESTING_ERROR);
+                    ErrorMessages.UNEXPECTED_TEST_RESULT.getMessage());
         }
 
         attr.setTestResultOutput(alertingResult.getAttributes().getMessage());

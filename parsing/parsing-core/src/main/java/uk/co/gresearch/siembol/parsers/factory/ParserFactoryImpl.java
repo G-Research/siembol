@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.parsers.common.SiembolParser;
@@ -23,7 +21,6 @@ import uk.co.gresearch.siembol.parsers.transformations.TransformationFactory;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,8 +28,6 @@ import java.util.stream.Collectors;
 import static uk.co.gresearch.siembol.parsers.model.PreProcessingFunctionDto.STRING_REPLACE;
 
 public class ParserFactoryImpl implements ParserFactory {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader JSON_PARSER_CONFIG_READER =
             new ObjectMapper().readerFor(ParserConfigDto.class);
     private static final ObjectReader JSON_PARSERS_CONFIG_READER =
@@ -92,7 +87,7 @@ public class ParserFactoryImpl implements ParserFactory {
             return new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, attributes);
 
         } catch (Exception e) {
-            String message = String.format("Exception during parser creation : %s", ExceptionUtils.getStackTrace(e));
+            String message = String.format("Error during parser compilation: %s", ExceptionUtils.getStackTrace(e));
             return ParserFactoryResult.fromErrorMessage(message);
         }
     }
@@ -290,9 +285,7 @@ public class ParserFactoryImpl implements ParserFactory {
                         throw new IllegalArgumentException(
                                 "convert_to_string requires conversion_exclusions in attributes");
                     }
-                    final Set<String> exclusions = extractor.getAttributes().getConversionExclusions()
-                            .stream()
-                            .collect(Collectors.toSet());
+                    final Set<String> exclusions = new HashSet<>(extractor.getAttributes().getConversionExclusions());
                     ret.add(x -> ParserExtractorLibrary.convertToString(x, exclusions));
                     break;
             }
@@ -405,15 +398,12 @@ public class ParserFactoryImpl implements ParserFactory {
             return Optional.empty();
         }
 
-        try {
-            ArrayList<ParserExtractor> ret = new ArrayList<>();
-            for (ParserExtractorDto extractor : parserConfig.getParserExtractors()) {
-                ret.add(createParserExtractor(extractor));
-            }
-            return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
-        } catch (Exception e) {
-            return Optional.empty();
+        ArrayList<ParserExtractor> ret = new ArrayList<>();
+        for (ParserExtractorDto extractor : parserConfig.getParserExtractors()) {
+            ret.add(createParserExtractor(extractor));
         }
+        return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
+
     }
 
     private String wrapParserConfigToParsersConfig(String configStr) throws IOException {
@@ -430,18 +420,13 @@ public class ParserFactoryImpl implements ParserFactory {
             return Optional.empty();
         }
 
-        try {
-            ArrayList<Transformation> ret = new ArrayList<>();
-            for (TransformationDto transformation : parserConfig.getParserTransformations()) {
-                ret.add(transformationFactory.create(transformation));
-            }
-
-            return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
-        } catch (Exception e) {
-            LOG.error(String.format("Exception %s during initialisation of parser transformation",
-                    ExceptionUtils.getStackTrace(e)));
-            return Optional.empty();
+        ArrayList<Transformation> ret = new ArrayList<>();
+        for (TransformationDto transformation : parserConfig.getParserTransformations()) {
+            ret.add(transformationFactory.create(transformation));
         }
+
+        return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
+
     }
 
     private SiembolParser createSyslogParser(SyslogParserConfigDto syslogConfig,

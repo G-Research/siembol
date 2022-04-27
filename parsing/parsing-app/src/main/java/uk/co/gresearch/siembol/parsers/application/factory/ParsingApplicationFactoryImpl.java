@@ -18,12 +18,15 @@ import uk.co.gresearch.siembol.parsers.common.SerializableSiembolParser;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactory;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactoryImpl;
 import uk.co.gresearch.siembol.parsers.factory.ParserFactoryResult;
+import uk.co.gresearch.siembol.parsers.model.ParserAttributesDto;
 import uk.co.gresearch.siembol.parsers.model.ParserConfigDto;
+import uk.co.gresearch.siembol.parsers.model.ParserTypeDto;
 import uk.co.gresearch.siembol.parsers.model.ParsersConfigDto;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult.StatusCode.ERROR;
@@ -35,7 +38,6 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     private static final String MISSING_ROUTING_PARSER = "Missing routing_parser properties";
     private static final String MISSING_HEADER_ROUTING_PARSER = "Missing header_routing_parsing properties";
     private static final String MISSING_TOPIC_ROUTING_PARSER = "Missing topic_routing_parsing properties";
-
     private static final String UNSUPPORTED_PARSER_APP_TYPE = "Unsupported parsing application type %s";
 
     private static final ObjectReader JSON_PARSERS_CONFIG_READER = new ObjectMapper()
@@ -45,16 +47,22 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
             .writerFor(ParserConfigDto.class);
     private static final ObjectReader JSON_PARSING_APP_READER = new ObjectMapper()
             .readerFor(ParsingApplicationDto.class);
+
+    private static final ObjectReader JSON_PARSING_APPS_READER = new ObjectMapper()
+            .readerFor(ParsingApplicationsDto.class);
     private static final ObjectWriter JSON_PARSING_APPS_WRITER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(ParsingApplicationsDto.class);
 
     private final JsonSchemaValidator jsonSchemaValidator;
     private final ParserFactory parserFactory;
+    private final Function<String, String> getParserDummyFun;
 
     public ParsingApplicationFactoryImpl() throws Exception {
         jsonSchemaValidator = new SiembolJsonSchemaValidator(ParsingApplicationsDto.class);
         parserFactory = ParserFactoryImpl.createParserFactory();
+        final var dummyParser = createDummyParser();
+        getParserDummyFun = x -> dummyParser;
     }
 
     @Override
@@ -112,13 +120,18 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     }
 
     @Override
-    public ParsingApplicationFactoryResult validateConfigurations(String parserConfigurations) {
+    public ParsingApplicationFactoryResult validateConfigurations(String parserApplicationConfigurations) {
         ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();
         try {
-            SiembolResult validationResult = jsonSchemaValidator.validate(parserConfigurations);
+            SiembolResult validationResult = jsonSchemaValidator.validate(parserApplicationConfigurations);
             if (validationResult.getStatusCode() != SiembolResult.StatusCode.OK) {
                 attributes.setMessage(validationResult.getAttributes().getMessage());
                 return new ParsingApplicationFactoryResult(ERROR, attributes);
+            }
+
+            ParsingApplicationsDto applications = JSON_PARSING_APPS_READER.readValue(parserApplicationConfigurations);
+            for (var application: applications.getParsingApplications()) {
+                createParser(application, getParserDummyFun);
             }
 
             return new ParsingApplicationFactoryResult(OK, attributes);
@@ -129,23 +142,17 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     }
 
     private ParsingApplicationParser createSingleParser(String applicationName,
-                                                        Map<String, String> parsersMap,
+                                                        Function<String, String> parserByNameFun,
                                                         ParsingSettingsDto parsingSettings,
                                                         ParsingApplicationSettingsDto appSettings) throws Exception {
         if (parsingSettings.getSingleParser() == null) {
             throw new IllegalArgumentException(MISSING_SINGLE_PARSER);
         }
 
-        if (!parsersMap.containsKey(parsingSettings.getSingleParser().getParserName())) {
-            String errorMsg = String.format(MISSING_PARSER_MSG,
-                    parsingSettings.getSingleParser().getParserName());
-            throw new IllegalArgumentException(errorMsg);
-        }
-
         return SingleApplicationParser.builder()
                 .parser(parsingSettings.getSingleParser().getOutputTopic(),
-                        new SerializableSiembolParser(parsersMap
-                                .get(parsingSettings.getSingleParser().getParserName())))
+                        new SerializableSiembolParser(parserByNameFun
+                                .apply(parsingSettings.getSingleParser().getParserName())))
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
                 .errorTopic(appSettings.getErrorTopic())
@@ -155,7 +162,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     }
 
     private ParsingApplicationParser createRouterParser(String applicationName,
-                                                        Map<String, String> parsersMap,
+                                                        Function<String, String> parserByNameFun,
                                                         ParsingSettingsDto parsingSettings,
                                                         ParsingApplicationSettingsDto appSettings) throws Exception {
         if (parsingSettings.getRoutingParser() == null) {
@@ -163,32 +170,22 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         }
 
         RoutingParserDto routingParser = parsingSettings.getRoutingParser();
-        if (!parsersMap.containsKey(routingParser.getRouterParserName())) {
-            String errorMsg = String.format(MISSING_PARSER_MSG, routingParser.getRouterParserName());
-            throw new IllegalArgumentException(errorMsg);
-        }
-        if (!parsersMap.containsKey(routingParser.getDefaultParser().getParserName())) {
-            String errorMsg = String.format(MISSING_PARSER_MSG, routingParser.getDefaultParser().getParserName());
-            throw new IllegalArgumentException(errorMsg);
-        }
 
         RoutingParsingApplicationParser.Builder<RoutingParsingApplicationParser> builder =
                 RoutingParsingApplicationParser.builder()
-                        .routerParser(new SerializableSiembolParser(parsersMap.get(routingParser.getRouterParserName())))
+                        .routerParser(new SerializableSiembolParser(
+                                parserByNameFun.apply(routingParser.getRouterParserName())))
                         .defaultParser(routingParser.getDefaultParser().getOutputTopic(),
                                 new SerializableSiembolParser(
-                                        parsersMap.get(routingParser.getDefaultParser().getParserName())))
+                                        parserByNameFun.apply(routingParser.getDefaultParser().getParserName())))
                         .routingConditionField(routingParser.getRoutingField())
                         .routingMessageField(routingParser.getRoutingMessage())
                         .mergedFields(routingParser.getMergedFields());
 
         for (RoutedParserPropertiesDto routedParser : routingParser.getParsers()) {
-            if (!parsersMap.containsKey(routedParser.getParserProperties().getParserName())) {
-                String errorMsg = String.format(MISSING_PARSER_MSG, routedParser.getParserProperties().getParserName());
-                throw new IllegalArgumentException(errorMsg);
-            }
             builder.addParser(routedParser.getParserProperties().getOutputTopic(),
-                    new SerializableSiembolParser(parsersMap.get(routedParser.getParserProperties().getParserName())),
+                    new SerializableSiembolParser(
+                            parserByNameFun.apply(routedParser.getParserProperties().getParserName())),
                     routedParser.getRoutingFieldPattern());
         }
 
@@ -202,7 +199,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     }
 
     private ParsingApplicationParser createHeaderRouterParser(String applicationName,
-                                                              Map<String, String> parsersMap,
+                                                              Function<String, String> parserByNameFun,
                                                               ParsingSettingsDto parsingSettings,
                                                               ParsingApplicationSettingsDto appSettings) throws Exception {
         var headerRoutingParser = parsingSettings.getHeaderRoutingParserDto();
@@ -210,24 +207,15 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
             throw new IllegalArgumentException(MISSING_HEADER_ROUTING_PARSER);
         }
 
-        if (!parsersMap.containsKey(headerRoutingParser.getDefaultParser().getParserName())) {
-            String errorMsg = String.format(MISSING_PARSER_MSG, headerRoutingParser.getDefaultParser().getParserName());
-            throw new IllegalArgumentException(errorMsg);
-        }
-
         var builder = SourceRoutingApplicationParser.builder()
                 .defaultParser(headerRoutingParser.getDefaultParser().getOutputTopic(),
                         new SerializableSiembolParser(
-                                parsersMap.get(headerRoutingParser.getDefaultParser().getParserName())));
+                                parserByNameFun.apply(headerRoutingParser.getDefaultParser().getParserName())));
 
         for (var parser : headerRoutingParser.getParsers()) {
-            if (!parsersMap.containsKey(parser.getParserProperties().getParserName())) {
-                String errorMsg = String.format(MISSING_PARSER_MSG, parser.getParserProperties().getParserName());
-                throw new IllegalArgumentException(errorMsg);
-            }
             builder.addParser(parser.getSourceHeaderValue(),
                     parser.getParserProperties().getOutputTopic(),
-                    new SerializableSiembolParser(parsersMap.get(parser.getParserProperties().getParserName())));
+                    new SerializableSiembolParser(parserByNameFun.apply(parser.getParserProperties().getParserName())));
         }
 
         builder.errorTopic(appSettings.getErrorTopic())
@@ -240,7 +228,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     }
 
     private ParsingApplicationParser createTopicRouterParser(String applicationName,
-                                                             Map<String, String> parsersMap,
+                                                             Function<String, String> parserByNameFun,
                                                              ParsingSettingsDto parsingSettings,
                                                              ParsingApplicationSettingsDto appSettings) throws Exception {
         var topicRoutingParser = parsingSettings.getTopicRoutingParserDto();
@@ -248,24 +236,15 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
             throw new IllegalArgumentException(MISSING_TOPIC_ROUTING_PARSER);
         }
 
-        if (!parsersMap.containsKey(topicRoutingParser.getDefaultParser().getParserName())) {
-            String errorMsg = String.format(MISSING_PARSER_MSG, topicRoutingParser.getDefaultParser().getParserName());
-            throw new IllegalArgumentException(errorMsg);
-        }
-
         var builder = SourceRoutingApplicationParser.builder()
                 .defaultParser(topicRoutingParser.getDefaultParser().getOutputTopic(),
                         new SerializableSiembolParser(
-                                parsersMap.get(topicRoutingParser.getDefaultParser().getParserName())));
+                                parserByNameFun.apply(topicRoutingParser.getDefaultParser().getParserName())));
 
         for (var parser : topicRoutingParser.getParsers()) {
-            if (!parsersMap.containsKey(parser.getParserProperties().getParserName())) {
-                String errorMsg = String.format(MISSING_PARSER_MSG, parser.getParserProperties().getParserName());
-                throw new IllegalArgumentException(errorMsg);
-            }
             builder.addParser(parser.getTopicName(),
                     parser.getParserProperties().getOutputTopic(),
-                    new SerializableSiembolParser(parsersMap.get(parser.getParserProperties().getParserName())));
+                    new SerializableSiembolParser(parserByNameFun.apply(parser.getParserProperties().getParserName())));
         }
 
         builder.errorTopic(appSettings.getErrorTopic())
@@ -277,10 +256,34 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         return builder.build();
     }
 
+
+    private ParsingApplicationParser createParser(ParsingApplicationDto application,
+                                                  Function<String, String> parserByNameFun) throws Exception {
+
+        var appSettings = application.getParsingApplicationSettingsDto();
+        var parsingSettings = application.getParsingSettingsDto();
+        switch (appSettings.getApplicationType()) {
+            case SINGLE_PARSER:
+                return createSingleParser(application.getParsingApplicationName(),
+                        parserByNameFun, parsingSettings, appSettings);
+            case ROUTER_PARSING:
+                return createRouterParser(application.getParsingApplicationName(),
+                        parserByNameFun, parsingSettings, appSettings);
+            case TOPIC_ROUTING_PARSING:
+                return createTopicRouterParser(application.getParsingApplicationName(),
+                        parserByNameFun, parsingSettings, appSettings);
+            case HEADER_ROUTING_PARSING:
+                return createHeaderRouterParser(application.getParsingApplicationName(),
+                        parserByNameFun, parsingSettings, appSettings);
+            default:
+                throw new IllegalArgumentException(String.format(UNSUPPORTED_PARSER_APP_TYPE,
+                        appSettings.getApplicationType()));
+        }
+    }
     private ParsingApplicationParser createParser(ParsingApplicationDto application,
                                                   String parserConfigs) throws Exception {
         ParsersConfigDto parsers = JSON_PARSERS_CONFIG_READER.readValue(parserConfigs);
-        Map<String, String> parsersMap = parsers.getParserConfigurations().stream()
+        final Map<String, String> parserMap = parsers.getParserConfigurations().stream()
                 .collect(Collectors.toMap(ParserConfigDto::getParserName, x -> {
                     try {
                         return JSON_PARSER_CONFIG_WRITER.writeValueAsString(x);
@@ -289,20 +292,8 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                     }
                 }));
 
-        var appSettings = application.getParsingApplicationSettingsDto();
-        var parsingSettings = application.getParsingSettingsDto();
-        switch (appSettings.getApplicationType()) {
-            case SINGLE_PARSER:
-                return createSingleParser(application.getParsingApplicationName(), parsersMap, parsingSettings, appSettings);
-            case ROUTER_PARSING:
-                return createRouterParser(application.getParsingApplicationName(), parsersMap, parsingSettings, appSettings);
-            case TOPIC_ROUTING_PARSING:
-                return createTopicRouterParser(application.getParsingApplicationName(), parsersMap, parsingSettings, appSettings);
-            case HEADER_ROUTING_PARSING:
-                return createHeaderRouterParser(application.getParsingApplicationName(), parsersMap, parsingSettings, appSettings);
-            default:
-                throw new IllegalArgumentException(String.format(UNSUPPORTED_PARSER_APP_TYPE, appSettings.getApplicationType()));
-        }
+        Function<String, String> parserByNameFun = x -> getParserFromMap(x, parserMap);
+        return createParser(application, parserByNameFun);
     }
 
     private String wrapParserApplicationToParserApplications(String configStr) throws IOException {
@@ -327,5 +318,25 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
             attributes.setSourceHeaderName(
                     application.getParsingSettingsDto().getHeaderRoutingParserDto().getHeaderName());
         }
+    }
+
+    private String getParserFromMap(String parserName, Map<String, String> parserMap) {
+        if (!parserMap.containsKey(parserName)) {
+            String errorMsg = String.format(MISSING_PARSER_MSG, parserName);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        return parserMap.get(parserName);
+    }
+
+    private String createDummyParser() throws JsonProcessingException {
+        var parser = new ParserConfigDto();
+        parser.setParserVersion(1);
+        parser.setAuthor("siembol");
+        parser.setParserName("dummy_parser");
+
+        var attributes = new ParserAttributesDto();
+        attributes.setParserType(ParserTypeDto.GENERIC);
+        parser.setParserAttributes(attributes);
+        return new ObjectMapper().writerFor(ParserConfigDto.class).writeValueAsString(parser);
     }
 }
