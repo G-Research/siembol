@@ -9,4 +9,8 @@ public interface TestCaseEvaluator {
     ConfigEditorResult validate(String testCase);
 
     ConfigEditorResult getSchema();
+
+    default TestCaseEvaluator withErrorMessage() {
+        return new TestCaseEvaluatorWithErrorMessage(this);
+    }
 }
