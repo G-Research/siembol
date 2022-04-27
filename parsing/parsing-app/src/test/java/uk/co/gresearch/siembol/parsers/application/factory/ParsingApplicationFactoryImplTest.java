@@ -214,20 +214,20 @@ public class ParsingApplicationFactoryImplTest {
      """;
 
     @Test
-    public void testGetSchema() {
+    public void getSchema() {
         ParsingApplicationFactoryResult schemaResult = factory.getSchema();
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, schemaResult.getStatusCode());
         Assert.assertFalse(schemaResult.getAttributes().getJsonSchema().isEmpty());
     }
 
     @Test
-    public void testValidationSingleGood() {
+    public void validationSingleGood() {
         ParsingApplicationFactoryResult result = factory.validateConfiguration(simpleSingleApplicationParser);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
     }
 
     @Test
-    public void testValidationSingleFail() {
+    public void validationSingleFail() {
         ParsingApplicationFactoryResult result = factory.validateConfiguration(simpleSingleApplicationParser
                 .replace("error_topic", "dummy"));
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -235,7 +235,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testValidationSingleFail2() {
+    public void validationSingleFail2() {
         ParsingApplicationFactoryResult result = factory.validateConfiguration(simpleSingleApplicationParser
                 .replace("\"parsing_parallelism\": 2,", ""));
         Assert.assertSame( ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -244,7 +244,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationSingleGood() {
+    public void creationSingleGood() {
         ParsingApplicationFactoryResult result = factory.create(simpleSingleApplicationParser, testParsersConfigs);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals("test", result.getAttributes().getName());
@@ -258,7 +258,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationSingleWrongApplication() {
+    public void creationSingleWrongApplication() {
         ParsingApplicationFactoryResult result = factory.create(
                 simpleSingleApplicationParser.replace("error_topic", "dummy"),
                 testParsersConfigs);
@@ -267,14 +267,14 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationSingleWrongParserConfigs() {
+    public void creationSingleWrongParserConfigs() {
         ParsingApplicationFactoryResult result = factory.create(simpleSingleApplicationParser, "INVALID");
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("INVALID"));
     }
 
     @Test
-    public void testCreationSingleMissingParserConfigs() {
+    public void creationSingleMissingParserConfigs() {
         ParsingApplicationFactoryResult result = factory.create(simpleSingleApplicationParser,
                 testParsersConfigs.replace("single", "unwanted"));
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -282,13 +282,13 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testValidationRoutingGood() {
+    public void validationRoutingGood() {
         ParsingApplicationFactoryResult result = factory.validateConfiguration(simpleRoutingApplicationParser);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
     }
 
     @Test
-    public void testValidationRoutingFail() {
+    public void validationRoutingFail() {
         ParsingApplicationFactoryResult result = factory.validateConfiguration(simpleRoutingApplicationParser
                 .replace("error_topic", "dummy"));
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -296,7 +296,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationRoutingGood() {
+    public void creationRoutingGood() {
         ParsingApplicationFactoryResult result = factory.create(simpleRoutingApplicationParser, testParsersConfigs);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals("test", result.getAttributes().getName());
@@ -310,7 +310,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreatingRoutingInvalidPattern() {
+    public void creatingRoutingInvalidPattern() {
         ParsingApplicationFactoryResult result = factory.create(
                 simpleRoutingApplicationParser.replace("^secret$", "^?(<invalid"),
                 testParsersConfigs);
@@ -319,7 +319,15 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationRoutingWrongApplication() {
+    public void validateRoutingInvalidPattern() {
+        ParsingApplicationFactoryResult result = factory.validateConfiguration(
+                simpleRoutingApplicationParser.replace("^secret$", "^?(<invalid"));
+        Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
+    }
+
+    @Test
+    public void creationRoutingWrongApplication() {
         ParsingApplicationFactoryResult result = factory.create(
                 simpleRoutingApplicationParser.replace("error_topic", "dummy"),
                 testParsersConfigs);
@@ -328,14 +336,14 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationRoutingWrongParserConfigs() {
+    public void creationRoutingWrongParserConfigs() {
         ParsingApplicationFactoryResult result = factory.create(simpleRoutingApplicationParser, "INVALID");
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("INVALID"));
     }
 
     @Test
-    public void testCreationRoutingMissingRouterParserConfigs() {
+    public void creationRoutingMissingRouterParserConfigs() {
         ParsingApplicationFactoryResult result = factory.create(simpleRoutingApplicationParser,
                 testParsersConfigs.replace("router", "unwanted"));
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -343,7 +351,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationRoutingMissingDefaultParserConfigs() {
+    public void creationRoutingMissingDefaultParserConfigs() {
         ParsingApplicationFactoryResult result = factory.create(simpleRoutingApplicationParser,
                 testParsersConfigs.replace("default", "unwanted"));
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -351,7 +359,7 @@ public class ParsingApplicationFactoryImplTest {
     }
 
     @Test
-    public void testCreationRoutingMissingParserConfigs() {
+    public void creationRoutingMissingParserConfigs() {
         ParsingApplicationFactoryResult result = factory.create(simpleRoutingApplicationParser,
                 testParsersConfigs.replace("single", "unwanted"));
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.ERROR, result.getStatusCode());
