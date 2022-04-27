@@ -235,14 +235,14 @@ public class ResponseSchemaServiceTest {
         Assert.assertNotNull(resultTestSchema.getAttributes().getTestSchema());
     }
 
-    @Test(expected = java.lang.IllegalStateException.class)
+    @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
     public void buildErrorGetSchema() throws Exception {
         Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_SCHEMA.toString())))
                 .thenReturn("errorMessage");
         responseSchemaService = builder.build();
     }
 
-    @Test(expected = java.lang.IllegalStateException.class)
+    @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
     public void buildErrorGetTestSchema() throws Exception {
         Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_TEST_SCHEMA.toString())))
                 .thenReturn("errorMessage");

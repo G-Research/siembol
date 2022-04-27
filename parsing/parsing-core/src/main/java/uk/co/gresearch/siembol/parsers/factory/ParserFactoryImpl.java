@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.parsers.common.SiembolParser;
@@ -23,7 +21,6 @@ import uk.co.gresearch.siembol.parsers.transformations.TransformationFactory;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,8 +28,6 @@ import java.util.stream.Collectors;
 import static uk.co.gresearch.siembol.parsers.model.PreProcessingFunctionDto.STRING_REPLACE;
 
 public class ParserFactoryImpl implements ParserFactory {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
     private static final ObjectReader JSON_PARSER_CONFIG_READER =
             new ObjectMapper().readerFor(ParserConfigDto.class);
     private static final ObjectReader JSON_PARSERS_CONFIG_READER =
@@ -290,9 +285,7 @@ public class ParserFactoryImpl implements ParserFactory {
                         throw new IllegalArgumentException(
                                 "convert_to_string requires conversion_exclusions in attributes");
                     }
-                    final Set<String> exclusions = extractor.getAttributes().getConversionExclusions()
-                            .stream()
-                            .collect(Collectors.toSet());
+                    final Set<String> exclusions = new HashSet<>(extractor.getAttributes().getConversionExclusions());
                     ret.add(x -> ParserExtractorLibrary.convertToString(x, exclusions));
                     break;
             }
@@ -409,7 +402,7 @@ public class ParserFactoryImpl implements ParserFactory {
         for (ParserExtractorDto extractor : parserConfig.getParserExtractors()) {
             ret.add(createParserExtractor(extractor));
         }
-        return Optional.of(ret);
+        return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
 
     }
 
@@ -426,7 +419,6 @@ public class ParserFactoryImpl implements ParserFactory {
         if (parserConfig.getParserTransformations() == null) {
             return Optional.empty();
         }
-
 
         ArrayList<Transformation> ret = new ArrayList<>();
         for (TransformationDto transformation : parserConfig.getParserTransformations()) {
