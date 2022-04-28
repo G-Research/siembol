@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { StatusCode } from './model';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { InputError } from './model/config-model';
+import { ErrorDialog, InputError } from './model/config-model';
 
 @Injectable({
     providedIn: 'root',
@@ -11,44 +11,65 @@ import { InputError } from './model/config-model';
 export class GlobalErrorHandler implements ErrorHandler {
     constructor(public dialog: MatDialog, private ngZone: NgZone) { }
 
-    handleError(data: Error | HttpErrorResponse) {
-        let message: string;
-        let resolution = "Ask administrators for help";
-        let icon_name = "report_problem";
-        let icon_color = "red";
-        let title = "Error Details";
-        data = data["rejection"] ? data["rejection"] : data;
+    handleError(data: Error) {
+        const dialogData = new ErrorDialogBuilder().build(data);
+        this.ngZone.run(() => {
+            this.dialog.open(ErrorDialogComponent, { data: dialogData });
+        });
+    }
+}
+
+export class ErrorDialogBuilder {
+    private message: string;
+    private resolution = "Ask administrators for help";
+    private icon_name = "report_problem";
+    private icon_color = "red";
+    private title = "Error Details";
+
+    build(data: Error): ErrorDialog {
         if (data instanceof HttpErrorResponse) {
-            message = data.error.message ? data.error.message
+            this.fromBackendErrorMessage(data);
+        } else {
+            this.fromInternalErrorMessage(data);
+        }
+        return { 
+            message: this.message, 
+            title: this.title, 
+            resolution: this.resolution, 
+            icon_name: this.icon_name, 
+            icon_color: this.icon_color
+        }
+    }
+
+    fromBackendErrorMessage(data: HttpErrorResponse) {
+        this.message = data.error.message ? data.error.message
                 : data.error.exception ? data.error.exception
                 : data.error.error ? data.error.error
                 : data.message
-            resolution = data.error.resolution? data.error.resolution: resolution;
-            title = data.error.title? data.error.title: title;
+        this.resolution = data.error.resolution? data.error.resolution: this.resolution;
+        this.title = data.error.title? data.error.title: this.title;
 
-            if (data.status === StatusCode.BAD_REQUEST) {
-                icon_name = "feedback";
-                icon_color = "orange";
-            } else if (data.status === StatusCode.UNKNOWN_ERROR) {
-                message = "Cannot reach backend";
-            } else if (data.status === StatusCode.UNAUTHORISED) {
-                message = "Unauthorised user";
-                resolution = "Close current tab and try in a new one. If error persists contact administrator";
-            }
-        } else {
-            if (data instanceof InputError) {
-                icon_name = "feedback";
-                icon_color = "orange";
-                resolution = "Inspect error message and try to fix your request. If error persists contact administrator"
-            }
-            message = data.toString();
+        switch(data.status) {
+            case StatusCode.BAD_REQUEST:
+                this.icon_name = "feedback";
+                this.icon_color = "orange";
+                break;
+            case StatusCode.UNKNOWN_ERROR:
+                this.message = "Cannot reach backend";
+                break;
+            case StatusCode.UNAUTHORISED:
+                this.message = "Unauthorised user";
+                this.resolution = "Close current tab and try in a new one. If error persists contact administrator";
+                break;
         }
-        
-        this.ngZone.run(() => {
-            this.dialog.open(ErrorDialogComponent,
-                {
-                    data: { message, title, resolution, icon_name, icon_color }
-                });
-        });
+    }
+
+    fromInternalErrorMessage(data: Error) {
+        if (data instanceof InputError) {
+            this.icon_name = "feedback";
+            this.icon_color = "orange";
+            this.resolution = "Inspect error message and try to fix your request. If error persists contact administrator";
+        }
+        this.message = data.toString();
     }
 }

@@ -283,3 +283,19 @@ export const FILTER_PARAM_KEY =  "filter"
 export const SEARCH_PARAM_KEY =  "search"
 
 export const HISTORY_PARAMS = ['configName', 'testCaseName'];
+
+export interface BackendErrorMessage {
+  message?: string,
+  resolution?: string,
+  title?: string,
+  exception?: string,
+  error?: string,
+}
+
+export interface ErrorDialog {
+  message: string,
+  resolution: string,
+  title: string,
+  icon_name: string,
+  icon_color: string,
+}
