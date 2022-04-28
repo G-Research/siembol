@@ -236,7 +236,9 @@ export interface ConfigAndTestsToClone {
   test_cases: TestCaseWrapper[]
 }
 
-export class ExistingConfigError extends Error {
+export class InputError extends Error {}
+
+export class ExistingConfigError extends InputError {
   constructor(message) {
     super(message);
     this.name = this.constructor.name;

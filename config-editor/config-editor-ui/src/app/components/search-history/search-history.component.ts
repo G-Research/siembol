@@ -6,13 +6,13 @@ import { parseSearchParams } from "@app/commons/helper-functions";
 @Component({
   selector: "re-search-history",
   template: `
-  <mat-expansion-panel *ngIf="searchHistory">
+  <mat-expansion-panel *ngIf="searchHistory" [expanded]="true">
     <mat-expansion-panel-header class="title-header">Saved Searches</mat-expansion-panel-header>
     <mat-accordion multi="true">
       <ng-container
         class="expansion-panel-container"
         *ngFor="let search of searchHistory.slice().reverse()">
-        <mat-expansion-panel [expanded]="false" (click)="routeTo(search)" [hideToggle]="true">
+        <mat-expansion-panel (click)="routeTo(search)" [hideToggle]="true">
           <mat-expansion-panel-header #panelH (click)="panelH._toggle()">
             <div class="labels">
               <div *ngFor="let param of parseSearchParams(search) | keyvalue">

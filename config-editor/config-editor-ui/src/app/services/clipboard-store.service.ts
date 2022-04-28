@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Type } from '@app/model/config-model';
+import { InputError, Type } from '@app/model/config-model';
 import { ConfigStoreState } from '@app/model/store-state';
 import { BehaviorSubject, from, map, catchError, mergeMap, Observable, throwError } from 'rxjs';
 import { ConfigLoaderService } from './config-loader.service';
@@ -18,10 +18,7 @@ export class ClipboardStoreService {
         return this.validateType(type, json)
           .pipe(
             map(() => json),
-            catchError(e => {
-            const message = e.error.exception ? e.error.exception : e.error.message;
-            return throwError('Unable to paste config from clipboard: ' + message);
-          }));
+          );
       }),
       map((json: string) => {
         this.updatePastedConfig(json);
@@ -44,8 +41,6 @@ export class ClipboardStoreService {
       case Type.ADMIN_TYPE: return this.configLoader.validateAdminConfig(json);
       default: return this.configLoader.validateTestCase(json);
     }
-    
-    
   }
 
   private isJsonString(str: string): boolean {
@@ -60,7 +55,7 @@ export class ClipboardStoreService {
   private getClipboard(): Observable<any> {
     return from(navigator.clipboard.readText()).pipe(map(c => {
       if (!this.isJsonString(c)) {
-        throw Error('Clipboard is not JSON');
+        throw new InputError('Clipboard is not JSON');
       }
       return c;
     }));
