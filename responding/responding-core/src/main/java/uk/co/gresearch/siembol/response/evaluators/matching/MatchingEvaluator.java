@@ -15,13 +15,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MatchingEvaluator implements Evaluable {
+    private static final String EMPTY_MATCHERS = "Empty matchers in matching evaluator";
     private final List<BasicMatcher> matchers;
     private final MatchingEvaluatorResultDto matchingResult;
 
     public MatchingEvaluator(MatchingEvaluatorAttributesDto attributesDto) {
         matchers = attributesDto.getMatchers().stream()
+                .filter(x -> x.isEnabled())
                 .map(this::createMatcher)
                 .collect(Collectors.toList());
+        if (matchers.isEmpty()) {
+            throw new IllegalArgumentException(EMPTY_MATCHERS);
+        }
+
         matchingResult = attributesDto.getEvaluationResult();
     }
 

@@ -12,12 +12,14 @@ public class MatchingEvaluatorFactoryTest {
               "evaluation_result": "match",
               "matchers": [
                 {
+                  "is_enabled" : true,
                   "matcher_type": "IS_IN_SET",
                   "is_negated": false,
                   "field": "is_alert",
                   "data": "true"
                 },
                 {
+                  "is_enabled" : true,
                   "matcher_type": "REGEX_MATCH",
                   "is_negated": false,
                   "field": "to_copy",
@@ -69,6 +71,21 @@ public class MatchingEvaluatorFactoryTest {
     public void testValidateAttributesInvalidJson() {
         RespondingResult result = factory.validateAttributes("INVALID");
         Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+    }
+
+    @Test
+    public void testValidateAttributesInvalidRegex() {
+        RespondingResult result = factory.validateAttributes(attributes.replace("<new_field>", "["));
+        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
+    }
+
+    @Test
+    public void testValidateAttributesDisabledMatchers() {
+        RespondingResult result = factory.validateAttributes(attributes.replace("\"is_enabled\" : true",
+                "\"is_enabled\" : false"));
+        Assert.assertEquals(RespondingResult.StatusCode.ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("Empty matchers in matching evaluator"));
     }
 
     @Test
