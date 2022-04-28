@@ -87,6 +87,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         }
 
         List<Matcher> matchers = ruleDto.getMatchers().stream()
+                .filter(x -> x.isEnabled())
                 .map(x -> createMatcher(x))
                 .collect(Collectors.toList());
 
