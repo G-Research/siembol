@@ -7,6 +7,13 @@ import java.util.List;
 
 @Attributes(title = "matcher", description = "Matcher for matching fields")
 public class MatcherDto {
+    @Attributes(description = "The matcher is enabled", required = false)
+    @JsonProperty("is_enabled")
+    private boolean enabled = true;
+
+    @Attributes(description = "Description of the matcher", required = false)
+    @JsonProperty("description")
+    private String description;
     @JsonProperty("matcher_type")
     @Attributes(required = true, description = "Type of matcher, either Regex match or list of strings " +
             "(newline delimited) or a composite matcher composing several matchers")
@@ -99,6 +106,22 @@ public class MatcherDto {
 
     public void setEndsWith(Boolean endsWith) {
         this.endsWith = endsWith;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
 

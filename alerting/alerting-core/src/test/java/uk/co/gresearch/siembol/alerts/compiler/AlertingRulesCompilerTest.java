@@ -23,39 +23,47 @@ public class AlertingRulesCompilerTest {
                   "rule_description": "Test rule - is_alert is equal to true",
                   "source_type" : "*",
                   "matchers" : [ {
-                      "matcher_type" : "REGEX_MATCH",
-                      "is_negated" : false,
-                      "field" : "is_alert",
-                      "data" : "(?i)true" },
+                        "is_enabled" : true,
+                        "matcher_type" : "REGEX_MATCH",
+                        "is_negated" : false,
+                        "field" : "is_alert",
+                        "data" : "(?i)true"
+                      },
                       {
+                       "is_enabled" : true,
                        "matcher_type": "REGEX_MATCH",
                        "is_negated": false,
                        "field": "source_type",
                        "data": "(?<sensor>.*)"
                      }
-                      ]
+                  ]
               }]
             }
             """;
 
     private final String alertRule = """
             {
-                  "rule_name" : "siembol_alert_generic",
-                  "rule_version" : 1,
-                  "rule_author" : "dummy",
-                  "rule_description": "Test rule - is_alert is equal to true",
-                  "source_type" : "*",
-                  "matchers" : [ {
-                      "matcher_type" : "REGEX_MATCH",
-                      "is_negated" : false,
-                      "field" : "is_alert",
-                      "data" : "(?i)true" },
-                      {
-                       "matcher_type": "REGEX_MATCH",
-                       "is_negated": false,
-                       "field": "source_type",
-                       "data": "(?<sensor>.*)"
-                     }]
+              "rule_name": "siembol_alert_generic",
+              "rule_version": 1,
+              "rule_author": "dummy",
+              "rule_description": "Test rule - is_alert is equal to true",
+              "source_type": "*",
+              "matchers": [
+                {
+                  "is_enabled": true,
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "source_type",
+                  "data": "(?<sensor>.*)"
+                },
+                {
+                  "is_enabled": true,
+                  "matcher_type": "REGEX_MATCH",
+                  "is_negated": false,
+                  "field": "is_alert",
+                  "data": "(?i)true"
+                }
+              ]
             }
             """;
 
@@ -87,6 +95,7 @@ public class AlertingRulesCompilerTest {
               "source_type": "*",
               "matchers": [
                 {
+                  "is_enabled" : true,
                   "matcher_type": "CONTAINS",
                   "is_negated": false,
                   "field": "is_alert",
@@ -96,32 +105,38 @@ public class AlertingRulesCompilerTest {
                   "ends_with" : true
                 },
                 {
+                  "is_enabled" : true,
                   "matcher_type": "REGEX_MATCH",
                   "is_negated": false,
                   "field": "source_type",
                   "data": "(?<sensor>.*)"
                 },
                 {
+                  "is_enabled" : true,
                   "matcher_type": "COMPOSITE_OR",
                   "is_negated": false,
                   "matchers": [
                     {
+                      "is_enabled" : true,
                       "matcher_type": "REGEX_MATCH",
                       "is_negated": false,
                       "field": "is_secret",
                       "data": "(?i)true"
                     },
                     {
+                      "is_enabled" : true,
                       "matcher_type": "COMPOSITE_AND",
                       "is_negated": false,
                       "matchers": [
                         {
+                          "is_enabled":true ,
                           "matcher_type": "REGEX_MATCH",
                           "is_negated": false,
                           "field": "is_public",
                           "data": "(?i)true"
                         },
                         {
+                          "is_enabled":true,
                           "matcher_type": "IS_IN_SET",
                           "is_negated": false,
                           "field": "is_detected",
@@ -179,7 +194,19 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
-    public void validationRuleOK() {
+    public void validationRuleDisabledFirstMatcherOk() {
+        AlertingResult ret = compiler.validateRule(alertRule.replaceFirst("\"is_enabled\": true",
+                "\"is_enabled\" : false"));
+        Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
+        AlertingResult matchResult = ret.getAttributes().getEngine().evaluate(goodAlert);
+        Assert.assertEquals(AlertingResult.StatusCode.OK, matchResult.getStatusCode());
+        Assert.assertEquals(EvaluationResult.MATCH, matchResult.getAttributes().getEvaluationResult());
+        Assert.assertEquals(1, matchResult.getAttributes().getOutputEvents().size());
+        Assert.assertNull(matchResult.getAttributes().getOutputEvents().get(0).get("sensor"));
+    }
+
+    @Test
+    public void validationRuleOk() {
         AlertingResult ret = compiler.validateRule(alertRule);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
         AlertingResult matchResult = ret.getAttributes().getEngine().evaluate(goodAlert);
@@ -194,6 +221,14 @@ public class AlertingRulesCompilerTest {
         AlertingResult ret = compiler.validateRule(alertRule.replace("<sensor>", "<sensor"));
         Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getException().contains("PatternSyntaxException"));
+    }
+
+    @Test
+    public void validationRuleDisabledMatchers() {
+        AlertingResult ret = compiler.validateRule(alertRule.replace("\"is_enabled\": true",
+                "\"is_enabled\" : false"));
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getException().contains("Empty matchers in a rule"));
     }
 
     @Test
@@ -249,6 +284,14 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
+    public void testingRuleDisabledMatchers() {
+        AlertingResult ret = compiler.testRule(alertRule.replace("\"is_enabled\": true",
+                "\"is_enabled\" : false"), goodAlert);
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getException().contains("Empty matchers in a rule"));
+    }
+
+    @Test
     public void testRulesOK() {
         AlertingResult ret = compiler.testRules(alertRules, goodAlert);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
@@ -289,6 +332,14 @@ public class AlertingRulesCompilerTest {
         AlertingResult ret = compiler.validateRule(ruleWithCompositeMatchers.replace("\"matchers\"",
                 "\"invalid_matchers\""));
         Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+    }
+
+    @Test
+    public void validationRuleWithCompositeDisabled() {
+        AlertingResult ret = compiler.validateRule(ruleWithCompositeMatchers.replace("\"is_enabled\":true",
+                "\"is_enabled\" : false"));
+        Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
+        Assert.assertTrue(ret.getAttributes().getException().contains("Empty matchers in the composite matcher"));
     }
 
     @Test
