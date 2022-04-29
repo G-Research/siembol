@@ -13,8 +13,8 @@ To save a search click on the `save` icon to the right of the search bar. It wil
 ## Checkboxes
 On the left hand side of the config manager page is a column for checkboxes. The standard checkboxes for each service are:
 - `my configs` - configs last modified by current user
-- `upgradable` -configs that have changes in store that haven't been released yet
-- `unreleased` - configs that haven't been released at all yet
+- `upgradable` - configs with unreleased changes in store
+- `unreleased` - unreleased configs
 
 To add more custom checkboxes to a service see [here](./how_to_use_ui_bootstrap_file.md).
 

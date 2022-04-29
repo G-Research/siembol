@@ -49,12 +49,12 @@ After selecting a service to edit you will be redirected to the service configur
 
 The table of configs is separated into the store (left) and release (right). To release an unreleased config or upgrade a config it first needs to be edited in the store, then it can be added to release and peer reviewed through git PRs.
 
-Every config in the table is in the store, to see its status in release there is the `Release Actions` column. There are three possible states:
-- up-to-date: store and release have the same version
-- upgradable: the version in release can be upgraded to the latest store version, click `Upgrade x to y` to upgrade
-- unreleased: the config in store has not been released at all yet, click `Add to Release` to add
+Every config in the table is in the store, its release status is in the `Release Actions` column. There are three possible states:
+- `up-to-date` - store and release have the same version
+- `upgradable` - the version in release can be upgraded to the latest store version, click `Upgrade x to y` to upgrade
+- `unreleased` - the config in store has not been released at all yet, click `Add to Release` to add
 
-The configs are ordered according to the order in the release at first, followed by all the non-released ones. You can reorder configs in release by clicking and dragging the icon to the left of the config name.
+The configs are ordered according to the order in the release at first, followed by all the non-released ones. Reordering configs in release is done by clicking and dragging the icon to the left of the config name.
 
 To delete a config from the store it first needs to be deleted from release if it is released. To delete from release click the cross icon in the `Release Actions` column, then the bin icon should appear in the `Store Actions` column to delete from the store.
 

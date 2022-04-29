@@ -17,7 +17,7 @@ This config file provides paths/keys of various variables in the schema of the s
 It also provides a key to define a javascript function that will return the labels for the service. This is done through the `labelsFunc` key. 
 
 ## Testing
-You can also enable and disable testing through these keys:
+Testing can be enabled or disable through these keys:
 - `testing.perConfigTestEnabled` - whether a single config can be tested
 - `testing.releaseTestEnabled` - whether the entire release can be tested
 - `testing.testCaseEnabled` - whether test cases can be created
@@ -42,7 +42,7 @@ Checkboxes for quick filtering can be added per service in the `checkboxes` key.
 ```
 
 ## Override default properties for service type
-The `override` key can be used to override any of the above properties for a specific service `name` (all the above is per service `type`). So if you have two services of the same type you can apply different config to one using this key. 
+The `override` key can be used to override any of the above properties for a specific service `name` (all the above is per service `type`). If there are two services of the same type different config can be applied to one using this key. 
 
 **_Example:_** Overriding the `testing.releaseTestEnabled` property for the `myalerts` service:
 ```
