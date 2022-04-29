@@ -1,4 +1,4 @@
-# How to test a release in siembol ui
+# How to test a release in Siembol UI
 For some services it is possible to test all the configs prior to submitting a new release from the release dialog by clicking on the `Test` button. This button will only be clickable once the release has been validated. 
 
 <img src="../screenshots/submit_dialog_alert.png" alt="drawing" width="500px"/>

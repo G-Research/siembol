@@ -1,8 +1,8 @@
-# How to release configurations in siembol ui
+# How to release configurations in Siembol IO
 <img src="../screenshots/config_manager.png" alt="drawing"/>
 
 ## Editing Release
-To upgrade a config in release to the latest version in store click on the `Upgrade x to y` button in the `Release Actions` column. It is only visible when a config in release is not up to date with the store. You can also click on `View Diff` to see the changes made.
+To upgrade a config in release to the latest version in store click on the `Upgrade x to y` button in the `Release Actions` column. It is only visible when a config in release is not up-to-date with the store. You can also click on `View Diff` to see the changes made.
 
 To remove a config from release simply click on the cross icon in the `Release Actions` column. 
 
@@ -13,10 +13,10 @@ To change the order of the configs in release simply drag the release config to 
 ## Release config not in current release
 To release a config that is not released, click the `Add to Release` button in the `Release Actions` column.
 
-## Create Pull Request with new release in siembol ui
+## Create Pull Request with new release in Siembol UI
 <img src="../screenshots/submit_dialog_alert.png" alt="drawing" width='600px'/>
 
-Once configs have been added/deleted/upgraded/reorded use the `Release PR` button above which is enabled after changes to release. This will open up a dialog, for some services it will automatically run a validation in the background, for others (e.g: alert, correlationalert) additional metadata can be specified in the dialog before clicking the `Validate` button (see in screenshot above). Once validated the changes to the release are displayed in the dialog.  
+Once configs have been added/deleted/upgraded/reordered use the `Release PR` button above which is enabled after changes to release. This will open up a dialog, for some services it will automatically run a validation in the background, for others (e.g: alert, correlationalert) additional metadata can be specified in the dialog before clicking the `Validate` button (see in screenshot above). Once validated the changes to the release are displayed in the dialog.  
 
 For some services it will be possible to run tests on the all the configs in the service by clicking the `Test` button in the dialog. 
 

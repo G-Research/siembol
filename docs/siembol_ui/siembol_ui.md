@@ -14,7 +14,7 @@ On the home page all services are listed alphabetically by name on the left side
 Your recently visited pages are saved in your browser and can be accessed with only one click from the home page. The default number of pages shown is 5 but can be configured in the `ui-config.json` file using the "historyMaxSize" key.
  
 ### Explore Siembol
-The 'Explore Siembol' section of the home page is for quick access to useful resources such as documentation, ticket tracking systems etc... By default there is a link to the documentation and to the issues page on the git repo. This can be customised from the `ui-config.json` config file. 
+The 'Explore Siembol' section of the home page is for quick access to useful resources such as documentation, ticket tracking systems etc... By default, there is a link to the documentation and to the issues page on the git repo. This can be customised from the `ui-config.json` config file. 
 
 Below is the default config file provided. The two default links are in "homeLinks". To add a new one a url, an icon and a title are required like in the config below. 
 
@@ -63,7 +63,7 @@ There is a search bar and various checkboxes on the left of the config manager u
 
 ### History
 By hovering over the `Config Name` column of a config in store its history becomes visible, see screenshot below. It includes dates, authors and the count of lines changed. 
-Similarly the release history is visible by hovering over the history logo next to the release column header. 
+Similarly, the release history is visible by hovering over the history logo next to the release column header. 
 
 The history is taken directly from git.
 

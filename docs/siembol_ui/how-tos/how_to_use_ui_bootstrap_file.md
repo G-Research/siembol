@@ -14,7 +14,7 @@ This config file provides paths/keys of various variables in the schema of the s
 - `description` - config description key
 
 ## Labels function
-It also provides a key to define a javascript function that will return the labels for the service. This is done through the `labelsFunc` key. 
+It also provides a key to define a JavaScript function that will return the labels for the service. This is done through the `labelsFunc` key. 
 
 ## Testing
 Testing can be enabled or disable through these keys:
@@ -25,7 +25,7 @@ Testing can be enabled or disable through these keys:
 ## Checkboxes
 Checkboxes for quick filtering can be added per service in the `checkboxes` key. Filters can be added based on different fields such as the author or the labels of the config. Below is example of the config of a checkbox. It defined one checkbox group called `Severity` with two checkboxes: `high` and `low`. The pattern defined for each checkbox is matched against the given field. The given field can be:
 - a `string` - the pattern is matched against it
-- a `list` -  the pattern has to match one of the items
+- a `list` - the pattern has to match one of the items
 ```
 "checkboxes": {
     "severity": {
