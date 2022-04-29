@@ -7,7 +7,7 @@ How to contribute to the siembol Java project
 ### Environment
 
 - [Maven](https://maven.apache.org/guides/) - version `3.5+`
-- [Java Development Kit 13+](https://adoptopenjdk.net/)
+- [Java Development Kit 17+](https://adoptopenjdk.net/)
 
 ### How to compile and install
 
@@ -53,6 +53,9 @@ mvn versions:set -DnewVersion=your_new_version
 How to contribute to config editor UI project
 ---------------------------------------------
 
+### NodeJS version
+
+The current NodeJS version used can be found in the github actions pipeline [here](https://github.com/G-Research/siembol/blob/main/.github/workflows/ci.yml#L215).
 ### Angular version
 
 The current Angular version can be found in the [package.json](/config-editor/config-editor-ui/package.json) file.

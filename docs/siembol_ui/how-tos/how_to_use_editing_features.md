@@ -14,10 +14,7 @@ Clicking on the copy icon during editing of a config will copy the JSON into you
 ## Paste in config editor
 When clicking the paste icon for the first time you should be presented with a dialog asking you to authorise this application to use your clipboard (in Chrome), you need to approve if you want to use the paste feature.
 
-After clicking the config is validated, if it is not valid an error dialog will pop up. If it valid the config will be pasted, however the name, author and version will not be pasted.
+After clicking the config is validated, if it is not valid an error dialog will pop up. If valid the config will be pasted, however the name, author and version will not.
 
 ## Paste in config manager
-It is also possible to paste when creating a new config by clicking on the paste icon right of the search bar (see screenshot below). If the config in your clipboard is not valid an error dialog will pop up. If it is valid you will be redirected to a new config.
-
-
-<img src="../screenshots/config_manager_paste.png" alt="drawing"/>
+See [here](./how_to_add_new_config_in_siembol_ui.md)

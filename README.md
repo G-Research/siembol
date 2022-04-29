@@ -18,6 +18,8 @@ Siembol provides a scalable, advanced security analytics framework based on open
     - [Setting up OAUTH2 OIDC](/docs/siembol_ui/how-tos/how_to_setup_oauth2_oidc_in_siembol_ui.md)
     - [Modifying the layout](/docs/siembol_ui/how-tos/how_to_modify_ui_layout.md)
     - [Managing applications](/docs/siembol_ui/how-tos/how_to_manage_applications.md)
+    - [Use ui-bootstrap file](/docs/siembol_ui/how-tos/how_to_use_ui_bootstrap_file.md)
+    - [Filter configs and save searches](/docs/siembol_ui/how-tos/how_to_filter_configs_and_save_searches.md)
 - Siembol services    
     - [Setting up a service in the config editor rest](/docs/services/how-tos/how_to_set_up_service_in_config_editor_rest.md)
     - [Alerting service](/docs/services/siembol_alerting_services.md)
