@@ -8,9 +8,9 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 import { JSONSchema7 } from 'json-schema';
 import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
-import { TestingType } from '@app/model/config-model';
+import { FILTER_PARAM_KEY, SEARCH_PARAM_KEY, TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
@@ -35,6 +35,8 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   testingType = TestingType.CONFIG_TESTING;
   field: FormlyFieldConfig;
   editedConfig$: Observable<Config>;
+  private serviceFilters: string[];
+  private searchTerm: string;
 
   constructor(
     private formlyJsonschema: FormlyJsonschema,
@@ -60,6 +62,12 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
       if (this.previousTab === this.NO_TAB) {
         this.previousTab = this.selectedTab;
       }
+    });
+    this.editorService.configStore.serviceFilters$.pipe(first()).subscribe(s => {
+      this.serviceFilters = cloneDeep(s);
+    });
+    this.editorService.configStore.searchTerm$.pipe(first()).subscribe(s => {
+      this.searchTerm = cloneDeep(s);
     });
   }
 
@@ -90,7 +98,15 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   changeRoute() {
-    this.router.navigate([this.editorService.serviceName]);
+    this.router.navigate(
+      [this.editorService.serviceName],
+      {
+        queryParams: {
+          [SEARCH_PARAM_KEY]: this.searchTerm? this.searchTerm: undefined,
+          [FILTER_PARAM_KEY]: this.serviceFilters,
+        }
+      }
+    );
   }
 
   onClickPaste() {

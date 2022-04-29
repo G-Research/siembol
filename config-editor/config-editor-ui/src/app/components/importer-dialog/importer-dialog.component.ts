@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Importer } from '@app/model/config-model';
+import { Importer, InputError } from '@app/model/config-model';
 import { EditorService } from '@app/services/editor.service';
 import { SchemaService } from '@app/services/schema/schema.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
@@ -74,7 +74,7 @@ export class ImporterDialogComponent {
       try {
         yaml.load(this.config);
       } catch (e) {
-        throw Error("Config is not valid YAML: " + e);
+        throw new InputError("Config is not valid YAML: " + e);
       }
     }
 }

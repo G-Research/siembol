@@ -1,6 +1,15 @@
-<h1 mat-dialog-title>Error Details</h1>
+<div mat-dialog-title class="title">
+    <mat-icon [ngStyle]="{'color': data.icon_color}">{{data.icon_name}}</mat-icon>
+    {{data.title}}
+</div>
+<mat-divider></mat-divider>
 <div mat-dialog-content>
-    <p  class="details">{{data}}.</p>
+    <pre class="details">{{data.message}}</pre>
+    <p class="resolution" *ngIf="data.resolution">
+        <br> 
+        <mat-icon>info</mat-icon>
+        {{data.resolution}}.
+    </p>
 </div>
 <div mat-dialog-actions>
     <button mat-button class="button-layout" (click)="onClickClose()">CLOSE</button>

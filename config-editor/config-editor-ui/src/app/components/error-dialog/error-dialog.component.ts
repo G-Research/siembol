@@ -1,5 +1,6 @@
-import { Component, Inject, NgZone } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ErrorDialog } from '@app/model/config-model';
 
 @Component({
     selector: 're-error-dialog',
@@ -8,7 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class ErrorDialogComponent {
     constructor(public dialogref: MatDialogRef<ErrorDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: ErrorDialog) {
     }
 
     onClickClose() {
