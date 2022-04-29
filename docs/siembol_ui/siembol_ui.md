@@ -47,7 +47,7 @@ After selecting a service to edit you will be redirected to the service configur
 
 <img src="screenshots/config_manager.png" alt="drawing"/>
 
-The table of configs is separated into the store (left) and release (right). To release a new config/upgrade a config it first needs to be edited in the store, then it can be added to release and peer reviewed through git PRs.
+The table of configs is separated into the store (left) and release (right). To release an unreleased config or upgrade a config it first needs to be edited in the store, then it can be added to release and peer reviewed through git PRs.
 
 Every config in the table is in the store, to see its status in release there is the `Release Actions` column. There are three possible states:
 - up-to-date: store and release have the same version
@@ -64,6 +64,8 @@ There is a search bar and various checkboxes on the left of the config manager u
 ### History
 By hovering over the `Config Name` column of a config in store its history becomes visible, see screenshot below. It includes dates, authors and the count of lines changed. 
 Similarly the release history is visible by hovering over the history logo next to the release column header. 
+
+The history is taken directly from git.
 
 <img src="screenshots/config_store_history.png" alt="drawing"/>
 
