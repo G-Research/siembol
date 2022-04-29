@@ -1,11 +1,13 @@
 # How to add new config in siembol ui
 
-<img src="../screenshots/config_store_hover.png" alt="drawing"/>
+Adding a new config is done through the config manager view as seen below.
+
+<img src="../screenshots/config_manager.png" alt="drawing"/>
 
 ## Add/Clone/Paste new config
 There are three ways to create a new config:
 - by clicking on the `plus` icon on the right of the search bar
-- by cloning another config using the clone button that appears when hovering over it (as seen in screenshot above)
+- by cloning another config using the clone button in the `Store Actions` column
 - by pasting another config from your clipboard by clicking on the paste icon on the right of the search bar
 
 You will then be redirected to the Config Editor. The config name has to be unique and cannot contain any spaces. 
