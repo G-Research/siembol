@@ -35,38 +35,38 @@ jobs:
         run: mvn --batch-mode surefire-report:report-only
       - name: Upload unit-test-results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: unit-test-results
           path: "**/target/surefire-reports/TEST-*.xml"
 
       - name: Upload alerting-storm jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: alerting-storm
           path: alerting/alerting-storm/target/alerting-storm-*.jar
       - name: Upload enriching-storm jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: enriching-storm
           path: enriching/enriching-storm/target/enriching-storm-*.jar
       - name: Upload parsing-storm jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: parsing-storm
           path: parsing/parsing-storm/target/parsing-storm-*.jar
       - name: Upload config-editor-rest jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: config-editor-rest
           path: config-editor/config-editor-rest/target/config-editor-rest-*.jar
       - name: Upload responding-stream jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: responding-stream
           path: responding/responding-stream/target/responding-stream-*.jar
       - name: Upload storm-topology-manager jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: storm-topology-manager
           path: deployment/storm-topology-manager/target/storm-topology-manager-*.jar
@@ -123,7 +123,7 @@ jobs:
       # Only run this step for main and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-${{ matrix.component }}
           path: image.tar
@@ -191,7 +191,7 @@ jobs:
       # Only run this step for main and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-${{ matrix.component }}
           path: image.tar
@@ -227,7 +227,7 @@ jobs:
       - name: Copy config defaults
         run: cp -r ../../config/config-editor-ui dist/config
       - name: Uploading dist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: config-editor-ui
           path: config-editor/config-editor-ui/dist
@@ -273,7 +273,7 @@ jobs:
       # Only run this step for main and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-config-editor-ui
           path: image.tar
@@ -365,7 +365,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Event File
           path: ${{ github.event_path }}
