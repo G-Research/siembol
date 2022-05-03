@@ -4,6 +4,13 @@ import com.github.reinert.jjschema.Attributes;
 
 @Attributes(title = "transformation", description = "The specification of transformation")
 public class TransformationDto {
+    @Attributes(description = "The transformation is enabled", required = false)
+    @JsonProperty("is_enabled")
+    private boolean enabled = true;
+
+    @Attributes(description = "Description of the transformation", required = false)
+    @JsonProperty("description")
+    private String description;
     @JsonProperty("transformation_type")
     @Attributes(required = true, description = "The type of the transformation")
     private TransformationTypeDto type;
@@ -24,5 +31,21 @@ public class TransformationDto {
 
     public void setAttributes(TransformationAttributesDto attributes) {
         this.attributes = attributes;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

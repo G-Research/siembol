@@ -23,6 +23,7 @@ public class ParserFactoryImplTest {
          },
          "parser_extractors": [
            {
+             "is_enabled": true,
              "extractor_type": "json_extractor",
              "name": "test",
              "field": "original_string",
@@ -41,6 +42,7 @@ public class ParserFactoryImplTest {
              }
            },
            {
+             "is_enabled" : true,
              "extractor_type": "pattern_extractor",
              "name": "pattern",
              "field": "dummy_field",
@@ -58,6 +60,7 @@ public class ParserFactoryImplTest {
          ],
          "transformations": [
          {
+           "is_enabled":true,
            "transformation_type": "field_name_string_replace",
            "attributes": {
              "string_replace_target": " ",
@@ -72,14 +75,14 @@ public class ParserFactoryImplTest {
      {"timestamp":"2019-03-27 18:52:02.732 Z", "test field" : true, "test_field1" : "   message     ", "test_field2" : "   message     ", "empty" : ""}""";
 
     @Test
-    public void testGetSchema() {
+    public void getSchema() {
         ParserFactoryResult schemaResult = factory.getSchema();
         Assert.assertSame(ParserFactoryResult.StatusCode.OK, schemaResult.getStatusCode());
         Assert.assertFalse(schemaResult.getAttributes().getJsonSchema().isEmpty());
     }
 
     @Test
-    public void testGoodCreate() {
+    public void createOk() {
         ParserFactoryResult result = factory.create(simpleGenericParser);
         Assert.assertSame(ParserFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getSiembolParser());
@@ -89,23 +92,48 @@ public class ParserFactoryImplTest {
         Assert.assertEquals(true, parsed.get(0).get("test_field"));
         Assert.assertNull(parsed.get(0).get("source_type"));
         Assert.assertNull(parsed.get(0).get("empty"));
+
     }
 
     @Test
-    public void testInvalidCreate() {
+    public void createDisabledExtractor() {
+        ParserFactoryResult result = factory.create(simpleGenericParser.replace("\"is_enabled\": true",
+                "\"is_enabled\": false"));
+        Assert.assertSame(ParserFactoryResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getSiembolParser());
+
+        List<Map<String, Object>> parsed = result.getAttributes().getSiembolParser().parse(message.getBytes());
+        Assert.assertNotEquals(1553712722732L, parsed.get(0).get("timestamp"));
+        Assert.assertNull(parsed.get(0).get("test_field"));
+    }
+
+    @Test
+    public void createDisabledTransformation() {
+        ParserFactoryResult result = factory.create(simpleGenericParser.replace("\"is_enabled\":true",
+                "\"is_enabled\": false"));
+        Assert.assertSame(ParserFactoryResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getSiembolParser());
+
+        List<Map<String, Object>> parsed = result.getAttributes().getSiembolParser().parse(message.getBytes());
+        Assert.assertEquals(1553712722732L, parsed.get(0).get("timestamp"));
+        Assert.assertEquals(true, parsed.get(0).get("test field"));
+    }
+
+    @Test
+    public void invalidCreate() {
         ParserFactoryResult result = factory.create("INVALID");
         Assert.assertSame(ParserFactoryResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getMessage());
     }
 
     @Test
-    public void testValidationGood() {
+    public void validationOk() {
         ParserFactoryResult result = factory.validateConfiguration(simpleGenericParser);
         Assert.assertSame(ParserFactoryResult.StatusCode.OK, result.getStatusCode());
     }
 
     @Test
-    public void testValidationInvalidPatternExtractor() {
+    public void validationInvalidPatternExtractor() {
         ParserFactoryResult result = factory.validateConfiguration(simpleGenericParser.replace("<test_match>",
                 "<test_match"));
         Assert.assertSame(ParserFactoryResult.StatusCode.ERROR, result.getStatusCode());
@@ -113,7 +141,7 @@ public class ParserFactoryImplTest {
     }
 
     @Test
-    public void testTestingGood() {
+    public void testingOk() {
         ParserFactoryResult result = factory.test(simpleGenericParser, null, message.getBytes());
         Assert.assertSame(result.getStatusCode(), ParserFactoryResult.StatusCode.OK);
         List<Map<String, Object>> parsed = result.getAttributes().getParserResult().getParsedMessages();
@@ -123,7 +151,7 @@ public class ParserFactoryImplTest {
     }
 
     @Test
-    public void testTestingInvalidPatternExtractor() {
+    public void testingInvalidPatternExtractor() {
         ParserFactoryResult result = factory.test(simpleGenericParser.replace("<test_match>",
                 "<test_match"), null, message.getBytes());
         Assert.assertSame(ParserFactoryResult.StatusCode.ERROR, result.getStatusCode());

@@ -8,6 +8,13 @@ import java.util.List;
 
 @Attributes(title = "parser extractor", description = "Parser extractor specification")
 public class ParserExtractorDto {
+    @Attributes(description = "The extractor is enabled", required = false)
+    @JsonProperty("is_enabled")
+    private boolean enabled = true;
+
+    @Attributes(description = "Description of the extractor", required = false)
+    @JsonProperty("description")
+    private String description;
     @Attributes(required = true, description = "The name of the extractor")
     private String name;
 
@@ -76,5 +83,21 @@ public class ParserExtractorDto {
 
     public void setPreProcessingFunction(PreProcessingFunctionDto preProcessingFunction) {
         this.preProcessingFunction = preProcessingFunction;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
