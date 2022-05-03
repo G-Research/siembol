@@ -65,6 +65,8 @@
         <commons_io_version>2.11.0</commons_io_version>
         <gson_version>2.9.0</gson_version>
         <kubernetes_client_version>5.12.2</kubernetes_client_version>
+        <reactor_core_version>3.4.17</reactor_core_version>
+        <io_micrometer_version>1.8.5</io_micrometer_version>
     </properties>
     <modules>
         <module>siembol-common</module>
