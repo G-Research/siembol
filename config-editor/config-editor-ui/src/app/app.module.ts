@@ -84,6 +84,8 @@ import { ConfigNameCellRendererComponent } from './components/config-manager/cel
 import { StoreHeaderGroupComponent } from './components/config-manager/header-groups/store-header-group.component';
 import { CheckboxFiltersComponent } from './components/checkbox-filters/checkbox-filters.component';
 import { SearchHistoryComponent } from './components/search-history/search-history.component';
+import { ExpansionPanelToggleObjectTypeComponent } from './ngx-formly/expansion-panel-object.type.component';
+import { FormlyMatToggleModule } from '@ngx-formly/material/toggle';
 
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
@@ -142,6 +144,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     AdminComponent,
     ChangeHistoryComponent,
     ObjectTypeComponent,
+    ExpansionPanelToggleObjectTypeComponent,
     ArrayTypeComponent,
     InputTypeComponent,
     NullTypeComponent,
@@ -230,6 +233,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { component: AdminTabTypeComponent, name: 'admin-tabs' },
         { component: UnionTypeComponent, name: 'multischema' },
         { component: TabArrayTypeComponent, name: 'tab-array' },
+        { component: ExpansionPanelToggleObjectTypeComponent, name: 'expansion-panel-toggle-object' },
       ],
       validationMessages: [
         { message: 'This field is required', name: 'required' },
@@ -248,6 +252,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
         { component: HelpLinkWrapperComponent, name: 'help-link' },
       ],
     }),
+    FormlyMatToggleModule,
     ReactiveFormsModule,
     FormlyMaterialModule,
     NgxPopperModule.forRoot({}),
