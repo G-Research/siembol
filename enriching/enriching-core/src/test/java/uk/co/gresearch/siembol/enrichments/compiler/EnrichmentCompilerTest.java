@@ -34,6 +34,7 @@ public class EnrichmentCompilerTest {
                    "source_type": "*",
                    "matchers": [
                      {
+                       "is_enabled" : true,
                        "matcher_type": "REGEX_MATCH",
                        "is_negated": false,
                        "field": "is_alert",
@@ -73,6 +74,7 @@ public class EnrichmentCompilerTest {
                    "source_type": "*",
                    "matchers": [
                      {
+                       "is_enabled" : true,
                        "matcher_type": "REGEX_MATCH",
                        "is_negated": false,
                        "field": "is_alert",
@@ -107,6 +109,7 @@ public class EnrichmentCompilerTest {
                    "source_type": "*",
                    "matchers": [
                      {
+                       "is_enabled" : true,
                        "matcher_type": "REGEX_MATCH",
                        "is_negated": false,
                        "field": "is_alert",
@@ -141,6 +144,7 @@ public class EnrichmentCompilerTest {
                    "source_type": "*",
                    "matchers": [
                      {
+                       "is_enabled" : true,
                        "matcher_type": "REGEX_MATCH",
                        "is_negated": false,
                        "field": "is_alert",
@@ -165,10 +169,11 @@ public class EnrichmentCompilerTest {
                "source_type": "*",
                "matchers": [
                  {
+                   "is_enabled" : true,
                    "matcher_type": "REGEX_MATCH",
                    "is_negated": false,
                    "field": "is_alert",
-                   "data": "true"
+                   "data": "(?i)true"
                  }
                ],
                "table_mapping": {
@@ -257,7 +262,7 @@ public class EnrichmentCompilerTest {
     }
 
     @Test
-    public void compileeRulesInvalidJson() {
+    public void compileRulesInvalidJson() {
         EnrichmentResult result = enrichmentCompiler.compile("INVALID");
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("INVALID"));
@@ -287,9 +292,17 @@ public class EnrichmentCompilerTest {
     @Test
     public void validateRuleInvalidRegex() {
         EnrichmentResult result = enrichmentCompiler.validateConfiguration(
-                testRule.replaceAll( "true", "(?<"));
+                testRule.replace( "(?i)true", "["));
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
+    }
+
+    @Test
+    public void validateRuleDisabledMatchers() {
+        EnrichmentResult result = enrichmentCompiler.validateConfiguration(
+                testRule.replace( "\"is_enabled\" : true", "\"is_enabled\" : false"));
+        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("Empty matchers in a rule"));
     }
 
     @Test
@@ -381,8 +394,17 @@ public class EnrichmentCompilerTest {
     @Test
     public void testingRuleInvalidRegex() {
         EnrichmentResult result = enrichmentCompiler.testConfiguration(
-                testRule.replaceAll( "true", "(?<"), testSpecification);
+                testRule.replace( "(?i)true", "(?<"), testSpecification);
         Assert.assertEquals(ERROR, result.getStatusCode());
         Assert.assertTrue(result.getAttributes().getMessage().contains("PatternSyntaxException"));
+    }
+
+    @Test
+    public void testingRuleDisabledMatchers() {
+        EnrichmentResult result = enrichmentCompiler.testConfiguration(
+                testRule.replace( "\"is_enabled\" : true", "\"is_enabled\" : false"),
+                testSpecification);
+        Assert.assertEquals(ERROR, result.getStatusCode());
+        Assert.assertTrue(result.getAttributes().getMessage().contains("Empty matchers in a rule"));
     }
 }

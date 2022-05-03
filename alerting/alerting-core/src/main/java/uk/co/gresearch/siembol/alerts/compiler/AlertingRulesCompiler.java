@@ -79,6 +79,7 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                     throw new IllegalArgumentException(MISSING_MATCHERS_IN_COMPOSITE_MATCHER);
                 }
                 List<Matcher> matchers = matcherDto.getMatchers().stream()
+                        .filter(x -> x.isEnabled())
                         .map(this::createMatcher)
                         .collect(Collectors.toList());
                 return CompositeMatcher.builder()
@@ -120,6 +121,7 @@ public class AlertingRulesCompiler implements AlertingCompiler {
             for (RuleDto ruleDto : rulesDto.getRules()) {
                 List<Matcher> matchers = ruleDto.getMatchers()
                         .stream()
+                        .filter(x -> x.isEnabled())
                         .map(this::createMatcher)
                         .collect(Collectors.toList());
 

@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toCollection;
 import static uk.co.gresearch.siembol.parsers.model.PreProcessingFunctionDto.STRING_REPLACE;
 
 public class ParserFactoryImpl implements ParserFactory {
@@ -398,12 +399,12 @@ public class ParserFactoryImpl implements ParserFactory {
             return Optional.empty();
         }
 
-        ArrayList<ParserExtractor> ret = new ArrayList<>();
-        for (ParserExtractorDto extractor : parserConfig.getParserExtractors()) {
-            ret.add(createParserExtractor(extractor));
-        }
-        return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
+        ArrayList<ParserExtractor> ret = parserConfig.getParserExtractors().stream()
+                .filter(x -> x.isEnabled())
+                .map(x -> createParserExtractor(x))
+                .collect(toCollection(ArrayList::new));
 
+        return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
     }
 
     private String wrapParserConfigToParsersConfig(String configStr) throws IOException {
@@ -420,13 +421,12 @@ public class ParserFactoryImpl implements ParserFactory {
             return Optional.empty();
         }
 
-        ArrayList<Transformation> ret = new ArrayList<>();
-        for (TransformationDto transformation : parserConfig.getParserTransformations()) {
-            ret.add(transformationFactory.create(transformation));
-        }
+        ArrayList<Transformation> ret = parserConfig.getParserTransformations().stream()
+                .filter(x -> x.isEnabled())
+                .map(x -> transformationFactory.create(x))
+                .collect(toCollection(ArrayList::new));
 
         return ret.isEmpty() ? Optional.empty() : Optional.of(ret);
-
     }
 
     private SiembolParser createSyslogParser(SyslogParserConfigDto syslogConfig,

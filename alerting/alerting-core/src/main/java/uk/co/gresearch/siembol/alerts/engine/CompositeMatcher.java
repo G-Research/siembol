@@ -54,6 +54,7 @@ public class CompositeMatcher implements Matcher {
     }
 
     public static class Builder {
+        private static final String EMPTY_MATCHERS = "Empty matchers in the composite matcher";
         private static final String WRONG_ARGUMENTS = "wrong arguments in the composite matcher";
         private static final String COMPOSITE_OR_MODIFY_EVENT_MSG = "COMPOSITE_OR matcher includes a matcher " +
                 "that can modify an event";
@@ -82,9 +83,11 @@ public class CompositeMatcher implements Matcher {
         }
 
         public CompositeMatcher build() {
-            if (negated == null
-                    || matchers == null || matchers.isEmpty()
-                    || matcherType == null) {
+            if (matchers == null || matchers.isEmpty()) {
+                throw new IllegalArgumentException(EMPTY_MATCHERS);
+            }
+
+            if (negated == null || matcherType == null) {
                 throw new IllegalArgumentException(WRONG_ARGUMENTS);
             }
 

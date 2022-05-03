@@ -43,7 +43,7 @@ public class Rule extends AbstractRule {
     }
 
     public static abstract class Builder<T extends Rule> extends AbstractRule.Builder<T>{
-        protected static final String MISSING_MATCHERS = "Missing matchers in alerts rule builder";
+        protected static final String MISSING_MATCHERS = "Empty matchers in a rule";
         protected List<Matcher> matchers;
         protected EnumSet<RuleFlags> flags = EnumSet.noneOf(RuleFlags.class);
 
