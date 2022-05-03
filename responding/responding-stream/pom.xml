@@ -153,7 +153,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.12.10</version>
+            <version>${byte_buddy_version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

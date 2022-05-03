@@ -114,6 +114,12 @@
             <version>1.30</version>
         </dependency>
         <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${byte_buddy_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>${io_micrometer_version}</version>
