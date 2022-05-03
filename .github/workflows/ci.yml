@@ -82,7 +82,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download jar
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.component }}
           path: deployment/docker
@@ -139,7 +139,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download jar
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.component }}
           path: deployment/docker/${{ matrix.component }}
@@ -239,7 +239,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download dist
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: config-editor-ui
           path: deployment/docker/config-editor-ui
@@ -350,7 +350,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Download Docker image
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: docker-${{ matrix.component }}
       - name: Load Docker image
