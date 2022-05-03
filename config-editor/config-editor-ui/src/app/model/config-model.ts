@@ -236,7 +236,9 @@ export interface ConfigAndTestsToClone {
   test_cases: TestCaseWrapper[]
 }
 
-export class ExistingConfigError extends Error {
+export class InputError extends Error {}
+
+export class ExistingConfigError extends InputError {
   constructor(message) {
     super(message);
     this.name = this.constructor.name;
@@ -281,3 +283,11 @@ export const FILTER_PARAM_KEY =  "filter"
 export const SEARCH_PARAM_KEY =  "search"
 
 export const HISTORY_PARAMS = ['configName', 'testCaseName'];
+
+export interface ErrorDialog {
+  message: string,
+  resolution: string,
+  title: string,
+  icon_name: string,
+  icon_color: string,
+}

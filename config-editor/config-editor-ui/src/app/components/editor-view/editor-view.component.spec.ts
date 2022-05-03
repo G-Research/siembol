@@ -14,6 +14,8 @@ const MockEditorService = {
   configStore: {
     editedConfig$: of({}),
     editingTestCase$: of(true),
+    searchTerm$: of("test"),
+    serviceFilters$: of([]),
   },
   metaDataMap: {
     testing: {

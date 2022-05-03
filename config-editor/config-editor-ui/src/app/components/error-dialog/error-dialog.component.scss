@@ -2,16 +2,35 @@
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.error {
-    font-family: monospace;
-    margin: 20px 0;
-}
-
 .button-layout {
     margin-right: 0px;
     margin-left: auto;
 }
 
 mat-divider {
-    margin: 10px 0;
+    margin: 15px 0;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    margin: 0 0 10px;
+}
+
+pre {
+    width: 100%;
+    min-width:400px;
+    max-height: 300px;
+    overflow-x: auto;
+    overflow-y: auto; 
+    background-color: black;
+    padding: 20px;
+}
+
+.resolution {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    margin: 10px 0 0;
 }

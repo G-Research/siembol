@@ -14,7 +14,7 @@ On the home page all services are listed alphabetically by name on the left side
 Your recently visited pages are saved in your browser and can be accessed with only one click from the home page. The default number of pages shown is 5 but can be configured in the `ui-config.json` file using the "historyMaxSize" key.
  
 ### Explore Siembol
-The 'Explore Siembol' section of the home page is for quick access to useful resources such as documentation, ticket tracking systems etc... By default there is a link to the documentation and to the issues page on the git repo. This can be customised from the `ui-config.json` config file. 
+The 'Explore Siembol' section of the home page is for quick access to useful resources such as documentation, ticket tracking systems etc... By default, there is a link to the documentation and to the issues page on the git repo. This can be customised from the `ui-config.json` config file. 
 
 Below is the default config file provided. The two default links are in "homeLinks". To add a new one a url, an icon and a title are required like in the config below. 
 
@@ -47,28 +47,33 @@ After selecting a service to edit you will be redirected to the service configur
 
 <img src="screenshots/config_manager.png" alt="drawing"/>
 
-### Config Store
-The config store is shown on the left hand side of the config manager page. These are the configs in the store repo. The configurations are ordered according to the order in deployment and with the deployed configs before the non-deployed ones. 
-<img src="screenshots/config_store.png" alt="drawing"/>
+The table of configs is separated into the store (left) and release (right). To release an unreleased config or upgrade a config it first needs to be edited in the store, then it can be added to release and peer reviewed through git PRs.
 
-### Deployment
-<p align="center">
-    <img src="screenshots/deployment.png" alt="drawing" width="500px"/>
-</p>
-The deployments are shown on the right hand side of the config manager page. These are the configs that are in the release repo. To add a new config from the store to deployment, simply drag it into the deployment column. Click the `Upgrade to version x` button below a deployed config to upgrade it to the latest changes from the store. To delete a config from deployment click on the `bin` icon that appears when hovering over it. 
+Every config in the table is in the store, its release status is in the `Release Actions` column. There are three possible states:
+- `up-to-date` - store and release have the same version
+- `upgradable` - the version in release can be upgraded to the latest store version, click `Upgrade x to y` to upgrade
+- `unreleased` - the config in store has not been released at all yet, click `Add to Release` to add
+
+The configs are ordered according to the order in the release at first, followed by all the non-released ones. Reordering configs in release is done by clicking and dragging the icon to the left of the config name.
+
+To delete a config from the store it first needs to be deleted from release if it is released. To delete from release click the cross icon in the `Release Actions` column, then the bin icon should appear in the `Store Actions` column to delete from the store.
 
 ### Filtering
-There is a search bar and various checkboxes at the top of the config manager used to filter the configs shown. The search bar allows you to search for configs by name, author or labels. The checkbox "My Edits" filters all configs where the current user has made the latest changes, "Undeployed" filters configs not in the deployment column, "Upgradable" filters configs that are deployed but don't have the latest version from the store.
+There is a search bar and various checkboxes on the left of the config manager used to filter the configs shown. See [here](how-tos/how_to_filter_configs_and_save_searches.md) for more details.
 
 ### History
-By hovering over the version number of a store config its history becomes visible. It includes dates, authors and the count of lines changed. 
-Similarly the deployment history is visible by hovering over the history logo. 
+By hovering over the `Config Name` column of a config in store its history becomes visible, see screenshot below. It includes dates, authors and the count of lines changed. 
+Similarly, the release history is visible by hovering over the history logo next to the release column header. 
+
+The history is taken directly from git.
+
+<img src="screenshots/config_store_history.png" alt="drawing"/>
 
 ## Creating a service config
 See [here](how-tos/how_to_test_config_in_siembol_ui.md).
 
 ## Editing a service config
-To edit a config the edit button that appears when hovering over a config can be used. 
+Editing can be done through the edit icon in the `Store Actions` column.
 
 Once in edit mode the window is separated in two:
  - on the left is the json tree view of the config, useful for a quick view of the entire config

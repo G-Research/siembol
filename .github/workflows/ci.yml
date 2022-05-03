@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '17'
@@ -35,38 +35,38 @@ jobs:
         run: mvn --batch-mode surefire-report:report-only
       - name: Upload unit-test-results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: unit-test-results
           path: "**/target/surefire-reports/TEST-*.xml"
 
       - name: Upload alerting-storm jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: alerting-storm
           path: alerting/alerting-storm/target/alerting-storm-*.jar
       - name: Upload enriching-storm jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: enriching-storm
           path: enriching/enriching-storm/target/enriching-storm-*.jar
       - name: Upload parsing-storm jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: parsing-storm
           path: parsing/parsing-storm/target/parsing-storm-*.jar
       - name: Upload config-editor-rest jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: config-editor-rest
           path: config-editor/config-editor-rest/target/config-editor-rest-*.jar
       - name: Upload responding-stream jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: responding-stream
           path: responding/responding-stream/target/responding-stream-*.jar
       - name: Upload storm-topology-manager jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: storm-topology-manager
           path: deployment/storm-topology-manager/target/storm-topology-manager-*.jar
@@ -82,7 +82,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download jar
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.component }}
           path: deployment/docker
@@ -97,7 +97,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@v3.6.2
+        uses: docker/metadata-action@v3.8.0
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
@@ -123,7 +123,7 @@ jobs:
       # Only run this step for main and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-${{ matrix.component }}
           path: image.tar
@@ -139,7 +139,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download jar
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.component }}
           path: deployment/docker/${{ matrix.component }}
@@ -165,7 +165,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@v3.6.2
+        uses: docker/metadata-action@v3.8.0
         with:
           images: gresearchdev/siembol-${{ matrix.component }}
           flavor: |
@@ -191,7 +191,7 @@ jobs:
       # Only run this step for main and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-${{ matrix.component }}
           path: image.tar
@@ -227,7 +227,7 @@ jobs:
       - name: Copy config defaults
         run: cp -r ../../config/config-editor-ui dist/config
       - name: Uploading dist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: config-editor-ui
           path: config-editor/config-editor-ui/dist
@@ -239,7 +239,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download dist
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: config-editor-ui
           path: deployment/docker/config-editor-ui
@@ -250,7 +250,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@v3.6.2
+        uses: docker/metadata-action@v3.8.0
         with:
           images: gresearchdev/siembol-config-editor-ui
           flavor: |
@@ -273,7 +273,7 @@ jobs:
       # Only run this step for main and hotfix branches.
       - name: Upload Docker image
         if: github.event_name == 'push' && !github.event.repository.fork && ( github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix/') )
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docker-config-editor-ui
           path: image.tar
@@ -315,7 +315,7 @@ jobs:
             maven-
 
       - name: Set up Maven Central Repository
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
@@ -350,7 +350,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Download Docker image
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: docker-${{ matrix.component }}
       - name: Load Docker image
@@ -365,7 +365,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Event File
           path: ${{ github.event_path }}
