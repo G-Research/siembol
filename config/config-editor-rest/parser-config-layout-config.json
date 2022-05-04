@@ -29,7 +29,17 @@
     "$..parser_extractors.items": {
       "widget": {
         "formlyConfig": {
-          "type": "expansion-panel-toggle-object"
+          "type": "expansion-panel-toggle-object",
+          "templateOptions": {
+            "descriptionFields": ["description", "extractor_type"]
+          }
+        }
+      }
+    },
+    "$..parser_extractors.items.properties.description": {
+      "widget": {
+        "formlyConfig": {
+          "type": "textarea"
         }
       }
     },
@@ -227,7 +237,17 @@
     "$..transformations.items": {
       "widget": {
         "formlyConfig": {
-          "type": "expansion-panel-toggle-object"
+          "type": "expansion-panel-toggle-object",
+          "templateOptions": {
+            "descriptionFields": ["description", "transformation_type"]
+          }
+        }
+      }
+    },
+    "$..transformations.items.properties.description": {
+      "widget": {
+        "formlyConfig": {
+          "type": "textarea"
         }
       }
     },

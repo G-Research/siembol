@@ -18,36 +18,38 @@ The data that is used to enrich events is stored in JSON files in a file store i
 
 ### Enrichment rule 
 - `rule_name` - Rule name that uniquely identifies the rule
-- `rule_author` - The author of the rule, i. e., the user who last modified the rule
+- `rule_author` - The author of the rule, i.e., the user who last modified the rule
 - `rule_version` - The version of the rule
 - `rule_description` - This field contains a single text input that allows you set a description for the rule. This should be a short, helpful comment that allows anyone to identify the purpose of this rule
-- `source_type` -  This fields allows you to determine the type of data you want to match on. It is essentially a matcher for the `source_type` field. This field does not support regex - however, using `*` as an input matches all source types. The source_type field is set during parsing and is equal to the name of the last parser which was used to parse the log
+- `source_type` - This fields allows you to determine the type of data you want to match on. It is essentially a matcher for the `source_type` field. This field does not support regex - however, using `*` as an input matches all source types. The source_type field is set during parsing and is equal to the name of the last parser which was used to parse the log
 - `matchers` - Matchers allow you to further filter the events that the enrichment will be applied to
 - `table_mapping` - Mappings for enriching events
 
 #### Matchers
 Matchers allow you to further filter the events that the enrichment will be applied to. You can add as many matchers as you want.
+- `description` - The description of the matcher
+- `is_enabled` - The matcher is enabled
 - `matcher_type` - Type of matcher, either `REGEX_MATCH` or `IS_IN_SET`
 - `is_negated`- The matcher is negated
 - `field` - The name of the field on which the matcher will be evaluated
 
 There are two types of matchers:
 - `REGEX_MATCH` - A regex_match allows you use a regex statement to match a specified field. There are two string inputs:
-    - `data` - The regex statement in Java syntax [https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event
+    - `data` - The regex statement in Java syntax [https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event
 
-- `IS_IN_SET` - It compares the value of a field to a set of strings defined in `data`. if the value is in the set then the matcher returns true. 
+- `IS_IN_SET` - It compares the value of a field to a set of strings defined in `data`. If the value is in the set then the matcher returns true. 
     - `data` - A list of strings to compare the value to. New line delimited. Does not support regex - each line must be a literal match however, field substitution is supported in this field
     
 #### Table Mapping
 The table mapping tab is where you configure the enrichment you want to perform.
 
 - `table_name` - The name of the table which contains the data you want to enrich the event with
-- `joining_key` - The string used to join the event with the table (the key json field). This field supports substitution eg `${field_name}` or `http://${host_field_name}/${path_field_name}`. This is used to filter the key field of the table 
+- `joining_key` - The string used to join the event with the table (the key json field). This field supports substitution e.g. `${field_name}` or `http://${host_field_name}/${path_field_name}`. This is used to filter the key field of the table 
 - `tags`- Tags are added into the event after successful joining the table with the joining key. You can add as many tags as you want
     - `tag_name` - The name of the tag
     - `tag_value` - The value of the tag
 
-- `enriching_fields` -  Fields from the enriching table that are added after successful joining the table with the joining key. You can add as many enriching fields as you want
+- `enriching_fields` - Fields from the enriching table that are added after successful joining the table with the joining key. You can add as many enriching fields as you want
     - `table_field_name` - The column in the enrichment table that you want to add
     - `event_field_name` - The name you want the field to have in event after enriching
 ```

@@ -8,7 +8,7 @@ Siembol response is a service for defining a response to an alert. It brings a f
 
 ## Siembol Response Rule 
 ### Evaluation
-The rules are ordered and evaluated similarly to firewall table - first match will stop further evalation. Each rule can return 
+The rules are ordered and evaluated similarly to firewall table - first match will stop further evaluation. Each rule can return 
 - `match` - The alert was matched by the rule and the evaluation of the alert has been finished
 - `no_match` - The alert was not matched by the rule and the next rule in the list will be evaluated
 - `filtered` - - The alert was filtered by the rule and the evaluation of the alert has been finished
@@ -38,13 +38,15 @@ Matching evaluator evaluates its matchers and returns evaluation result from its
 - `evaluator_attributes`
     - `evaluation_result` - The evaluation result returned by the evaluator after matching from `match`, `filtered`, `filtered_when_no_match`
     - `matchers` - You can add as many matchers as you want.
+        - `description` - The description of the matcher
+        - `is_enabled` - The matcher is enabled
         - `matcher_type` - Type of matcher, either `REGEX_MATCH` or `IS_IN_SET`
         - `is_negated`- The matcher is negated
         - `field` - The name of the field on which the matcher will be evaluated
 
 There are two types of matchers:
 - `REGEX_MATCH` - A regex_match allows you use a regex statement to match a specified field. There are two string inputs:
-    - `data` - The regex statement in [Java data time formatter syntax](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event
+    - `data` - The regex statement in [Java data time formatter syntax](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event
 
 - `IS_IN_SET` - It compares the value of a field to a set of strings defined in `data`. If the value is in the set then the matcher returns true. 
     - `data` - A list of strings to compare the value to. New line delimited. Does not support regex - each line must be a literal match however, field substitution is supported in this field
@@ -111,7 +113,7 @@ Kafka writer evaluator produces a message with alert to a kafka topic.
 Siembol response plugins allows to extend the functionality of siembol response by integrating custom evaluators if needed. A response plugin can contain one or more evaluators and siembol response can load one or more plugins if needed.
 
 ### Plugin architecture
-A Siembol response plugin is an shaded jar file that includes all its dependencies see [how to write response plugin](how-tos/how_to_write_response_plugin.md). The plugins can be copied in a directory where will be loaded by the [springboot properties launcher](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html) The plugin is also integrated into siembol UI and it evaluators can be used in the similar way as the ones provided directly by siembol response.
+A Siembol response plugin is a shaded jar file that includes all its dependencies see [how to write response plugin](how-tos/how_to_write_response_plugin.md). The plugins can be copied in a directory where they will be loaded by the [springboot properties launcher](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html) The plugin is also integrated into siembol UI and its evaluators can be used in the similar way as the ones provided directly by siembol response.
 
 ### Evaluators implemented internally at GR that we are planning to open source
 - Elk search 
@@ -129,7 +131,7 @@ A Siembol response plugin is an shaded jar file that includes all its dependenci
 - Jira search
     - searching Jira issues using Jira Query Language
 - Jira create issue
-    - create an issue in an Jira project
+    - create an issue in a Jira project
 - Papermill notebook
     - launching a Jupyter Notebook using [papermill service](https://papermill.readthedocs.io/en/latest/) 
 

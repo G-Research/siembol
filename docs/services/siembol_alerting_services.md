@@ -3,7 +3,7 @@
 Siembol alert is a detection engine used to filter matching events from an incoming data stream based on a configurable rule set. The correlation alert allows you to group several detections together before raising an alert.
 ## Alert service
 ### Common rule fields 
-The fields thar are common to alert and correlation alert.
+The fields that are common to alert and correlation alert.
 - `rule_name` - Rule name that uniquely identifies the rule
 - `rule_author` - The author of the rule - the user who last modified the rule
 - `rule_version` - The version of the rule
@@ -28,6 +28,8 @@ Tip: if you want to match on multiple data sources, set the source type to be * 
 
 #### Matchers
 Matchers allow you to select the events you want the rule to alert on.
+- `description` - The description of the matcher
+- `is_enabled` - The matcher is enabled
 - `matcher_type` - Type of matcher, either `REGEX_MATCH`, `IS_IN_SET`, `CONTAINS`, `COMPOSITE_AND` or `COMPOSITE_OR`
 - `is_negated`- The matcher is negated
     private Boolean negated = false;
@@ -35,13 +37,13 @@ Matchers allow you to select the events you want the rule to alert on.
 
 There are four types of matchers:
 - `REGEX_MATCH` - A regex_match allows you use a regex statement to match a specified field. There are two string inputs:
-    - `data`: the regex statement in Java using syntax from [https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event.
-- `IS_IN_SET` - An "is_in_set" matcher compares the value of a field to a set of strings defined in `data`. if the value is in the set then the matcher returns true. 
+    - `data`: the regex statement in Java using syntax from [https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html) except allowing to use underscores in the names of captured groups Named capture groups in the regex are added as fields in the event. They are available from the next matcher onwards and are included in the output event.
+- `IS_IN_SET` - An "is_in_set" matcher compares the value of a field to a set of strings defined in `data`. If the value is in the set then the matcher returns true. 
     - `data` - A list of strings to compare the value to. New line delimited. Does not support regex - each line must be a literal match however, field substitution is supported in this field.
-    - `case_insensitive`- Use case insensitive string compare
-- `CONTAINS` - A "contains" matcher searches for substring defined in `data`. if the pattern is found the matcher returns true.
+    - `case_insensitive`- Use case-insensitive string compare
+- `CONTAINS` - A "contains" matcher searches for substring defined in `data`. If the pattern is found the matcher returns true.
     - `data` - A pattern to search. Field substitution is supported in this field.
-    - `case_insensitive` - Use case insensitive string compare
+    - `case_insensitive` - Use case-insensitive string compare
     - `starts_with`- The field value starts with the pattern
     - `ends_with` - The field value ends with the pattern
 - `COMPOSITE_AND` - Used to combine matchers from the list `matchers` with AND logic operation
@@ -65,7 +67,7 @@ The correlation alert allows you to group several detections together before rai
     - `event_time` - The time window is calculated using the `timestamp` field in the events, the `timestamp` field is usually computed during parsing from the log  
     - `processing_time` - The time window is calculated using the current time (when an alert is evaluated), the events need to be processed by the correlation alert component within the time window
     - `max_time_lag_in_sec` - The event with timestamp older than the current time minus the lag (in seconds) will be discarded
-     - `alerts_threshold` - The alerts threshold allows you to configure how many detections (you can specify which detections later) need to trigger in the time window for the alert to trigger. This field accepts an integer value, if it is left empty then all detections need to to trigger before an alert is created
+     - `alerts_threshold` - The alert's threshold allows you to configure how many detections (you can specify which detections later) need to trigger in the time window for the alert to trigger. This field accepts an integer value, if it is left empty then all detections need to trigger before an alert is created
      - `alerts` - The list of alerts for correlation
         - `alert` - The alert name used for correlation
         - `threshold` - The number of times the alert has to trigger in the time window
@@ -93,7 +95,7 @@ The correlation alert allows you to group several detections together before rai
 - `alerts.engine.bolt.num.executors` - The number of executors for evaluating alerting rules
 - `kafka.writer.bolt.num.executors` - The number of executors for producing alerts to output topic
 ### Alert admin config
-- `alerts.engine` - This fields should be set to `siembol_alerts`
+- `alerts.engine` - This field should be set to `siembol_alerts`
 ### Correlation alert admin config
-- `alerts.engine` - This fields should be set to `siembol_correlation_alerts`
+- `alerts.engine` - This field should be set to `siembol_correlation_alerts`
 - `alerts.engine.clean.interval.sec` - The period in seconds for regular cleaning a rule correlation data that are not needed for the further rule evaluation

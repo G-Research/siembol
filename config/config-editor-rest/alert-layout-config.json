@@ -19,7 +19,10 @@
             "items": {
                 "widget": {
                     "formlyConfig": {
-                        "type": "expansion-panel-toggle-object"
+                        "type": "expansion-panel-toggle-object",
+                        "templateOptions": {
+                            "descriptionFields": ["description", "matcher_type"]
+                        }
                     }
                 },
                 "type": "object",
@@ -32,7 +35,7 @@
                         "default": true
                     },
                     "description": {
-                        "type": "string",
+                        "type": "textarea",
                         "description": "Description of the matcher"
                     },
                     "matcher_type": {
@@ -110,7 +113,10 @@
                         "items": {
                             "widget": {
                                 "formlyConfig": {
-                                    "type": "expansion-panel-toggle-object"
+                                    "type": "expansion-panel-toggle-object",
+                                    "templateOptions": {
+                                        "descriptionFields": ["description", "matcher_type"]
+                                    }
                                 }
                             },
                             "type": "object",
@@ -128,7 +134,7 @@
                                     }
                                 },
                                 "description": {
-                                    "type": "string",
+                                    "type": "textarea",
                                     "description": "Description of the matcher"
                                 },
                                 "matcher_type": {
@@ -211,7 +217,10 @@
                                     "items": {
                                         "widget": {
                                             "formlyConfig": {
-                                                "type": "expansion-panel-toggle-object"
+                                                "type": "expansion-panel-toggle-object",
+                                                "templateOptions": {
+                                                    "descriptionFields": ["description", "matcher_type"]
+                                                }
                                             }
                                         },
                                         "type": "object",
@@ -229,7 +238,7 @@
                                                 }
                                             },
                                             "description": {
-                                                "type": "string",
+                                                "type": "textarea",
                                                 "description": "Description of the matcher"
                                             },
                                             "matcher_type": {

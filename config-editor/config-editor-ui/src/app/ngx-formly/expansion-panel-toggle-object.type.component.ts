@@ -10,10 +10,12 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
         <mat-panel-title>
           {{ to.label }}
         </mat-panel-title>
-        <mat-panel-description>
-          {{ model?.description }}
+        <mat-panel-description class="description">
+          <div class="description-container">
+            {{ getFirstDescriptionField() }}
+          </div>
         </mat-panel-description>
-        <formly-field [field]="enabled_field" (click)="onClickToggle($event)"></formly-field>
+        <formly-field [field]="enabledField" (click)="onClickToggle($event)"></formly-field>
       </mat-expansion-panel-header>
       <div *ngFor="let f of field.fieldGroup">
         <div class="alert alert-danger" role="alert" *ngIf="showError && formControl.errors">
@@ -28,6 +30,17 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
       mat-card:last-child {
         display: none;
       }
+      .description { 
+        min-width: 0;
+        min-height: 0;
+      }
+      .description-container {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+      }
     `,
   ],
 })
@@ -36,16 +49,26 @@ export class ExpansionPanelToggleObjectTypeComponent extends FieldType implement
       defaultValue: {},
     };
     isEnabledFieldName = "is_enabled";
-    enabled_field: FormlyFieldConfig;
+    enabledField: FormlyFieldConfig;
      
     ngOnInit() {
-        this.enabled_field = this.field.fieldGroup.find(f => f.key == this.isEnabledFieldName); 
-        this.enabled_field.wrappers = [];  
-        this.enabled_field.type = "toggle";
+        this.enabledField = this.field.fieldGroup.find(f => f.key == this.isEnabledFieldName); 
+        this.enabledField.wrappers = [];  
+        this.enabledField.type = "toggle";
     }
 
     onClickToggle(event: Event) {
       // note: this is to avoid the expansion panel opening/closing when toggling is_enabled
       event.stopPropagation();
+    }
+
+    getFirstDescriptionField(): string {
+      if (this.to.descriptionFields) {
+        for (const fieldName of this.to.descriptionFields) {
+          if (this.model && this.model[fieldName]) {
+            return this.model[fieldName]
+          } 
+        }
+      }
     }
 }
