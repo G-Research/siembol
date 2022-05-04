@@ -38,8 +38,8 @@ Matching evaluator evaluates its matchers and returns evaluation result from its
 - `evaluator_attributes`
     - `evaluation_result` - The evaluation result returned by the evaluator after matching from `match`, `filtered`, `filtered_when_no_match`
     - `matchers` - You can add as many matchers as you want.
-        - `description` - The description of the matcher
         - `is_enabled` - The matcher is enabled
+        - `description` - The description of the matcher
         - `matcher_type` - Type of matcher, either `REGEX_MATCH` or `IS_IN_SET`
         - `is_negated`- The matcher is negated
         - `field` - The name of the field on which the matcher will be evaluated

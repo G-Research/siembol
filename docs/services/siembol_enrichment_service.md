@@ -27,8 +27,8 @@ The data that is used to enrich events is stored in JSON files in a file store i
 
 #### Matchers
 Matchers allow you to further filter the events that the enrichment will be applied to. You can add as many matchers as you want.
-- `description` - The description of the matcher
 - `is_enabled` - The matcher is enabled
+- `description` - The description of the matcher
 - `matcher_type` - Type of matcher, either `REGEX_MATCH` or `IS_IN_SET`
 - `is_negated`- The matcher is negated
 - `field` - The name of the field on which the matcher will be evaluated
