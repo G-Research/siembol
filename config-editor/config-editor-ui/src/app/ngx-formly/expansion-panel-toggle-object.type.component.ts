@@ -19,7 +19,7 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
         <div class="alert alert-danger" role="alert" *ngIf="showError && formControl.errors">
             <formly-validation-message [field]="field"></formly-validation-message>
         </div>
-        <formly-field *ngIf="f.key !== 'is_enabled'" [field]="f"></formly-field>
+        <formly-field *ngIf="f.key !== isEnabledFieldName" [field]="f"></formly-field>
       </div>
     </mat-expansion-panel>
   `,
