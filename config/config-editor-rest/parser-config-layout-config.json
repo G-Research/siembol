@@ -31,7 +31,7 @@
         "formlyConfig": {
           "type": "expansion-panel-toggle-object",
           "templateOptions": {
-            "descriptionFields": ["description", "extractor_type"]
+            "titleFields": ["description", "extractor_type"]
           }
         }
       }
@@ -239,7 +239,7 @@
         "formlyConfig": {
           "type": "expansion-panel-toggle-object",
           "templateOptions": {
-            "descriptionFields": ["description", "transformation_type"]
+            "titleFields": ["description", "transformation_type"]
           }
         }
       }

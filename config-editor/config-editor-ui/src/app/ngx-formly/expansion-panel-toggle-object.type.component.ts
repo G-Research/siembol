@@ -12,7 +12,7 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
         </mat-panel-title>
         <mat-panel-description class="description">
           <div class="description-container">
-            {{ getFirstDescriptionField() }}
+            {{ getFirstTitleField() }}
           </div>
         </mat-panel-description>
         <formly-field [field]="enabledField" (click)="onClickToggle($event)"></formly-field>
@@ -62,9 +62,9 @@ export class ExpansionPanelToggleObjectTypeComponent extends FieldType implement
       event.stopPropagation();
     }
 
-    getFirstDescriptionField(): string {
-      if (this.to.descriptionFields) {
-        for (const fieldName of this.to.descriptionFields) {
+    getFirstTitleField(): string {
+      if (this.to.titleFields) {
+        for (const fieldName of this.to.titleFields) {
           if (this.model && this.model[fieldName]) {
             return this.model[fieldName]
           } 

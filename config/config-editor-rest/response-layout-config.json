@@ -93,7 +93,7 @@
                 "formlyConfig": {
                     "type": "expansion-panel-toggle-object",
                     "templateOptions": {
-                        "descriptionFields": ["description", "matcher_type"]
+                        "titleFields": ["description", "matcher_type"]
                     }
                 }
             }
