@@ -20,7 +20,7 @@ Once configs have been added/deleted/upgraded/reordered use the `Release PR` but
 
 For some services it will be possible to run tests on the all the configs in the service by clicking the `Test` button in the dialog. 
 
-To create a pull request in the release repo of the service being edited click on the `Deploy` button in the dialog.
+To create a pull request in the release repo of the service being edited click on the `Release` button in the dialog.
 
 If the user trying to release does not have the latest version of the release, an error dialog will be shown and the latest release will be loaded from the backend. The user will have to redo its release changes to try again.
 
