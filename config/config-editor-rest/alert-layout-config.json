@@ -19,15 +19,22 @@
             "items": {
                 "widget": {
                     "formlyConfig": {
-                        "wrappers": [
-                            "expansion-panel"
-                        ]
+                        "type": "expansion-panel-toggle-object"
                     }
                 },
                 "type": "object",
                 "description": "Matcher for matching fields",
                 "title": "matcher",
                 "properties": {
+                    "is_enabled": {
+                        "type": "boolean",
+                        "description": "The matcher is enabled",
+                        "default": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the matcher"
+                    },
                     "matcher_type": {
                         "enum": [
                             "REGEX_MATCH",
@@ -103,15 +110,27 @@
                         "items": {
                             "widget": {
                                 "formlyConfig": {
-                                    "wrappers": [
-                                        "expansion-panel"
-                                    ]
+                                    "type": "expansion-panel-toggle-object"
                                 }
                             },
                             "type": "object",
                             "description": "Matcher for matching fields",
                             "title": "matcher",
                             "properties": {
+                                "is_enabled": {
+                                    "type": "boolean",
+                                    "description": "The matcher is enabled",
+                                    "default": true,
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!model"
+                                        }
+                                    }
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Description of the matcher"
+                                },
                                 "matcher_type": {
                                     "enum": [
                                         "REGEX_MATCH",
@@ -192,15 +211,27 @@
                                     "items": {
                                         "widget": {
                                             "formlyConfig": {
-                                                "wrappers": [
-                                                    "expansion-panel"
-                                                ]
+                                                "type": "expansion-panel-toggle-object"
                                             }
                                         },
                                         "type": "object",
                                         "description": "Matcher for matching fields",
                                         "title": "matcher",
                                         "properties": {
+                                            "is_enabled": {
+                                                "type": "boolean",
+                                                "description": "The matcher is enabled",
+                                                "default": true,
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!model"
+                                                    }
+                                                }
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "description": "Description of the matcher"
+                                            },
                                             "matcher_type": {
                                                 "enum": [
                                                     "REGEX_MATCH",
@@ -284,7 +315,6 @@
                             "matcher_type"
                         ]
                     },
-                    "description": "Matchers of the rule",
                     "minItems": 1
                 }
             }

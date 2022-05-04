@@ -91,9 +91,7 @@
         "$..matchers.items": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": [
-                        "expansion-panel"
-                    ]
+                    "type": "expansion-panel-toggle-object"
                 }
             }
         },

@@ -84,7 +84,7 @@ import { ConfigNameCellRendererComponent } from './components/config-manager/cel
 import { StoreHeaderGroupComponent } from './components/config-manager/header-groups/store-header-group.component';
 import { CheckboxFiltersComponent } from './components/checkbox-filters/checkbox-filters.component';
 import { SearchHistoryComponent } from './components/search-history/search-history.component';
-import { ExpansionPanelToggleObjectTypeComponent } from './ngx-formly/expansion-panel-object.type.component';
+import { ExpansionPanelToggleObjectTypeComponent } from './ngx-formly/expansion-panel-toggle-object.type.component';
 import { FormlyMatToggleModule } from '@ngx-formly/material/toggle';
 
 ModuleRegistry.registerModules([
