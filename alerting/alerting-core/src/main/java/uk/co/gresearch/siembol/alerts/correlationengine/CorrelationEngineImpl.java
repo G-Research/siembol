@@ -27,11 +27,12 @@ public class CorrelationEngineImpl implements AlertingEngine {
 
     @Override
     public AlertingResult evaluate(Map<String, Object> alert) {
-        if (!(alert.get(AlertingFields.RULE_NAME.getAlertingName()) instanceof String alertName)
+        if (!(alert.get(AlertingFields.RULE_NAME.getAlertingName()) instanceof String)
                 || !(alert.get(CORRELATION_KEY_TAG_NAME.toString()) instanceof String)) {
             return  AlertingResult.fromErrorMessage(MISSING_CORRELATION_ATTRIBUTES);
         }
 
+        String alertName = (String)alert.get(AlertingFields.RULE_NAME.getAlertingName());
         if (!alertToCorrelationRulesMap.containsKey(alertName)) {
             return AlertingResult.fromEvaluationResult(EvaluationResult.NO_MATCH, alert);
         }

@@ -100,19 +100,20 @@ public class CompositeMatcher implements Matcher {
             matchers.forEach(x -> canModifyEvent |= x.canModifyEvent());
 
             switch (matcherType) {
-                case COMPOSITE_OR -> {
+                case COMPOSITE_OR:
                     if (canModifyEvent) {
                         throw new IllegalArgumentException(COMPOSITE_OR_MODIFY_EVENT_MSG);
                     }
                     evaluationFunction = x -> evaluateOr(matchers, x);
-                }
-                case COMPOSITE_AND -> {
+                    break;
+                case COMPOSITE_AND:
                     if (negated && canModifyEvent) {
                         throw new IllegalArgumentException(COMPOSITE_AND_MODIFY_EVENT_MSG);
                     }
                     evaluationFunction = x -> evaluateAnd(matchers, x);
-                }
-                default -> throw new IllegalArgumentException(WRONG_ARGUMENTS);
+                    break;
+                default:
+                    throw new IllegalArgumentException(WRONG_ARGUMENTS);
             }
             return new CompositeMatcher(this);
         }

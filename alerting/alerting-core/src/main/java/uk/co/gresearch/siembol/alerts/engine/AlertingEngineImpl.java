@@ -23,9 +23,10 @@ public class AlertingEngineImpl implements AlertingEngine {
 
     @Override
     public AlertingResult evaluate(Map<String, Object> event) {
-        if (!(event.get(sourceField) instanceof String sensor)) {
+        if (!(event.get(sourceField) instanceof String)) {
             return AlertingResult.fromEvaluationResult(EvaluationResult.NO_MATCH, event);
         }
+        String sensor = (String)event.get(sourceField);
 
         List<Map<String, Object>> outputEvents = new ArrayList<>();
         List<Map<String, Object>> exceptionsEvents = new ArrayList<>();
