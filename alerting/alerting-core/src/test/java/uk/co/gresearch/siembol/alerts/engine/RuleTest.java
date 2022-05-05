@@ -20,14 +20,14 @@ public class RuleTest {
     private final Map<String, Object> event = new HashMap<>();
     private List<Pair<String, String>> constants;
     private List<Pair<String, Object>> protections;
-    private BasicMatcher matcher;
+    private Matcher matcher;
     private Rule rule;
 
     @Before
     public void setUp() {
         constants = List.of(Pair.of("detection_source", "alerts"));
         protections = List.of(Pair.of(AlertingFields.MAX_PER_HOUR_FIELD.toString(), 1));
-        matcher = Mockito.mock(BasicMatcher.class);
+        matcher = Mockito.mock(Matcher.class);
         when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.MATCH);
     }
 
@@ -174,5 +174,44 @@ public class RuleTest {
                 .tags(constants)
                 .protections(protections)
                 .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void oneNegatedMatcher()  {
+        when(matcher.isNegated()).thenReturn(true);
+        rule = Rule.builder()
+                .matchers(List.of(matcher))
+                .name(name)
+                .version(version)
+                .tags(constants)
+                .protections(protections)
+                .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void twoNegatedMatchers()  {
+        when(matcher.isNegated()).thenReturn(true);
+        rule = Rule.builder()
+                .matchers(List.of(matcher, matcher))
+                .name(name)
+                .version(version)
+                .tags(constants)
+                .protections(protections)
+                .build();
+    }
+
+    @Test
+    public void nonNegatedMatcherAndMultipleNegatedMatchers()  {
+        var nonNegatedMatcher = Mockito.mock(Matcher.class);
+        when(nonNegatedMatcher.isNegated()).thenReturn(false);
+        when(matcher.isNegated()).thenReturn(true);
+        rule = Rule.builder()
+                .matchers(List.of(matcher, matcher, nonNegatedMatcher, matcher, matcher))
+                .name(name)
+                .version(version)
+                .tags(constants)
+                .protections(protections)
+                .build();
+        Assert.assertNotNull(rule);
     }
 }

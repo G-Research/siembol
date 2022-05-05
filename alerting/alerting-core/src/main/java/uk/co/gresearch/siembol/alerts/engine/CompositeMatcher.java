@@ -29,6 +29,11 @@ public class CompositeMatcher implements Matcher {
         return canModifyEvent;
     }
 
+    @Override
+    public boolean isNegated() {
+        return negated;
+    }
+
     public static Builder builder() {
         return new Builder();
     }

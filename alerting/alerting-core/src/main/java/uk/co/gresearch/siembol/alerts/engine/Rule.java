@@ -44,6 +44,7 @@ public class Rule extends AbstractRule {
 
     public static abstract class Builder<T extends Rule> extends AbstractRule.Builder<T>{
         protected static final String MISSING_MATCHERS = "Empty matchers in a rule";
+        protected static final String NEGATED_MATCHERS_ONLY = "The rule contains negated matchers only";
         protected List<Matcher> matchers;
         protected EnumSet<RuleFlags> flags = EnumSet.noneOf(RuleFlags.class);
 
@@ -61,11 +62,16 @@ public class Rule extends AbstractRule {
             if (matchers == null || matchers.isEmpty()) {
                 throw new IllegalArgumentException(MISSING_MATCHERS);
             }
+
+            boolean allNegatedMatchers = true;
             for (Matcher matcher : matchers) {
                 if (matcher.canModifyEvent()) {
                     flags.add(RuleFlags.CAN_MODIFY_EVENT);
-                    break;
                 }
+                allNegatedMatchers &= matcher.isNegated();
+            }
+            if (allNegatedMatchers) {
+                throw new IllegalArgumentException(NEGATED_MATCHERS_ONLY);
             }
         }
     }

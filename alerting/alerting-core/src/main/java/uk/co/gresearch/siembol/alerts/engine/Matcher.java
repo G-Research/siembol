@@ -7,4 +7,5 @@ import java.util.Map;
 public interface Matcher {
     EvaluationResult match(Map<String, Object> log);
     boolean canModifyEvent();
+    boolean isNegated();
 }
