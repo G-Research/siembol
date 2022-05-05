@@ -20,9 +20,9 @@ public enum AlertingFields {
     static {
         for (AlertingFields field : AlertingFields.values()) {
             ALERTING_FIELDS.put(field.toString(),
-                    String.format("%s_%s", ALERTS_PREFIX, field.toString()));
+                    String.format("%s_%s", ALERTS_PREFIX, field));
             CORRELATION_ALERTING_FIELDS.put(field.toString(),
-                    String.format("%s_%s", CORRELATION_ALERTS_PREFIX, field.toString()));
+                    String.format("%s_%s", CORRELATION_ALERTS_PREFIX, field));
         }
     }
 

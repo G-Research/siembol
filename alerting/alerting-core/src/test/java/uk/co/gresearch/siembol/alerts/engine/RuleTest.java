@@ -32,7 +32,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodMetadata() {
+    public void ruleWithMetadataOk() {
         rule = Rule.builder()
                 .matchers(List.of(matcher))
                 .name(name)
@@ -57,7 +57,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodMetadataVariableTag() {
+    public void ruleWithMetadataVariableTagOk() {
         constants = new ArrayList<>(constants);
         constants.add(Pair.of("malicious_url", "http://${dummy_host}/${dummy_path}"));
         rule = Rule.builder()
@@ -87,7 +87,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodCanModifyEvent() {
+    public void ruleCanModifyEventOk() {
         when(matcher.canModifyEvent()).thenReturn(true);
 
         rule = Rule.builder()
@@ -102,7 +102,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodMatch() {
+    public void ruleMatchOk() {
         rule = Rule.builder()
                 .matchers(List.of(matcher))
                 .name(name)
@@ -117,7 +117,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodNoMatch() {
+    public void ruleNoMatch() {
         when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.NO_MATCH);
         rule = Rule.builder()
                 .matchers(List.of(matcher))
@@ -133,7 +133,7 @@ public class RuleTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testThrowsException() throws RuntimeException {
+    public void matchThrowsException() throws RuntimeException {
         when(matcher.match(ArgumentMatchers.any())).thenThrow(new RuntimeException());
         rule = Rule.builder()
                 .matchers(List.of(matcher))
@@ -147,7 +147,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void missingName()  {
+    public void builderMissingName()  {
         rule = Rule.builder()
                 .matchers(List.of(matcher))
                 .version(version)
@@ -157,7 +157,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void missingVersion()  {
+    public void builderMissingVersion()  {
         Rule.builder()
                 .matchers(List.of(matcher))
                 .name(name)
@@ -167,7 +167,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void missingMatchers()  {
+    public void builderMissingMatchers()  {
         Rule.builder()
                 .name(name)
                 .version(version)
@@ -177,7 +177,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void oneNegatedMatcher()  {
+    public void builderOneNegatedMatcher()  {
         when(matcher.isNegated()).thenReturn(true);
         rule = Rule.builder()
                 .matchers(List.of(matcher))
@@ -189,7 +189,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void twoNegatedMatchers()  {
+    public void builderTwoNegatedMatchers()  {
         when(matcher.isNegated()).thenReturn(true);
         rule = Rule.builder()
                 .matchers(List.of(matcher, matcher))
@@ -201,7 +201,7 @@ public class RuleTest {
     }
 
     @Test
-    public void nonNegatedMatcherAndMultipleNegatedMatchers()  {
+    public void builderOneMatcherAndMultipleNegatedMatchers()  {
         var nonNegatedMatcher = Mockito.mock(Matcher.class);
         when(nonNegatedMatcher.isNegated()).thenReturn(false);
         when(matcher.isNegated()).thenReturn(true);

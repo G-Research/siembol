@@ -7,7 +7,6 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.engine.AbstractRule;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_KEY_TAG_NAME;
 
@@ -66,10 +65,7 @@ public class CorrelationRule extends AbstractRule {
     }
 
     public List<String> getAlertNames() {
-        return alertToCounterIndex
-                .keySet()
-                .stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(alertToCounterIndex.keySet());
     }
 
 
@@ -133,7 +129,7 @@ public class CorrelationRule extends AbstractRule {
     public static abstract class Builder<T extends CorrelationRule> extends AbstractRule.Builder<T>{
         protected static final String ALERT_ALREADY_EXISTS_MSG = "Duplicate alert names for correlation";
         protected static final String INVALID_ALERT_COUNTER = "Invalid alert counter specification";
-        protected static final String EMTPY_ALERT_COUNTERS_MSG = "Missing alert counters";
+        protected static final String EMPTY_ALERT_COUNTERS_MSG = "Missing alert counters";
         protected static final String MISSING_REQUIRED_ATTRIBUTES = "Missing required attributes for alert correlation";
         protected static final String WRONG_ALERT_THRESHOLDS = "wrong alert thresholds";
         protected static final Integer PROCESSING_TIME_MAX_LAG_TIME = 0;
@@ -181,14 +177,14 @@ public class CorrelationRule extends AbstractRule {
 
     public static CorrelationRule.Builder<CorrelationRule> builder() {
 
-        return new CorrelationRule.Builder<CorrelationRule>() {
+        return new CorrelationRule.Builder<>() {
             @Override
             protected CorrelationRule buildInternally() {
                 if (!flags.contains(Flags.USE_EVENT_TIME)) {
                     maxLagTimeInSec = PROCESSING_TIME_MAX_LAG_TIME;
                 }
                 if (alertCountersMetadataTemp.isEmpty()) {
-                    throw new IllegalArgumentException(EMTPY_ALERT_COUNTERS_MSG);
+                    throw new IllegalArgumentException(EMPTY_ALERT_COUNTERS_MSG);
                 }
                 if (timeWindowInMs == null || maxLagTimeInSec == null) {
                     throw new IllegalArgumentException(MISSING_REQUIRED_ATTRIBUTES);

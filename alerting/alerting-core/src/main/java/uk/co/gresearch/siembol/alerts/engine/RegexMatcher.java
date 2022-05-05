@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class RegexMatcher extends BasicMatcher {
     private static final String EMPTY_PATTERN = "Empty pattern";
     private static final Pattern VARIABLE_PATTERN =
-            Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z0-9:_]*)>");
+            Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z\\d:_]*)>");
     private static final String VARIABLE_NAME = "var";
     private static final int VAR_PREFIX_SIZE = "(\\<".length();
 
@@ -43,7 +43,7 @@ public class RegexMatcher extends BasicMatcher {
 
     public static RegexMatcher.Builder<RegexMatcher> builder() {
 
-        return new RegexMatcher.Builder<RegexMatcher>() {
+        return new RegexMatcher.Builder<>() {
             @Override
             public RegexMatcher build() {
                 if (pattern == null || variableNames == null) {
@@ -78,7 +78,7 @@ public class RegexMatcher extends BasicMatcher {
                 }
 
                 //NOTE: we rename variables since java does not support '_', ':'
-                sb.append(VARIABLE_NAME + variableNames.size());
+                sb.append(VARIABLE_NAME).append(variableNames.size());
                 variableNames.add(name);
             }
 

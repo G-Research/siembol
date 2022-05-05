@@ -78,7 +78,7 @@ public class Rule extends AbstractRule {
 
     public static Builder<Rule> builder() {
 
-        return new Builder<Rule>() {
+        return new Builder<>() {
             @Override
             protected Rule buildInternally() {
                 prepareBuild();
