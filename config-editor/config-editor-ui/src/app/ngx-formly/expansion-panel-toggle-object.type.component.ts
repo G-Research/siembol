@@ -5,7 +5,7 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
   // tslint:disable-next-line:component-selector
   selector: 'formly-expansion-panel-toggle-object-type',
   template: `
-    <mat-expansion-panel [expanded]="true" hideToggle>
+    <mat-expansion-panel [expanded]="true" hideToggle [ngClass]="{'disabled': model[isEnabledFieldName] === false}">
       <mat-expansion-panel-header>
         <mat-panel-title>
           {{ to.label }}
@@ -33,6 +33,9 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
       .description { 
         min-width: 0;
         min-height: 0;
+      }
+      .disabled {
+        background-color: dimgrey;
       }
       .description-container {
         overflow: hidden;
