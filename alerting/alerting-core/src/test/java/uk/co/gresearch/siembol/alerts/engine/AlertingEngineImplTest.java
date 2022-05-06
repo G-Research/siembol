@@ -139,7 +139,7 @@ public class AlertingEngineImplTest {
 
     @Test
     public void testMatchAndException() {
-        when(rule1.match(ArgumentMatchers.<Map<String, Object>>any())).thenThrow(new RuntimeException());
+        when(rule1.match(ArgumentMatchers.any())).thenThrow(new RuntimeException());
         AlertingResult ret = engine.evaluate(knownSourceType);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(EvaluationResult.MATCH, ret.getAttributes().getEvaluationResult());

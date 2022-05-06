@@ -36,6 +36,11 @@ public abstract class BasicMatcher implements Matcher {
         return false;
     }
 
+    @Override
+    public boolean isNegated() {
+        return isNegated;
+    }
+
     protected abstract EvaluationResult matchInternally(Map<String, Object> map, String fieldValue);
 
     public static abstract class Builder<T extends BasicMatcher> {

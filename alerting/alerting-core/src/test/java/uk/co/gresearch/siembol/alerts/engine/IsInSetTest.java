@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IsInSetTest {
-    private String field = "test_field";
+    private final String field = "test_field";
     private Map<String, Object> event;
     private IsInSetMatcher matcher;
 

@@ -22,7 +22,7 @@ public class RuleProtectionSystemTest {
 
     @Test
     public void testIncrement() {
-        //NOTE: this test can theoretically  fails we can turn it of in case of issues
+        //NOTE: this test can theoretically  fail we can turn it of in case of issues
         for (int i = 1; i < 2; i++) {
             AlertingResult ret = protection.incrementRuleMatches(ruleName);
             Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());

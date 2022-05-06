@@ -40,9 +40,7 @@ public abstract class AbstractRule {
         outputFields.forEach(x -> event.put(x.getKey(), x.getValue()));
         for (Pair<String, String> variableOutputField : variableOutputFields) {
             Optional<String> value = EvaluationLibrary.substitute(event, variableOutputField.getValue());
-            if (value.isPresent()) {
-                event.put(variableOutputField.getKey(), value.get());
-            }
+            value.ifPresent(x -> event.put(variableOutputField.getKey(), x));
         }
     }
 

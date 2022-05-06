@@ -20,19 +20,19 @@ public class RuleTest {
     private final Map<String, Object> event = new HashMap<>();
     private List<Pair<String, String>> constants;
     private List<Pair<String, Object>> protections;
-    private BasicMatcher matcher;
+    private Matcher matcher;
     private Rule rule;
 
     @Before
     public void setUp() {
         constants = List.of(Pair.of("detection_source", "alerts"));
         protections = List.of(Pair.of(AlertingFields.MAX_PER_HOUR_FIELD.toString(), 1));
-        matcher = Mockito.mock(BasicMatcher.class);
+        matcher = Mockito.mock(Matcher.class);
         when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.MATCH);
     }
 
     @Test
-    public void testGoodMetadata() {
+    public void ruleWithMetadataOk() {
         rule = Rule.builder()
                 .matchers(List.of(matcher))
                 .name(name)
@@ -57,7 +57,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodMetadataVariableTag() {
+    public void ruleWithMetadataVariableTagOk() {
         constants = new ArrayList<>(constants);
         constants.add(Pair.of("malicious_url", "http://${dummy_host}/${dummy_path}"));
         rule = Rule.builder()
@@ -87,7 +87,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodCanModifyEvent() {
+    public void ruleCanModifyEventOk() {
         when(matcher.canModifyEvent()).thenReturn(true);
 
         rule = Rule.builder()
@@ -102,7 +102,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodMatch() {
+    public void ruleMatchOk() {
         rule = Rule.builder()
                 .matchers(List.of(matcher))
                 .name(name)
@@ -117,7 +117,7 @@ public class RuleTest {
     }
 
     @Test
-    public void testGoodNoMatch() {
+    public void ruleNoMatch() {
         when(matcher.match(ArgumentMatchers.any())).thenReturn(EvaluationResult.NO_MATCH);
         rule = Rule.builder()
                 .matchers(List.of(matcher))
@@ -133,7 +133,7 @@ public class RuleTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testThrowsException() throws RuntimeException {
+    public void matchThrowsException() throws RuntimeException {
         when(matcher.match(ArgumentMatchers.any())).thenThrow(new RuntimeException());
         rule = Rule.builder()
                 .matchers(List.of(matcher))
@@ -147,7 +147,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void missingName()  {
+    public void builderMissingName()  {
         rule = Rule.builder()
                 .matchers(List.of(matcher))
                 .version(version)
@@ -157,7 +157,7 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void missingVersion()  {
+    public void builderMissingVersion()  {
         Rule.builder()
                 .matchers(List.of(matcher))
                 .name(name)
@@ -167,12 +167,51 @@ public class RuleTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void missingMatchers()  {
+    public void builderMissingMatchers()  {
         Rule.builder()
                 .name(name)
                 .version(version)
                 .tags(constants)
                 .protections(protections)
                 .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void builderOneNegatedMatcher()  {
+        when(matcher.isNegated()).thenReturn(true);
+        rule = Rule.builder()
+                .matchers(List.of(matcher))
+                .name(name)
+                .version(version)
+                .tags(constants)
+                .protections(protections)
+                .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void builderTwoNegatedMatchers()  {
+        when(matcher.isNegated()).thenReturn(true);
+        rule = Rule.builder()
+                .matchers(List.of(matcher, matcher))
+                .name(name)
+                .version(version)
+                .tags(constants)
+                .protections(protections)
+                .build();
+    }
+
+    @Test
+    public void builderOneMatcherAndMultipleNegatedMatchers()  {
+        var nonNegatedMatcher = Mockito.mock(Matcher.class);
+        when(nonNegatedMatcher.isNegated()).thenReturn(false);
+        when(matcher.isNegated()).thenReturn(true);
+        rule = Rule.builder()
+                .matchers(List.of(matcher, matcher, nonNegatedMatcher, matcher, matcher))
+                .name(name)
+                .version(version)
+                .tags(constants)
+                .protections(protections)
+                .build();
+        Assert.assertNotNull(rule);
     }
 }

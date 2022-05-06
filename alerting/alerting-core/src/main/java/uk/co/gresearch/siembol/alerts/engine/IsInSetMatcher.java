@@ -28,7 +28,7 @@ public class IsInSetMatcher extends BasicMatcher {
         boolean matchedVariable = false;
         for (String variableString : variableStrings) {
             Optional<String> substituted = EvaluationLibrary.substitute(map, variableString);
-            if (!substituted.isPresent()) {
+            if (substituted.isEmpty()) {
                 continue;
             }
 
@@ -45,7 +45,7 @@ public class IsInSetMatcher extends BasicMatcher {
 
     public static Builder<IsInSetMatcher> builder() {
 
-        return new Builder<IsInSetMatcher>() {
+        return new Builder<>() {
             @Override
             public IsInSetMatcher build() {
                 if (words == null || words.isEmpty()) {

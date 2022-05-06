@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 public class AlertCounterMetadata {
     public enum Flags {
-        MANDATORY;
+        MANDATORY
     }
     private final EnumSet<Flags> flags;
     private final int threshold;

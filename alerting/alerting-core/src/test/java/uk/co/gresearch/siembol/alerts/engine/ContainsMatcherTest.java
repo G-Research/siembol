@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ContainsMatcherTest {
-    private String field = "test_field";
+    private final String field = "test_field";
     private Map<String, Object> event;
     private ContainsMatcher matcher;
     private final String pattern = "secret";
