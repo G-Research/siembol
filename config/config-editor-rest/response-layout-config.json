@@ -91,9 +91,17 @@
         "$..matchers.items": {
             "widget": {
                 "formlyConfig": {
-                    "wrappers": [
-                        "expansion-panel"
-                    ]
+                    "type": "expansion-panel-toggle-object",
+                    "templateOptions": {
+                        "titleFields": ["description", "matcher_type"]
+                    }
+                }
+            }
+        },
+        "$..matchers.items.properties.description": {
+            "widget": {
+                "formlyConfig": {
+                    "type": "textarea"
                 }
             }
         },

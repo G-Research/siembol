@@ -120,6 +120,7 @@ import { FieldArrayType } from '@ngx-formly/core';
         flex: 9;
         position: relative;
         transition: all 0.2s ease-in-out;
+        max-width: 100%;
       }
     `,
   ],
