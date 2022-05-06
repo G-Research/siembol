@@ -31,7 +31,7 @@
         "formlyConfig": {
           "type": "expansion-panel-toggle-object",
           "templateOptions": {
-            "titleFields": ["description", "extractor_type"]
+            "titleFields": ["description", "name"]
           }
         }
       }

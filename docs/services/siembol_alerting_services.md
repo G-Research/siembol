@@ -28,8 +28,8 @@ Tip: if you want to match on multiple data sources, set the source type to be * 
 
 #### Matchers
 Matchers allow you to select the events you want the rule to alert on.
-- `description` - The description of the matcher
 - `is_enabled` - The matcher is enabled
+- `description` - The description of the matcher
 - `matcher_type` - Type of matcher, either `REGEX_MATCH`, `IS_IN_SET`, `CONTAINS`, `COMPOSITE_AND` or `COMPOSITE_OR`
 - `is_negated`- The matcher is negated
     private Boolean negated = false;
