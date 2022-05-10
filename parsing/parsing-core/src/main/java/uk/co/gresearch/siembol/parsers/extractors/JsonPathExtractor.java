@@ -101,8 +101,9 @@ public class JsonPathExtractor extends ParserExtractor {
                         .ifPresent(x -> result.put(query.getLeft(), x));
             }
         } catch (Exception e) {
-            String errorMessage = String.format("Error during extracting json path queries:%s\n Exception: %s",
-                    message, ExceptionUtils.getStackTrace(e));
+            String errorMessage = String.format("Error during evaluating json path extractor name:%s " +
+                            "message:%s, exception: %s",
+                    getName(), message, ExceptionUtils.getStackTrace(e));
             LOG.debug(errorMessage);
             if (shouldThrowExceptionOnError()) {
                 throw new IllegalStateException(errorMessage);

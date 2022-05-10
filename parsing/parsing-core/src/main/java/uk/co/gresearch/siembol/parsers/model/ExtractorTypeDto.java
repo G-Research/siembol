@@ -9,7 +9,7 @@ public enum ExtractorTypeDto {
     @JsonProperty("key_value_extractor") KEY_VALUE_EXTRACTOR("key_value_extractor"),
     @JsonProperty("csv_extractor") CSV_EXTRACTOR("csv_extractor"),
     @JsonProperty("json_extractor") JSON_EXTRACTOR("json_extractor"),
-    @JsonProperty("json_extractor") JSON_PATH_EXTRACTOR("json_path_extractor"),
+    @JsonProperty("json_path_extractor") JSON_PATH_EXTRACTOR("json_path_extractor"),
     @JsonProperty("regex_select_extractor") REGEX_SELECT_EXTRACTOR("regex_select_extractor");
 
     private final String name;
