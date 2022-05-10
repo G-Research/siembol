@@ -1,0 +1,154 @@
+package uk.co.gresearch.siembol.parsers.extractors;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Strings;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+
+import java.util.*;
+
+public class JsonPathExtractor extends ParserExtractor {
+    public enum JsonPathExtractorFlags {
+        AT_LEAST_ONE_QUERY_RESULT
+    }
+
+    static {
+        Configuration.setDefaults(new Configuration.Defaults() {
+            private final JsonProvider jsonProvider = new JacksonJsonNodeJsonProvider();
+            private final MappingProvider mappingProvider = new JacksonMappingProvider();
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+        });
+    }
+
+    private static final Logger LOG = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
+    private static final String AT_LEAST_ONE_QUERY_MSG = "At least one json path query should store its result";
+    private static final String EMPTY_FIELD_OR_QUERY_MSG = "Output field and json path query should be non empty";
+    private static final String EMPTY_QUERIES_MSG = "Json path extractor requires at least one query";
+
+    private final ArrayList<ImmutablePair<String, String>> queries;
+    private final EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags;
+
+    private JsonPathExtractor(JsonPathExtractor.Builder<?> builder) {
+        super(builder);
+        queries = builder.queries;
+        jsonPathExtractorFlags = builder.jsonPathExtractorFlags;
+    }
+
+    private Optional<Object> getValue(DocumentContext context, String jsonPathQuery) {
+        Object currentObj = context.read(jsonPathQuery);
+        if (currentObj instanceof Number) {
+            return Optional.of(currentObj);
+        }
+
+        if (!(currentObj instanceof JsonNode)) {
+            return Optional.empty();
+        }
+
+        JsonNode current = (JsonNode) currentObj;
+        if (current.isArray() && current.size() == 1) {
+            current = current.get(0);
+        }
+
+        if (current.isBoolean()) {
+            return Optional.of(current.booleanValue());
+        }
+
+        if (current.isNumber()) {
+            return Optional.of(current.numberValue());
+        }
+
+        if (current.isTextual()) {
+            return Optional.of(current.textValue());
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    protected Map<String, Object> extractInternally(String message) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            final DocumentContext context = JsonPath.parse(message);
+            for (var query : queries) {
+                getValue(context, query.getRight())
+                        .ifPresent(x -> result.put(query.getLeft(), x));
+            }
+        } catch (Exception e) {
+            String errorMessage = String.format("Error during extracting json path queries:%s\n Exception: %s",
+                    message, ExceptionUtils.getStackTrace(e));
+            LOG.debug(errorMessage);
+            if (shouldThrowExceptionOnError()) {
+                throw new IllegalStateException(errorMessage);
+            }
+        }
+
+        if (result.isEmpty()
+                && jsonPathExtractorFlags.contains(JsonPathExtractorFlags.AT_LEAST_ONE_QUERY_RESULT)
+                && shouldThrowExceptionOnError()) {
+            throw new IllegalStateException(AT_LEAST_ONE_QUERY_MSG);
+        }
+
+        return result;
+    }
+
+    public static Builder<JsonPathExtractor> builder() {
+
+        return new Builder<>() {
+            @Override
+            public JsonPathExtractor build() {
+                if (queries.isEmpty()) {
+                    throw new IllegalArgumentException(EMPTY_QUERIES_MSG);
+                }
+                return new JsonPathExtractor(this);
+            }
+        };
+    }
+
+    public static abstract class Builder<T extends JsonPathExtractor>
+            extends ParserExtractor.Builder<T> {
+
+        protected ArrayList<ImmutablePair<String, String>> queries = new ArrayList<>();
+        protected EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags = EnumSet.noneOf(JsonPathExtractorFlags.class);
+
+        public Builder<T> addQuery(String field, String query) {
+            if (Strings.isNullOrEmpty(field) || Strings.isNullOrEmpty(query)) {
+                throw new IllegalArgumentException(EMPTY_FIELD_OR_QUERY_MSG);
+            }
+
+            queries.add(ImmutablePair.of(field, query));
+            return this;
+        }
+
+        public Builder<T> jsonPathExtractorFlags(EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags) {
+            this.jsonPathExtractorFlags = jsonPathExtractorFlags;
+            return this;
+        }
+    }
+}
