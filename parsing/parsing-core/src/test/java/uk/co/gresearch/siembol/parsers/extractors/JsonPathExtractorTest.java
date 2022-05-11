@@ -90,6 +90,34 @@ public class JsonPathExtractorTest {
     }
 
     @Test
+    public void extractingBracketNotationOk() {
+        var extractor = JsonPathExtractor.builder()
+                .addQuery("moby_dick_price", "$..['books'][?(@.title =~ /moby dick/i)]['price']")
+                .addQuery("moby_dick_category", "$..['books'][?(@.title =~ /moby dick/i)]['category']")
+                .addQuery("authors", "$['products']['books'][*]['author']")
+                .addQuery("dummy", "dummy")
+                .addQuery("table_available", "$['products']['table']['available']")
+                .addQuery("titles", "['products']['books'][*]['title']")
+                .addQuery("books_count", "$..['books'].length()")
+                .jsonPathExtractorFlags(jsonPathExtractorFlags)
+                .extractorFlags(extractorFlags)
+                .name(name)
+                .field(field)
+                .build();
+
+        Map<String, Object> out = extractor.extract(productsJson);
+        Assert.assertEquals(6, out.size());
+        Assert.assertEquals(true, out.get("table_available"));
+        Assert.assertEquals(4, out.get("books_count"));
+        Assert.assertEquals("Sayings of the Century,Neuromancer,Moby Dick,The Lord of the Rings",
+                out.get("titles"));
+        Assert.assertEquals(11, out.get("moby_dick_price"));
+        Assert.assertEquals("fiction", out.get("moby_dick_category"));
+        Assert.assertEquals("Nigel Rees,William Gibson,Herman Melville,J. R. R. Tolkien", out.get("authors"));
+        Assert.assertNotNull(out);
+    }
+
+    @Test
     public void extractingNoResultOk() {
         var extractor = JsonPathExtractor.builder()
                 .addQuery("dummy", "dummy")
