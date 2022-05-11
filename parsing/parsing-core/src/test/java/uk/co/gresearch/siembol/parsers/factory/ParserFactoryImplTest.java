@@ -14,62 +14,80 @@ public class ParserFactoryImplTest {
     }
 
     private final String simpleGenericParser = """
-       {
-         "parser_name" : "test",
-         "parser_version" : 1,
-         "parser_author" : "dummy",
-         "parser_attributes": {
-           "parser_type": "generic"
-         },
-         "parser_extractors": [
-           {
-             "is_enabled": true,
-             "extractor_type": "json_extractor",
-             "name": "test",
-             "field": "original_string",
-             "post_processing_functions": [
-               "format_timestamp"
-             ],
-             "attributes": {
-               "skip_empty_values" : true,
-               "should_overwrite_fields": true,
-               "should_remove_field": false,
-               "time_formats": [
-                 {
-                   "time_format": "yyyy-MM-dd HH:mm:ss.SSS 'Z'"
-                 }
-               ]
-             }
-           },
-           {
-             "is_enabled" : true,
-             "extractor_type": "pattern_extractor",
-             "name": "pattern",
-             "field": "dummy_field",
-             "attributes": {
-               "skip_empty_values" : true,
-               "should_overwrite_fields": false,
-               "should_remove_field": false,
-               "should_match_pattern": true,
-               "dot_all_regex_flag": true,
-               "regular_expressions" : [
-                    "^(?<test_match>).*$"
-               ]
-             }
-           }
-         ],
-         "transformations": [
-         {
-           "is_enabled":true,
-           "transformation_type": "field_name_string_replace",
-           "attributes": {
-             "string_replace_target": " ",
-             "string_replace_replacement": "_"
-           }
-         }
-       ]
-       }
-     """;
+              {
+                "parser_name" : "test",
+                "parser_version" : 1,
+                "parser_author" : "dummy",
+                "parser_attributes": {
+                  "parser_type": "generic"
+                },
+                "parser_extractors": [
+                  {
+                    "is_enabled": true,
+                    "extractor_type": "json_extractor",
+                    "name": "test",
+                    "field": "original_string",
+                    "post_processing_functions": [
+                      "format_timestamp"
+                    ],
+                    "attributes": {
+                      "skip_empty_values" : true,
+                      "should_overwrite_fields": true,
+                      "should_remove_field": false,
+                      "time_formats": [
+                        {
+                          "time_format": "yyyy-MM-dd HH:mm:ss.SSS 'Z'"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "is_enabled" : true,
+                    "extractor_type": "pattern_extractor",
+                    "name": "pattern",
+                    "field": "dummy_field",
+                    "attributes": {
+                      "skip_empty_values" : true,
+                      "should_overwrite_fields": false,
+                      "should_remove_field": false,
+                      "should_match_pattern": true,
+                      "dot_all_regex_flag": true,
+                      "regular_expressions" : [
+                           "^(?<test_match>).*$"
+                      ]
+                    }
+                  },
+                  {
+                    "is_enabled": true,
+                    "extractor_type": "json_path_extractor",
+                    "name": "json_path_queries",
+                    "field": "json_field",
+                    "attributes": {
+                      "skip_empty_values": true,
+                      "should_overwrite_fields": false,
+                      "should_remove_field": false,
+                      "at_least_one_query_result": true,
+                      "json_path_queries": [
+                        {
+                          "output_field": "product_title",
+                          "query": "$.products.title"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "transformations": [
+                {
+                  "is_enabled":true,
+                  "transformation_type": "field_name_string_replace",
+                  "attributes": {
+                    "string_replace_target": " ",
+                    "string_replace_replacement": "_"
+                  }
+                }
+              ]
+              }
+            """;
 
     private final String message = """
      {"timestamp":"2019-03-27 18:52:02.732 Z", "test field" : true, "test_field1" : "   message     ", "test_field2" : "   message     ", "empty" : ""}""";
