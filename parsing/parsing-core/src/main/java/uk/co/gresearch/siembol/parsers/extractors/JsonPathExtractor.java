@@ -2,10 +2,7 @@ package uk.co.gresearch.siembol.parsers.extractors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
@@ -51,6 +48,8 @@ public class JsonPathExtractor extends ParserExtractor {
     private static final String AT_LEAST_ONE_QUERY_MSG = "At least one json path query should store its result";
     private static final String EMPTY_FIELD_OR_QUERY_MSG = "Output field and json path query should be non empty";
     private static final String EMPTY_QUERIES_MSG = "Json path extractor requires at least one query";
+    private static final String EXCEPTION_MSG = "Error during evaluating json path extractor name:%s," +
+            " message:%s, exception: %s";
 
     private final ArrayList<ImmutablePair<String, String>> queries;
     private final EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags;
@@ -61,8 +60,20 @@ public class JsonPathExtractor extends ParserExtractor {
         jsonPathExtractorFlags = builder.jsonPathExtractorFlags;
     }
 
+    private String getArrayValue(JsonNode node) {
+        StringBuilder sb = new StringBuilder();
+        node.iterator().forEachRemaining(x -> sb.append(x.isTextual() ? x.textValue() : x.toString()).append(','));
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
     private Optional<Object> getValue(DocumentContext context, String jsonPathQuery) {
-        Object currentObj = context.read(jsonPathQuery);
+        Object currentObj;
+        try {
+            currentObj = context.read(jsonPathQuery);
+        } catch (PathNotFoundException e) {
+            return Optional.empty();
+        }
+
         if (currentObj instanceof Number) {
             return Optional.of(currentObj);
         }
@@ -72,8 +83,12 @@ public class JsonPathExtractor extends ParserExtractor {
         }
 
         JsonNode current = (JsonNode) currentObj;
-        if (current.isArray() && current.size() == 1) {
-            current = current.get(0);
+        if (current.isArray()) {
+            if (current.size() == 1) {
+                current = current.get(0);
+            } else {
+                return Optional.of(getArrayValue(current));
+            }
         }
 
         if (current.isBoolean()) {
@@ -101,9 +116,7 @@ public class JsonPathExtractor extends ParserExtractor {
                         .ifPresent(x -> result.put(query.getLeft(), x));
             }
         } catch (Exception e) {
-            String errorMessage = String.format("Error during evaluating json path extractor name:%s " +
-                            "message:%s, exception: %s",
-                    getName(), message, ExceptionUtils.getStackTrace(e));
+            String errorMessage = String.format(EXCEPTION_MSG, getName(), message, ExceptionUtils.getStackTrace(e));
             LOG.debug(errorMessage);
             if (shouldThrowExceptionOnError()) {
                 throw new IllegalStateException(errorMessage);
