@@ -75,7 +75,7 @@ Json extractor extracts valid json message and unfolds json into flat json key v
 - `path_prefix` - The prefix added to the extracted field names after json parsing
 - `nested_separator` - The separator added during unfolding of nested json objects
 #### Json Path Extractor
-Json Path extractor evaluate json path queries on the input field and stores their results. Siembol supports `dot` and `bracket` notation using syntax from [https://github.com/json-path/JsonPath#readme](https://github.com/json-path/JsonPath#readme) 
+Json Path extractor evaluates json path queries on the input field and stores their results. Siembol supports `dot` and `bracket` notation using syntax from [https://github.com/json-path/JsonPath#readme](https://github.com/json-path/JsonPath#readme) 
 - `at_least_one_query_result` - At least one query should store its result otherwise the extractor throws an exception
 - `json_path_queries` - List of json path queries, where a json path `query` is evaluated and stored in `output_field` on success
 ### Parser Transformations
