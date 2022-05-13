@@ -193,6 +193,36 @@
         }
       }
     },
+    "$..parser_extractors..at_least_one_query_result": {
+      "widget": {
+        "formlyConfig": {
+          "hideExpression": "field.parent.parent.model.extractor_type  !== 'json_path_extractor'"
+        }
+      }
+    },
+    "$..parser_extractors..json_path_queries": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "help-link",
+            "expansion-panel"
+          ],
+          "hideExpression": "field.parent.parent.model.extractor_type  !== 'json_path_extractor'",
+          "templateOptions": {
+            "link": "https://github.com/json-path/JsonPath#readme"
+          }
+        }
+      }
+    },
+    "$..parser_extractors..json_path_queries.items": {
+      "widget": {
+        "formlyConfig": {
+          "wrappers": [
+            "panel"
+          ]
+        }
+      }
+    },
     "$..parser_extractors..time_formats": {
       "widget": {
         "formlyConfig": {

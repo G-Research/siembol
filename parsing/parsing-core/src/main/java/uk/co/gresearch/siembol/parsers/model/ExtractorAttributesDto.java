@@ -102,6 +102,14 @@ public class ExtractorAttributesDto {
     @Attributes(description = "List of fields excluded from string converting", minItems = 1)
     private List<String> conversionExclusions = Arrays.asList(SiembolMessageFields.TIMESTAMP.toString());
 
+    @JsonProperty("at_least_one_query_result")
+    @Attributes(description = "At least one query should store its result otherwise the extractor throws an exception")
+    private Boolean atLeastOneQueryResult = false;
+
+    @JsonProperty("json_path_queries")
+    @Attributes(description = "List of json path queries", minItems = 1)
+    private List<JsonPathQueryDto> jsonPathQueries;
+
     public Boolean getShouldOverwrite() {
         return shouldOverwrite;
     }
@@ -300,5 +308,21 @@ public class ExtractorAttributesDto {
 
     public void setConversionExclusions(List<String> conversionExclusions) {
         this.conversionExclusions = conversionExclusions;
+    }
+
+    public Boolean getAtLeastOneQueryResult() {
+        return atLeastOneQueryResult;
+    }
+
+    public void setAtLeastOneQueryResult(Boolean atLeastOneQueryResult) {
+        this.atLeastOneQueryResult = atLeastOneQueryResult;
+    }
+
+    public List<JsonPathQueryDto> getJsonPathQueries() {
+        return jsonPathQueries;
+    }
+
+    public void setJsonPathQueries(List<JsonPathQueryDto> jsonPathQueries) {
+        this.jsonPathQueries = jsonPathQueries;
     }
 }

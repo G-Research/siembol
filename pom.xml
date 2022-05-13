@@ -6,7 +6,7 @@
     <groupId>uk.co.gresearch.siembol</groupId>
     <artifactId>siembol</artifactId>
     <name>siembol</name>
-    <version>2.5.2-SNAPSHOT</version>
+    <version>2.5.3-SNAPSHOT</version>
     <description>A scalable, advanced security analytics framework based on open-source big data technologies.</description>
     <inceptionYear>2019</inceptionYear>
     <url>https://siembol.io/</url>
@@ -68,6 +68,7 @@
         <reactor_core_version>3.4.17</reactor_core_version>
         <io_micrometer_version>1.8.5</io_micrometer_version>
         <byte_buddy_version>1.12.10</byte_buddy_version>
+        <json_path_version>2.7.0</json_path_version>
     </properties>
     <modules>
         <module>siembol-common</module>

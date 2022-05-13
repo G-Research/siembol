@@ -213,6 +213,18 @@ public class ParserFactoryImpl implements ParserFactory {
         return ret;
     }
 
+    private EnumSet<JsonPathExtractor.JsonPathExtractorFlags> getJsonPathExtractorFlags(
+            ExtractorAttributesDto attributes) {
+        var ret = EnumSet.noneOf(
+                JsonPathExtractor.JsonPathExtractorFlags.class);
+
+        if (attributes.getAtLeastOneQueryResult()) {
+            ret.add(JsonPathExtractor.JsonPathExtractorFlags.AT_LEAST_ONE_QUERY_RESULT);
+        }
+
+        return ret;
+    }
+
     private List<ColumnNames> createColumnNames(List<ColumnNamesDto> columnNames) {
         return columnNames.stream()
                 .map(x -> x.getColumnFilter() == null
@@ -222,7 +234,7 @@ public class ParserFactoryImpl implements ParserFactory {
                 .collect(Collectors.toList());
     }
 
-    private List<Pair<String, String>> createPatterns(List<SearchPatternDto> patterns){
+    private List<Pair<String, String>> createPatterns(List<SearchPatternDto> patterns) {
         return patterns
                 .stream()
                 .map(x -> Pair.of(x.getName(), x.getPattern()))
@@ -369,6 +381,23 @@ public class ParserFactoryImpl implements ParserFactory {
                 .build();
     }
 
+    private ParserExtractor createJsonPathExtractor(ParserExtractorDto extractor) {
+        var builder = JsonPathExtractor
+                .builder()
+                .jsonPathExtractorFlags(getJsonPathExtractorFlags(extractor.getAttributes()));
+
+        extractor.getAttributes().getJsonPathQueries()
+                .forEach(x -> builder.addQuery(x.getOutputField(), x.getQuery()));
+
+        return builder
+                .name(extractor.getName())
+                .field(extractor.getField())
+                .extractorFlags(getExtractorFlags(extractor.getAttributes()))
+                .preProcessing(createPreprocessingFunction(extractor))
+                .postProcessing(createPostProcessingFunctions(extractor))
+                .build();
+    }
+
     private ParserExtractor createParserExtractor(ParserExtractorDto extractor) {
         if (extractor == null
                 || extractor.getName() == null
@@ -389,6 +418,8 @@ public class ParserFactoryImpl implements ParserFactory {
                 return createJsonExtractor(extractor);
             case REGEX_SELECT_EXTRACTOR:
                 return createRegexSelectExtractor(extractor);
+            case JSON_PATH_EXTRACTOR:
+                return createJsonPathExtractor(extractor);
         }
 
         throw new IllegalArgumentException("Unsupported extractor type");
