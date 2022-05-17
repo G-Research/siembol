@@ -15,7 +15,7 @@ public class TimeExclusionEvaluatorFactory implements RespondingEvaluatorFactory
     private final SiembolJsonSchemaValidator attributesSchema;
 
     public TimeExclusionEvaluatorFactory() throws Exception {
-        attributesSchema = new SiembolJsonSchemaValidator(TimeExclusionEvaluatorFactory.class);
+        attributesSchema = new SiembolJsonSchemaValidator(TimeExclusionEvaluatorAttributesDto.class);
     }
 
     @Override

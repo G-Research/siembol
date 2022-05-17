@@ -3,8 +3,8 @@ package uk.co.gresearch.siembol.response.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
-@Attributes(title = "table formatter evaluator attributes",
-        description = "Attributes for formatting markdown table from json object")
+@Attributes(title = "time exclusion evaluator attributes",
+        description = "Attributes for time exclusion evaluator")
 public class TimeExclusionEvaluatorAttributesDto {
     @JsonProperty("timestamp_field")
     @Attributes(required = true,
