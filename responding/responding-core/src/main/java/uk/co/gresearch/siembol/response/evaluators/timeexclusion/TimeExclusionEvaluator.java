@@ -1,7 +1,6 @@
 package uk.co.gresearch.siembol.response.evaluators.timeexclusion;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
 import uk.co.gresearch.siembol.common.utils.EvaluationLibrary;
 import uk.co.gresearch.siembol.response.common.Evaluable;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
@@ -33,8 +32,9 @@ public class TimeExclusionEvaluator implements Evaluable {
                 throw new IllegalStateException(SUBSTITUTION_FAILED_MSG);
             }
 
-            TimeExclusionEvaluatorAttributesDto currentAttr = (TimeExclusionEvaluatorAttributesDto) substituted.get();
+            var currentAttr = (TimeExclusionEvaluatorAttributesDto) substituted.get();
             if (Strings.isNullOrEmpty(currentAttr.getTimestampField())
+                    || Strings.isNullOrEmpty(currentAttr.getTimeZone())
                     || Strings.isNullOrEmpty(currentAttr.getHoursOfDayPattern())
                     || Strings.isNullOrEmpty(currentAttr.getDaysOfWeekPattern())
                     || Strings.isNullOrEmpty(currentAttr.getMonthsOfYearPattern())) {
@@ -46,7 +46,7 @@ public class TimeExclusionEvaluator implements Evaluable {
                 throw new IllegalStateException(MISSING_TIMESTAMP_MSG);
             }
 
-            Number timestamp = (Number) timestampObj;
+            var timestamp = (Number) timestampObj;
             Instant instant = Instant.ofEpochMilli(timestamp.longValue());
             ZoneId zoneId = ZoneId.of(currentAttr.getTimeZone());
             ZonedDateTime dateTime = ZonedDateTime.ofInstant(instant, zoneId);
