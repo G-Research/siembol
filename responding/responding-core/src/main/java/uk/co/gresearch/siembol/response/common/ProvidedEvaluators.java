@@ -9,6 +9,7 @@ import uk.co.gresearch.siembol.response.evaluators.markdowntable.TableFormatterE
 import uk.co.gresearch.siembol.response.evaluators.matching.MatchingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.sleep.SleepEvaluatorFactory;
 import uk.co.gresearch.siembol.response.evaluators.throttling.AlertThrottlingEvaluatorFactory;
+import uk.co.gresearch.siembol.response.evaluators.timeexclusion.TimeExclusionEvaluatorFactory;
 import uk.co.gresearch.siembol.response.model.ProvidedEvaluatorsProperties;
 
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ public enum ProvidedEvaluators {
     ARRAY_REDUCER_EVALUATOR("array_reducer"),
     ALERT_THROTTLING_EVALUATOR("alert_throttling"),
     SLEEP_EVALUATOR("sleep"),
-    KAFKA_WRITER_EVALUATOR("kafka_writer");
+    KAFKA_WRITER_EVALUATOR("kafka_writer"),
+    TIME_EXCLUSION_EVALUATOR("time_exclusion");
 
     private final String name;
     ProvidedEvaluators(String name) {
@@ -47,7 +49,8 @@ public enum ProvidedEvaluators {
                 new ArrayTableFormatterEvaluatorFactory(),
                 new ArrayReducerEvaluatorFactory(),
                 new AlertThrottlingEvaluatorFactory(),
-                new SleepEvaluatorFactory()));
+                new SleepEvaluatorFactory(),
+                new TimeExclusionEvaluatorFactory()));
 
         if (properties != null && properties.getKafkaWriter() != null) {
                 factories.add(new KafkaWriterEvaluatorFactory(properties.getKafkaWriter()));

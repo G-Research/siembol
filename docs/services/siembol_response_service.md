@@ -109,6 +109,16 @@ Kafka writer evaluator produces a message with alert to a kafka topic.
 - `evaluator_attributes`
   - `topic_name`- The name of the kafka topic
 
+#### Time exclusion
+Time exclusion evaluator interprets the timestamp in provided time zone and evaluates patterns for excluding alerts.
+- `evaluator_type` - The type equals to `time_exclusion`
+- `evaluator_attributes`
+  - `timestamp_field` -  The name of the milliseconds epoch timestamp field  which will be used for evaluating the exclusion
+  - `time_zone` - Timezone which will be used for interpreting the timestamp
+  - `months_of_year_pattern` - Months of year pattern, where months are numbers from 1 to 12
+  - `days_of_week_pattern` - Days of week pattern, where days are numbers from 1 to 7
+  - `hours_of_day_pattern` - Hours of day pattern, where hours are numbers from 0 to 23
+
 ## Plugins
 Siembol response plugins allows to extend the functionality of siembol response by integrating custom evaluators if needed. A response plugin can contain one or more evaluators and siembol response can load one or more plugins if needed.
 
