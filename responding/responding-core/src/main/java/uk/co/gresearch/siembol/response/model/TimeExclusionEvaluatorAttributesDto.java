@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.response.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 
 @Attributes(title = "time exclusion evaluator attributes",
         description = "Attributes for time exclusion evaluator")
@@ -28,6 +29,12 @@ public class TimeExclusionEvaluatorAttributesDto {
     @Attributes(required = true,
             description = "Hours of day pattern, where hours are numbers from 0 to 23")
     private String hoursOfDayPattern = ".*";
+
+    @JsonProperty("result_if_not_excluded")
+    @Attributes(required = true,
+            description = "Evaluation result that the evaluator returns if the alert is not excluded",
+            enums = { "no_match", "match" })
+    private ResponseEvaluationResult resultIfNotExcluded = ResponseEvaluationResult.NO_MATCH;
 
     public String getTimeZone() {
         return timeZone;
@@ -67,5 +74,13 @@ public class TimeExclusionEvaluatorAttributesDto {
 
     public void setHoursOfDayPattern(String hoursOfDayPattern) {
         this.hoursOfDayPattern = hoursOfDayPattern;
+    }
+
+    public ResponseEvaluationResult getResultIfNotExcluded() {
+        return resultIfNotExcluded;
+    }
+
+    public void setResultIfNotExcluded(ResponseEvaluationResult resultIfNotExcluded) {
+        this.resultIfNotExcluded = resultIfNotExcluded;
     }
 }

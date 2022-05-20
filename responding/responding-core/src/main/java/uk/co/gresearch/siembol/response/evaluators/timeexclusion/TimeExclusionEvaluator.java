@@ -57,7 +57,7 @@ public class TimeExclusionEvaluator implements Evaluable {
                 return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.FILTERED, alert);
             }
 
-            return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.NO_MATCH, alert);
+            return RespondingResult.fromEvaluationResult(attributes.getResultIfNotExcluded(), alert);
         } catch (Exception e) {
             return RespondingResult.fromException(e);
         }

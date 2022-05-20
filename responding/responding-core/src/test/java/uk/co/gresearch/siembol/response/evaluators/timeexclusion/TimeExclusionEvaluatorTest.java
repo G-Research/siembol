@@ -22,7 +22,8 @@ public class TimeExclusionEvaluatorTest {
               "time_zone": "Europe/London",
               "months_of_year_pattern": ".*",
               "days_of_week_pattern": "3|6|7",
-              "hours_of_day_pattern": "7|8|11"
+              "hours_of_day_pattern": "7|8|11",
+              "result_if_not_excluded": "no_match"
             }
             """;
 
@@ -73,6 +74,17 @@ public class TimeExclusionEvaluatorTest {
         Assert.assertNotNull(result.getAttributes().getAlert());
     }
 
+    @Test
+    public void matchHoursSimple() {
+        attributesDto.setHoursOfDayPattern("1|2|3");
+        attributesDto.setResultIfNotExcluded(MATCH);
+        evaluator = new TimeExclusionEvaluator(attributesDto);
+        RespondingResult result = evaluator.evaluate(alert);
+        Assert.assertEquals(RespondingResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertEquals(MATCH, result.getAttributes().getResult());
+        Assert.assertNotNull(result.getAttributes());
+        Assert.assertNotNull(result.getAttributes().getAlert());
+    }
     @Test
     public void noMatchHoursSubstitution() {
         attributesDto.setHoursOfDayPattern("${hours_pattern}");
