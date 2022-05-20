@@ -13,7 +13,8 @@ public class TimeExclusionEvaluatorFactoryTest {
               "time_zone": "Europe/London",
               "months_of_year_pattern": ".*",
               "days_of_week_pattern": "6|7",
-              "hours_of_day_pattern": "7|8|9"
+              "hours_of_day_pattern": "7|8|9",
+              "result_if_not_excluded": "no_match"
             }
             """;
 
