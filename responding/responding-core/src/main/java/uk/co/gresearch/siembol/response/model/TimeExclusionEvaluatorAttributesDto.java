@@ -33,7 +33,7 @@ public class TimeExclusionEvaluatorAttributesDto {
     @JsonProperty("result_if_not_excluded")
     @Attributes(required = true,
             description = "Evaluation result that the evaluator returns if the alert is not excluded",
-            enums = { "no_match", "match"})
+            enums = { "no_match", "match" })
     private ResponseEvaluationResult resultIfNotExcluded = ResponseEvaluationResult.NO_MATCH;
 
     public String getTimeZone() {
