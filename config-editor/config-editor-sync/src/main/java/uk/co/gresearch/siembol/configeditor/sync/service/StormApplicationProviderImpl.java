@@ -129,14 +129,15 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
 
     @Override
     public ConfigEditorResult updateStormTopologies(List<StormTopologyDto> topologiesToUpdate,
-                                                    Set<String> serviceNames) {
+                                                    Set<String> serviceNames,
+                                                    boolean syncAll) {
         StormTopologiesDto currentTopologies = getCurrentTopologies();
         List<StormTopologyDto> newTopologies = new ArrayList<>();
         Map<String, StormTopologyDto> relatedTopologies = new HashMap<>();
         currentTopologies.getTopologies().forEach(x -> {
             if (serviceNames.contains(x.getServiceName())) {
                 relatedTopologies.put(x.getTopologyName(), x);
-            } else {
+            } else if (!syncAll) {
                 newTopologies.add(x);
             }
         });
