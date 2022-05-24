@@ -235,8 +235,21 @@ public class StormApplicationProviderTest {
     @Test
     public void removeAllTopologiesServices() throws Exception {
         services.addAll(Arrays.asList("alert", "parsing"));
-        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(new ArrayList<>(), services);
+        ConfigEditorResult result = stormApplicationProvider
+                .updateStormTopologies(new ArrayList<>(), services, false);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTopologies());
+        Assert.assertTrue(result.getAttributes().getTopologies().isEmpty());
+        verify(zooKeeperConnector, times(1)).setData(any());
+    }
+
+    @Test
+    public void removeAllTopologies() throws Exception {
+        services.addAll(List.of("new_service"));
+        ConfigEditorResult result = stormApplicationProvider
+                .updateStormTopologies(new ArrayList<>(), services, true);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
+        Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertTrue(result.getAttributes().getTopologies().isEmpty());
         verify(zooKeeperConnector, times(1)).setData(any());
@@ -245,7 +258,8 @@ public class StormApplicationProviderTest {
     @Test
     public void removeTopologiesFromOneService() throws Exception {
         services.addAll(List.of("parsing"));
-        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(new ArrayList<>(), services);
+        ConfigEditorResult result = stormApplicationProvider
+                .updateStormTopologies(new ArrayList<>(), services, false);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertEquals(1, result.getAttributes().getTopologies().size());
@@ -258,7 +272,7 @@ public class StormApplicationProviderTest {
     @Test
     public void updateTopologiesOk() throws Exception {
         services.addAll(Arrays.asList("alert", "parsing"));
-        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services);
+        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services, false);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getTopologies());
         Assert.assertEquals(3, result.getAttributes().getTopologies().size());
@@ -269,7 +283,7 @@ public class StormApplicationProviderTest {
     public void updateTopologiesNothingToUpdate() throws Exception {
         services.addAll(Arrays.asList("alert", "parsing"));
         topologiesToUpdate =  ((StormTopologiesDto)TOPOLOGIES_READER.readValue(initTopologies)).getTopologies();
-        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services);
+        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services, false);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         Assert.assertNull(result.getAttributes().getTopologies());
         Assert.assertNotNull(result.getAttributes().getMessage());
@@ -293,7 +307,7 @@ public class StormApplicationProviderTest {
     public void updateDuplicatesError() {
         topologiesToUpdate.get(0).setTopologyName("b");
         services.addAll(Arrays.asList("alert", "parsing"));
-        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services);
+        ConfigEditorResult result = stormApplicationProvider.updateStormTopologies(topologiesToUpdate, services, false);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes().getException());
         Health health = stormApplicationProvider.checkHealth();

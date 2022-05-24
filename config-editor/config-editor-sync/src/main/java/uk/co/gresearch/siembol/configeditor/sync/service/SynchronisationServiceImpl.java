@@ -26,6 +26,8 @@ public class SynchronisationServiceImpl implements SynchronisationService {
     private static final String INIT_COMPLETED_MSG = "Initialisation of synchronisation service completed";
     private static final String EMPTY_ACTIONS_MSG = "No actions registered in synchronisation service";
     private static final String SERVICES_SYNC_REQUEST_MSG = "Requested synchronisation {} of services: {}";
+
+    private static final String ALL_SERVICES_SYNC_REQUEST_MSG = "Requested synchronisation {} of all services: {}";
     private static final String SERVICE_SYNC_RELEASE_DISABLED =
             "Release synchronisation with zookeeper is disabled for the service: {}";
     private static final String RELEASING_TOPOLOGIES_DISABLED =
@@ -43,7 +45,8 @@ public class SynchronisationServiceImpl implements SynchronisationService {
     }
 
     private ConfigEditorResult executeActions(List<String> serviceNames,
-                                              Map<String, SynchronisationAction> serviceActionsMaps) {
+                                              Map<String, SynchronisationAction> serviceActionsMaps,
+                                              boolean allServices) {
         List<ConfigEditorServiceContext> serviceContexts = new ArrayList<>();
 
         for (String serviceName : serviceNames) {
@@ -74,9 +77,9 @@ public class SynchronisationServiceImpl implements SynchronisationService {
 
         if (!servicesWithChangedTopologies.isEmpty()) {
             ConfigEditorResult topologiesUpdateResult = stormProvider
-                    .updateStormTopologies(topologies, servicesWithChangedTopologies);
+                    .updateStormTopologies(topologies, servicesWithChangedTopologies, allServices);
             if (topologiesUpdateResult.getStatusCode() != OK) {
-                String msg = String.format(ERROR_UPDATE_TOPOLOGIES_MSG, servicesWithChangedTopologies.toString());
+                String msg = String.format(ERROR_UPDATE_TOPOLOGIES_MSG, servicesWithChangedTopologies);
                 LOGGER.error(msg);
                 exception.set(new IllegalStateException(msg));
                 return topologiesUpdateResult;
@@ -90,12 +93,14 @@ public class SynchronisationServiceImpl implements SynchronisationService {
     public ConfigEditorResult synchroniseServices(List<String> serviceNames, SynchronisationType syncType) {
         LOGGER.info(SERVICES_SYNC_REQUEST_MSG, syncType.toString(), serviceNames.toString());
         Map<String, SynchronisationAction> actionsMap = syncTypeToActionsMap.get(syncType);
-        return executeActions(serviceNames, actionsMap);
+        return executeActions(serviceNames, actionsMap, false);
     }
 
     @Override
     public ConfigEditorResult synchroniseAllServices(SynchronisationType syncType) {
-        return synchroniseServices(allServiceNames, syncType);
+        LOGGER.info(ALL_SERVICES_SYNC_REQUEST_MSG, syncType.toString(), allServiceNames);
+        Map<String, SynchronisationAction> actionsMap = syncTypeToActionsMap.get(syncType);
+        return executeActions(allServiceNames, actionsMap, true);
     }
 
     @Override

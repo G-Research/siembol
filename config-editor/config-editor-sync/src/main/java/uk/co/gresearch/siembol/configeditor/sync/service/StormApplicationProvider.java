@@ -12,7 +12,9 @@ public interface StormApplicationProvider {
 
     ConfigEditorResult getStormTopologies(String serviceName);
 
-    ConfigEditorResult updateStormTopologies(List<StormTopologyDto> topologies, Set<String> serviceNames);
+    ConfigEditorResult updateStormTopologies(List<StormTopologyDto> topologies,
+                                             Set<String> serviceNames,
+                                             boolean syncAll);
 
     ConfigEditorResult restartStormTopology(String serviceName, String topologyName);
 

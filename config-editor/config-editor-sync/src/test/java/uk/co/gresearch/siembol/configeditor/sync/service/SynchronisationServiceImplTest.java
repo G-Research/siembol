@@ -11,11 +11,7 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorServiceContext;
 import uk.co.gresearch.siembol.configeditor.sync.actions.SynchronisationAction;
 import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -56,6 +52,13 @@ public class SynchronisationServiceImplTest {
     }
 
     @Test
+    public void syncOneServiceOk() {
+        ConfigEditorResult result = synchronisationService.synchroniseServices(List.of("a"), SynchronisationType.ALL);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
+        verify(action, times(1)).execute(any());
+    }
+
+    @Test
     public void checkHealthOk() {
         Assert.assertEquals(Status.UP, synchronisationService.checkHealth().getStatus());
     }
@@ -72,24 +75,36 @@ public class SynchronisationServiceImplTest {
 
     @Test
     public void syncAllWithTopologiesOk() {
-        when(stormProvider.updateStormTopologies(any(), any())).thenReturn(
+        when(stormProvider.updateStormTopologies(any(), any(), eq(true))).thenReturn(
                 ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.OK, "ok"));
         context.setStormTopologies(Optional.of(Arrays.asList(new StormTopologyDto())));
         ConfigEditorResult result = synchronisationService.synchroniseAllServices(SynchronisationType.ALL);
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
         verify(action, times(1)).execute(any());
-        verify(stormProvider, times(1)).updateStormTopologies(any(), any());
+        verify(stormProvider, times(1)).updateStormTopologies(any(), any(), eq(true));
+    }
+
+    @Test
+    public void syncOneServiceWithTopologyOk() {
+        when(stormProvider.updateStormTopologies(any(), any(), eq(false))).thenReturn(
+                ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.OK, "ok"));
+        context.setStormTopologies(Optional.of(Arrays.asList(new StormTopologyDto())));
+        ConfigEditorResult result = synchronisationService.synchroniseServices(List.of("a"),
+                SynchronisationType.ALL);
+        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, result.getStatusCode());
+        verify(action, times(1)).execute(any());
+        verify(stormProvider, times(1)).updateStormTopologies(any(), any(), eq(false));
     }
 
     @Test
     public void syncAllWithTopologiesError() {
-        when(stormProvider.updateStormTopologies(any(), any())).thenReturn(
+        when(stormProvider.updateStormTopologies(any(), any(), eq(true))).thenReturn(
                 ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, "error"));
         context.setStormTopologies(Optional.of(Arrays.asList(new StormTopologyDto())));
         ConfigEditorResult result = synchronisationService.synchroniseAllServices(SynchronisationType.ALL);
         Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, result.getStatusCode());
         Assert.assertEquals(Status.DOWN, synchronisationService.checkHealth().getStatus());
         verify(action, times(1)).execute(any());
-        verify(stormProvider, times(1)).updateStormTopologies(any(), any());
+        verify(stormProvider, times(1)).updateStormTopologies(any(), any(), eq(true));
     }
 }
