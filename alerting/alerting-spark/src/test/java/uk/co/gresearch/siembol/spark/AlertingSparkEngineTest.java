@@ -49,9 +49,11 @@ public class AlertingSparkEngineTest {
         AlertingSparkEngine clone = SerializationUtils.clone(engine);
         AlertingSparkResult retClone = clone.eval(goodAlert, 100);
 
-        Assert.assertEquals(ret.getMatchesTotal(), retClone.getMatchesTotal());
-        Assert.assertEquals(ret.getExceptionsTotal(), retClone.getExceptionsTotal());
-        Assert.assertEquals(ret.getExceptions(), retClone.getExceptions());
-        Assert.assertEquals(ret.getMatches(), retClone.getMatches());
+        var alertingResult = ret.toAlertingSparkTestingResult();
+        var retCloneResult = retClone.toAlertingSparkTestingResult();
+        Assert.assertEquals(alertingResult.getMatchesTotal(), retCloneResult.getMatchesTotal());
+        Assert.assertEquals(alertingResult.getExceptionsTotal(), retCloneResult.getExceptionsTotal());
+        Assert.assertEquals(alertingResult.getExceptions(), retCloneResult.getExceptions());
+        Assert.assertEquals(alertingResult.getMatches(), retCloneResult.getMatches());
     }
 }
