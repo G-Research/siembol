@@ -23,7 +23,7 @@ public class SpringMetricsRegistrar implements SiembolMetricsRegistrar {
     public SiembolGauge registerGauge(String name) {
         var gauge = new SiembolGauge();
         Gauge
-                .builder(name, () -> gauge.getValue())
+                .builder(name, gauge::getValue)
                 .register(registry);
 
         return gauge;
