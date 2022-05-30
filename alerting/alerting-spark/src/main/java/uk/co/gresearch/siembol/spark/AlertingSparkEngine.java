@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class AlertingSparkEngine implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final String ALERTING_RULE_COMPILATION_ERROR = "Exception during compiling alerting rules";
     private transient AlertingEngine alertingEngine;
     private String rules;
 
@@ -39,7 +40,7 @@ public class AlertingSparkEngine implements Serializable {
                     .getAttributes()
                     .getEngine();
         } catch (Exception e) {
-            throw new IOException();
+            throw new IOException(ALERTING_RULE_COMPILATION_ERROR);
         }
     }
 }

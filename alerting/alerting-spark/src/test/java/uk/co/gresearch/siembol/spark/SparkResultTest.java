@@ -6,13 +6,14 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
+import uk.co.gresearch.siembol.common.model.AlertingSparkTestingResultDto;
 
 import java.util.*;
 
 public class SparkResultTest {
     private AlertingAttributes attributes;
     private AlertingResult alertingResult;
-    private AlertingSparkResult alertingSparkResult;
+    private AlertingSparkTestingResultDto alertingSparkTestResult;
     private final int maxResult = 100;
     private Map<String, Object> event;
 
@@ -26,25 +27,29 @@ public class SparkResultTest {
     @Test
     public void wrongStatusCodeTest() {
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, attributes);
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
-        Assert.assertEquals(1, alertingSparkResult.getExceptionsTotal());
-        Assert.assertEquals(0, alertingSparkResult.getMatchesTotal());
-        Assert.assertTrue(alertingSparkResult.getMatches().isEmpty());
-        Assert.assertEquals(1, alertingSparkResult.getExceptions().size());
-        Assert.assertEquals("Status code: ERROR", alertingSparkResult.getExceptions().get(0));
+        alertingSparkTestResult = new AlertingSparkResult(alertingResult, maxResult).toAlertingSparkTestingResult();
+
+        Assert.assertEquals(1, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertEquals(0, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertTrue(alertingSparkTestResult.getMatches().isEmpty());
+        Assert.assertTrue(alertingSparkTestResult.getExceptions().isEmpty());
     }
+
 
     @Test
     public void singleEventTest() {
         event.put("test", "true");
         attributes.setOutputEvents(List.of(event));
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
-        Assert.assertEquals(0, alertingSparkResult.getExceptionsTotal());
-        Assert.assertEquals(1, alertingSparkResult.getMatchesTotal());
-        Assert.assertTrue(alertingSparkResult.getExceptions().isEmpty());
-        Assert.assertEquals(1, alertingSparkResult.getMatches().size());
-        Assert.assertEquals("{\"test\":\"true\"}", alertingSparkResult.getMatches().get(0));
+        var sparkResult = new AlertingSparkResult(alertingResult, maxResult);
+        alertingSparkTestResult = sparkResult.toAlertingSparkTestingResult();
+        Assert.assertEquals(0, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertEquals(1, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertTrue(alertingSparkTestResult.getExceptions().isEmpty());
+        Assert.assertEquals(1, alertingSparkTestResult.getMatches().size());
+        Assert.assertEquals("true", alertingSparkTestResult.getMatches().get(0).get("test"));
+        Assert.assertNotNull(sparkResult.toString());
     }
+
 
     @Test
     public void maxResultEventTest() {
@@ -55,24 +60,27 @@ public class SparkResultTest {
         }
 
         attributes.setOutputEvents(events);
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
-        Assert.assertEquals(0, alertingSparkResult.getExceptionsTotal());
-        Assert.assertEquals(maxResult + 1, alertingSparkResult.getMatchesTotal());
-        Assert.assertTrue(alertingSparkResult.getExceptions().isEmpty());
-        Assert.assertEquals(maxResult, alertingSparkResult.getMatches().size());
-        Assert.assertEquals("{\"test\":\"true\"}", alertingSparkResult.getMatches().get(0));
+        alertingSparkTestResult = new AlertingSparkResult(alertingResult, maxResult).toAlertingSparkTestingResult();
+        Assert.assertEquals(0, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertEquals(maxResult + 1, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertTrue(alertingSparkTestResult.getExceptions().isEmpty());
+        Assert.assertEquals(maxResult, alertingSparkTestResult.getMatches().size());
+        Assert.assertEquals("true", alertingSparkTestResult.getMatches().get(0).get("test"));
     }
+
 
     @Test
     public void singleExceptionTest() {
         event.put("test", "true");
         attributes.setExceptionEvents(List.of(event));
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
-        Assert.assertEquals(1, alertingSparkResult.getExceptionsTotal());
-        Assert.assertEquals(0, alertingSparkResult.getMatchesTotal());
-        Assert.assertTrue(alertingSparkResult.getMatches().isEmpty());
-        Assert.assertEquals(1, alertingSparkResult.getExceptions().size());
-        Assert.assertEquals("{\"test\":\"true\"}", alertingSparkResult.getExceptions().get(0));
+        var sparkResult = new AlertingSparkResult(alertingResult, maxResult);
+        alertingSparkTestResult = sparkResult.toAlertingSparkTestingResult();
+        Assert.assertEquals(1, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertEquals(0, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertTrue(alertingSparkTestResult.getMatches().isEmpty());
+        Assert.assertEquals(1, alertingSparkTestResult.getExceptions().size());
+        Assert.assertEquals("true", alertingSparkTestResult.getExceptions().get(0).get("test"));
+        Assert.assertNotNull(sparkResult.toString());
     }
 
     @Test
@@ -84,12 +92,12 @@ public class SparkResultTest {
         }
 
         attributes.setExceptionEvents(events);
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
-        Assert.assertEquals(0, alertingSparkResult.getMatchesTotal());
-        Assert.assertEquals(maxResult + 1, alertingSparkResult.getExceptionsTotal());
-        Assert.assertTrue(alertingSparkResult.getMatches().isEmpty());
-        Assert.assertEquals(maxResult, alertingSparkResult.getExceptions().size());
-        Assert.assertEquals("{\"test\":\"true\"}", alertingSparkResult.getExceptions().get(0));
+        alertingSparkTestResult = new AlertingSparkResult(alertingResult, maxResult).toAlertingSparkTestingResult();
+        Assert.assertEquals(0, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertEquals(maxResult + 1, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertTrue(alertingSparkTestResult.getMatches().isEmpty());
+        Assert.assertEquals(maxResult, alertingSparkTestResult.getExceptions().size());
+        Assert.assertEquals("true", alertingSparkTestResult.getExceptions().get(0).get("test"));
     }
 
     @Test
@@ -102,12 +110,13 @@ public class SparkResultTest {
 
         attributes.setOutputEvents(events);
         attributes.setExceptionEvents(events);
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
+        var sparkResult = new AlertingSparkResult(alertingResult, maxResult);
+        alertingSparkTestResult = sparkResult.toAlertingSparkTestingResult();
 
-        Assert.assertEquals(10, alertingSparkResult.getMatchesTotal());
-        Assert.assertEquals(10, alertingSparkResult.getExceptionsTotal());
-        Assert.assertEquals(10, alertingSparkResult.getMatches().size());
-        Assert.assertEquals(10, alertingSparkResult.getExceptions().size());
+        Assert.assertEquals(10, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertEquals(10, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertEquals(10, alertingSparkTestResult.getMatches().size());
+        Assert.assertEquals(10, alertingSparkTestResult.getExceptions().size());
 
         event.put("test", "false");
         ArrayList<Map<String, Object>> eventsOther = new ArrayList<>();
@@ -118,35 +127,40 @@ public class SparkResultTest {
         AlertingAttributes attributesOther = new AlertingAttributes();
         attributesOther.setOutputEvents(eventsOther);
         attributesOther.setExceptionEvents(eventsOther);
-        AlertingSparkResult alertingSparkResultOther = new AlertingSparkResult(
+        var sparkResultOther = new AlertingSparkResult(
                 new AlertingResult(AlertingResult.StatusCode.OK, attributesOther), maxResult);
+        var alertingSparkTestResultOther = sparkResultOther
+                .toAlertingSparkTestingResult();
 
-        Assert.assertEquals(maxResult + 1, alertingSparkResultOther.getMatchesTotal());
-        Assert.assertEquals(maxResult + 1, alertingSparkResultOther.getExceptionsTotal());
-        Assert.assertEquals(maxResult, alertingSparkResultOther.getMatches().size());
-        Assert.assertEquals(maxResult, alertingSparkResultOther.getExceptions().size());
+        Assert.assertEquals(maxResult + 1, alertingSparkTestResultOther.getMatchesTotal());
+        Assert.assertEquals(maxResult + 1, alertingSparkTestResultOther.getExceptionsTotal());
+        Assert.assertEquals(maxResult, alertingSparkTestResultOther.getMatches().size());
+        Assert.assertEquals(maxResult, alertingSparkTestResultOther.getExceptions().size());
 
-        alertingSparkResult = alertingSparkResult.merge(alertingSparkResultOther);
-        Assert.assertEquals(10 + maxResult + 1, alertingSparkResult.getMatchesTotal());
-        Assert.assertEquals(10 + maxResult + 1, alertingSparkResult.getExceptionsTotal());
-        Assert.assertEquals(maxResult, alertingSparkResult.getMatches().size());
-        Assert.assertEquals(maxResult, alertingSparkResult.getExceptions().size());
+        alertingSparkTestResult = sparkResult.merge(sparkResultOther).toAlertingSparkTestingResult();
+        Assert.assertEquals(10 + maxResult + 1, alertingSparkTestResult.getMatchesTotal());
+        Assert.assertEquals(10 + maxResult + 1, alertingSparkTestResult.getExceptionsTotal());
+        Assert.assertEquals(maxResult, alertingSparkTestResult.getMatches().size());
+        Assert.assertEquals(maxResult, alertingSparkTestResult.getExceptions().size());
     }
+
 
     @Test
     public void serializableTest() {
         event.put("test", "true");
         attributes.setOutputEvents(List.of(event));
-        alertingSparkResult = new AlertingSparkResult(alertingResult, maxResult);
+        var sparkResult = new AlertingSparkResult(alertingResult, maxResult);
 
-        byte[] blob = SerializationUtils.serialize(alertingSparkResult);
+        byte[] blob = SerializationUtils.serialize(sparkResult);
         Assert.assertTrue(blob.length > 0);
-        AlertingSparkResult clone = SerializationUtils.clone(alertingSparkResult);
+        AlertingSparkTestingResultDto cloneTestingResult = SerializationUtils
+                .clone(sparkResult).toAlertingSparkTestingResult();
 
-        Assert.assertEquals(0, clone.getExceptionsTotal());
-        Assert.assertEquals(1, clone.getMatchesTotal());
-        Assert.assertTrue(clone.getExceptions().isEmpty());
-        Assert.assertEquals(1, clone.getMatches().size());
-        Assert.assertEquals("{\"test\":\"true\"}", clone.getMatches().get(0));
+        Assert.assertEquals(0, cloneTestingResult.getExceptionsTotal());
+        Assert.assertEquals(1, cloneTestingResult.getMatchesTotal());
+        Assert.assertTrue(cloneTestingResult.getExceptions().isEmpty());
+        Assert.assertEquals(1, cloneTestingResult.getMatches().size());
+        Assert.assertEquals("true", cloneTestingResult.getMatches().get(0).get("test"));
     }
+
 }

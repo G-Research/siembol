@@ -1,15 +1,16 @@
 package uk.co.gresearch.siembol.common.metrics;
 
-import java.util.concurrent.atomic.AtomicInteger;
+
+import com.google.common.util.concurrent.AtomicDouble;
 
 public class SiembolGauge {
-    private final AtomicInteger value = new AtomicInteger(0);
+    private final AtomicDouble value = new AtomicDouble(0);
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value.set(value);
     }
 
-    public int getValue() {
-        return value.intValue();
+    public double getValue() {
+        return value.doubleValue();
     }
 }

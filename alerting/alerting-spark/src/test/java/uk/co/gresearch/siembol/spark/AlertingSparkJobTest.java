@@ -52,7 +52,7 @@ public class AlertingSparkJobTest {
 
     private JavaSparkContext sc;
     private AlertingSparkJob job;
-    private final int maxResult = 100;
+    private final int maxResultSize = 100;
 
     @Before
     public void setup() {
@@ -72,23 +72,20 @@ public class AlertingSparkJobTest {
             events.add(goodAlert);
             events.add("INVALID");
         }
+
         JavaRDD<String> eventsRdd = sc.parallelize(events);
         job = new AlertingSparkJob.Builder()
                 .sparkContext(sc)
-                .sourceType("dummy")
-                .toDate("dummy")
-                .fromDate("dummy")
-                .logPath("dummy")
                 .rdd(eventsRdd)
                 .alertingRules(isAlertRules)
-                .maxResult(maxResult)
+                .maxResultSize(maxResultSize)
                 .build();
 
-        AlertingSparkResult result = job.eval();
+        var result = job.eval().toAlertingSparkTestingResult();
         Assert.assertEquals(200, result.getMatchesTotal());
         Assert.assertEquals(200, result.getExceptionsTotal());
-        Assert.assertEquals(maxResult, result.getMatches().size());
-        Assert.assertEquals(maxResult, result.getExceptions().size());
+        Assert.assertEquals(maxResultSize, result.getMatches().size());
+        Assert.assertEquals(maxResultSize, result.getExceptions().size());
     }
 
     @Test
@@ -101,16 +98,12 @@ public class AlertingSparkJobTest {
         JavaRDD<String> eventsRdd = sc.parallelize(events);
         job = new AlertingSparkJob.Builder()
                 .sparkContext(sc)
-                .sourceType("dummy")
-                .toDate("dummy")
-                .fromDate("dummy")
-                .logPath("dummy")
                 .rdd(eventsRdd)
                 .alertingRules(isAlertRules)
-                .maxResult(maxResult)
+                .maxResultSize(maxResultSize)
                 .build();
 
-        AlertingSparkResult result = job.eval();
+        var result = job.eval().toAlertingSparkTestingResult();
         Assert.assertEquals(0, result.getMatchesTotal());
         Assert.assertEquals(0, result.getExceptionsTotal());
         Assert.assertEquals(0, result.getMatches().size());
@@ -128,13 +121,8 @@ public class AlertingSparkJobTest {
         sc.parallelize(events);
         job = new AlertingSparkJob.Builder()
                 .sparkContext(sc)
-                .suffix("txt")
-                .sourceType("dummy")
-                .fromDate("2019-06-19")
-                .toDate("2019-06-20")
-                .logPath("e:/hdfs/apps/siembol/indexing/rotated/")
                 .alertingRules(isAlertRules)
-                .maxResult(maxResult)
+                .maxResultSize(maxResultSize)
                 .build();
 
         AlertingSparkResult result = job.eval();
