@@ -49,7 +49,16 @@ public enum SiembolMetrics {
     SIEMBOL_SYNC_ADMIN_CONFIG("siembol_counter_sync_admin_config_%s"),
     SIEMBOL_SYNC_RULES_VERSION("siembol_counter_sync_config_version_%s"),
     CONFIG_EDITOR_REST_RELEASE_PR_SERVICE("siembol_counter_release_pr_%s"),
-    CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s");
+    CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s"),
+
+    HEARTBEAT_MESSAGES_SENT("siembol_counter_hearbeat_messages_sent_%s"),
+    HEARTBEAT_MESSAGES_READ("siembol_counter_hearbeat_messages_read_%s"),
+    HEARTBEAT_LATENCY_PARSING("siembol_gauge_hearbeat_latency_parsing_%s"),
+    HEARTBEAT_LATENCY_ENRICHING("siembol_gauge_hearbeat_latency_enriching_%s"),
+    HEARTBEAT_LATENCY_RESPONDING("siembol_gauge_hearbeat_latency_responding_%s"),
+    HEARTBEAT_LATENCY_TOTAL("siembol_gauge_hearbeat_latency_total_%s"),
+    HEARTBEAT_PRODUCER_ERROR("siembol_counter_heartbeat_producer_error_%s"),
+    HEARTBEAT_CONSUMER_ERROR("siembol_counter_heartbeat_consumer_error_%s");
 
     private final String formatStringName;
 

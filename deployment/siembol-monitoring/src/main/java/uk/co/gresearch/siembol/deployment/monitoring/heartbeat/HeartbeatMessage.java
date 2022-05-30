@@ -6,11 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HeartbeatMessage {
-    private long timestamp; // ISO format
+    private String timestamp; // ISO format
 
-    private Boolean siembolHeartbeat;
+    private Boolean siembolHeartbeat = true;
 
-    private String name; // producerName or parsingClusterName
+    private String producerName;
 
     private Map<String, Object> message = new LinkedHashMap<>();
 
@@ -31,11 +31,11 @@ public class HeartbeatMessage {
         this.siembolHeartbeat = siembolHeartbeat;
     }
 
-    public long getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 }

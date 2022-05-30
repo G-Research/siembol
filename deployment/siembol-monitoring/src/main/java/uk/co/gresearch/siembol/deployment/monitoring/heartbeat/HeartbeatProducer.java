@@ -1,35 +1,47 @@
 package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
+import reactor.core.publisher.Mono;
+import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
+import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
-import uk.co.gresearch.siembol.common.utils.TimeProvider;
 import uk.co.gresearch.siembol.deployment.monitoring.application.HeartbeatProducerProperties;
 
+import java.io.Closeable;
 import java.lang.invoke.MethodHandles;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class HeartbeatProducer {
+public class HeartbeatProducer implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_KAFKA_WRITER_PROPS_MSG = "Missing heartbeat kafka producer properties for {}";
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final HeartbeatMessage message = new HeartbeatMessage();
-    private SiembolMetricsRegistrar metricsRegistrar;
+    private static final ObjectWriter objectWriter = new ObjectMapper().writer();
+    private final Map<String, Exception> exceptionMap = new HashMap<>();
+    private final int errorThreshold;
+    private final Map<String, Producer<String,String>> producerMap = new HashMap<>();
 
     public HeartbeatProducer(Map<String, HeartbeatProducerProperties> producerPropertiesMap,
                              int heartbeatIntervalSeconds,
                              Map<String, Object> heartbeatMessageProperties,
                              SiembolMetricsRegistrar metricsRegistrar) {
-        this.metricsRegistrar = metricsRegistrar;
         this.initialiseMessage(heartbeatMessageProperties);
+        this.errorThreshold = producerPropertiesMap.size();
         for (Map.Entry<String, HeartbeatProducerProperties> producerProperties : producerPropertiesMap.entrySet()) {
             var kafkaWriterProperties = producerProperties.getValue().getKafkaProperties();
             if (kafkaWriterProperties == null) {
@@ -37,15 +49,20 @@ public class HeartbeatProducer {
                 // what to do with error
             }
 
-            // register counter here and send as attributes in callback
             var producer = new KafkaProducer<>(
                     kafkaWriterProperties,
                     new StringSerializer(),
                     new StringSerializer());
             var topicName = producerProperties.getValue().getOutputTopic();
             var producerName = producerProperties.getKey();
+            producerMap.put(producerName, producer);
+            var updateCounter =
+                    metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_MESSAGES_SENT.getMetricName(producerName));
+            var errorCounter =
+                    metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_PRODUCER_ERROR.getMetricName(producerName));
             this.executorService.scheduleAtFixedRate(() ->
-                            this.executorService.execute(() -> this.sendHeartbeat(producer, topicName, producerName)),
+                            this.executorService.execute(() -> this.sendHeartbeat(producer, topicName, producerName,
+                                    updateCounter, errorCounter)),
                     heartbeatIntervalSeconds,
                     heartbeatIntervalSeconds,
                     TimeUnit.SECONDS);
@@ -53,35 +70,36 @@ public class HeartbeatProducer {
     }
 
     private void initialiseMessage(Map<String, Object> messageProperties) {
-        this.message.setSiembolHeartbeat(true); // true by default
-// set the name        // what if empty message? -> should not fail
+        // check empty message
         for (Map.Entry<String, Object> messageEntry : messageProperties.entrySet()) {
             this.message.setMessage(messageEntry.getKey(), messageEntry.getValue());
         }
     }
 
-
-    private void sendHeartbeat(Producer<String, String> producer, String topicName, String producerName) {
-        var objectWriter = new ObjectMapper().writer(); // one static writer
-        this.message.setTimestamp(new TimeProvider().getCurrentTimeInMs()); // current ms -> format ISO, time
-        // formatter
+    private void sendHeartbeat(Producer<String, String> producer, String topicName, String producerName,
+                               SiembolCounter updateCounter, SiembolCounter errorCounter) {
+        var now = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        this.message.setTimestamp(formatter.format(now));
         try {
             producer.send(new ProducerRecord<>(topicName, objectWriter.writeValueAsString(this.message))).get();
-            this.metricsRegistrar.registerCounter(HeartbeatMetrics.HEARTBEAT_MESSAGES_SENT.getMetricName(producerName)).increment();
+            updateCounter.increment();
+            exceptionMap.remove(producerName);
         } catch (Exception e) {
-            LOG.error("Error sending message to kakfa with producer {}", producerName);
-            this.metricsRegistrar.registerCounter(HeartbeatMetrics.HEARTBEAT_PRODUCER_ERROR.getMetricName(producerName)).increment();
+            LOG.error("Error sending message to kafka with producer {}", producerName);
+            errorCounter.increment();
+            exceptionMap.put(producerName, e);
         }
     }
 
-    //getHealth method
+    private Mono<Health> checkHealth() {
+        return Mono.just(exceptionMap.size() > errorThreshold? Health.down().build(): Health.up().build());
+    }
 
-    // do I need to cloe producer? yes: add closeable
-
+    public void close() {
+        for (var producer: this.producerMap.values()) {
+            producer.close();
+        }
+    }
     // callable vs runnable
-    // time zone in applica
-    // UTC time
-
-    // map exception: producername: exception -> if all have exception fail + threshold
-    // in map last exception
 }
