@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -11,8 +10,10 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
+import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
-import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
+import uk.co.gresearch.siembol.common.metrics.SiembolGauge;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.deployment.monitoring.application.HeartbeatConsumerProperties;
@@ -21,17 +22,19 @@ import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.Properties;
 
+import static uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProcessingResult.StatusCode.OK;
+
 public class HeartbeatConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Kafka stream service initialisation started";
     private static final String INIT_COMPLETED = "Kafka stream service initialisation completed";
     private final KafkaStreams streams;
-    private static ObjectReader MESSAGE_READER = new ObjectMapper()
+    private static final ObjectReader MESSAGE_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
-    private SiembolCounter parsingLatencyGauge;
-    private SiembolCounter enrichmentLatencyGauge;
-    private SiembolCounter responseLatencyGauge;
-    private SiembolCounter totalLatencyGauge;
+    private final SiembolGauge parsingLatencyGauge;
+    private final SiembolGauge enrichmentLatencyGauge;
+    private final SiembolGauge responseLatencyGauge;
+    private final SiembolGauge totalLatencyGauge;
 
     public HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar) {
         this(properties, metricsRegistrar, new KafkaStreamsFactory());
@@ -41,10 +44,10 @@ public class HeartbeatConsumer {
                       KafkaStreamsFactory streamsFactory) {
         streams = createStreams(streamsFactory, properties);
         streams.start();
-        parsingLatencyGauge = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_LATENCY_PARSING.name());
-        enrichmentLatencyGauge = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING.name());
-        responseLatencyGauge = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING.name());
-        totalLatencyGauge = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL.name());
+        parsingLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING.name());
+        enrichmentLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING.name());
+        responseLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING.name());
+        totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL.name());
     }
 
     private KafkaStreams createStreams(KafkaStreamsFactory streamsFactory, HeartbeatConsumerProperties properties) {
@@ -53,7 +56,7 @@ public class HeartbeatConsumer {
         builder.<String, String>stream(properties.getInputTopic())
                 .mapValues(this::processMessage)
                 .filter((x, y) -> y.getStatusCode() != OK)
-                .mapValues(x -> x.getAttributes().getMessage())
+                .mapValues(HeartbeatProcessingResult::getMessage)
                 .to(properties.getErrorTopic());
 
         Properties configuration = new Properties();
@@ -67,16 +70,35 @@ public class HeartbeatConsumer {
         return ret;
     }
 
-    private void processMessage(String value) throws JsonProcessingException {
-        Map<String, Object> message = MESSAGE_READER.readValue(value);
-        Object timestamp = message.get(SiembolMessageFields.TIMESTAMP);
-        Object parsingTimestamp = message.get(SiembolMessageFields.PARSING_TIME);
-        Object enrichingTimestamp = message.get(SiembolMessageFields.ENRICHING_TIME);
-        Object responseTimestamp = message.get(SiembolMessageFields.RESPONSE_TIME);
+    private HeartbeatProcessingResult processMessage(String value) {
+        try {
+            Map<String, Object> message = MESSAGE_READER.readValue(value);
+            // check if numbers before + if field exist?
+            var currentTimestamp = System.currentTimeMillis();
+            var timestamp = (Number) message.get(SiembolMessageFields.TIMESTAMP);
+            var parsingTimestamp = (Number) message.get(SiembolMessageFields.PARSING_TIME);
+            var enrichingTimestamp = (Number) message.get(SiembolMessageFields.ENRICHING_TIME);
+            var responseTimestamp = (Number) message.get(SiembolMessageFields.RESPONSE_TIME);
 
-        // calculate latency between all services
-        // cretae the model for expected output? Or is it just ResponseAlert?
+            parsingLatencyGauge.setValue(parsingTimestamp.longValue() - timestamp.longValue());
+            enrichmentLatencyGauge.setValue(enrichingTimestamp.longValue() - parsingTimestamp.longValue());
+            responseLatencyGauge.setValue(responseTimestamp.longValue() - enrichingTimestamp.longValue());
+            totalLatencyGauge.setValue(currentTimestamp - timestamp.longValue());
 
+            return HeartbeatProcessingResult.fromSuccess();
+        } catch (Exception e) {
+            LOG.error("error message:  {}", e.toString());
+            return HeartbeatProcessingResult.fromException(e);
+        }
+    }
 
+    public Mono<Health> checkHealth() {
+        return Mono.just(streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
+                ? Health.up().build() :
+                Health.down().build());
+    }
+
+    public void close() {
+        streams.close();
     }
 }
