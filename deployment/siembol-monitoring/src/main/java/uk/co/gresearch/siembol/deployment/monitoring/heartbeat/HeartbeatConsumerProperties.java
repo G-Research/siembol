@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.deployment.monitoring.application;
+package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
 import java.util.Map;
 

@@ -1,4 +1,7 @@
-package uk.co.gresearch.siembol.deployment.monitoring.application;
+package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
+
+import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatConsumerProperties;
+import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducerProperties;
 
 import java.util.Map;
 
@@ -6,7 +9,9 @@ public class HeartbeatProperties {
     private int heartbeatIntervalSeconds = 60;
 
     private Map<String, HeartbeatProducerProperties> heartbeatProducers;
-    private Map<String, HeartbeatConsumerProperties> heartbeatConsumers;
+
+    private HeartbeatConsumerProperties heartbeatConsumer;
+
     private Map<String, Object> message;
 
     public int getHeartbeatIntervalSeconds() {
@@ -25,12 +30,12 @@ public class HeartbeatProperties {
         this.heartbeatProducers = heartbeatProducers;
     }
 
-    public Map<String, HeartbeatConsumerProperties> getHeartbeatConsumers() {
-        return heartbeatConsumers;
+    public HeartbeatConsumerProperties getHeartbeatConsumer() {
+        return heartbeatConsumer;
     }
 
-    public void setHeartbeatConsumers(Map<String, HeartbeatConsumerProperties> heartbeatConsumers) {
-        this.heartbeatConsumers = heartbeatConsumers;
+    public void setHeartbeatConsumer(HeartbeatConsumerProperties heartbeatConsumer) {
+        this.heartbeatConsumer = heartbeatConsumer;
     }
 
     public Map<String, Object> getMessage() {

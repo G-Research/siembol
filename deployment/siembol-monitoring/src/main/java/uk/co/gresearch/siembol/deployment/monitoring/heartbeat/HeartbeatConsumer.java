@@ -16,9 +16,9 @@ import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.metrics.SiembolGauge;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
-import uk.co.gresearch.siembol.deployment.monitoring.application.HeartbeatConsumerProperties;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Properties;
 
@@ -37,17 +37,17 @@ public class HeartbeatConsumer {
     private final SiembolGauge totalLatencyGauge;
 
     public HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar) {
-        this(properties, metricsRegistrar, new KafkaStreamsFactory());
+        this(properties, metricsRegistrar, new KafkaStreamsFactoryImpl());
     }
 
     HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar,
                       KafkaStreamsFactory streamsFactory) {
         streams = createStreams(streamsFactory, properties);
         streams.start();
-        parsingLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING.name());
-        enrichmentLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING.name());
-        responseLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING.name());
-        totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL.name());
+        parsingLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name());
+        enrichmentLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name());
+        responseLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name());
+        totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name());
     }
 
     private KafkaStreams createStreams(KafkaStreamsFactory streamsFactory, HeartbeatConsumerProperties properties) {
@@ -72,13 +72,13 @@ public class HeartbeatConsumer {
 
     private HeartbeatProcessingResult processMessage(String value) {
         try {
+            var currentTimestamp = Instant.now().toEpochMilli();
             Map<String, Object> message = MESSAGE_READER.readValue(value);
             // check if numbers before + if field exist?
-            var currentTimestamp = System.currentTimeMillis();
-            var timestamp = (Number) message.get(SiembolMessageFields.TIMESTAMP);
-            var parsingTimestamp = (Number) message.get(SiembolMessageFields.PARSING_TIME);
-            var enrichingTimestamp = (Number) message.get(SiembolMessageFields.ENRICHING_TIME);
-            var responseTimestamp = (Number) message.get(SiembolMessageFields.RESPONSE_TIME);
+            var timestamp = (Number) message.get(SiembolMessageFields.TIMESTAMP.toString());
+            var parsingTimestamp = (Number) message.get(SiembolMessageFields.PARSING_TIME.toString());
+            var enrichingTimestamp = (Number) message.get(SiembolMessageFields.ENRICHING_TIME.toString());
+            var responseTimestamp = (Number) message.get(SiembolMessageFields.RESPONSE_TIME.toString());
 
             parsingLatencyGauge.setValue(parsingTimestamp.longValue() - timestamp.longValue());
             enrichmentLatencyGauge.setValue(enrichingTimestamp.longValue() - parsingTimestamp.longValue());

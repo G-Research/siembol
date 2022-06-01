@@ -20,11 +20,11 @@ public enum SiembolMessageFields {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return name;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 }

@@ -2,6 +2,9 @@ package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.util.Map;
+import java.util.Properties;
+
 public class HeartbeatProcessingResult {
     private StatusCode statusCode;
 

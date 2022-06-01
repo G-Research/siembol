@@ -53,10 +53,10 @@ public enum SiembolMetrics {
 
     HEARTBEAT_MESSAGES_SENT("siembol_counter_hearbeat_messages_sent_%s"),
     HEARTBEAT_MESSAGES_READ("siembol_counter_hearbeat_messages_read_%s"),
-    HEARTBEAT_LATENCY_PARSING("siembol_gauge_hearbeat_latency_parsing_%s"),
-    HEARTBEAT_LATENCY_ENRICHING("siembol_gauge_hearbeat_latency_enriching_%s"),
-    HEARTBEAT_LATENCY_RESPONDING("siembol_gauge_hearbeat_latency_responding_%s"),
-    HEARTBEAT_LATENCY_TOTAL("siembol_gauge_hearbeat_latency_total_%s"),
+    HEARTBEAT_LATENCY_PARSING_MS("siembol_gauge_hearbeat_latency_ms_parsing_%s"),
+    HEARTBEAT_LATENCY_ENRICHING_MS("siembol_gauge_hearbeat_latency_ms_enriching_%s"),
+    HEARTBEAT_LATENCY_RESPONDING_MS("siembol_gauge_hearbeat_latency_ms_responding_%s"),
+    HEARTBEAT_LATENCY_TOTAL_MS("siembol_gauge_hearbeat_latency_ms_total_%s"),
     HEARTBEAT_PRODUCER_ERROR("siembol_counter_heartbeat_producer_error_%s"),
     HEARTBEAT_CONSUMER_ERROR("siembol_counter_heartbeat_consumer_error_%s");
 

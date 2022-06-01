@@ -13,12 +13,10 @@ import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
-import uk.co.gresearch.siembol.deployment.monitoring.application.HeartbeatProducerProperties;
 
 import java.io.Closeable;
 import java.lang.invoke.MethodHandles;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class HeartbeatProducer implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_KAFKA_WRITER_PROPS_MSG = "Missing heartbeat kafka producer properties for {}";
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executorService;
     private final HeartbeatMessage message = new HeartbeatMessage();
     private static final ObjectWriter objectWriter = new ObjectMapper().writer();
     private final Map<String, Exception> exceptionMap = new HashMap<>();
@@ -42,14 +40,16 @@ public class HeartbeatProducer implements Closeable {
                              SiembolMetricsRegistrar metricsRegistrar) {
 
         this(producerPropertiesMap, heartbeatIntervalSeconds, heartbeatMessageProperties, metricsRegistrar,
-                createProducers(producerPropertiesMap));
+                createProducers(producerPropertiesMap), Executors.newSingleThreadScheduledExecutor());
     }
 
-    HeartbeatProducer(Map<String, HeartbeatProducerProperties> producerPropertiesMap,
+    public HeartbeatProducer(Map<String, HeartbeatProducerProperties> producerPropertiesMap,
                       int heartbeatIntervalSeconds,
                       Map<String, Object> heartbeatMessageProperties,
                       SiembolMetricsRegistrar metricsRegistrar,
-                      Map<String, Producer<String, String>> producerMap) {
+                      Map<String, Producer<String, String>> producerMap,
+                      ScheduledExecutorService executorService) {
+        this.executorService = executorService;
         this.initialiseMessage(heartbeatMessageProperties);
         this.errorThreshold = producerPropertiesMap.size();
         for (Map.Entry<String, Producer<String, String>> producer: producerMap.entrySet()) {
@@ -60,9 +60,9 @@ public class HeartbeatProducer implements Closeable {
             var errorCounter =
                     metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_PRODUCER_ERROR.getMetricName(producerName));
             this.executorService.scheduleAtFixedRate(() ->
-                            this.executorService.execute(() -> this.sendHeartbeat(producer.getValue(), topicName,
+                             this.sendHeartbeat(producer.getValue(), topicName,
                                     producerName,
-                                    updateCounter, errorCounter)),
+                                    updateCounter, errorCounter),
                     heartbeatIntervalSeconds,
                     heartbeatIntervalSeconds,
                     TimeUnit.SECONDS);
@@ -89,7 +89,6 @@ public class HeartbeatProducer implements Closeable {
     }
 
     private void initialiseMessage(Map<String, Object> messageProperties) {
-        // check empty message
         for (Map.Entry<String, Object> messageEntry : messageProperties.entrySet()) {
             this.message.setMessage(messageEntry.getKey(), messageEntry.getValue());
         }
@@ -97,15 +96,16 @@ public class HeartbeatProducer implements Closeable {
 
     private void sendHeartbeat(Producer<String, String> producer, String topicName, String producerName,
                                SiembolCounter updateCounter, SiembolCounter errorCounter) {
-        var now = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS);
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        this.message.setTimestamp(formatter.format(now));
+        var now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+        this.message.setEventTime(now.toString());
+        this.message.setProducerName(producerName);
         try {
             producer.send(new ProducerRecord<>(topicName, objectWriter.writeValueAsString(this.message))).get();
             updateCounter.increment();
+            LOG.info("Sent heartbeat with producer {} to topic {}", producerName, topicName);
             exceptionMap.remove(producerName);
         } catch (Exception e) {
-            LOG.error("Error sending message to kafka with producer {}", producerName);
+            LOG.error("Error sending message to kafka with producer {}: {}", producerName, e.toString());
             errorCounter.increment();
             exceptionMap.put(producerName, e);
         }
@@ -120,5 +120,4 @@ public class HeartbeatProducer implements Closeable {
             producer.close();
         }
     }
-    // callable vs runnable
 }

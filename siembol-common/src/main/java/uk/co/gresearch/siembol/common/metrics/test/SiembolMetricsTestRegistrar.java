@@ -39,4 +39,11 @@ public class SiembolMetricsTestRegistrar implements SiembolMetricsRegistrar {
         }
         return countersMap.get(name).getValue();
     }
+
+    public double getGaugeValue(String name) {
+        if (!gaugesMap.containsKey(name)) {
+            throw new IllegalArgumentException(String.format(METRIC_DOES_NOT_EXIST_MSG, name));
+        }
+        return gaugesMap.get(name).getValue();
+    }
 }

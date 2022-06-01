@@ -78,6 +78,7 @@
         <module>responding</module>
         <module>config-editor</module>
         <module>deployment/storm-topology-manager</module>
+        <module>deployment/siembol-monitoring</module>
     </modules>
     <packaging>pom</packaging>
     <distributionManagement>

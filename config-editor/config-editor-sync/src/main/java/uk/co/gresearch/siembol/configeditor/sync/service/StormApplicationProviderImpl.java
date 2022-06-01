@@ -88,7 +88,7 @@ public class StormApplicationProviderImpl implements StormApplicationProvider {
         updatedTopologies.sort(Comparator.comparing(StormTopologyDto::getTopologyName));
         StormTopologiesDto topologiesToSend = new StormTopologiesDto();
         topologiesToSend.setTopologies(updatedTopologies);
-        topologiesToSend.setTimestamp(Number responseTimestamp = (Number) message.get(SiembolMessageFields.RESPONSE_TIME););
+        topologiesToSend.setTimestamp(System.currentTimeMillis());
         try {
             final String updatedString = TOPOLOGIES_WRITER.writeValueAsString(topologiesToSend);
             LOGGER.info(UPDATING_TOPOLOGIES_IN_ZOOKEEPER, updatedString);

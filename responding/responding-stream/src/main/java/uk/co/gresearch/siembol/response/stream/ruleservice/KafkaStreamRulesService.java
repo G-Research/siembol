@@ -78,7 +78,10 @@ public class KafkaStreamRulesService implements RulesService {
 
     private RespondingResult processMessage(String value) {
         try {
+
+
             ResponseAlert alert = ResponseAlert.fromOriginalString(UUID.randomUUID().toString(), value);
+
             alert.put(SiembolMessageFields.RESPONSE_TIME.toString(), System.currentTimeMillis());
             LOG.info("Processing alert guid {}", alert.getResponseAlertId());
             LOG.debug("alert for processing: {}", value);
