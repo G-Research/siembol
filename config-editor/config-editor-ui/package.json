@@ -20,7 +20,7 @@
   },
   "private": true,
   "dependencies": {
-    "@ag-grid-community/angular": "^27.1.1",
+    "@ag-grid-community/angular": "^27.3.0",
     "@ag-grid-community/client-side-row-model": "^27.1.0",
     "@ag-grid-community/core": "^27.1.0",
     "@angular-devkit/build-angular": "^13.3.1",
