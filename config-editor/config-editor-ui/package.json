@@ -24,7 +24,7 @@
     "@ag-grid-community/client-side-row-model": "^27.1.0",
     "@ag-grid-community/core": "^27.1.0",
     "@angular-devkit/build-angular": "^13.3.1",
-    "@angular/animations": "^13.3.1",
+    "@angular/animations": "^13.3.11",
     "@angular/cdk": "^13.3.2",
     "@angular/common": "^13.3.1",
     "@angular/compiler": "^13.3.1",
