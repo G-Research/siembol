@@ -21,7 +21,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - name: Cache Maven packages
-        uses: actions/cache@v3.0.1
+        uses: actions/cache@v3.0.3
         with:
           path: ~/.m2
           key: maven-${{ hashFiles('**/pom.xml') }}
@@ -305,7 +305,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Maven packages
-        uses: actions/cache@v3.0.1
+        uses: actions/cache@v3.0.3
         with:
           path: |
             ~/.m2
