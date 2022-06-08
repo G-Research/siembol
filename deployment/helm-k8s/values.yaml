@@ -23,54 +23,6 @@ certmanager:
 tls:
   enabled: true
 
-
-# -----------------------------------------------------------------------------
-# ZooKeeper parameters
-# -----------------------------------------------------------------------------
-
-zookeeper:
-  ## If `zookeeper.enabled: false`, the `servers` value must be set.
-  ## `storm.zookeeper.servers` and `kafka.externalZookeeper.servers`
-  ## should be updated to match this value.
-  ## If `zookeeper.enabled: true`, this chart will spin up ZooKeeper 
-  ## service with the default name: "{{ .Release.Name }}-zookeeper".
-  ## The Storm and Kafka sub-charts will use this same service by 
-  ## using the default values below.
-  enabled: true 
-  # servers: "ext-zk-zookeeper"
-  image:
-    registry: docker.io
-    repository: bitnami/zookeeper
-    tag: 3.7.0-debian-10-r0
-    pullPolicy: Always
-
-
-# -----------------------------------------------------------------------------
-# Kafka parameters
-# -----------------------------------------------------------------------------
-
-kafka:
-  persistence:
-    enabled: false
-  # disable Kafka's ZooKeeper and use a templatized value to use Siembol's zk
-  zookeeper:
-    enabled: false
-  externalZookeeper:
-    # This value will be evaluated in the context of the Kafka sub-chart
-    servers: ["{{ .Release.Name }}-zookeeper"]
-
-# -----------------------------------------------------------------------------
-# Storm parameters
-# -----------------------------------------------------------------------------
-
-storm:
-  # disable Storm's ZooKeeper and use a templatized value to use Siembol's zk
-  zookeeper:
-    enabled: false 
-    # This value will be evaluated in the context of the Storm sub-chart
-    servers: ["{{ .Release.Name }}-zookeeper"]
-  appName: "storm"
-
 # -----------------------------------------------------------------------------
 # Dependencies ingress parameters
 # -----------------------------------------------------------------------------
