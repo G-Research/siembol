@@ -9,8 +9,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class EnrichmentsMemoryTableTest {
+public class EnrichmentMemoryTableTest {
 
     private final String simpleEmptyFields = """    
             {
@@ -51,7 +52,7 @@ public class EnrichmentsMemoryTableTest {
     private EnrichmentMemoryTable table;
 
     @Test
-    public void testGoodSimpleNoFields() throws IOException {
+    public void simpleTableNoFields() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleEmptyFields.getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
@@ -70,7 +71,7 @@ public class EnrichmentsMemoryTableTest {
     }
 
     @Test
-    public void testGoodSimpleOneField() throws IOException {
+    public void simpleTableOneField() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleOneField.getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
@@ -92,7 +93,7 @@ public class EnrichmentsMemoryTableTest {
     }
 
     @Test
-    public void testGoodSimpleMixedFields() throws IOException {
+    public void simpleTableMixedFields() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
@@ -113,13 +114,13 @@ public class EnrichmentsMemoryTableTest {
     }
 
     @Test
-    public void testGoodSimpleMixedFieldsCommand() throws IOException {
+    public void simpleTableMixedFieldsCommand() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
         EnrichmentCommand command = new EnrichmentCommand();
-        command.setTags(new ArrayList<>(Arrays.asList(Pair.of("tag_key", "tag_value"))));
-        command.setEnrichmentFields(new ArrayList<>(Arrays.asList(
+        command.setTags(new ArrayList<>(List.of(Pair.of("tag_key", "tag_value"))));
+        command.setEnrichmentFields(new ArrayList<>(List.of(
                 Pair.of("is_malicious", "siembol:is_malicious"))));
         command.setKey("1.2.3.1");
         Optional<List<Pair<String, String>>> values = table.getValues(command);
@@ -132,13 +133,13 @@ public class EnrichmentsMemoryTableTest {
     }
 
     @Test
-    public void testGoodSimpleMixedFieldsCommandMissing() throws IOException {
+    public void simpleTableMixedFieldsCommandMissing() throws IOException {
         try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
         EnrichmentCommand command = new EnrichmentCommand();
-        command.setTags(new ArrayList<>(Arrays.asList(Pair.of("tag_key", "tag_value"))));
-        command.setEnrichmentFields(new ArrayList<>(Arrays.asList(
+        command.setTags(new ArrayList<>(List.of(Pair.of("tag_key", "tag_value"))));
+        command.setEnrichmentFields(new ArrayList<>(List.of(
                 Pair.of("is_malicious", "siembol:is_malicious"))));
         command.setKey("1.2.3.15");
         Optional<List<Pair<String, String>>> values = table.getValues(command);
@@ -146,32 +147,58 @@ public class EnrichmentsMemoryTableTest {
     }
 
     @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
-    public void testInvalidJson() throws IOException {
+    public void invalidJson() throws IOException {
         try (InputStream is = new ByteArrayInputStream("INVALID".getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidJsonTable() throws IOException {
+    public void invalidJsonTable() throws IOException {
         try (InputStream is = new ByteArrayInputStream("[]".getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnsupportedFieldType() throws IOException {
+    public void unsupportedFieldType() throws IOException {
         try (InputStream is = new ByteArrayInputStream(unsupportedFieldType.getBytes())) {
             table = EnrichmentMemoryTable.fromJsonStream(is);
         }
     }
 
     @Test(expected = com.fasterxml.jackson.core.io.JsonEOFException.class)
-    public void testInvalidJsonTable2() throws IOException {
+    public void invalidJsonTable2() throws IOException {
         String trimString = simpleOneField.trim();
         try (InputStream is = new ByteArrayInputStream(trimString
                 .substring(0, trimString.length() - 1).getBytes())) {
             EnrichmentMemoryTable.fromJsonStream(is);
         }
+    }
+
+    @Test
+    public void tableMetadata() throws IOException {
+        try (InputStream is = new ByteArrayInputStream(simpleMixedFields.getBytes())) {
+            table = EnrichmentMemoryTable.fromJsonStream(is);
+        }
+        Assert.assertTrue(table.containsKey(TableMetadata.TABLE_METADATA_KEY));
+        Optional<List<Pair<String, String>>> values = table.getValues(TableMetadata.TABLE_METADATA_KEY,
+                List.of(TableMetadata.LAST_UPDATE_FIELD_NAME,
+                        TableMetadata.SIZE_FIELD_NAME,
+                        TableMetadata.NUMBER_OF_FIELDS_FIELD_NAME,
+                        TableMetadata.NUMBER_OF_ROWS_FIELD_NAME,
+                        TableMetadata.NUMBER_OF_VALUES_FIELD_NAME));
+
+        Assert.assertTrue(values.isPresent());
+        Assert.assertEquals(5, values.get().size());
+
+        var valuesMap = values.get().stream()
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+        Assert.assertEquals(5, valuesMap.size());
+        Assert.assertNotNull(valuesMap.get(TableMetadata.LAST_UPDATE_FIELD_NAME));
+        Assert.assertEquals("5", valuesMap.get(TableMetadata.NUMBER_OF_ROWS_FIELD_NAME));
+        Assert.assertEquals("3", valuesMap.get(TableMetadata.NUMBER_OF_FIELDS_FIELD_NAME));
+        Assert.assertEquals("6", valuesMap.get(TableMetadata.NUMBER_OF_VALUES_FIELD_NAME));
+        Assert.assertEquals("225", valuesMap.get(TableMetadata.SIZE_FIELD_NAME));
     }
 }
