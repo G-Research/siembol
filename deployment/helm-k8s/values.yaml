@@ -24,7 +24,7 @@ tls:
   enabled: true
 
 # -----------------------------------------------------------------------------
-# Dependencies ingress parameters
+# Ingress for dependencies parameters
 # -----------------------------------------------------------------------------
 dep_ingresses:
   enrichment_store:
