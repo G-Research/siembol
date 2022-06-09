@@ -11,7 +11,6 @@ import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
-import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 import uk.co.gresearch.siembol.common.metrics.SiembolGauge;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
@@ -25,6 +24,7 @@ import java.util.Properties;
 import static uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProcessingResult.StatusCode.OK;
 
 public class HeartbeatConsumer {
+    private static final String WRONG_MESSAGE_FORMAT = "Wrong message json file format";
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Kafka stream service initialisation started";
     private static final String INIT_COMPLETED = "Kafka stream service initialisation completed";
@@ -42,12 +42,12 @@ public class HeartbeatConsumer {
 
     HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar,
                       KafkaStreamsFactory streamsFactory) {
-        streams = createStreams(streamsFactory, properties);
-        streams.start();
         parsingLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name());
         enrichmentLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name());
         responseLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name());
         totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name());
+        streams = createStreams(streamsFactory, properties);
+        streams.start();
     }
 
     private KafkaStreams createStreams(KafkaStreamsFactory streamsFactory, HeartbeatConsumerProperties properties) {
@@ -74,7 +74,14 @@ public class HeartbeatConsumer {
         try {
             var currentTimestamp = Instant.now().toEpochMilli();
             Map<String, Object> message = MESSAGE_READER.readValue(value);
-            // check if numbers before + if field exist?
+            if (message == null
+                    || !(message.get(SiembolMessageFields.TIMESTAMP.toString()) instanceof Number)
+                    || !(message.get(SiembolMessageFields.PARSING_TIME.toString()) instanceof Number)
+                    || !(message.get(SiembolMessageFields.ENRICHING_TIME.toString()) instanceof Number)
+                    || !(message.get(SiembolMessageFields.RESPONSE_TIME.toString()) instanceof Number)
+            ) {
+                throw new IllegalArgumentException(WRONG_MESSAGE_FORMAT);
+            }
             var timestamp = (Number) message.get(SiembolMessageFields.TIMESTAMP.toString());
             var parsingTimestamp = (Number) message.get(SiembolMessageFields.PARSING_TIME.toString());
             var enrichingTimestamp = (Number) message.get(SiembolMessageFields.ENRICHING_TIME.toString());
@@ -92,10 +99,10 @@ public class HeartbeatConsumer {
         }
     }
 
-    public Mono<Health> checkHealth() {
-        return Mono.just(streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
+    public Health checkHealth() {
+        return streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
                 ? Health.up().build() :
-                Health.down().build());
+                Health.down().build();
     }
 
     public void close() {

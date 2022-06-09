@@ -11,11 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
-import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducerProperties;
-import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducer;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,18 +26,17 @@ import org.mockito.MockedStatic;
 
 public class HeartbeatProducerTest {
     private SiembolMetricsTestRegistrar metricsTestRegistrar;
-    private Map<String, HeartbeatProducerProperties> producerPropertiesMap= new HashMap<>();
+    private final Map<String, HeartbeatProducerProperties> producerPropertiesMap= new HashMap<>();
     private final Map<String, Object> heartbeatMessageProperties = new HashMap<>();
     private MockProducer<String, String> producer1;
     private MockProducer<String, String> producer2;
-    private Map<String, Producer<String,String>> producerMap = new HashMap<>();
+    private final Map<String, Producer<String,String>> producerMap = new HashMap<>();
     private ScheduledExecutorService mockScheduledService;
     private MockedStatic<Instant> mockInstant;
 
     @Before
     public void setUp() {
         metricsTestRegistrar = new SiembolMetricsTestRegistrar();
-        var cachedMetricsRegistrar = metricsTestRegistrar.cachedRegistrar();
 
         var instant = Instant.parse("2022-05-31T09:10:11.50Z");
         mockInstant = Mockito.mockStatic(Instant.class);

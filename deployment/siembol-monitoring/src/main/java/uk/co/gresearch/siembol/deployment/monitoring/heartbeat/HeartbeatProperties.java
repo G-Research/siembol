@@ -1,8 +1,5 @@
 package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
-import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatConsumerProperties;
-import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducerProperties;
-
 import java.util.Map;
 
 public class HeartbeatProperties {

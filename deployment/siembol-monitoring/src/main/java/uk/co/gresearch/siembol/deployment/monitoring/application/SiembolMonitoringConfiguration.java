@@ -17,7 +17,7 @@ import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProperti
 @EnableConfigurationProperties(HeartbeatProperties.class)
 public class SiembolMonitoringConfiguration implements DisposableBean {
     @Autowired
-    private HeartbeatProperties properties;
+    private ServiceConfigurationProperties properties;
     @Autowired
     private MeterRegistry springMeterRegistrar;
     private HeartbeatConsumer heartbeatConsumer;
@@ -30,14 +30,15 @@ public class SiembolMonitoringConfiguration implements DisposableBean {
     @Bean("heartbeatProducer")
     @DependsOn("metricsRegistrar")
     HeartbeatProducer heartbeatProducer(@Autowired SiembolMetricsRegistrar metricsRegistrar) {
-        return new HeartbeatProducer(properties.getHeartbeatProducers(), properties.getHeartbeatIntervalSeconds(),
-                properties.getMessage(), metricsRegistrar);
+        return new HeartbeatProducer(properties.getHeartbeatProperties().getHeartbeatProducers(),
+                properties.getHeartbeatProperties().getHeartbeatIntervalSeconds(),
+                properties.getHeartbeatProperties().getMessage(), metricsRegistrar);
     }
 
     @Bean("heartbeatConsumer")
     @DependsOn("metricsRegistrar")
     HeartbeatConsumer heartbeatConsumer(@Autowired SiembolMetricsRegistrar metricsRegistrar) {
-        heartbeatConsumer = new HeartbeatConsumer(properties.getHeartbeatConsumer(), metricsRegistrar);
+        heartbeatConsumer = new HeartbeatConsumer(properties.getHeartbeatProperties().getHeartbeatConsumer(), metricsRegistrar);
         return heartbeatConsumer;
     }
 

@@ -55,7 +55,7 @@ public class HeartbeatConsumerTest {
         properties.setErrorTopic(errorTopic);
         properties.setKafkaProperties(new HashMap<>());
 
-        var service = new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
+        new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
         testDriver = streamsFactory.getTestDriver();
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
                 Serdes.String().serializer());
@@ -86,5 +86,10 @@ public class HeartbeatConsumerTest {
     public void testProcessingError() {
         testInputTopic.pipeInput("test");
         Assert.assertFalse(testErrorTopic.isEmpty());
+    }
+
+    @After
+    public void close() {
+        mockInstant.close();
     }
 }
