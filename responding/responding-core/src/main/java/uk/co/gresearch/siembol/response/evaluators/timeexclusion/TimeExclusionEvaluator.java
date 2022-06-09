@@ -1,7 +1,6 @@
 package uk.co.gresearch.siembol.response.evaluators.timeexclusion;
 
 import com.google.common.base.Strings;
-import org.joda.time.DateTime;
 import uk.co.gresearch.siembol.common.utils.EvaluationLibrary;
 import uk.co.gresearch.siembol.response.common.Evaluable;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
@@ -12,7 +11,6 @@ import uk.co.gresearch.siembol.response.model.TimeExclusionEvaluatorAttributesDt
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 
 public class TimeExclusionEvaluator implements Evaluable {
