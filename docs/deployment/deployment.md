@@ -63,3 +63,19 @@ Docker images are built both from snapshots and releases.
     - See [how to set-up oauth2](../siembol_ui/how-tos/how_to_setup_oauth2_oidc_in_siembol_ui.md)
 ## Deployment scenarios
 ## Helm charts
+
+We have developed a chart which bootstraps a Siembol deployment on a Kubernetes cluster using the Helm package manager. By using this Helm chart, Siembol can be deployed with the default [configuration](../../deployment/helm-k8s/README.md#configuration). 
+
+There are a few dependencies that Siembol rely on which should be installed first, these are Storm and Zookeeper. By following the [Quickstart Guide](../introduction/how-tos/quickstart.md#2-install-dependencies) you can easily deploy both components before deploying Siembol. As part of the [dependencies script](../../deployment/quickstart_install/sh-scripts/dependencies.sh), there are a few default parameters, these can be modified if needed. Also, you will find that Kafka will be deployed as part of this script, which is useful to test parsing and enriching of a log message. When you have Zookeeper and Storm deployed, you can deploy Siembol. The core components provided as part of the Helm chart are:
+
+ -  config-editor-rest
+ -  config-editor-ui
+ -  storm-topology-manager
+
+You can find the default parameters in [configuration](../../deployment/helm-k8s/README.md#configuration).
+
+Moreover, we have a few additional components. 
+#### Enrichment Store 
+This component 
+
+ these components can be enabled or diabled by modifying the `enabled_apps` list.
