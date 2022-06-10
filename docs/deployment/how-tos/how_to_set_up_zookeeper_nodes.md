@@ -3,30 +3,12 @@ How to set-up ZooKeeper nodes for Siembol configuration
 
 Siembol configurations are stored in git repositories and cached in ZooKeeper. ZooKeeper notifies the storm topologies when updates occur allowing for configuration changes without the need to restart components.
 
-You can create the ZooKeeper nodes manually prior to running siembol services. However, you can use autocreation of ZooKeeper nodes by defining the default value of the node in the ZooKeeper connector property `init-value-if-not-exists`, for example:
+Siembol automatically create ZooKeeper nodes, this is done by defining the default value of the node in the ZooKeeper connector property `init-value-if-not-exists`, for example:
 
 ```properties
 config-editor.storm-topologies-zookeeper.zk-path=/siembol/synchronise
 config-editor.storm-topologies-zookeeper.zk-url=siembol-zookeeper:2181
 config-editor.storm-topologies-zookeeper.init-value-if-not-exists={}
-```
-
-Alternatively you can create a node by connecting to a ZooKeeper server and running a command like the following:
-
-```shell
-zookeeper@siembol-storm-zookeeper-0:/apache-zookeeper-3.5.5-bin$ bin/zkCli.sh
-Connecting to localhost:2181
-...
-[zk: localhost:2181(CONNECTED) 3] create /siembol/node
-```
-
-To initialise it with any empty JSON object:
-
-```shell
-zookeeper@siembol-storm-zookeeper-0:/apache-zookeeper-3.5.5-bin$ bin/zkCli.sh
-Connecting to localhost:2181
-...
-[zk: localhost:2181(CONNECTED) 3] set /siembol/node '{}'
 ```
 
  
@@ -47,6 +29,8 @@ The [config editor rest service](../../services/how-tos/how_to_set_up_service_in
 
 ```properties
 config-editor.services.alert.release-zookeeper.zk-path=/siembol/alerts/rules
+config-editor.services.alert.release-zookeeper.zk-url=siembol-zookeeper:2181
+config-editor.services.alert.release-zookeeper.zk-path.init-value-if-not-exists={}
 ```
 
 These ZooKeeper nodes now ensure that any change to alerting rules in the Siembol UI will be deployed to alerting instances running in Storm. 
@@ -60,11 +44,16 @@ Therefore, it is required to have two ZooKeeper nodes for this to work: at least
 
 ```properties
 config-editor.storm-topologies-zookeeper.zk-path=/siembol/synchronise
+config-editor.storm-topologies-zookeeper.init-value-if-not-exists={}
 ```
 
 The storm topology manager service requires read access to the synchronise node and read/write access to its internal cache node. Both nodes can be configured in the storm-topology-manager's `application.properties` file:
 
 ```properties
 topology-manager.desired-state.zk-path=/siembol/synchronise
+topology-manager.desired-state.zk-url=siembol-zookeeper:2181
+
 topology-manager.saved-state.zk-path=/siembol/cache
+topology-manager.saved-state.init-value-if-not-exists={}
+topology-manager.saved-state.zk-url=siembol-zookeeper:2181
 ```
