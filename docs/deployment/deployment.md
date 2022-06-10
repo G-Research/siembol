@@ -66,7 +66,9 @@ Docker images are built both from snapshots and releases.
 
 We have developed a chart which bootstraps a Siembol deployment on a Kubernetes cluster using the Helm package manager. By using this Helm chart, Siembol can be deployed with the default [configuration](../../deployment/helm-k8s/README.md#configuration). 
 
-There are a few dependencies that Siembol rely on which should be installed first, these are Storm and Zookeeper. By following the [Quickstart Guide](../introduction/how-tos/quickstart.md#2-install-dependencies) you can easily deploy both components before deploying Siembol. As part of the [dependencies script](../../deployment/quickstart_install/sh-scripts/dependencies.sh), there are a few default parameters, these can be modified if needed. Also, you will find that Kafka will be deployed as part of this script, which is useful to test parsing and enriching of a log message. When you have Zookeeper and Storm deployed, you can deploy Siembol. The core components provided as part of the Helm chart are:
+There are a few dependencies that Siembol rely on which should be deployed in the namespace first, these are Storm and ZooKeeper. Kafka can be embedded, but there is support to connect to external kerberised Kafka cluster. See [how to set-up kerberos](how-tos/how_to_set_up_kerberos_for_external_dependencies.md). 
+
+By following the [Quickstart Guide](../introduction/how-tos/quickstart.md#2-install-dependencies) you can easily deploy Storm and Zookeeper before deploying Siembol. As part of the [dependencies script](../../deployment/quickstart_install/sh-scripts/dependencies.sh), there are a few default parameters, these can be modified e.g. to add more Storm supervisors and more ZooKeeper replicas. Also, you will find that Kafka will be deployed as part of this script, which is useful to test parsing and enriching of a log message. When you have Zookeeper and Storm deployed, you can deploy Siembol. The core components provided as part of the Helm chart are:
 
  -  config-editor-rest
  -  config-editor-ui
@@ -74,8 +76,67 @@ There are a few dependencies that Siembol rely on which should be installed firs
 
 You can find the default parameters in [configuration](../../deployment/helm-k8s/README.md#configuration).
 
-Moreover, we have a few additional components. 
+Moreover, we have a few additional components: 
 #### Enrichment Store 
-This component 
+This component is a web server which acts as a store for enrichment tables. Functionality to upload, view and download JOSN files is supported. There is also support to specify and create directories.
+
+To create and upload an enrichment table:
+
+```bash
+echo '{"1.2.3.4":{"hostname":"test-name"}}' > hostname.json
+curl -F "uploaded_file=@hostname.json;" https://enrichment.siembol.local/upload.php
+```
+
+You can specify a directory path when uploading a file by adding the `directory_path` key:
+```bash
+curl -F "uploaded_file=@hostname.json;" -F "directory_path=/my_path" https://enrichment.siembol.local/upload.php
+```
+
+To check out an uploaded enrichment table, go to this url in the browser:
+```bash
+https://enrichment.siembol.local/download.php?filename=hostname.json
+```
+
+To check out all uploaded enrichment tables and directories, go to this url in the browser:
+```bash 
+https://enrichment.siembol.local/
+``` 
+
+Currently enrichment store supports files up to 30 MB and this can easily be modified as required [here](../../deployment/helm-k8s/resources/php.ini-local)
+
+#### Oauth2 Proxy
+There is support for Oauth2 Proxy which is a lightweight deployment that provides authentication using Providers such as Google, GitHub and others.
+This can be deployed by adding the Helm chart and specifying the required values.
+```bash
+helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
+helm install -f oauth-values.yaml my-release oauth2-proxy/oauth2-proxy
+```
+Example values: [oauth-values.yaml](../../deployment/helm-k8s/oauth-values.yaml):
+
+Environment variables under `oauth2-proxy.extraEnvVars`:
+| Name                  | Default value              | Description             |
+| ---------------------------| -------------------------| ------------------- |
+| `OAUTH2_PROXY_REDIRECT_URL` | https://oauth-proxy.siembol.local/oauth2/callback | The OAuth Redirect URL |
+| `OAUTH2_PROXY_CLIENT_ID` | "Your Client ID" | The OAuth Client ID |
+| `OAUTH2_PROXY_CLIENT_SECRET` | "Your Client Secret" | The OAuth Client Secret |
+| `OAUTH2_PROXY_COOKIE_SECRET` | "YOUR SECRET"| The Cookie Secret |
+| `OAUTH2_PROXY_COOKIE_DOMAIN` | .siembol.local | Cookie domain to force cookies to (e.g. .siembol.local) |
+| `OAUTH2_PROXY_COOKIE_EXPIRE` | 8h | Expire timeframe for cookie |
+| `OAUTH2_PROXY_COOKIE_NAME` | _siembol-oauth-proxy | The name of the cookie that the oauth_proxy creates |
+
+| Parameter                  | Description              | Default             |
+| ---------------------------| -------------------------| ------------------- |
+| `oauth2-proxy.ingress.enabled` | Enable ingress | true |
+| `oauth2-proxy.ingress.hosts` | List of ingress hosts | - oauth-proxy.siembol.local |
+| `oauth2-proxy.ingress.tls.secretName` | Name of TLS secret | oauth2-proxy-tls |
+| `oauth2-proxy.ingress.tls.hosts` | List of TLS hosts | - oauth-proxy.siembol.local |
+| `oauth2-proxy.redis.enabled` | Enable redis | false |
+
+For further configuration, please see [Oauth2 Proxy docs](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/)
+
+
+
+#### Ingress for dependencies
+We have a folder for ingress specifications for extra components which allows for these components to run behind Oauth2 proxy. 
 
  these components can be enabled or diabled by modifying the `enabled_apps` list.
