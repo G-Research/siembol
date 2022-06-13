@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.dep_ingresses.name }}
+  name: {{ .Values.dep_ingresses.storm.name }}
   namespace: {{ .Values.namespace }}
   annotations:
   {{- if .Values.certmanager.enabled }}
@@ -18,7 +18,7 @@ spec:
   tls:
   - hosts: 
     - {{ .Values.dep_ingresses.storm.fqdn }}
-    secretName: {{ .Values.dep_ingresses.name }}-tls
+    secretName: {{ .Values.dep_ingresses.storm.name }}-tls
   {{ end }}
   rules:
   - host: {{ .Values.dep_ingresses.storm.fqdn }}
