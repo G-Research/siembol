@@ -68,7 +68,7 @@ We have developed a chart which bootstraps a Siembol deployment on a Kubernetes 
 
 There are a few dependencies that Siembol rely on which should be deployed in the namespace first, these are Storm and ZooKeeper. Kafka can be embedded, but there is support to connect to external kerberised Kafka cluster. See [how to set-up kerberos](how-tos/how_to_set_up_kerberos_for_external_dependencies.md). 
 
-By following the [Quickstart Guide](../introduction/how-tos/quickstart.md#2-install-dependencies) you can easily deploy Storm and Zookeeper before deploying Siembol. As part of the [dependencies script](../../deployment/quickstart_install/sh-scripts/dependencies.sh), there are a few default parameters, these can be modified e.g. to add more Storm supervisors and more ZooKeeper replicas. Also, you will find that Kafka will be deployed as part of this script, which is useful to test parsing and enriching of a log message. When you have Zookeeper and Storm deployed, you can deploy Siembol. The core components provided as part of the Helm chart are:
+By following the [Quickstart Guide](../introduction/how-tos/quickstart.md#2-install-dependencies) you can easily deploy Storm and Zookeeper before deploying Siembol. As part of the [dependencies script](../../deployment/quickstart_install/sh-scripts/dependencies.sh), there are a few default parameters, these can be modified e.g. to add more Storm supervisors and edit number of ZooKeeper replicas. Also, you will find that Kafka will be deployed as part of this script, which is useful to test parsing and enriching of a log message. When you have Zookeeper and Storm deployed, you can deploy Siembol. The core components provided as part of the Helm chart are:
 
  -  config-editor-rest
  -  config-editor-ui
@@ -78,7 +78,7 @@ You can find the default parameters in [configuration](../../deployment/helm-k8s
 
 Moreover, we have a few additional components: 
 #### Enrichment Store 
-This component is a web server which acts as a store for enrichment tables. Functionality to upload, view and download JOSN files is supported. There is also support to specify and create directories.
+This component is a web server which acts as a store for enrichment tables. Functionality to upload, view and download JSON files is supported. There is also support to specify and create directories.
 
 To create and upload an enrichment table:
 
@@ -102,7 +102,7 @@ To check out all uploaded enrichment tables and directories, go to this url in t
 https://enrichment.siembol.local/
 ``` 
 
-Currently enrichment store supports files up to 30 MB and this can easily be modified as required [here](../../deployment/helm-k8s/resources/php.ini-local)
+Currently enrichment store supports files up to 30 MB and this can easily be modified as required [here](../../deployment/helm-k8s/resources/php.ini-local). This configuration file is deployed as a ConfigMap.
 
 #### Oauth2 Proxy
 There is support for Oauth2 Proxy which is a lightweight deployment that provides authentication using Providers such as Google, GitHub and others.
@@ -123,6 +123,8 @@ Environment variables under `oauth2-proxy.extraEnvVars`:
 | `OAUTH2_PROXY_COOKIE_DOMAIN` | .siembol.local | Cookie domain to force cookies to (e.g. .siembol.local) |
 | `OAUTH2_PROXY_COOKIE_EXPIRE` | 8h | Expire timeframe for cookie |
 | `OAUTH2_PROXY_COOKIE_NAME` | _siembol-oauth-proxy | The name of the cookie that the oauth_proxy creates |
+
+Further parameters:
 
 | Parameter                  | Description              | Default             |
 | ---------------------------| -------------------------| ------------------- |
@@ -161,7 +163,7 @@ We have a folder for ingress specifications for extra components which allows fo
 
 ### Enable & Disable components
 
-These components can be enabled or disabled by modifying the `enabled_apps` list.
+All Siembol components can be enabled or disabled by modifying the `enabled_apps` list.
 By default the enabled_apps list consists of these components:
 ```bash
 - ui
@@ -181,10 +183,10 @@ Any component can be removed by removing it from the list in [values.yaml](../..
 ```
 
 ### Customize Helm Chart
-When you use the Siembol chart and other charts such as Storm, Zookeeper etc. some of the configuration options can be limited for your use case. If you need to customise the deployments in ways of your own, you might fork the chart to create your own custom version. If you do this, each time the maintainers update its Helm chart, your custom version becomes out of snc and possibly obsolete. To keep your version up-to-date, you would need to pull from upstream for every update. 
+When you use the Siembol chart and other charts such as Storm, Zookeeper etc. some of the configuration options can be limited for your use case. If you need to customise the deployments in ways of your own, you might fork the chart to create your own custom version. If you do this, each time the maintainers update their Helm chart, your custom version becomes out of sync and possibly obsolete. To keep your version up-to-date, you would need to pull from upstream for every update. 
 
-### Can you customize a Helm chart without forking?
-Yes, with [Kustomize](https://kustomize.io/), you can use it to perform custom deployments while always using the latest Helm chart version from your vendor. Kustomize enables you to overlay your own 'kustomizations' in yaml files. We have used it by first rendering the chart template locally, and then apply the Kustomize overlay when we deploy the app. This is very useful when deploying the same app to multiple environments, but with different combinations of requirements for each environment. For example a certain port or label is different from dev and prod environments, and in these scenarios it may be more flexible to apply a different Kustomize overlay to the same rendered Helm chart for each environment.
+#### Can you customize a Helm chart without forking?
+Yes, with [Kustomize](https://kustomize.io/), you can use it to perform custom deployments while always using the latest Helm chart version from your vendor. Kustomize enables you to overlay your own 'kustomizations' in yaml files. We have used it by first rendering the chart template locally, and then applying the Kustomize overlay when we deploy the app. This is very useful when deploying the same app to multiple environments, but with different combinations of requirements for each environment. For example a certain port or label is different for dev and prod environments, and in these scenarios it may be more flexible to apply a different Kustomize overlay to the same rendered Helm chart for each environment. Example:
 
 1. Render Helm chart using helm template command:
 ```bash
@@ -192,7 +194,7 @@ $ helm template storm --values values.qa.yaml . > new_templates/temp.yaml
 ```
 The above command outputs a YAML file with all values from the values.yaml file resolved for the templates.
 
-2. Create a new kustomization file to add e.g. labels to a pod:
+2. Create a new kustomization file to add e.g. a label to a deployment:
 ```bash
 $ cat new_templates/kustomization.yaml
 commonLabels:
@@ -204,9 +206,9 @@ resources:
 ```bash
 $ kubectl apply -k new_templates/.
 ```
-4. We can see that our own kustomization has been applied and deployed together with the upstream chart.
+4. We can see that our own kustomization has been applied and deployed together with the upstream chart:
 ```bash
-kubectl get deploy storm-ui --show-labels
+$ kubectl get deploy storm-ui --show-labels
 ```
 ```
 NAME     READY  UP-TO-DATE AVAILABLE AGE LABELS
