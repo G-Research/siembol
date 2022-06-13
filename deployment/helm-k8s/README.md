@@ -137,5 +137,5 @@ The command removes all the Kubernetes components associated with the chart and 
 | `dep_ingresses.storm.fqdn` | Fully qualified domain name | storm.siembol.local |
 | `dep_ingresses.storm.service.name` | Name of Service | storm-ui |
 | `dep_ingresses.storm.service.port` | Service port | 8080 |
-| `dep_ingresses.storm.oauth2_proxy.enabled` | Enable Oauth2 Proxy for Enrichment Store | false |
+| `dep_ingresses.storm.oauth2_proxy.enabled` | Enable Oauth2 Proxy for Storm UI | false |
 | `dep_ingresses.storm.oauth2_proxy.host` | Oauth2 Proxy host name | oauth-proxy.siembol.local |

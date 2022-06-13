@@ -137,6 +137,78 @@ For further configuration, please see [Oauth2 Proxy docs](https://oauth2-proxy.g
 
 
 #### Ingress for dependencies
-We have a folder for ingress specifications for extra components which allows for these components to run behind Oauth2 proxy. 
+We have a folder for ingress specifications for extra components which allows for these components to be deployed with an Ingress and also the option to run behind Oauth2 proxy. 
 
- these components can be enabled or diabled by modifying the `enabled_apps` list.
+### Enrichment Store
+| Parameter                  | Description              | Default             |
+| ---------------------------| -------------------------| ------------------- |
+| `dep_ingresses.enrichment_store.enabled` | Enable ingress | true |
+| `dep_ingresses.enrichment_store.fqdn` | Fully qualified domain name | enrichment.siembol.local |
+| `dep_ingresses.enrichment_store.oauth2_proxy.enabled` | Enable oauth2 proxy for this ingress | false |
+| `dep_ingresses.enrichment_store.oauth2_proxy.host` | Host for oauth2 proxy | oauth-proxy.siembol.local |
+
+### Storm
+| Parameter                  | Description              | Default             |
+| ---------------------------| -------------------------| ------------------- |
+| `dep_ingresses.storm.enabled` | Enable ingress | true |
+| `dep_ingresses.storm.fqdn` | Fully qualified domain name | storm.siembol.local |
+| `dep_ingresses.storm.service.name` | Service name | storm-ui |
+| `dep_ingresses.storm.service.port` | Port for service | 8080 |
+| `dep_ingresses.storm.oauth2_proxy.enabled` | Enable oauth2 proxy for this ingress | false |
+| `dep_ingresses.storm.oauth2_proxy.host` | Host for oauth2 proxy | oauth-proxy.siembol.local |
+
+
+
+### Enable & Disable components
+
+These components can be enabled or disabled by modifying the `enabled_apps` list.
+By default the enabled_apps list consists of these components:
+```bash
+- ui
+- rest
+- manager
+- dep_ingresses
+- enrichment_store
+```
+Any component can be removed by removing it from the list in [values.yaml](../../deployment/helm-k8s/values.yaml) or you can add another component such as `response` e.g.
+```bash
+- ui
+- rest
+- manager
+- dep_ingresses
+- enrichment_store
+- response
+```
+
+### Customize Helm Chart
+When you use the Siembol chart and other charts such as Storm, Zookeeper etc. some of the configuration options can be limited for your use case. If you need to customise the deployments in ways of your own, you might fork the chart to create your own custom version. If you do this, each time the maintainers update its Helm chart, your custom version becomes out of snc and possibly obsolete. To keep your version up-to-date, you would need to pull from upstream for every update. 
+
+### Can you customize a Helm chart without forking?
+Yes, with [Kustomize](https://kustomize.io/), you can use it to perform custom deployments while always using the latest Helm chart version from your vendor. Kustomize enables you to overlay your own 'kustomizations' in yaml files. We have used it by first rendering the chart template locally, and then apply the Kustomize overlay when we deploy the app. This is very useful when deploying the same app to multiple environments, but with different combinations of requirements for each environment. For example a certain port or label is different from dev and prod environments, and in these scenarios it may be more flexible to apply a different Kustomize overlay to the same rendered Helm chart for each environment.
+
+1. Render Helm chart using helm template command:
+```bash
+$ helm template storm --values values.qa.yaml . > new_templates/temp.yaml
+```
+The above command outputs a YAML file with all values from the values.yaml file resolved for the templates.
+
+2. Create a new kustomization file to add e.g. labels to a pod:
+```bash
+$ cat new_templates/kustomization.yaml
+commonLabels:
+    app: kustomLabel
+resources:
+- new_templates/temp.yaml
+```
+3. Install our chart with the new label:
+```bash
+$ kubectl apply -k new_templates/.
+```
+4. We can see that our own kustomization has been applied and deployed together with the upstream chart.
+```bash
+kubectl get deploy storm-ui --show-labels
+```
+```
+NAME     READY  UP-TO-DATE AVAILABLE AGE LABELS
+storm-ui   1/1    1            1     10s   app=storm-ui,chart=storm-1.0.14,heritage=Helm,app=kustomLabel
+```
