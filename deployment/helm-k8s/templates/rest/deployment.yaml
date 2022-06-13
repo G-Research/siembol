@@ -31,11 +31,11 @@ spec:
           - containerPort: {{ .Values.rest.containerPort }}
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: {{ .Values.rest.resources.requests.memory }}
+            cpu: {{ .Values.rest.resources.requests.cpu }}
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: {{ .Values.rest.resources.limits.memory }}
+            cpu: {{ .Values.rest.resources.limits.cpu }}
         securityContext:
           runAsUser: 101
         readinessProbe:
@@ -43,15 +43,15 @@ spec:
             path: /health
             port: {{ .Values.rest.containerPort }}
             scheme: HTTP
-          initialDelaySeconds: 100
-          periodSeconds: 30
+          initialDelaySeconds: {{ .Values.rest.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.rest.readinessProbe.periodSeconds }}
         livenessProbe:
           httpGet:
             path: /health
             port: {{ .Values.rest.containerPort }}
             scheme: HTTP
-          initialDelaySeconds: 100
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.rest.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.rest.livenessProbe.periodSeconds }}
         {{ if .Values.rest.configmap.enabled -}}
         envFrom:
         - configMapRef:

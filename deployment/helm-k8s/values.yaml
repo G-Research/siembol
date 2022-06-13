@@ -51,8 +51,10 @@ enrichment_store:
   appName: "enrichment-store"
   image:
     repository: php
-    tag: 8.0-apache
+    tag: 8.1-apache
     pullPolicy: Always
+  securityContext:
+    runAsUser: 82
   containerPort: 80
   service:
     port: 80
@@ -64,6 +66,15 @@ enrichment_store:
   security:
     user: 82
     fsGroup: 82
+    runAsGroup: 82
+
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "128Mi"
+    limits:
+      cpu: "400m"
+      memory: "256Mi"
 
 
 # -----------------------------------------------------------------------------
@@ -94,6 +105,21 @@ rest:
   
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
 
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  readinessProbe:
+    initialDelaySeconds: 100
+    periodSeconds: 30
+  livenessProbe:
+    initialDelaySeconds: 100
+    periodSeconds: 10
+
 # -----------------------------------------------------------------------------
 # config-editor-ui parameters
 # -----------------------------------------------------------------------------
@@ -115,6 +141,21 @@ ui:
   ingress:
     enabled: true
     fqdn: ui.siembol.local
+
+  resources:
+    requests:
+      cpu: 0.1
+      memory: "128Mi"
+    limits:
+      cpu: 0.5
+      memory: "256Mi"
+
+  readinessProbe:
+    initialDelaySeconds: 15
+    periodSeconds: 30
+  livenessProbe:
+    initialDelaySeconds: 300
+    periodSeconds: 30
 
 
 # -----------------------------------------------------------------------------
@@ -142,6 +183,22 @@ manager:
     enabled: true
     fqdn: topology-manager.siembol.local
 
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 30
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+
 # -----------------------------------------------------------------------------
 # siembol response parameters
 # -----------------------------------------------------------------------------
@@ -164,3 +221,18 @@ response:
     port: 8080
 
   javaOpts: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
+
+  resources:
+    requests:
+      cpu: 0.5
+      memory: "256Mi"
+    limits:
+      cpu: 1
+      memory: "1024Mi"
+
+  readinessProbe:
+    initialDelaySeconds: 20
+    periodSeconds: 30
+  livenessProbe:
+    initialDelaySeconds: 100
+    periodSeconds: 10

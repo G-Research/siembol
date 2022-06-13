@@ -13,8 +13,8 @@ spec:
       app: {{ include "siembol.enrichment_store.fullname" $ }}
   strategy:
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+      maxSurge: 0
+      maxUnavailable: 1
     type: RollingUpdate
   template:
     metadata:
@@ -32,15 +32,16 @@ spec:
           - name: APACHE_RUN_GROUP
             value: "#82"
           ports:
-            - name: file-server
-              containerPort: {{ .Values.enrichment_store.containerPort }}
+            - containerPort: {{ .Values.enrichment_store.containerPort }}
+          securityContext:
+            runAsUser: {{ .Values.enrichment_store.securityContext.runAsUser }}
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "200m"
+              memory:  {{ .Values.enrichment_store.resources.requests.memory }}
+              cpu: {{ .Values.enrichment_store.resources.requests.cpu }}
             limits:
-              memory: "256Mi"
-              cpu: "400m"
+              memory: {{ .Values.enrichment_store.resources.limits.memory }}
+              cpu: {{ .Values.enrichment_store.resources.limits.cpu }}
           volumeMounts:
             - name: files
               mountPath: /opt/files
@@ -53,6 +54,7 @@ spec:
       securityContext:
         runAsUser: {{ .Values.enrichment_store.security.user }}
         fsGroup: {{ .Values.enrichment_store.security.fsGroup }}
+        runAsGroup: {{ .Values.enrichment_store.security.runAsGroup }}
       volumes:
         - name: code
           configMap:
