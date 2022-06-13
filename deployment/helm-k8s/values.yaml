@@ -35,6 +35,7 @@ dep_ingresses:
       host: oauth-proxy.siembol.local
   storm:
     enabled: true
+    name: storm
     fqdn: storm.siembol.local
     service:
       name: storm-ui
