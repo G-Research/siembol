@@ -8,11 +8,8 @@ helm repo update
 
 helm install storm gresearch/storm -n=siembol \
     --set supervisor.replicaCount=1  \
-    --set supervisor.image.tag=2.3.0 \
     --set supervisor.childopts="-Xmx1g" \
     --set supervisor.slots=3 \
-    --set nimbus.image.tag=2.3.0 \
-    --set ui.image.tag=2.3.0 \
     --set zookeeper.fullnameOverride="siembol-zookeeper"
 
 helm install kafka bitnami/kafka -n=siembol \
