@@ -26,7 +26,7 @@ public class HeartbeatProducerTest {
         var instant = Instant.parse("2022-05-31T09:10:11.50Z");
         mockInstant = Mockito.mockStatic(Instant.class);
         mockInstant.when(Instant::now).thenReturn(instant);
-        heartbeatMessageProperties.put("ky", "value");
+        heartbeatMessageProperties.put("key", "value");
     }
 
     @Test
