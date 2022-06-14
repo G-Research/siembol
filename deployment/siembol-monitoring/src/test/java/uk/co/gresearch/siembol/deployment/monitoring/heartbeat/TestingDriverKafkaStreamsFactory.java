@@ -3,6 +3,7 @@ package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
+import uk.co.gresearch.siembol.common.utils.KafkaStreamsFactory;
 
 import java.io.Closeable;
 import java.util.Properties;

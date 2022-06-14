@@ -6,13 +6,13 @@ public enum SiembolMessageFields {
     DST_ADDR("ip_dst_addr"),
     DST_PORT("ip_dst_port"),
     PROTOCOL("protocol"),
-    TIMESTAMP("timestamp"),
+    TIMESTAMP(SiembolConstants.TIMESTAMP),
     ORIGINAL("original_string"),
     GUID("guid"),
     SENSOR_TYPE("source_type"),
-    PARSING_TIME("siembol_parsing_ts"),
-    ENRICHING_TIME("siembol_enriching_ts"),
-    RESPONSE_TIME("siembol_response_ts");
+    PARSING_TIME(SiembolConstants.PARSING_TIME),
+    ENRICHING_TIME(SiembolConstants.ENRICHING_TIME),
+    RESPONSE_TIME(SiembolConstants.RESPONSE_TIME);
 
     private final String name;
     SiembolMessageFields(String name) {

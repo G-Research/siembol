@@ -190,6 +190,11 @@
             <version>${io_micrometer_version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${kafka_version}</version>
+        </dependency>
     </dependencies>
     <build>
     </build>

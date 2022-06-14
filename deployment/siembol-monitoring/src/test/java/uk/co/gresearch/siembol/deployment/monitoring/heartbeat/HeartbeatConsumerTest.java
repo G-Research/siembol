@@ -31,13 +31,11 @@ public class HeartbeatConsumerTest {
             }
             """;
     private final String inputTopic = "input";
-    private final String errorTopic = "error";
     private SiembolMetricsTestRegistrar metricsTestRegistrar;
     private KafkaStreams kafkaStreams;
     private TestingDriverKafkaStreamsFactory streamsFactory;
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, String> testInputTopic;
-    private TestOutputTopic<String, String> testErrorTopic;
     private MockedStatic<Instant> mockInstant;
 
     @Before
@@ -52,15 +50,12 @@ public class HeartbeatConsumerTest {
 
         var properties = new HeartbeatConsumerProperties();
         properties.setInputTopic(inputTopic);
-        properties.setErrorTopic(errorTopic);
         properties.setKafkaProperties(new HashMap<>());
 
         new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
         testDriver = streamsFactory.getTestDriver();
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
                 Serdes.String().serializer());
-        testErrorTopic = testDriver.createOutputTopic(errorTopic, Serdes.String().deserializer(),
-                Serdes.String().deserializer());
     }
 
     @After
@@ -71,7 +66,6 @@ public class HeartbeatConsumerTest {
     @Test
     public void testProcessingMessage() {
         testInputTopic.pipeInput(heartbeatMessageStr);
-        Assert.assertTrue(testErrorTopic.isEmpty());
         Assert.assertEquals(1,
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name()), 0);
         Assert.assertEquals(19,
@@ -80,12 +74,6 @@ public class HeartbeatConsumerTest {
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()), 0);
         Assert.assertEquals(823,
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name()), 0);
-    }
-
-    @Test
-    public void testProcessingError() {
-        testInputTopic.pipeInput("test");
-        Assert.assertFalse(testErrorTopic.isEmpty());
     }
 
     @After

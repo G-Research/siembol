@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
+package uk.co.gresearch.siembol.common.utils;
 
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;

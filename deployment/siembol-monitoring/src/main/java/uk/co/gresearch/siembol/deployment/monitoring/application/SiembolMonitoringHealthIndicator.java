@@ -8,14 +8,14 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatConsumer;
-import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducer;
+import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducerScheduler;
 
 
 @Component
 public class SiembolMonitoringHealthIndicator implements ReactiveHealthIndicator {
     private final SimpleStatusAggregator statusAggregator = new SimpleStatusAggregator();
     @Autowired
-    private HeartbeatProducer heartbeatProducer;
+    private HeartbeatProducerScheduler heartbeatProducerScheduler;
     @Autowired
     private HeartbeatConsumer heartbeatConsumer;
 
@@ -27,7 +27,7 @@ public class SiembolMonitoringHealthIndicator implements ReactiveHealthIndicator
 
     private Mono<Health> checkDownstreamServiceHealth() {
         Status status = statusAggregator.getAggregateStatus(
-                heartbeatProducer.checkHealth().getStatus(),
+                heartbeatProducerScheduler.checkHealth().getStatus(),
                 heartbeatConsumer.checkHealth().getStatus());
         return Mono.just(new Health.Builder().status(status).build());
     }
