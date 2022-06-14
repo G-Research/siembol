@@ -45,8 +45,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | `tls.enabled` | Enable TLS  | true  |
 
 ### Config Editor Rest
-| Parameter                  | Description              | Default             |
-| ---------------------------| -------------------------| ------------------- |
+| Parameter                  | Description              | Default                 |
+| ---------------------------| -------------------------| ----------------------- |
 | `rest.appName` | Config Editor Rest app name | config-editor-rest |
 | `rest.image.repository` | Config Editor Rest image repository | gresearchdev/siembol-config-editor-rest |
 | `rest.image.tag` | Config Editor Rest image tag | latest |
@@ -92,10 +92,10 @@ The command removes all the Kubernetes components associated with the chart and 
 
 
 ### Storm Topology Manager
-| Parameter                  | Description              | Default             |
-| ---------------------------| -------------------------| ------------------- |
+| Parameter                  | Description              | Default                     |
+| ---------------------------| -------------------------| --------------------------- |
 | `manager.appName` | storm-topology-manager | storm-topology-manager |
-| `manager.image.repository` | Topology Manager image repository | ggresearchdev/siembol-storm-topology-manager |
+| `manager.image.repository` | Topology Manager image repository | gresearchdev/siembol-storm-topology-manager |
 | `manager.image.tag` | Topology Manager image tag | latest |
 | `manager.image.pullPolicy` | Topology Manager image pull policy | Always |
 | `manager.containerPort` | Port of pod | 8082 |
@@ -106,9 +106,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `manager.service.port` | Service target port | 8082 |
 | `manager.ingress.enabled` | Enable ingress | true |
 | `manager.ingress.fqdn` | Fully qualified domain name | topology-manager.siembol.local |
-| `manager.resources.requests.cpu` | Pod CPU requests | "250m" |
-| `manager.resources.requests.memory` | Pod memory requests | "128Mi" |
-| `manager.resources.limits.cpu` | Pod CPU limits | "500m" |
+| `manager.resources.requests.cpu` | Pod CPU requests | 250m |
+| `manager.resources.requests.memory` | Pod memory requests | 128Mi |
+| `manager.resources.limits.cpu` | Pod CPU limits | 500m |
 | `manager.resources.limits.memory` | Pod memory limits | 512Mi |
 | `manager.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 30 |
 | `manager.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
@@ -129,9 +129,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `response.health.port` | Port for healthcheck | 8080 |
 | `response.javaOpts` | Specify Java opts | -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts | 
 | `response.resources.requests.cpu` | Pod CPU requests | 0.5 |
-| `response.resources.requests.memory` | Pod memory requests | "256Mi" |
+| `response.resources.requests.memory` | Pod memory requests | 256Mi |
 | `response.resources.limits.cpu` | Pod CPU limits | 1 |
-| `response.resources.limits.memory` | Pod memory limits | "1024Mi" |
+| `response.resources.limits.memory` | Pod memory limits | 1024Mi |
 | `response.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 20 |
 | `response.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
 | `response.livenessProbe.initialDelaySeconds` | Initial delay seconds for livenessProbe | 100 |
@@ -156,10 +156,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | `enrichment_store.security.user` | Specify security context for user | 82 |
 | `enrichment_store.security.fsGroup` | Specify security context for group | 82 |
 | `enrichment_store.security.runAsGroup` | Specify security group | 82 |
-| `enrichment_store.resources.requests.cpu` | Pod CPU requests | "200m" |
-| `enrichment_store.resources.requests.memory` | Pod memory requests | "128Mi" |
-| `enrichment_store.resources.limits.cpu` | Pod CPU limits | "400m" |
-| `enrichment_store.resources.limits.memory` | Pod memory limits | "256Mi" |
+| `enrichment_store.resources.requests.cpu` | Pod CPU requests | 200m |
+| `enrichment_store.resources.requests.memory` | Pod memory requests | 128Mi |
+| `enrichment_store.resources.limits.cpu` | Pod CPU limits | 400m |
+| `enrichment_store.resources.limits.memory` | Pod memory limits | 256Mi |
 
 
 ### Ingress for dependencies
