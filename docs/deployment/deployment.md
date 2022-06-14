@@ -34,7 +34,7 @@ Docker images are built both from snapshots and releases.
     - [alerting-storm](https://hub.docker.com/r/gresearchdev/siembol-alerting-storm/)
 
 #### Application configuration files
-All Siembol components above have default application properties as part of their docker images. These application properties can be found in the [config directory](../../config). If you would like to override these properties, you can patch the file and use `Kustomize`, see [how to customize helm charts](how-tos/how_to_customize_helm_charts.md).
+All Siembol components above have default application properties as part of their docker images. These application properties can be found in the [config directory](../../config). If you would like to override these properties, you can patch the files and use `Kustomize`, see [how to customize helm charts](how-tos/how_to_customize_helm_charts.md#how-to-patch-application-configuration-files).
 
 ## Infrastructure dependencies
 - k8s cluster - environment to deploy siembol ui and related micro services for managements and orchestration of siembol services configurations
