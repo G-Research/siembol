@@ -60,7 +60,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `rest.ingress.enabled` | Enable ingress | true |
 | `rest.ingress.fqdn` | Fully qualified domain name | rest.siembol.local |
 | `rest.javaOpts` | Specify Java opts | -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts |
-
+| `rest.resources.requests.cpu` | Pod CPU requests | 250m |
+| `rest.resources.requests.memory` | Pod memory requests | 256Mi |
+| `rest.resources.limits.cpu` | Pod CPU limits | 500m |
+| `rest.resources.limits.memory` | Pod memory limits | 512Mi |
+| `rest.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 100 |
+| `rest.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
+| `rest.livenessProbe.initialDelaySeconds` | Initial delay seconds for livenessProbe | 100 |
+| `rest.livenessProbe.periodSeconds` | Period seconds for livenessProbe | 10 |
 
 ### Config Editor UI
 | Parameter                  | Description              | Default             |
@@ -74,6 +81,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `ui.service.intport` | Service port | 80 |
 | `ui.ingress.enabled` | Enable ingress | true |
 | `ui.ingress.fqdn` | Fully qualified domain name | ui.siembol.local |
+| `ui.resources.requests.cpu` | Pod CPU requests | 0.1 |
+| `ui.resources.requests.memory` | Pod memory requests | 128Mi |
+| `ui.resources.limits.cpu` | Pod CPU limits | 0.5 |
+| `ui.resources.limits.memory` | Pod memory limits | 256Mi |
+| `ui.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 15 |
+| `ui.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
+| `ui.livenessProbe.initialDelaySeconds` | Initial delay seconds for livenessProbe | 300 |
+| `ui.livenessProbe.periodSeconds` | Period seconds for livenessProbe | 30 |
 
 
 ### Storm Topology Manager
@@ -91,7 +106,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `manager.service.port` | Service target port | 8082 |
 | `manager.ingress.enabled` | Enable ingress | true |
 | `manager.ingress.fqdn` | Fully qualified domain name | topology-manager.siembol.local |
-
+| `manager.resources.requests.cpu` | Pod CPU requests | "250m" |
+| `manager.resources.requests.memory` | Pod memory requests | "128Mi" |
+| `manager.resources.limits.cpu` | Pod CPU limits | "500m" |
+| `manager.resources.limits.memory` | Pod memory limits | 512Mi |
+| `manager.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 30 |
+| `manager.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
+| `manager.livenessProbe.initialDelaySeconds` | Initial delay seconds for livenessProbe | 30 |
+| `manager.livenessProbe.periodSeconds` | Period seconds for livenessProbe | 10 |
 
 ### Siembol Response
 | Parameter                  | Description              | Default             |
@@ -106,6 +128,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `response.health.path` | Path for healthcheck | /health |
 | `response.health.port` | Port for healthcheck | 8080 |
 | `response.javaOpts` | Specify Java opts | -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts | 
+| `response.resources.requests.cpu` | Pod CPU requests | 0.5 |
+| `response.resources.requests.memory` | Pod memory requests | "256Mi" |
+| `response.resources.limits.cpu` | Pod CPU limits | 1 |
+| `response.resources.limits.memory` | Pod memory limits | "1024Mi" |
+| `response.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 20 |
+| `response.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
+| `response.livenessProbe.initialDelaySeconds` | Initial delay seconds for livenessProbe | 100 |
+| `response.livenessProbe.periodSeconds` | Period seconds for livenessProbe | 10 |
 
 
 ### Enrichment Store
@@ -115,6 +145,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `enrichment_store.image.repository` | Enrichment Store image repository | php |
 | `enrichment_store.image.tag` | Enrichment Store image tag | 8.0-apache |
 | `enrichment_store.image.pullPolicy` | Enrichment Store image pull policy | Always |
+| `enrichment_store.securityContext.runAsUser` | Specify security context user for container | 82 |
 | `enrichment_store.containerPort` | Port of pod | 80 |
 | `enrichment_store.service.port` | Service target port | 80 |
 | `enrichment_store.pvc.name` | Persistent volume claim name | files-store |
@@ -124,6 +155,11 @@ The command removes all the Kubernetes components associated with the chart and 
 | `enrichment_store.ingress.fqdn` | Fully qualified domain name | ui.siembol.local |
 | `enrichment_store.security.user` | Specify security context for user | 82 |
 | `enrichment_store.security.fsGroup` | Specify security context for group | 82 |
+| `enrichment_store.security.runAsGroup` | Specify security group | 82 |
+| `enrichment_store.resources.requests.cpu` | Pod CPU requests | "200m" |
+| `enrichment_store.resources.requests.memory` | Pod memory requests | "128Mi" |
+| `enrichment_store.resources.limits.cpu` | Pod CPU limits | "400m" |
+| `enrichment_store.resources.limits.memory` | Pod memory limits | "256Mi" |
 
 
 ### Ingress for dependencies
