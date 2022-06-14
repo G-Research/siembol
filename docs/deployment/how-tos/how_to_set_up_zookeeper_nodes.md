@@ -3,12 +3,19 @@ How to set-up ZooKeeper nodes for Siembol configuration
 
 Siembol configurations are stored in git repositories and cached in ZooKeeper. ZooKeeper notifies the storm topologies when updates occur allowing for configuration changes without the need to restart components.
 
-Siembol automatically create ZooKeeper nodes, this is done by defining the default value of the node in the ZooKeeper connector property `init-value-if-not-exists`, for example:
+The ZooKeeper root node should be `/siembol` and all subsequent nodes created should use that node as root, e.g. `/siembol/synchronise`. Siembol automatically creates ZooKeeper nodes, this is done by defining the default value of the node in the ZooKeeper connector property `init-value-if-not-exists`, for example:
 
 ```properties
 config-editor.storm-topologies-zookeeper.zk-path=/siembol/synchronise
-config-editor.storm-topologies-zookeeper.zk-url=siembol-zookeeper:2181
 config-editor.storm-topologies-zookeeper.init-value-if-not-exists={}
+```
+The ZooKeeper url should also be specified in the properties file, this should be the ZooKeeper service name and port in the case of one ZooKeeper replica.
+```properties
+config-editor.storm-topologies-zookeeper.zk-url=siembol-zookeeper:2181
+```
+If there are multiple ZooKeeper replicas then a different url should be used in order to distinguish between the replicas. The url consists of the pod name, followed by the headless service and namespace e.g.
+```properties
+config-editor.storm-topologies-zookeeper.zk-url=siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc,siembol-zookeeper-1.siembol-zookeeper-headless.siembol.svc,siembol-zookeeper-2.siembol-zookeeper-headless.siembol.svc
 ```
 
  
