@@ -32,11 +32,11 @@ spec:
           - containerPort: {{ .Values.manager.containerPort }}
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "250m"
+            memory: {{ .Values.manager.resources.requests.memory }}
+            cpu: {{ .Values.manager.resources.requests.cpu }}
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: {{ .Values.manager.resources.limits.memory }}
+            cpu: {{ .Values.manager.resources.limits.cpu }}
         securityContext:
           runAsUser: 101
         readinessProbe:
@@ -44,15 +44,15 @@ spec:
             path: /health
             port: {{ .Values.manager.service.port }}
             scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 30
+          initialDelaySeconds: {{ .Values.manager.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.manager.readinessProbe.periodSeconds }}
         livenessProbe:
           httpGet:
             path: /health
             port: {{ .Values.manager.service.port }}
             scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.manager.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.manager.livenessProbe.periodSeconds }}
         env:
         - name: JAVA_OPTS
           value: {{ .Values.manager.javaOpts }}

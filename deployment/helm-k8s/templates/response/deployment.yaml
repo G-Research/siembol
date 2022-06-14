@@ -28,25 +28,25 @@ spec:
           runAsUser: 1000
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "0.5"
+            memory: {{ .Values.response.resources.requests.memory }}
+            cpu: {{ .Values.response.resources.requests.cpu }}
           limits:
-            memory: "1024Mi"
-            cpu: "1"
+            memory: {{ .Values.response.resources.limits.memory }}
+            cpu: {{ .Values.response.resources.limits.cpu }}
         readinessProbe:
           httpGet:
             path: {{ .Values.response.health.path }}
             port: {{ .Values.response.health.port }}
             scheme: HTTP
-          initialDelaySeconds: 20
-          periodSeconds: 30
+          initialDelaySeconds: {{ .Values.response.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.response.readinessProbe.periodSeconds }}
         livenessProbe:
           httpGet:
             path: {{ .Values.response.health.path }}
             port: {{ .Values.response.health.port }}
             scheme: HTTP
-          initialDelaySeconds: 20
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.response.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.response.livenessProbe.periodSeconds }}
         env:
         - name: JAVA_OPTS
           value: {{ .Values.response.javaOpts }}

@@ -30,19 +30,6 @@ function Git-Details {
     }
 }
 
-function Init-Zookeeper-Nodes {
-    $zookeeperNodes = "/siembol/synchronise", "/siembol/alerts", "/siembol/correlation_alerts", "/siembol/parser_configs", "/siembol/cache", "/siembol/enrichment_rules", "/siembol/enrichment_tables"
-    Write-Output "Creating Zookeeper nodes "
-    $POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/component=zookeeper,app.kubernetes.io/instance=storm,app.kubernetes.io/name=zookeeper" -o jsonpath="{.items[0].metadata.name}")
-    kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create /siembol 1> $null
-    Foreach($node in $zookeeperNodes) {
-        kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh create $node 1> $null
-        kubectl exec -it $POD_NAME -n $NAMESPACE -- zkCli.sh set $node '{}' 1> $null
-        Write-Output "$node node initialised with empty JSON object"
-    }
-
-}
-
 Write-Output "************** Install Script For Demo **************"
 Write-Output "*****************************************************"
 

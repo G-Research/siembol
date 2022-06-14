@@ -41,6 +41,10 @@ public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
     public static EnrichmentMemoryTable fromJsonStream(InputStream is) throws IOException {
         HashMap<String, ArrayList<Pair<String, String>>> table = new HashMap<>();
         JsonFactory factory = new JsonFactory();
+        int numValues = 0;
+        Set<String> fieldNames = new HashSet<>();
+        TableMetadata tableMetadata = new TableMetadata();
+        tableMetadata.setSize(is.available());
 
         try(JsonParser parser = factory.createParser(is)) {
             if (parser.nextToken() != JsonToken.START_OBJECT) {
@@ -61,6 +65,8 @@ public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
                         throw new IllegalArgumentException(String.format(INVALID_JSON_TABLE_FIELD_MSG, fieldName, key));
                     }
                     fields.add(Pair.of(fieldName, parser.getText()));
+                    numValues++;
+                    fieldNames.add(fieldName);
                 }
                 table.put(key, fields.isEmpty() ? new ArrayList<>() : fields);
             }
@@ -69,6 +75,11 @@ public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
                 throw new IllegalArgumentException(INVALID_JSON_TABLE_OBJECT);
             }
         }
+
+        tableMetadata.setNumberOfFields(fieldNames.size());
+        tableMetadata.setNumberOfValues(numValues);
+        tableMetadata.setNumberOfRows(table.size());
+        table.put(TableMetadata.TABLE_METADATA_KEY, new ArrayList<>(tableMetadata.getValues()));
 
         return new EnrichmentMemoryTable(table);
     }

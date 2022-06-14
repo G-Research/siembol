@@ -9,14 +9,11 @@ helm repo update
 
 helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.replicaCount=1 `
-    --set supervisor.image.tag=2.3.0 `
     --set supervisor.resources.requests.memory=1024 `
     --set supervisor.resources.limits.memory=1024 `
     --set supervisor.resources.requests.cpu=500m `
     --set supervisor.childopts="-Xmx1g" `
-    --set nimbus.image.tag=2.3.0 `
     --set supervisor.slots=3 `
-    --set ui.image.tag=2.3.0 `
     --set zookeeper.fullnameOverride="siembol-zookeeper"
 
 
