@@ -74,6 +74,13 @@ public class HeartbeatConsumerTest {
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()), 0);
         Assert.assertEquals(823,
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name()), 0);
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_MESSAGES_READ.name()));
+    }
+
+    @Test
+    public void testProcessingError() {
+        testInputTopic.pipeInput("test");
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.name()));
     }
 
     @After
