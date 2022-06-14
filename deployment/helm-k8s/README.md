@@ -151,8 +151,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `enrichment_store.pvc.name` | Persistent volume claim name | files-store |
 | `enrichment_store.pvc.storageclass` | Storage Class type | "" |
 | `enrichment_store.pvc.storage` | Storage size | 1Gi |
-| `enrichment_store.ingress.enabled` | Enable ingress | true |
-| `enrichment_store.ingress.fqdn` | Fully qualified domain name | enrichment.siembol.local |
 | `enrichment_store.security.user` | Specify security context for user | 82 |
 | `enrichment_store.security.fsGroup` | Specify security context for group | 82 |
 | `enrichment_store.security.runAsGroup` | Specify security group | 82 |
