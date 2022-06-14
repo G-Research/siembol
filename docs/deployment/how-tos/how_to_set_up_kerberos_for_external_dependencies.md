@@ -1,8 +1,6 @@
 How to set up Kerberos for external dependencies
 ================================================
 
-> **_Note:_** This document describes connecting to external dependencies that require Kerberos authentication. It does not contain information on how to set up Kerberos for a Storm Cluster. If that is required, please see the Storm documentation to enable Kerberos, https://storm.apache.org/releases/1.2.3/SECURITY.html, as this is out-of-scope of this document.
-
 Enabling Kerberos for Kafka clients
 -----------------------------------
 
@@ -10,7 +8,7 @@ Siembol services publish and consume data to and from Kafka. This Kafka communic
 
 Before adding the specific Kafka consumer and producer configuration you must ensure that the environment running the siembol storm topologies has a valid `krb5` config file. This should be configured appropriately with your organizations Kerberos setup and should be placed in at: `/etc/krb5.conf`. 
 
-In most cases, this file should be a config map available in your Kubernetes namespace, and should be mounted into all siembol pods. Additionally, you will need to ensure the Storm workers have a keytab available to them that you wish to use for the Kafka authentication. We will assume that the keytab `/etc/security/keytabs/siembol.keytab` exists and allows ticket requests for the user `siembol@DOMAIN.NET`.
+In most cases, this file should be a config map available in your Kubernetes namespace, and should be mounted into all siembol pods. This can be achieved by using `Kustomize` and patching the deployment file, see [how to customize helm charts](how_to_customize_helm_charts.md). Additionally, you will need to ensure the Storm workers have a keytab available to them that you wish to use for the Kafka authentication. We will assume that the keytab `/etc/security/keytabs/siembol.keytab` exists and allows ticket requests for the user `siembol@DOMAIN.NET`.
 
 > **_Note:_**
 If using the Docker images provided by this repositories build then the Docker images should have the appropriate Kerberos client libraries readily available. If not, you will need to ensure the libraries are installed. 
