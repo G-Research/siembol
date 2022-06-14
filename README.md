@@ -34,3 +34,4 @@ Siembol provides a scalable, advanced security analytics framework based on open
     - [Setting up a GitHub webhook](/docs/deployment/how-tos/how_to_setup_github_webhook.md)
     - [Tuning the performance of Storm topologies](/docs/deployment/how-tos/how_to_tune_performance_of_storm_topologies.md)
     - [Setting up Kerberos for external dependencies](/docs/deployment/how-tos/how_to_set_up_kerberos_for_external_dependencies.md)
+    - [Customize Helm chart](/docs/deployment/how-tos/how_to_customize_helm_charts.md)
