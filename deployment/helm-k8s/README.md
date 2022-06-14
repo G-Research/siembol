@@ -143,7 +143,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------| -------------------------| ------------------- |
 | `enrichment_store.appName` | Enrichment Store app name | enrichment-store |
 | `enrichment_store.image.repository` | Enrichment Store image repository | php |
-| `enrichment_store.image.tag` | Enrichment Store image tag | 8.0-apache |
+| `enrichment_store.image.tag` | Enrichment Store image tag | 8.1-apache |
 | `enrichment_store.image.pullPolicy` | Enrichment Store image pull policy | Always |
 | `enrichment_store.securityContext.runAsUser` | Specify security context user for container | 82 |
 | `enrichment_store.containerPort` | Port of pod | 80 |
@@ -152,7 +152,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `enrichment_store.pvc.storageclass` | Storage Class type | "" |
 | `enrichment_store.pvc.storage` | Storage size | 1Gi |
 | `enrichment_store.ingress.enabled` | Enable ingress | true |
-| `enrichment_store.ingress.fqdn` | Fully qualified domain name | ui.siembol.local |
+| `enrichment_store.ingress.fqdn` | Fully qualified domain name | enrichment.siembol.local |
 | `enrichment_store.security.user` | Specify security context for user | 82 |
 | `enrichment_store.security.fsGroup` | Specify security context for group | 82 |
 | `enrichment_store.security.runAsGroup` | Specify security group | 82 |
