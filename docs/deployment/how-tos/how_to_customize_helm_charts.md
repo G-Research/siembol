@@ -33,4 +33,46 @@ NAME     READY  UP-TO-DATE AVAILABLE AGE LABELS
 storm-ui   1/1    1            1     10s   app=storm-ui,chart=storm-1.0.14,heritage=Helm,app=kustomLabel
 ```
 
+#### How to patch application configuration files
+If you want to for example override the default application.properties file for any component or alert-layout-config.json for config-editor-rest, what can be done is to copy e.g. application.properties from [config directory](../../../config/config-editor-rest) and paste to a local file. Edit the fields needed. Then you create a ConfigMap which loads this file:
+```kubernetes
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: siembol-config-editor-rest
+  namespace: {{ .Values.namespace }}
+data:
+  application.properties: |-
+{{ .Files.Get .Values.applicationPropertiesFileName | indent 4 }}
+```
+Next step is to patch the deployment file, by adding the ConfigMap to the volumes section:
+```kubernetes
+  volumes:
+  - name: cacerts
+    secret:
+      secretName: cacerts
+  - name: rules-dir
+    emptyDir: {}
+  - name: config-dir
+    emptyDir: {}
+  - name: config-editor-rest-cm
+    configMap:
+      name: siembol-config-editor-rest
+```
 
+and then mount the file in correct location and same file name `/opt/config-editor-rest/application.properties`:
+```kubernetes
+  volumeMounts:
+  - name: cacerts
+    mountPath: /etc/ssl/certs/java/cacerts
+    subPath: cacerts
+    readOnly: true        
+  - name: rules-dir
+    mountPath: /tmp/siembol-config
+  - name: config-dir
+    mountPath: /config
+  - name: config-editor-rest-cm
+    mountPath: /opt/config-editor-rest/application.properties
+    subPath: application.properties
+    readOnly: true
+```
