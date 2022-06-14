@@ -3,7 +3,7 @@ How to set-up ZooKeeper nodes for Siembol configuration
 
 Siembol configurations are stored in git repositories and cached in ZooKeeper. ZooKeeper notifies the storm topologies when updates occur allowing for configuration changes without the need to restart components.
 
-The ZooKeeper root node should be `/siembol` and all subsequent nodes created should use that node as root, e.g. `/siembol/synchronise`. Siembol automatically creates ZooKeeper nodes, this is done by defining the default value of the node in the ZooKeeper connector property `init-value-if-not-exists`, for example:
+The ZooKeeper root node should be `siembol` and all subsequent nodes created should use that node as root, e.g. `/siembol/synchronise`. Siembol automatically creates ZooKeeper nodes, this is done by defining the default value of the node in the ZooKeeper connector property `init-value-if-not-exists`, for example:
 
 ```properties
 config-editor.storm-topologies-zookeeper.zk-path=/siembol/synchronise
