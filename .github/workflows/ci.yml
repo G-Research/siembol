@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: siembol-monitoring
-          path: deployment/siembol-monitoring/target/siembol-monitoringr-*.jar
+          path: deployment/siembol-monitoring/target/siembol-monitoring-*.jar
 
   build-docker-storm:
     runs-on: ubuntu-latest
