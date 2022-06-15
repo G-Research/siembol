@@ -10,6 +10,7 @@ import org.apache.kafka.streams.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
+import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
 import uk.co.gresearch.siembol.common.metrics.SiembolGauge;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
@@ -19,7 +20,7 @@ import uk.co.gresearch.siembol.common.utils.KafkaStreamsFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
-import java.util.Properties;
+import java.util.*;
 
 
 public class HeartbeatConsumer {
@@ -29,12 +30,10 @@ public class HeartbeatConsumer {
     private final KafkaStreams streams;
     private static final ObjectReader MESSAGE_READER = new ObjectMapper()
             .readerFor(HeartbeatProcessedMessage.class);
-    private final SiembolGauge parsingLatencyGauge;
-    private final SiembolGauge enrichmentLatencyGauge;
-    private final SiembolGauge responseLatencyGauge;
     private final SiembolGauge totalLatencyGauge;
     private final SiembolCounter consumerErrorCount;
     private final SiembolCounter consumerMessageRead;
+    private final Map<ServiceType, SiembolGauge> servicesMetrics = new LinkedHashMap<>();
 
     public HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar) {
         this(properties, metricsRegistrar, new KafkaStreamsFactoryImpl());
@@ -44,9 +43,22 @@ public class HeartbeatConsumer {
                       KafkaStreamsFactory streamsFactory) {
         consumerErrorCount = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.name());
         consumerMessageRead = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_MESSAGES_READ.name());
-        parsingLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name());
-        enrichmentLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name());
-        responseLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name());
+
+        if (properties.getEnabledServices() == null) {
+            throw new IllegalArgumentException("Missing enabled services for heartbeat consumer.");
+        }
+        if (properties.getEnabledServices().contains(ServiceType.PARSING_APP)) {
+            servicesMetrics.put(ServiceType.PARSING_APP,
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name()));
+        }
+        if (properties.getEnabledServices().contains(ServiceType.ENRICHMENT)) {
+            servicesMetrics.put(ServiceType.ENRICHMENT,
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name()));
+        }
+        if (properties.getEnabledServices().contains(ServiceType.RESPONSE)) {
+            servicesMetrics.put(ServiceType.RESPONSE,
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()));
+        }
         totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name());
         streams = createStreams(streamsFactory, properties);
         streams.start();
@@ -73,10 +85,25 @@ public class HeartbeatConsumer {
         try {
             var currentTimestamp = Instant.now().toEpochMilli();
             HeartbeatProcessedMessage message = MESSAGE_READER.readValue(value);
+            var lastTimestamp = message.getTimestamp().longValue();
 
-            parsingLatencyGauge.setValue(message.getParsingTime().longValue() - message.getTimestamp().longValue());
-            enrichmentLatencyGauge.setValue(message.getEnrichingTime().longValue() - message.getParsingTime().longValue());
-            responseLatencyGauge.setValue(message.getResponseTime().longValue() - message.getEnrichingTime().longValue());
+            for(Map.Entry<ServiceType, SiembolGauge> serviceMetric: servicesMetrics.entrySet()) {
+                switch (serviceMetric.getKey()) {
+                    case PARSING_APP -> {
+                        serviceMetric.getValue().setValue(message.getParsingTime().longValue() - lastTimestamp);
+                        lastTimestamp = message.getParsingTime().longValue();
+                    }
+                    case ENRICHMENT -> {
+                        serviceMetric.getValue().setValue(message.getEnrichingTime().longValue() - lastTimestamp);
+                        lastTimestamp = message.getEnrichingTime().longValue();
+                    }
+                    case RESPONSE -> {
+                        serviceMetric.getValue().setValue(message.getResponseTime().longValue() - lastTimestamp);
+                        lastTimestamp = message.getResponseTime().longValue();
+                    }
+                }
+
+            }
             totalLatencyGauge.setValue(currentTimestamp - message.getTimestamp().longValue());
             consumerMessageRead.increment();
         } catch (Exception e) {
