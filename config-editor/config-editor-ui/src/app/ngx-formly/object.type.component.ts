@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FieldType } from '@ngx-formly/core';
+import { FieldType, FieldTypeConfig } from '@ngx-formly/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -18,7 +18,7 @@ import { FieldType } from '@ngx-formly/core';
     `,
   ],
 })
-export class ObjectTypeComponent extends FieldType {
+export class ObjectTypeComponent extends FieldType<FieldTypeConfig> {
   defaultOptions = {
     defaultValue: {},
   };
