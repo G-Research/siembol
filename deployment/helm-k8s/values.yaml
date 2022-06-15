@@ -14,7 +14,6 @@ enabled_apps:
 - manager
 - dep_ingresses
 - enrichment_store
-- monitoring
 
 # Enable certmanager 
 certmanager:
@@ -238,17 +237,3 @@ response:
   livenessProbe:
     initialDelaySeconds: 100
     periodSeconds: 10
-
-
-# -----------------------------------------------------------------------------
-# siembol monitoring parameters
-# -----------------------------------------------------------------------------
-monitoring:
-  appName: "monitoring"
-  image:
-    repository: "gresearchdev/siembol-monitoring"
-    tag: "latest"
-    pullPolicy: Always
-  
-  service:
-    port: 8083
