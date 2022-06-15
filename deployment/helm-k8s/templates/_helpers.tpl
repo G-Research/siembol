@@ -129,12 +129,3 @@ Set the name for the Kafka chart
 {{- define "kafka.fullname" -}}
 {{- printf "%s-%s" .Release.Name "kafka" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-
-{{/*
-Create a fully qualified siembol monitoring fullname.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "siembol.monitoring.fullname" -}}
-{{- $name := default .Chart.Name .Values.monitoring.appName -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
