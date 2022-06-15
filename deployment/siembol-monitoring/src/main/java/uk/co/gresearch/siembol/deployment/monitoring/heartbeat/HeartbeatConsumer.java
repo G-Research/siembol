@@ -89,18 +89,17 @@ public class HeartbeatConsumer {
 
             for(Map.Entry<ServiceType, SiembolGauge> serviceMetric: servicesMetrics.entrySet()) {
                 switch (serviceMetric.getKey()) {
-                    case PARSING_APP -> {
+                    case PARSING_APP:
                         serviceMetric.getValue().setValue(message.getParsingTime().longValue() - lastTimestamp);
                         lastTimestamp = message.getParsingTime().longValue();
-                    }
-                    case ENRICHMENT -> {
+                        break;
+                    case ENRICHMENT:
                         serviceMetric.getValue().setValue(message.getEnrichingTime().longValue() - lastTimestamp);
                         lastTimestamp = message.getEnrichingTime().longValue();
-                    }
-                    case RESPONSE -> {
+                        break;
+                    case RESPONSE:
                         serviceMetric.getValue().setValue(message.getResponseTime().longValue() - lastTimestamp);
                         lastTimestamp = message.getResponseTime().longValue();
-                    }
                 }
 
             }
