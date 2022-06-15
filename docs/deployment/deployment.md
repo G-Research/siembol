@@ -18,6 +18,7 @@ Docker images are built both from snapshots and releases.
     - [storm-topology-manager](https://hub.docker.com/r/gresearchdev/siembol-storm-topology-manager/)
     - [config-editor-rest](https://hub.docker.com/r/gresearchdev/siembol-config-editor-rest/)
     - [responding-stream](https://hub.docker.com/r/gresearchdev/siembol-responding-stream/)
+    - [siembol-monitoring](https://hub.docker.com/r/gresearchdev/siembol-monitoring/)
 
 - Config editor UI
     - A Single page Angular application 
