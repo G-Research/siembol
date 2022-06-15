@@ -156,6 +156,9 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
                 .errorTopic(appSettings.getErrorTopic())
+                .originalStringTopic(appSettings.getOriginalStringTopic())
+                .maxNumFields(appSettings.getMaxNumFields())
+                .maxFieldSize(appSettings.getMaxFieldSize())
                 .metadataPrefix(appSettings.getMetadataPrefix())
                 .name(applicationName)
                 .build();
@@ -190,6 +193,10 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         }
 
         builder.errorTopic(appSettings.getErrorTopic())
+                .originalStringTopic(appSettings.getOriginalStringTopic())
+                .maxNumFields(appSettings.getMaxNumFields())
+                .maxFieldSize(appSettings.getMaxFieldSize())
+                .metadataPrefix(appSettings.getMetadataPrefix())
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
                 .metadataPrefix(appSettings.getMetadataPrefix())
@@ -219,6 +226,10 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         }
 
         builder.errorTopic(appSettings.getErrorTopic())
+                .originalStringTopic(appSettings.getOriginalStringTopic())
+                .maxNumFields(appSettings.getMaxNumFields())
+                .maxFieldSize(appSettings.getMaxFieldSize())
+                .metadataPrefix(appSettings.getMetadataPrefix())
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
                 .metadataPrefix(appSettings.getMetadataPrefix())
@@ -248,6 +259,10 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         }
 
         builder.errorTopic(appSettings.getErrorTopic())
+                .originalStringTopic(appSettings.getOriginalStringTopic())
+                .maxNumFields(appSettings.getMaxNumFields())
+                .maxFieldSize(appSettings.getMaxFieldSize())
+                .metadataPrefix(appSettings.getMetadataPrefix())
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
                 .metadataPrefix(appSettings.getMetadataPrefix())

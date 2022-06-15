@@ -53,6 +53,9 @@ public class ParsingApplicationBoltTest {
                  ],
                  "parse_metadata" : false,
                  "error_topic": "error",
+                 "max_num_fields" : 100,
+                 "max_field_size" : 10,
+                 "original_string_topic" : "truncated",
                  "input_parallelism": 1,
                  "parsing_parallelism": 2,
                  "output_parallelism": 3,
@@ -157,7 +160,7 @@ public class ParsingApplicationBoltTest {
     }
 
     @Test
-    public void testParsedOk() throws IOException {
+    public void parsedOk() throws IOException {
         parsingApplicationBolt.execute(tuple);
         Values values = argumentEmitCaptor.getValue();
         Assert.assertNotNull(values);
@@ -182,7 +185,32 @@ public class ParsingApplicationBoltTest {
     }
 
     @Test
-    public void testFilteredOk() throws Exception {
+    public void parsedTruncatedOriginalString() throws IOException {
+        parsingApplicationBolt.execute(tuple);
+        Values values = argumentEmitCaptor.getValue();
+        Assert.assertNotNull(values);
+        Assert.assertEquals(2, values.size());
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+        Assert.assertEquals(1, messages.size());
+        Assert.assertEquals("output", messages.get(0).getTopic());
+
+        Map<String, Object> parsed = JSON_READER.readValue(messages.get(0).getMessage());
+        Assert.assertEquals("RAW_LOG", parsed.get(SiembolMessageFields.ORIGINAL.toString()));
+        Assert.assertEquals("single", parsed.get(SiembolMessageFields.SENSOR_TYPE.toString()));
+        Assert.assertNull(parsed.get("metadata_is_metadata"));
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counters = (SiembolMetricsCounters)values.get(1);
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName()));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                .getMetricName("single")));
+        Assert.assertEquals(1,
+                metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.PARSING_CONFIGS_UPDATE.getMetricName()));
+    }
+
+    @Test
+    public void filteredOk() throws Exception {
         Assert.assertEquals(1,
                 metricsTestRegistrarFactory.getCounterValue(SiembolMetrics.PARSING_CONFIGS_UPDATE.getMetricName()));
 
@@ -203,7 +231,40 @@ public class ParsingApplicationBoltTest {
     }
 
     @Test
-    public void testExceptionMetadata() throws Exception {
+    public void truncatedOriginalStringOk() throws Exception {
+        when(tuple.getValueByField(eq(ParsingApplicationTuples.LOG.toString())))
+                .thenReturn("123456789abcdefgh".getBytes());
+        parsingApplicationBolt.execute(tuple);
+
+        Values values = argumentEmitCaptor.getValue();
+        Assert.assertNotNull(values);
+        Assert.assertEquals(2, values.size());
+        Assert.assertTrue(values.get(0) instanceof KafkaWriterMessages);
+        KafkaWriterMessages messages = (KafkaWriterMessages)values.get(0);
+        Assert.assertEquals(2, messages.size());
+        Assert.assertEquals("output", messages.get(0).getTopic());
+        Assert.assertEquals("truncated", messages.get(1).getTopic());
+
+        Map<String, Object> parsed = JSON_READER.readValue(messages.get(0).getMessage());
+        Assert.assertEquals("123456789a", parsed.get(SiembolMessageFields.ORIGINAL.toString()));
+        Assert.assertEquals("single", parsed.get(SiembolMessageFields.SENSOR_TYPE.toString()));
+
+
+        Assert.assertTrue(values.get(1) instanceof SiembolMetricsCounters);
+        var counters = (SiembolMetricsCounters)values.get(1);
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName()));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                .getMetricName("single")));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_TRUNCATED_FIELDS_MESSAGES
+                .getMetricName("single")));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_TRUNCATED_ORIGINAL_STRING_MESSAGES
+                .getMetricName("single")));
+        Assert.assertTrue(counters.contains(SiembolMetrics.PARSING_SOURCE_TYPE_SENT_ORIGINAL_STRING_MESSAGES
+                .getMetricName("single")));
+    }
+
+    @Test
+    public void exceptionMetadata() throws Exception {
         parsingAttributes.setApplicationParserSpecification(simpleSingleApplicationParser.replace(
                 "\"parse_metadata\" : false", "\"parse_metadata\" : true"
         ));
@@ -234,7 +295,7 @@ public class ParsingApplicationBoltTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExceptionNullData() {
+    public void exceptionNullData() {
         when(tuple.getValueByField(eq(ParsingApplicationTuples.LOG.toString()))).thenReturn(null);
         parsingApplicationBolt.execute(tuple);
     }

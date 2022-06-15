@@ -7,7 +7,12 @@ public enum SiembolMetrics {
 
     PARSING_SOURCE_TYPE_PARSED_MESSAGES("siembol_counter_parsed_messages_%s"),
     PARSING_SOURCE_TYPE_FILTERED_MESSAGES("siembol_counter_filtered_messages_%s"),
-
+    PARSING_SOURCE_TYPE_REMOVED_FIELDS_MESSAGES("siembol_counter_removed_fields_messages_%s"),
+    PARSING_SOURCE_TYPE_TRUNCATED_FIELDS_MESSAGES("siembol_counter_truncated_fields_messages_%s"),
+    PARSING_SOURCE_TYPE_TRUNCATED_ORIGINAL_STRING_MESSAGES(
+            "siembol_counter_truncated_original_string_messages_%s"),
+    PARSING_SOURCE_TYPE_SENT_ORIGINAL_STRING_MESSAGES(
+            "siembol_counter_app_sent_original_string_messages_%s"),
     PARSING_APP_PARSED_MESSAGES("siembol_counter_app_parsed_messages"),
     PARSING_APP_FILTERED_MESSAGES("siembol_counter_app_filtered_messages"),
     PARSING_APP_ERROR_MESSAGES("siembol_counter_app_error_messages"),
