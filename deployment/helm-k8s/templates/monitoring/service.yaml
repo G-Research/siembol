@@ -1,0 +1,16 @@
+{{- if (has "monitoring" .Values.enabled_apps) -}}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ include "siembol.monitoring.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    metrics: "true"
+spec:
+  selector:
+    app: {{ include "siembol.monitoring.fullname" $ }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.monitoring.service.port }}
+    name: web
+{{- end -}}

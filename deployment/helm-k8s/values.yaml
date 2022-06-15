@@ -14,6 +14,7 @@ enabled_apps:
 - manager
 - dep_ingresses
 - enrichment_store
+- monitoring
 
 # Enable certmanager 
 certmanager:
@@ -237,3 +238,31 @@ response:
   livenessProbe:
     initialDelaySeconds: 100
     periodSeconds: 10
+
+# -----------------------------------------------------------------------------
+# siembol monitoring parameters
+# -----------------------------------------------------------------------------
+monitoring:
+  appName: "monitoring"
+  image:
+    repository: "gresearchdev/siembol-monitoring"
+    tag: "latest"
+    pullPolicy: Always
+
+  service:
+    port: 8083
+
+  resources:
+    requests:
+      cpu: 0.1
+      memory: "128Mi"
+    limits:
+      cpu: 0.5
+      memory: "256Mi"
+
+  readinessProbe:
+    initialDelaySeconds: 20
+    periodSeconds: 30
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 30
