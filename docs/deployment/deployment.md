@@ -161,6 +161,17 @@ We have a folder for ingress specifications for extra components which allows fo
 | `dep_ingresses.storm.oauth2_proxy.enabled` | Enable oauth2 proxy for this ingress | false |
 | `dep_ingresses.storm.oauth2_proxy.host` | Host for oauth2 proxy | oauth-proxy.siembol.local |
 
+#### Siembol Monitoring
+Siembol monitoring is a springboot application with components to monitor Siembol. It has one component: siembol heartbeat. 
+
+##### Siembol Heartbeat
+Siembol heartbeat can be used to monitor all components of Siembol are working correctly. It has two main components:
+- kafka producers: send a heartbeat message to a kafka topic at an interval of time specified in the config. Multiple producers can be defined with different kafka properties, e.g. different kafka cluster or topics.
+- kafka consumer: reads the heartbeat message after it has been processed by Siembol services. Calculates the total latency and latency between services depending on the services enabled. 
+
+For the heartbeat to work config has to be added to each Siembol service used to process the heartbeat message and write it to the topic read by the consumer. 
+
+See [siembol monitoring](how-tos/how_to_setup_siembol_monitoring.md) for configuration details.
 
 
 ### Enable & Disable components
