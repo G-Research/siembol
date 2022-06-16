@@ -4,6 +4,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
 import { Subject } from 'rxjs';
 import { debounceTime, take, takeUntil } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
+import { FieldTypeConfig } from '@ngx-formly/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -60,7 +61,7 @@ import { cloneDeep } from 'lodash';
     `,
   ],
 })
-export class JsonObjectTypeComponent extends FieldType implements OnInit, OnDestroy {
+export class JsonObjectTypeComponent extends FieldType<FieldTypeConfig> implements OnInit, OnDestroy {
   @ViewChild('autosize', { static: false }) autosize: CdkTextareaAutosize;
   defaultOptions = {
     defaultValue: {},

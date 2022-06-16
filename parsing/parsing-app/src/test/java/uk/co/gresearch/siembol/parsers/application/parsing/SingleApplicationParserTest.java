@@ -1,5 +1,8 @@
 package uk.co.gresearch.siembol.parsers.application.parsing;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,14 +19,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SingleApplicationParserTest {
+    private static final ObjectReader JSON_READER = new ObjectMapper()
+            .readerFor(new TypeReference<Map<String, Object>>() { });
     private final String metadata = """
-     {
-    
-         "a": "string",
-         "b": 1,
-         "c": true
-     }
-     """;
+            {
+                
+                "a": "string",
+                "b": 1,
+                "c": true
+            }
+            """;
 
     private SerializableSiembolParser siembolParser;
     private final String sourceType = "test_type";
@@ -33,6 +38,8 @@ public class SingleApplicationParserTest {
     private List<Map<String, Object>> parsed;
     private final String errorTopic = "error";
     private final String outputTopic = "output";
+
+    private final String originalStringTopic = "original";
     private final byte[] input = "test".getBytes();
     private ParserResult parserResult;
     TimeProvider timeProvider;
@@ -62,14 +69,14 @@ public class SingleApplicationParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMissingArguments() {
+    public void missingArguments() {
         appParser = SingleApplicationParser.builder()
                 .errorTopic(errorTopic)
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testMissingArguments2() throws Exception {
+    public void missingArguments2() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -79,7 +86,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseTwoMessages() throws Exception {
+    public void parseTwoMessages() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -88,7 +95,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -107,7 +114,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseOneMessages() throws Exception {
+    public void parseOneMessage() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -117,7 +124,7 @@ public class SingleApplicationParserTest {
 
         parserResult.getParsedMessages().remove(1);
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -132,7 +139,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseOneMessageGuid() throws Exception {
+    public void parseOneMessageWithGuid() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .addGuidToMessages(true)
@@ -143,7 +150,7 @@ public class SingleApplicationParserTest {
 
         parserResult.getParsedMessages().remove(1);
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -158,7 +165,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseOneMessageFiltered() throws Exception {
+    public void parseOneMessageFiltered() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -166,15 +173,15 @@ public class SingleApplicationParserTest {
                 .timeProvider(timeProvider)
                 .build();
 
-        parserResult.getParsedMessages().replaceAll(x-> new HashMap<>());
+        parserResult.getParsedMessages().replaceAll(x -> new HashMap<>());
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         Assert.assertEquals(1, result.size());
         Assert.assertNull(result.get(0).getMessages());
     }
 
     @Test
-    public void testExceptionParsing() throws Exception {
+    public void parseWithError() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -185,7 +192,7 @@ public class SingleApplicationParserTest {
         parserResult.setParsedMessages(null);
         parserResult.setException(new IllegalStateException("test_exception"));
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -198,7 +205,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testRuntimeExceptionParsing() throws Exception {
+    public void parseWithRuntimeExceptiom() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test-app")
@@ -207,7 +214,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenThrow(new RuntimeException("runtime_exception"));
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -220,7 +227,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParsingFiltered() throws Exception {
+    public void parseFiltered() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -230,7 +237,7 @@ public class SingleApplicationParserTest {
 
         parserResult.setParsedMessages(new ArrayList<>());
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -239,7 +246,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseTwoMessagesMetadata() throws Exception {
+    public void parseTwoMessagesWithMetadata() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -250,7 +257,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -275,7 +282,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseTwoMessagesGuidMetadata() throws Exception {
+    public void parseTwoMessagesWithGuidAndMetadata() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -287,7 +294,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -314,7 +321,7 @@ public class SingleApplicationParserTest {
     }
 
     @Test
-    public void testParseTwoMessagesMetadataNoPrefix() throws Exception {
+    public void parseTwoMessagesWithNoPrefixMetadata() throws Exception {
         appParser = SingleApplicationParser.builder()
                 .parser(outputTopic, siembolParser)
                 .name("test")
@@ -324,7 +331,7 @@ public class SingleApplicationParserTest {
                 .build();
 
         when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
-        List<ParsingApplicationResult> result = appParser.parse( metadata, input);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
         verify(timeProvider, times(1)).getCurrentTimeInMs();
         verify(siembolParser, times(1)).parseToResult(metadata, input);
         Assert.assertEquals(1, result.size());
@@ -345,6 +352,131 @@ public class SingleApplicationParserTest {
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("b" + "\":1"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains("c" + "\":true"));
         Assert.assertTrue(result.get(0).getMessages().get(1).contains(
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+    }
+
+    @Test
+    public void parseOneMessageWithLargeFields() throws Exception {
+        appParser = SingleApplicationParser.builder()
+                .parser(outputTopic, siembolParser)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .maxFieldSize(10)
+                .build();
+
+        parserResult.getParsedMessages().remove(1);
+        message1.put("large_field", "123456789ABC");
+
+
+        when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(siembolParser, times(1)).parseToResult(metadata, input);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(1, result.get(0).getMessages().size());
+        Assert.assertEquals(outputTopic, result.get(0).getTopic());
+        Assert.assertTrue(result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.PARSED));
+        Assert.assertTrue(result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.TRUNCATED_FIELDS));
+        Assert.assertFalse(
+                result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.TRUNCATED_ORIGINAL_STRING));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("large_field" + "\":\"123456789A\""));
+
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+
+        Assert.assertFalse(result.get(0).getMessages().get(0).contains("guid" + "\":"));
+
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+    }
+
+    @Test
+    public void parseOneMessageWithLargeOriginalString() throws Exception {
+        appParser = SingleApplicationParser.builder()
+                .parser(outputTopic, siembolParser)
+                .name("test")
+                .errorTopic(errorTopic)
+                .originalStringTopic(originalStringTopic)
+                .timeProvider(timeProvider)
+                .maxFieldSize(10)
+                .build();
+
+        parserResult.getParsedMessages().remove(1);
+        message1.put("original_string", "123456789ABC");
+
+
+        when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(siembolParser, times(1)).parseToResult(metadata, input);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(1, result.get(0).getMessages().size());
+        Assert.assertEquals(outputTopic, result.get(0).getTopic());
+        Assert.assertTrue(result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.PARSED));
+        Assert.assertTrue(result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.TRUNCATED_FIELDS));
+        Assert.assertTrue(result.get(0).getResultFlags().contains(
+                ParsingApplicationResult.ResultFlag.TRUNCATED_ORIGINAL_STRING));
+        Assert.assertTrue(
+                result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.TRUNCATED_ORIGINAL_STRING));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("original_string" + "\":\"123456789A\""));
+
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+
+        Assert.assertFalse(result.get(0).getMessages().get(0).contains("guid" + "\":"));
+
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
+                SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
+
+        Assert.assertEquals(1, result.get(1).getMessages().size());
+        Assert.assertEquals(originalStringTopic, result.get(1).getTopic());
+        Assert.assertTrue(result.get(1).getResultFlags().contains(ParsingApplicationResult.ResultFlag.ORIGINAL_MESSAGE));
+        Assert.assertFalse(result.get(1).getResultFlags().contains(ParsingApplicationResult.ResultFlag.PARSED));
+        Assert.assertEquals(1, result.get(0).getMessages().size());
+        Assert.assertEquals(new String(input), result.get(1).getMessages().get(0));
+    }
+
+    @Test
+    public void parseOneMessageWithLargeNumberOfFields() throws Exception {
+        appParser = SingleApplicationParser.builder()
+                .parser(outputTopic, siembolParser)
+                .name("test")
+                .errorTopic(errorTopic)
+                .timeProvider(timeProvider)
+                .maxFieldSize(100)
+                .maxNumFields(20)
+                .build();
+
+        parserResult.getParsedMessages().remove(1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 20; i++) {
+            sb.append("a");
+            message1.put(sb.toString(), "dummy");
+        }
+
+
+        when(siembolParser.parseToResult(metadata, input)).thenReturn(parserResult);
+        List<ParsingApplicationResult> result = appParser.parse(metadata, input);
+        verify(timeProvider, times(1)).getCurrentTimeInMs();
+        verify(siembolParser, times(1)).parseToResult(metadata, input);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(1, result.get(0).getMessages().size());
+        Assert.assertEquals(outputTopic, result.get(0).getTopic());
+
+        Map<String, Object> parsed = JSON_READER.readValue(result.get(0).getMessages().get(0));
+        Assert.assertEquals(20, parsed.size());
+        Assert.assertTrue(parsed.containsKey(SiembolMessageFields.PARSING_TIME.getName()));
+        Assert.assertTrue(parsed.containsKey(SiembolMessageFields.TIMESTAMP.getName()));
+        Assert.assertTrue(result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.PARSED));
+        Assert.assertTrue(result.get(0).getResultFlags().contains(ParsingApplicationResult.ResultFlag.REMOVED_FIELDS));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(SiembolMessageFields.PARSING_TIME + "\":1"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("test_field" + "\":\"a"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains("timestamp" + "\":1"));
+        Assert.assertFalse(result.get(0).getMessages().get(0).contains("aaaaaaaaaaaaaaaaa"));
+        Assert.assertTrue(result.get(0).getMessages().get(0).contains(
                 SiembolMessageFields.SENSOR_TYPE + "\":\"test_type\""));
     }
 }

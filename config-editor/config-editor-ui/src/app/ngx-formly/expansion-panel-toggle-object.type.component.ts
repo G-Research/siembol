@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
+import { FieldType, FormlyFieldConfig, FieldTypeConfig } from '@ngx-formly/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -47,7 +47,7 @@ import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
     `,
   ],
 })
-export class ExpansionPanelToggleObjectTypeComponent extends FieldType implements OnInit {
+export class ExpansionPanelToggleObjectTypeComponent extends FieldType<FieldTypeConfig> implements OnInit {
     defaultOptions = {
       defaultValue: {},
     };

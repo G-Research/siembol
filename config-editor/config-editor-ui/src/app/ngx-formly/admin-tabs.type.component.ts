@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FieldType } from '@ngx-formly/core';
+import { FieldType, FieldTypeConfig } from '@ngx-formly/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -37,7 +37,7 @@ import { FieldType } from '@ngx-formly/core';
     `,
   ],
 })
-export class AdminTabTypeComponent extends FieldType implements OnInit {
+export class AdminTabTypeComponent extends FieldType<FieldTypeConfig> implements OnInit {
   selectedTab = 0;
   tabTypes = ['array', 'object', 'rawobject'];
 

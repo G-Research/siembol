@@ -1,5 +1,10 @@
 package uk.co.gresearch.siembol.common.constants;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public enum SiembolMessageFields {
     SRC_ADDR("ip_src_addr"),
     SRC_PORT("ip_src_port"),
@@ -26,5 +31,9 @@ public enum SiembolMessageFields {
 
     public String getName() {
         return name;
+    }
+
+    public static Set<String> getMessageFieldsSet() {
+        return Arrays.stream(SiembolMessageFields.values()).map(x -> x.getName()).collect(Collectors.toSet());
     }
 }

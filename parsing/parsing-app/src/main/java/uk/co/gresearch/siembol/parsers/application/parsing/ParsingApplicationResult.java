@@ -2,18 +2,23 @@ package uk.co.gresearch.siembol.parsers.application.parsing;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 public class ParsingApplicationResult implements Serializable {
-    public enum ResultType implements Serializable {
+    public enum ResultFlag implements Serializable {
         PARSED,
         ERROR,
-        FILTERED
+        FILTERED,
+        TRUNCATED_FIELDS,
+        TRUNCATED_ORIGINAL_STRING,
+        REMOVED_FIELDS,
+        ORIGINAL_MESSAGE,
     }
     private static final long serialVersionUID = 1L;
     private final String sourceType;
     private String topic;
     private ArrayList<String> messages;
-    private ResultType resultType = ResultType.PARSED;
+    private EnumSet<ResultFlag> resultFlags = EnumSet.noneOf(ResultFlag.class);
 
     public ParsingApplicationResult(String sourceType) {
         this.sourceType = sourceType;
@@ -44,11 +49,11 @@ public class ParsingApplicationResult implements Serializable {
         this.topic = topic;
     }
 
-    public ResultType getResultType() {
-        return resultType;
+    public EnumSet<ResultFlag> getResultFlags() {
+        return resultFlags;
     }
 
-    public void setResultType(ResultType resultType) {
-        this.resultType = resultType;
+    public void setResultFlags(EnumSet<ResultFlag> resultFlags) {
+        this.resultFlags = resultFlags;
     }
 }
