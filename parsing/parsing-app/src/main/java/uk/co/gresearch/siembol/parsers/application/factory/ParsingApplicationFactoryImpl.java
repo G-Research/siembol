@@ -199,7 +199,6 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                 .metadataPrefix(appSettings.getMetadataPrefix())
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
-                .metadataPrefix(appSettings.getMetadataPrefix())
                 .name(applicationName);
 
         return builder.build();
@@ -232,7 +231,6 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                 .metadataPrefix(appSettings.getMetadataPrefix())
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
-                .metadataPrefix(appSettings.getMetadataPrefix())
                 .name(applicationName);
 
         return builder.build();
@@ -262,7 +260,6 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
                 .originalStringTopic(appSettings.getOriginalStringTopic())
                 .maxNumFields(appSettings.getMaxNumFields())
                 .maxFieldSize(appSettings.getMaxFieldSize())
-                .metadataPrefix(appSettings.getMetadataPrefix())
                 .parseMetadata(appSettings.getParseMetadata())
                 .addGuidToMessages(true)
                 .metadataPrefix(appSettings.getMetadataPrefix())
