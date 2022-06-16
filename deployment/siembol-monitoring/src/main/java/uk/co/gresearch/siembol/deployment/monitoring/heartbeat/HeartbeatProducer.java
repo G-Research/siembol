@@ -18,6 +18,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class HeartbeatProducer implements Closeable {
@@ -25,15 +26,13 @@ public class HeartbeatProducer implements Closeable {
 
     private final HeartbeatMessage message = new HeartbeatMessage();
     private static final ObjectWriter objectWriter = new ObjectMapper().writer();
-    private boolean exceptionLastRun = false;
+    private final AtomicReference<Exception> exception = new AtomicReference<>();
     private static final String MISSING_KAFKA_WRITER_PROPS_MSG = "Missing heartbeat kafka producer properties for %s";
     private final String producerName;
     private final Producer<String, String> producer;
     private final SiembolCounter updateCounter;
     private final SiembolCounter errorCounter;
     private final String topicName;
-
-
 
     public HeartbeatProducer(HeartbeatProducerProperties producerProperties,
                              String producerName,
@@ -64,8 +63,6 @@ public class HeartbeatProducer implements Closeable {
 
     }
 
-
-
     private void initialiseMessage(Map<String, Object> messageProperties) {
         for (Map.Entry<String, Object> messageEntry : messageProperties.entrySet()) {
             this.message.setMessage(messageEntry.getKey(), messageEntry.getValue());
@@ -80,11 +77,11 @@ public class HeartbeatProducer implements Closeable {
             producer.send(new ProducerRecord<>(topicName, objectWriter.writeValueAsString(this.message))).get();
             updateCounter.increment();
             LOG.info("Sent heartbeat with producer {} to topic {}", producerName, topicName);
-            exceptionLastRun = false;
+            exception.set(null);
         } catch (Exception e) {
             LOG.error("Error sending message to kafka with producer {}: {}", producerName, e.toString());
             errorCounter.increment();
-            exceptionLastRun = true;
+            exception.set(e);
         }
     }
 
@@ -93,6 +90,6 @@ public class HeartbeatProducer implements Closeable {
     }
 
     public Health checkHealth() {
-        return exceptionLastRun? Health.down().build(): Health.up().build();
+        return exception.get() == null ? Health.down().withException(exception.get()).build(): Health.up().build();
     }
 }
