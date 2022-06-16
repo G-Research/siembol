@@ -38,6 +38,18 @@ public class ParsingApplicationSettingsDto {
     @Attributes(description = "Parsing json metadata from input key records")
     private Boolean parseMetadata = false;
 
+    @JsonProperty("max_num_fields")
+    @Attributes(description = "Maximum number of fields after parsing the message")
+    private Integer maxNumFields = 300;
+    @JsonProperty("max_field_size")
+    @Attributes(description = "Maximum field size after parsing the message in bytes")
+    private Integer maxFieldSize = 40000;
+
+    @JsonProperty("original_string_topic")
+    @Attributes(description = "Kafka topic for messages with truncated original_string field. " +
+            "The raw log for a message with truncated original_string will be sent to this topic")
+    private String originalStringTopic;
+
     @JsonProperty("metadata_prefix")
     @Attributes(description = "Prefix used in metadata fields when parsing metadata is enabled")
     private String metadataPrefix = "metadata_";
@@ -104,5 +116,29 @@ public class ParsingApplicationSettingsDto {
 
     public void setParseMetadata(Boolean parseMetadata) {
         this.parseMetadata = parseMetadata;
+    }
+
+    public Integer getMaxNumFields() {
+        return maxNumFields;
+    }
+
+    public void setMaxNumFields(Integer maxNumFields) {
+        this.maxNumFields = maxNumFields;
+    }
+
+    public Integer getMaxFieldSize() {
+        return maxFieldSize;
+    }
+
+    public void setMaxFieldSize(Integer maxFieldSize) {
+        this.maxFieldSize = maxFieldSize;
+    }
+
+    public String getOriginalStringTopic() {
+        return originalStringTopic;
+    }
+
+    public void setOriginalStringTopic(String originalStringTopic) {
+        this.originalStringTopic = originalStringTopic;
     }
 }

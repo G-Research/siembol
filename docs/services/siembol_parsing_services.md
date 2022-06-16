@@ -114,7 +114,7 @@ Filter logs that are matching the `message_filter`, where `matchers` are specifi
 Parsers are integrated in a stream application (storm topology) that combines one or multiple parsers, reads a log from input kafka topics and produces a normalised log to output kafka topics when parsing is successful or to an error topic on error.
 - `parsing_app_name` - The name of the parsing application
 - `parsing_app_version` - The version of the parsing application
-- `parsing_app_autho` - The author of the parsing application
+- `parsing_app_author` - The author of the parsing application
 - `parsing_app_description`- Description of the parsing application 
 - `parsing_app_settings` - Parsing application settings
     - `parsing_app_type`- The type of the parsing application - `single_parser`, `router_parsing`, `topic_routing_parsing` or `header_routing_parsing`
@@ -124,6 +124,9 @@ Parsers are integrated in a stream application (storm topology) that combines on
     - `parsing_parallelism` - The number of parallel executors for parsing messages
     - `output_parallelism` - The number of parallel executors for publishing parsed messages to kafka
     - `parse_metadata` - Parsing json metadata from input key records using `metadata_prefix` added to metadata field names, by default `metadata_`
+    - `max_num_fields` - Maximum number of fields after parsing the message
+    - `max_field_size` - Maximum field size after parsing the message in bytes
+    - `original_string_topic` - Kafka topic for messages with truncated original_string field. The raw input log for a message with truncated `original_string` will be sent to this topic
 - `parsing_settings` - Parsing settings depends on parsing application type
 ### Single Parser
 The application integrates a single parser.
