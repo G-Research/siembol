@@ -2,6 +2,7 @@ import { Component, ViewChild, NgZone, AfterViewInit } from '@angular/core';
 import { FieldType } from '@ngx-formly/material/form-field';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { take } from 'rxjs/operators';
+import { FieldTypeConfig } from '@ngx-formly/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -57,7 +58,7 @@ import { take } from 'rxjs/operators';
     `,
   ],
 })
-export class TextAreaTypeComponent extends FieldType implements AfterViewInit {
+export class TextAreaTypeComponent extends FieldType<FieldTypeConfig>  implements AfterViewInit {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
 
   constructor(private ngZone: NgZone) {

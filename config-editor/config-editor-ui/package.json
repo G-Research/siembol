@@ -1,6 +1,6 @@
 {
   "name": "rule-editor.ui",
-  "version": "2.5.2-dev",
+  "version": "2.5.3-dev",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -34,8 +34,8 @@
     "@angular/platform-browser": "^13.3.1",
     "@angular/platform-browser-dynamic": "^13.3.1",
     "@angular/router": "^13.3.1",
-    "@ngx-formly/core": "^6.0.0-next.9",
-    "@ngx-formly/material": "^6.0.0-next.9",
+    "@ngx-formly/core": "^6.0.0-beta.3",
+    "@ngx-formly/material": "^6.0.0-beta.3",
     "@types/json-schema": "^7.0.10",
     "jasmine-marbles": "^0.9.2",
     "js-yaml": "^4.1.0",
@@ -90,7 +90,7 @@
     "protractor": "^7.0.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.6.0",
-    "typescript": "^4.6.4",
+    "typescript": "~4.6.4",
     "webpack": "^5.69.1"
   }
 }

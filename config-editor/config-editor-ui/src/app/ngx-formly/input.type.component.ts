@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatInput } from '@angular/material/input';
+import { FieldTypeConfig } from '@ngx-formly/core';
 import { FieldType } from '@ngx-formly/material/form-field';
 
 @Component({
@@ -34,7 +35,7 @@ import { FieldType } from '@ngx-formly/material/form-field';
     `,
   ],
 })
-export class InputTypeComponent extends FieldType {
+export class InputTypeComponent extends FieldType<FieldTypeConfig> {
   @ViewChild(MatInput, { static: true }) formFieldControl!: MatInput;
 
   get type() {
