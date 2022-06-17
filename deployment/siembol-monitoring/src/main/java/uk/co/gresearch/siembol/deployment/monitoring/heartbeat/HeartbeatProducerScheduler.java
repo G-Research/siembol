@@ -43,7 +43,9 @@ public class HeartbeatProducerScheduler implements Closeable {
         }
     }
 
-    public static HeartbeatProducer createHeartbeatProducer(HeartbeatProducerProperties properties, String producerName, BiFunction<HeartbeatProducerProperties, String, HeartbeatProducer> factory) {
+    public static HeartbeatProducer createHeartbeatProducer(HeartbeatProducerProperties properties,
+                                                            String producerName,
+                                                            BiFunction<HeartbeatProducerProperties, String, HeartbeatProducer> factory) {
         LOG.info("Initialising producer {}", producerName);
         var producer = factory.apply(properties, producerName);
         LOG.info("Finished initialising heartbeat producer {}", producerName);

@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
+package uk.co.gresearch.siembol.common.testing;
 
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
@@ -37,4 +37,3 @@ public class TestingDriverKafkaStreamsFactory implements KafkaStreamsFactory, Cl
         return testDriver;
     }
 }
-

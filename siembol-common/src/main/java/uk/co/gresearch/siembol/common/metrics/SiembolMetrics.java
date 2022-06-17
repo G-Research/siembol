@@ -57,13 +57,13 @@ public enum SiembolMetrics {
     CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s"),
 
     HEARTBEAT_MESSAGES_SENT("siembol_counter_hearbeat_messages_sent_%s"),
-    HEARTBEAT_MESSAGES_READ("siembol_counter_hearbeat_messages_read_%s"),
-    HEARTBEAT_LATENCY_PARSING_MS("siembol_gauge_hearbeat_latency_ms_parsing_%s"),
-    HEARTBEAT_LATENCY_ENRICHING_MS("siembol_gauge_hearbeat_latency_ms_enriching_%s"),
-    HEARTBEAT_LATENCY_RESPONDING_MS("siembol_gauge_hearbeat_latency_ms_responding_%s"),
-    HEARTBEAT_LATENCY_TOTAL_MS("siembol_gauge_hearbeat_latency_ms_total_%s"),
+    HEARTBEAT_MESSAGES_READ("siembol_counter_hearbeat_messages_read"),
+    HEARTBEAT_LATENCY_PARSING_MS("siembol_gauge_hearbeat_latency_ms_parsing"),
+    HEARTBEAT_LATENCY_ENRICHING_MS("siembol_gauge_hearbeat_latency_ms_enriching"),
+    HEARTBEAT_LATENCY_RESPONDING_MS("siembol_gauge_hearbeat_latency_ms_responding"),
+    HEARTBEAT_LATENCY_TOTAL_MS("siembol_gauge_hearbeat_latency_ms_total"),
     HEARTBEAT_PRODUCER_ERROR("siembol_counter_heartbeat_producer_error_%s"),
-    HEARTBEAT_CONSUMER_ERROR("siembol_counter_heartbeat_consumer_error_%s");
+    HEARTBEAT_CONSUMER_ERROR("siembol_counter_heartbeat_consumer_error");
 
     private final String formatStringName;
 

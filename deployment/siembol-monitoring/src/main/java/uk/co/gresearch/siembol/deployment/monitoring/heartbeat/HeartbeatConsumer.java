@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -33,7 +34,7 @@ public class HeartbeatConsumer {
     private final SiembolGauge totalLatencyGauge;
     private final SiembolCounter consumerErrorCount;
     private final SiembolCounter consumerMessageRead;
-    private final Map<ServiceType, SiembolGauge> servicesMetrics = new LinkedHashMap<>();
+    private final List<Pair<ServiceType, SiembolGauge>> servicesMetrics = new ArrayList<>();
 
     public HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar) {
         this(properties, metricsRegistrar, new KafkaStreamsFactoryImpl());
@@ -48,16 +49,16 @@ public class HeartbeatConsumer {
             throw new IllegalArgumentException("Missing enabled services for heartbeat consumer.");
         }
         if (properties.getEnabledServices().contains(ServiceType.PARSING_APP)) {
-            servicesMetrics.put(ServiceType.PARSING_APP,
-                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name()));
+            servicesMetrics.add(Pair.of(ServiceType.PARSING_APP,
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name())));
         }
         if (properties.getEnabledServices().contains(ServiceType.ENRICHMENT)) {
-            servicesMetrics.put(ServiceType.ENRICHMENT,
-                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name()));
+            servicesMetrics.add(Pair.of(ServiceType.ENRICHMENT,
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name())));
         }
         if (properties.getEnabledServices().contains(ServiceType.RESPONSE)) {
-            servicesMetrics.put(ServiceType.RESPONSE,
-                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()));
+            servicesMetrics.add(Pair.of(ServiceType.RESPONSE,
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name())));
         }
         totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name());
         streams = createStreams(streamsFactory, properties);
@@ -87,7 +88,7 @@ public class HeartbeatConsumer {
             HeartbeatProcessedMessage message = MESSAGE_READER.readValue(value);
             var lastTimestamp = message.getTimestamp().longValue();
 
-            for(Map.Entry<ServiceType, SiembolGauge> serviceMetric: servicesMetrics.entrySet()) {
+            for(Pair<ServiceType, SiembolGauge> serviceMetric: servicesMetrics) {
                 switch (serviceMetric.getKey()) {
                     case PARSING_APP:
                         serviceMetric.getValue().setValue(message.getParsingTime().longValue() - lastTimestamp);

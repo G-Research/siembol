@@ -23,11 +23,10 @@ import java.util.function.Function;
 
 public class HeartbeatProducer implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private final HeartbeatMessage message = new HeartbeatMessage();
-    private static final ObjectWriter objectWriter = new ObjectMapper().writer();
-    private final AtomicReference<Exception> exception = new AtomicReference<>();
     private static final String MISSING_KAFKA_WRITER_PROPS_MSG = "Missing heartbeat kafka producer properties for %s";
+    private static final ObjectWriter OBJECT_WRITER = new ObjectMapper().writer();
+    private final HeartbeatMessage message = new HeartbeatMessage();
+    private final AtomicReference<Exception> exception = new AtomicReference<>();
     private final String producerName;
     private final Producer<String, String> producer;
     private final SiembolCounter updateCounter;
@@ -76,7 +75,7 @@ public class HeartbeatProducer implements Closeable {
         this.message.setEventTime(now.toString()); // ISO format
         this.message.setProducerName(producerName);
         try {
-            producer.send(new ProducerRecord<>(topicName, objectWriter.writeValueAsString(this.message))).get();
+            producer.send(new ProducerRecord<>(topicName, OBJECT_WRITER.writeValueAsString(this.message))).get();
             updateCounter.increment();
             LOG.info("Sent heartbeat with producer {} to topic {}", producerName, topicName);
             exception.set(null);

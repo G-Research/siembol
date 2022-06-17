@@ -6,15 +6,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum SiembolMessageFields {
-    SRC_ADDR("ip_src_addr"),
-    SRC_PORT("ip_src_port"),
-    DST_ADDR("ip_dst_addr"),
-    DST_PORT("ip_dst_port"),
-    PROTOCOL("protocol"),
+    SRC_ADDR(SiembolConstants.SRC_ADDR),
+    SRC_PORT(SiembolConstants.SRC_PORT),
+    DST_ADDR(SiembolConstants.DST_ADDR),
+    DST_PORT(SiembolConstants.DST_PORT),
+    PROTOCOL(SiembolConstants.PROTOCOL),
+    ORIGINAL(SiembolConstants.ORIGINAL),
+    GUID(SiembolConstants.GUID),
+    SENSOR_TYPE(SiembolConstants.SENSOR_TYPE),
     TIMESTAMP(SiembolConstants.TIMESTAMP),
-    ORIGINAL("original_string"),
-    GUID("guid"),
-    SENSOR_TYPE("source_type"),
     PARSING_TIME(SiembolConstants.PARSING_TIME),
     ENRICHING_TIME(SiembolConstants.ENRICHING_TIME),
     RESPONSE_TIME(SiembolConstants.RESPONSE_TIME);

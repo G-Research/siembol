@@ -48,7 +48,7 @@ public class HeartbeatProducerSchedulerTest {
     }
 
     @Test
-    public void Ok() {
+    public void ok() {
         new HeartbeatProducerScheduler(properties, mockScheduledService, factory);
         ArgumentCaptor<Runnable> argumentCaptor = ArgumentCaptor.forClass(Runnable.class);
         ArgumentCaptor<HeartbeatProducerProperties> producerPropertiesCaptor =
@@ -71,7 +71,7 @@ public class HeartbeatProducerSchedulerTest {
     }
 
     @Test
-    public void CheckHealthUp() {
+    public void checkHealthUp() {
         var heartbeatProducerScheduler =  new HeartbeatProducerScheduler(properties, mockScheduledService,
                 (x, y) -> heartbeatProducer);
         when(heartbeatProducer.checkHealth()).thenReturn(Health.up().build(), Health.down().build());
@@ -80,7 +80,7 @@ public class HeartbeatProducerSchedulerTest {
     }
 
     @Test
-    public void CheckHealthDown() {
+    public void checkHealthDown() {
         var heartbeatProducerScheduler =  new HeartbeatProducerScheduler(properties, mockScheduledService, (x, y) -> heartbeatProducer);
         when(heartbeatProducer.checkHealth()).thenReturn(Health.down().build());
         assertEquals(heartbeatProducerScheduler.checkHealth(), Health.down().build());

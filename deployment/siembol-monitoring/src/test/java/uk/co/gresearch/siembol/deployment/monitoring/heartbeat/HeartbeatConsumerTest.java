@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
+import uk.co.gresearch.siembol.common.testing.TestingDriverKafkaStreamsFactory;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class HeartbeatConsumerTest {
     }
 
     @Test
-    public void testProcessingMessage() {
+    public void processingMessageOk() {
         new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
         testDriver = streamsFactory.getTestDriver();
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
@@ -92,7 +93,7 @@ public class HeartbeatConsumerTest {
     }
 
     @Test
-    public void testProcessingError() {
+    public void processingError() {
         new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
         testDriver = streamsFactory.getTestDriver();
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
