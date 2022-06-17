@@ -40,6 +40,9 @@ siembol-monitoring.heartbeat-properties.heartbeat-consumer.kafka-properties.[boo
 siembol-monitoring.heartbeat-properties.heartbeat-consumer.kafka-properties.[application.id]=siembol.heartbeat.reader
 siembol-monitoring.heartbeat-properties.heartbeat-consumer.kafka-properties.[auto.offset.reset]=earliest
 siembol-monitoring.heartbeat-properties.heartbeat-consumer.kafka-properties.[security.protocol]=PLAINTEXT
+siembol-monitoring.heartbeat-properties.heartbeat-consumer.enabled-services=parsingapp,enrichment,response
 ```
 Any additional kafka consumer config parameter can be added.
+
+The `enabled-services` property is to specify between which Siembol services latency should be computed. Only put services that are running.
 
