@@ -11,10 +11,9 @@ import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.metrics.spring.SpringMetricsRegistrar;
 import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatConsumer;
 import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProducerScheduler;
-import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProperties;
 
 @Configuration
-@EnableConfigurationProperties(HeartbeatProperties.class)
+@EnableConfigurationProperties(ServiceConfigurationProperties.class)
 public class SiembolMonitoringConfiguration implements DisposableBean {
     @Autowired
     private ServiceConfigurationProperties properties;
@@ -30,10 +29,7 @@ public class SiembolMonitoringConfiguration implements DisposableBean {
     @Bean("heartbeatProducerScheduler")
     @DependsOn("metricsRegistrar")
     HeartbeatProducerScheduler heartbeatProducerScheduler(@Autowired SiembolMetricsRegistrar metricsRegistrar) {
-        return new HeartbeatProducerScheduler(properties.getHeartbeatProperties().getHeartbeatProducers(),
-                properties.getHeartbeatProperties().getMessage(),
-                properties.getHeartbeatProperties().getHeartbeatIntervalSeconds(),
-                metricsRegistrar);
+        return new HeartbeatProducerScheduler(properties.getHeartbeatProperties(), metricsRegistrar);
     }
 
     @Bean("heartbeatConsumer")

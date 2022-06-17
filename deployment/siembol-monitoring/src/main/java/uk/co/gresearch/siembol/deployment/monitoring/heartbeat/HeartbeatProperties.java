@@ -1,7 +1,10 @@
 package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.Map;
 
+@ConfigurationProperties(prefix = "heartbeat-properties")
 public class HeartbeatProperties {
     private int heartbeatIntervalSeconds = 60;
 

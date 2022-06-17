@@ -13,44 +13,41 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 public class HeartbeatProducerScheduler implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final Map<String, HeartbeatProducer> producerMap =  new HashMap<>();
     private final int errorThreshold;
 
-    public HeartbeatProducerScheduler(Map<String, HeartbeatProducerProperties> producerPropertiesMap,
-                                      Map<String, Object> heartbeatMessageProperties,
-                                      int heartbeatIntervalSeconds,
+    public HeartbeatProducerScheduler(HeartbeatProperties properties,
                                       SiembolMetricsRegistrar metricsRegistrar) {
-        this(producerPropertiesMap,
-                heartbeatMessageProperties,
-                heartbeatIntervalSeconds,
-                metricsRegistrar,
-                Executors.newSingleThreadScheduledExecutor(),
-                new HeartbeatProducerFactory());
+        this(properties, Executors.newSingleThreadScheduledExecutor(),
+                (HeartbeatProducerProperties x, String y) ->
+                      new HeartbeatProducer(x, y, properties.getMessage(), metricsRegistrar));
     }
 
-    HeartbeatProducerScheduler(Map<String, HeartbeatProducerProperties> producerPropertiesMap,
-                               Map<String, Object> heartbeatMessageProperties,
-                               int heartbeatIntervalSeconds,
-                               SiembolMetricsRegistrar metricsRegistrar,
+    HeartbeatProducerScheduler(HeartbeatProperties properties,
                                ScheduledExecutorService executorService,
-                               HeartbeatProducerFactory factory) {
-        this.errorThreshold = producerPropertiesMap.size();
-        for (Map.Entry<String, HeartbeatProducerProperties> producerProperties : producerPropertiesMap.entrySet()) {
+                               BiFunction<HeartbeatProducerProperties, String, HeartbeatProducer> factory) {
+        this.errorThreshold = properties.getHeartbeatProducers().size();
+        for (Map.Entry<String, HeartbeatProducerProperties> producerProperties : properties.getHeartbeatProducers().entrySet()) {
             var producerName = producerProperties.getKey();
-            LOG.info("Initialising producer {}", producerName);
-            var producer = factory.createHeartbeatProducer(producerProperties.getValue(), producerName,
-                    heartbeatMessageProperties, metricsRegistrar);
+            var producer = createHeartbeatProducer(producerProperties.getValue(), producerName, factory);
             producerMap.put(producerName, producer);
             executorService.scheduleAtFixedRate(
                     producer::sendHeartbeat,
-                heartbeatIntervalSeconds,
-                heartbeatIntervalSeconds,
+                properties.getHeartbeatIntervalSeconds(),
+                    properties.getHeartbeatIntervalSeconds(),
                 TimeUnit.SECONDS);
-            LOG.info("Finished initialising heartbeat producer {}", producerName);
         }
+    }
+
+    public static HeartbeatProducer createHeartbeatProducer(HeartbeatProducerProperties properties, String producerName, BiFunction<HeartbeatProducerProperties, String, HeartbeatProducer> factory) {
+        LOG.info("Initialising producer {}", producerName);
+        var producer = factory.apply(properties, producerName);
+        LOG.info("Finished initialising heartbeat producer {}", producerName);
+        return producer;
     }
 
     public Health checkHealth() {

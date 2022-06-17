@@ -64,8 +64,10 @@ public class HeartbeatProducer implements Closeable {
     }
 
     private void initialiseMessage(Map<String, Object> messageProperties) {
-        for (Map.Entry<String, Object> messageEntry : messageProperties.entrySet()) {
-            this.message.setMessage(messageEntry.getKey(), messageEntry.getValue());
+        if (messageProperties != null) {
+            for (Map.Entry<String, Object> messageEntry : messageProperties.entrySet()) {
+                this.message.setMessage(messageEntry.getKey(), messageEntry.getValue());
+            }
         }
     }
 
