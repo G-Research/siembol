@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.stream.ruleservice;
+package uk.co.gresearch.siembol.common.utils;
 
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Properties;
+
 
 public class KafkaStreamsFactoryImpl implements KafkaStreamsFactory {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

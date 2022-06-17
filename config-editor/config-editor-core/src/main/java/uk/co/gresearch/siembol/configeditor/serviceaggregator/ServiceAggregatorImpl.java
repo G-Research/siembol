@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
+import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.common.*;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreImpl;

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
-import uk.co.gresearch.siembol.configeditor.common.ServiceType;
+import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.sync.actions.*;
 import uk.co.gresearch.siembol.configeditor.sync.common.ConfigServiceHelper;
 import uk.co.gresearch.siembol.configeditor.model.*;

@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.sync.common;
 
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
-import uk.co.gresearch.siembol.configeditor.common.ServiceType;
+import uk.co.gresearch.siembol.common.constants.ServiceType;
 
 import java.util.Optional;
 

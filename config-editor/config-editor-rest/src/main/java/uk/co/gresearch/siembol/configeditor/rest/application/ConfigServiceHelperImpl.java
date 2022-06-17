@@ -6,7 +6,7 @@ import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
-import uk.co.gresearch.siembol.configeditor.common.ServiceType;
+import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.rest.common.ConfigEditorConfigurationProperties;

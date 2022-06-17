@@ -70,6 +70,11 @@ jobs:
         with:
           name: storm-topology-manager
           path: deployment/storm-topology-manager/target/storm-topology-manager-*.jar
+      - name: Upload siembol-monitoring jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: siembol-monitoring
+          path: deployment/siembol-monitoring/target/siembol-monitoring-*.jar
 
   build-docker-storm:
     runs-on: ubuntu-latest
@@ -133,7 +138,7 @@ jobs:
     needs: build-java
     strategy:
       matrix:
-        component: [config-editor-rest, responding-stream, storm-topology-manager]
+        component: [config-editor-rest, responding-stream, storm-topology-manager, siembol-monitoring]
       fail-fast: false
     steps:
       - name: Checkout
@@ -341,7 +346,7 @@ jobs:
     environment: release
     strategy:
       matrix:
-        component: [alerting-storm, enriching-storm, parsing-storm, config-editor-rest, responding-stream, storm-topology-manager, config-editor-ui]
+        component: [alerting-storm, enriching-storm, parsing-storm, config-editor-rest, responding-stream, storm-topology-manager, config-editor-ui, siembol-monitoring]
       fail-fast: false
     steps:
       - name: Login to DockerHub
