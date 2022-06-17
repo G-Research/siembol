@@ -29,6 +29,11 @@ public class HeartbeatProducerTest {
         heartbeatMessageProperties.put("key", "value");
     }
 
+    @After
+    public void tearDown() {
+        mockInstant.close();
+    }
+
     @Test
     public void sendHeartbeatOk() {
         var producerProperties = new HeartbeatProducerProperties();
@@ -63,8 +68,4 @@ public class HeartbeatProducerTest {
                 metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_PRODUCER_ERROR.getMetricName("p")));
     }
 
-    @After
-    public void close() {
-        mockInstant.close();
-    }
 }

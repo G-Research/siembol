@@ -28,9 +28,9 @@ public class HeartbeatConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Kafka stream service initialisation started";
     private static final String INIT_COMPLETED = "Kafka stream service initialisation completed";
-    private final KafkaStreams streams;
     private static final ObjectReader MESSAGE_READER = new ObjectMapper()
             .readerFor(HeartbeatProcessedMessage.class);
+    private final KafkaStreams streams;
     private final SiembolGauge totalLatencyGauge;
     private final SiembolCounter consumerErrorCount;
     private final SiembolCounter consumerMessageRead;
@@ -88,7 +88,7 @@ public class HeartbeatConsumer {
             HeartbeatProcessedMessage message = MESSAGE_READER.readValue(value);
             var lastTimestamp = message.getTimestamp().longValue();
 
-            for(Pair<ServiceType, SiembolGauge> serviceMetric: servicesMetrics) {
+            for(var serviceMetric: servicesMetrics) {
                 switch (serviceMetric.getKey()) {
                     case PARSING_APP:
                         serviceMetric.getValue().setValue(message.getParsingTime().longValue() - lastTimestamp);

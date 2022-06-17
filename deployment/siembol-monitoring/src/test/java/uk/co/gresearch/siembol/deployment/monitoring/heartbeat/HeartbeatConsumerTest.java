@@ -72,6 +72,7 @@ public class HeartbeatConsumerTest {
     @After
     public void tearDown() {
         streamsFactory.close();
+        mockInstant.close();
     }
 
     @Test
@@ -118,10 +119,5 @@ public class HeartbeatConsumerTest {
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()), 0);
         Assert.assertEquals(823,
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name()), 0);
-    }
-
-    @After
-    public void close() {
-        mockInstant.close();
     }
 }
