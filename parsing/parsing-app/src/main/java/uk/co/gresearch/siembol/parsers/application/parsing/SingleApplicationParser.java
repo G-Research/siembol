@@ -22,10 +22,8 @@ public class SingleApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(String source, String metadata, byte[] message) {
-        List<ParserResult> ret = new ArrayList<>();
-        ret.add(parser.parseToResult(metadata, message));
-        return ret;
+    protected ParserResult parseInternally(String source, String metadata, byte[] message) {
+        return parser.parseToResult(metadata, message);
     }
 
     public static Builder<SingleApplicationParser> builder() {

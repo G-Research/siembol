@@ -16,6 +16,9 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
             .getLogger(MethodHandles.lookup().lookupClass());
     private static final String MISSING_ROUTER_FIELDS = "Missing routing fields: %s, %s, in the parsed message: %s";
     private static final String MISSING_ARGUMENTS = "Missing arguments in routing parsing application";
+    private static final String UNSUPPORTED_ROUTER_PARSER_MESSAGES_SIZE_MSG =
+            "Router parser should produce only one message";
+    private static final int SUPPORTED_ROUTER_PARSER_MESSAGES_SIZE = 1;
 
     private final String routingConditionField;
     private final String routingMessageField;
@@ -33,49 +36,53 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(String source, String metadata, byte[] message) {
-        List<ParserResult> ret = new ArrayList<>();
+    protected ParserResult parseInternally(String source, String metadata, byte[] message) {
         ParserResult routerResult = routerParser.parseToResult(metadata, message);
         if (routerResult.getException() != null) {
-            ret.add(routerResult);
-            return ret;
+            return routerResult;
         }
 
         List<Map<String, Object>> routerParsedMessages = routerResult.getParsedMessages();
-        for (Map<String, Object> parsedMsg : routerParsedMessages) {
-            if (!parsedMsg.containsKey(routingConditionField)
-                    || !parsedMsg.containsKey(routingMessageField)) {
-                String errorMsg = String.format(MISSING_ROUTER_FIELDS,
-                        routingConditionField, routingMessageField, parsedMsg);
-                LOG.debug(errorMsg);
-                routerResult.setException(new IllegalStateException(errorMsg));
-                ret.add(routerResult);
-                continue; //NOTE: we try the next message that could be valid
-            }
-
-            String messageToParse = parsedMsg.get(routingMessageField).toString();
-            String messageToCondition = parsedMsg.get(routingConditionField).toString();
-            for (SiembolParserWrapper parser : parsers) {
-                if (!parser.checkCondition(messageToCondition)) {
-                    continue;
-                }
-
-                ParserResult result = parser.parseToResult(metadata, messageToParse.getBytes());
-                if (result.getParsedMessages() != null && !result.getParsedMessages().isEmpty()) {
-                    for (String field : mergedFields) {
-                        if (parsedMsg.containsKey(field)) {
-                            result.getParsedMessages().forEach(x -> x.put(field, parsedMsg.get(field)));
-                        }
-                    }
-                }
-                ret.add(result);
-                break;
-            }
+        if (routerParsedMessages.isEmpty()) {
+            return routerResult;
         }
 
-        return ret;
-    }
+        if (routerParsedMessages.size() != SUPPORTED_ROUTER_PARSER_MESSAGES_SIZE) {
+            LOG.debug(UNSUPPORTED_ROUTER_PARSER_MESSAGES_SIZE_MSG);
+            routerResult.setException(new IllegalStateException(UNSUPPORTED_ROUTER_PARSER_MESSAGES_SIZE_MSG));
+            return routerResult;
+        }
 
+        var parsedMsg = routerParsedMessages.get(0);
+        if (!parsedMsg.containsKey(routingConditionField)
+                || !parsedMsg.containsKey(routingMessageField)) {
+            String errorMsg = String.format(MISSING_ROUTER_FIELDS,
+                    routingConditionField, routingMessageField, parsedMsg);
+            LOG.debug(errorMsg);
+            routerResult.setException(new IllegalStateException(errorMsg));
+            return routerResult;
+        }
+
+        String messageToParse = parsedMsg.get(routingMessageField).toString();
+        String messageToCondition = parsedMsg.get(routingConditionField).toString();
+        for (SiembolParserWrapper parser : parsers) {
+            if (!parser.checkCondition(messageToCondition)) {
+                continue;
+            }
+
+            ParserResult result = parser.parseToResult(metadata, messageToParse.getBytes());
+            if (result.getParsedMessages() != null && !result.getParsedMessages().isEmpty()) {
+                for (String field : mergedFields) {
+                    if (parsedMsg.containsKey(field)) {
+                        result.getParsedMessages().forEach(x -> x.put(field, parsedMsg.get(field)));
+                    }
+                }
+            }
+            return result;
+        }
+
+        return routerResult;
+    }
     public static Builder<RoutingParsingApplicationParser> builder() {
         return new Builder<>() {
             private static final long serialVersionUID = 1L;

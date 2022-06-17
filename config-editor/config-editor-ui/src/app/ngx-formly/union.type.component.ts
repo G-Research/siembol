@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FieldType } from '@ngx-formly/core';
+import { FieldTypeConfig } from '@ngx-formly/core';
 
 @Component({
   selector: 'formly-union-type',
@@ -16,4 +17,4 @@ import { FieldType } from '@ngx-formly/core';
     </div>
   `,
 })
-export class UnionTypeComponent extends FieldType {}
+export class UnionTypeComponent extends FieldType<FieldTypeConfig> {}

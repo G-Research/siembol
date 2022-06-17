@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.common;
+package uk.co.gresearch.siembol.common.constants;
 
 public enum ServiceType {
     RESPONSE("response"),

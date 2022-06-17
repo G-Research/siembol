@@ -7,7 +7,12 @@ public enum SiembolMetrics {
 
     PARSING_SOURCE_TYPE_PARSED_MESSAGES("siembol_counter_parsed_messages_%s"),
     PARSING_SOURCE_TYPE_FILTERED_MESSAGES("siembol_counter_filtered_messages_%s"),
-
+    PARSING_SOURCE_TYPE_REMOVED_FIELDS_MESSAGES("siembol_counter_removed_fields_messages_%s"),
+    PARSING_SOURCE_TYPE_TRUNCATED_FIELDS_MESSAGES("siembol_counter_truncated_fields_messages_%s"),
+    PARSING_SOURCE_TYPE_TRUNCATED_ORIGINAL_STRING_MESSAGES(
+            "siembol_counter_truncated_original_string_messages_%s"),
+    PARSING_SOURCE_TYPE_SENT_ORIGINAL_STRING_MESSAGES(
+            "siembol_counter_sent_original_string_messages_%s"),
     PARSING_APP_PARSED_MESSAGES("siembol_counter_app_parsed_messages"),
     PARSING_APP_FILTERED_MESSAGES("siembol_counter_app_filtered_messages"),
     PARSING_APP_ERROR_MESSAGES("siembol_counter_app_error_messages"),
@@ -49,7 +54,16 @@ public enum SiembolMetrics {
     SIEMBOL_SYNC_ADMIN_CONFIG("siembol_counter_sync_admin_config_%s"),
     SIEMBOL_SYNC_RULES_VERSION("siembol_counter_sync_config_version_%s"),
     CONFIG_EDITOR_REST_RELEASE_PR_SERVICE("siembol_counter_release_pr_%s"),
-    CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s");
+    CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s"),
+
+    HEARTBEAT_MESSAGES_SENT("siembol_counter_hearbeat_messages_sent_%s"),
+    HEARTBEAT_MESSAGES_READ("siembol_counter_hearbeat_messages_read"),
+    HEARTBEAT_LATENCY_PARSING_MS("siembol_gauge_hearbeat_latency_ms_parsing"),
+    HEARTBEAT_LATENCY_ENRICHING_MS("siembol_gauge_hearbeat_latency_ms_enriching"),
+    HEARTBEAT_LATENCY_RESPONDING_MS("siembol_gauge_hearbeat_latency_ms_responding"),
+    HEARTBEAT_LATENCY_TOTAL_MS("siembol_gauge_hearbeat_latency_ms_total"),
+    HEARTBEAT_PRODUCER_ERROR("siembol_counter_heartbeat_producer_error_%s"),
+    HEARTBEAT_CONSUMER_ERROR("siembol_counter_heartbeat_consumer_error");
 
     private final String formatStringName;
 

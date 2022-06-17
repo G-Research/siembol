@@ -1,7 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.serviceaggregator;
 
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
-import uk.co.gresearch.siembol.configeditor.common.ServiceType;
+import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;

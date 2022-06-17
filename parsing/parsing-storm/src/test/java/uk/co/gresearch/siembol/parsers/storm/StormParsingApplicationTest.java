@@ -45,6 +45,9 @@ public class StormParsingApplicationTest {
           "input_parallelism": 1,
           "parsing_parallelism": 1,
           "output_parallelism": 1,
+          "max_num_fields" : 100,
+          "max_field_size" : 10,
+          "original_string_topic" : "truncated",
           "parsing_app_type": "single_parser"
         },
         "parsing_settings": {

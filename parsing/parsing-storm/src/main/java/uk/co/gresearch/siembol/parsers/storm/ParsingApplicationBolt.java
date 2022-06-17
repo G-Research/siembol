@@ -139,34 +139,23 @@ public class ParsingApplicationBolt extends BaseRichBolt {
             throw new IllegalArgumentException(INVALID_TYPE_IN_TUPLE);
         }
 
-        byte[] log = (byte[])logObj;
+        byte[] log = (byte[]) logObj;
         ArrayList<ParsingApplicationResult> results = currentParser.parse(source, metadata, log);
 
         var kafkaWriterMessages = new KafkaWriterMessages();
         var counters = new SiembolMetricsCounters();
         for (var result : results) {
-            if (ParsingApplicationResult.ResultType.FILTERED.equals(result.getResultType())) {
+            if (result.getResultFlags().contains(ParsingApplicationResult.ResultFlag.FILTERED)) {
                 metricsRegistrar.registerCounter(
                                 SiembolMetrics.PARSING_SOURCE_TYPE_FILTERED_MESSAGES.getMetricName(result.getSourceType()))
                         .increment();
                 metricsRegistrar.registerCounter(SiembolMetrics.PARSING_APP_FILTERED_MESSAGES.getMetricName())
                         .increment();
-
             } else {
-                results.forEach(x -> x.getMessages().forEach(y -> {
-                    kafkaWriterMessages.add(new KafkaWriterMessage(x.getTopic(), y));
-                    switch (result.getResultType()) {
-                        case PARSED:
-                            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
-                                    .getMetricName(result.getSourceType()));
-                            counters.add(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName());
-                            break;
-                        case ERROR:
-                            counters.add(SiembolMetrics.PARSING_APP_ERROR_MESSAGES
-                                    .getMetricName());
-                            break;
-                    }
-                }));
+                result.getMessages().forEach(x -> {
+                    kafkaWriterMessages.add(new KafkaWriterMessage(result.getTopic(), x));
+                    addCounters(counters, result.getResultFlags(), result.getSourceType());
+                });
             }
         }
 
@@ -175,6 +164,39 @@ public class ParsingApplicationBolt extends BaseRichBolt {
         }
 
         collector.ack(tuple);
+    }
+
+    private void addCounters(SiembolMetricsCounters counters,
+                             EnumSet<ParsingApplicationResult.ResultFlag> resultFlags,
+                             String sourceType) {
+        if (resultFlags.contains(ParsingApplicationResult.ResultFlag.PARSED)) {
+            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_PARSED_MESSAGES
+                    .getMetricName(sourceType));
+            counters.add(SiembolMetrics.PARSING_APP_PARSED_MESSAGES.getMetricName());
+        }
+
+        if (resultFlags.contains(ParsingApplicationResult.ResultFlag.ERROR)) {
+            counters.add(SiembolMetrics.PARSING_APP_ERROR_MESSAGES.getMetricName());
+        }
+
+        if (resultFlags.contains(ParsingApplicationResult.ResultFlag.REMOVED_FIELDS)) {
+            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_REMOVED_FIELDS_MESSAGES.getMetricName(sourceType));
+        }
+
+        if (resultFlags.contains(ParsingApplicationResult.ResultFlag.TRUNCATED_FIELDS)) {
+            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_TRUNCATED_FIELDS_MESSAGES
+                    .getMetricName(sourceType));
+        }
+
+        if (resultFlags.contains(ParsingApplicationResult.ResultFlag.TRUNCATED_ORIGINAL_STRING)) {
+            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_TRUNCATED_ORIGINAL_STRING_MESSAGES
+                    .getMetricName(sourceType));
+        }
+
+        if (resultFlags.contains(ParsingApplicationResult.ResultFlag.ORIGINAL_MESSAGE)) {
+            counters.add(SiembolMetrics.PARSING_SOURCE_TYPE_SENT_ORIGINAL_STRING_MESSAGES
+                    .getMetricName(sourceType));
+        }
     }
 
     @Override

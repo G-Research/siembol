@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
 import uk.co.gresearch.siembol.parsers.common.SerializableSiembolParser;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class SourceRoutingApplicationParser extends ParsingApplicationParser {
     private static final long serialVersionUID = 1L;
@@ -25,11 +23,9 @@ public class SourceRoutingApplicationParser extends ParsingApplicationParser {
     }
 
     @Override
-    protected List<ParserResult> parseInternally(String source, String metadata, byte[] message) {
-        List<ParserResult> ret = new ArrayList<>();
-        SiembolParserWrapper parser = sourceToParserMap.getOrDefault(source, defaultParser);
-        ret.add(parser.parseToResult(metadata, message));
-        return ret;
+    protected ParserResult parseInternally(String source, String metadata, byte[] message) {
+        var parser = sourceToParserMap.getOrDefault(source, defaultParser);
+        return parser.parseToResult(metadata, message);
     }
 
     public static Builder<SourceRoutingApplicationParser> builder() {

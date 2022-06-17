@@ -21,6 +21,9 @@ public class ParsingApplicationFactoryImplTest {
            "secret"
          ],
          "error_topic": "error",
+         "max_num_fields" : 100,
+         "max_field_size" : 40000,
+         "original_string_topic" : "truncated",
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
@@ -49,6 +52,9 @@ public class ParsingApplicationFactoryImplTest {
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
+         "max_num_fields" : 100,
+         "max_field_size" : 40000,
+         "original_string_topic" : "truncated",
          "parsing_app_type": "router_parsing"
        },
        "parsing_settings": {
@@ -93,6 +99,9 @@ public class ParsingApplicationFactoryImplTest {
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
+         "max_num_fields" : 100,
+         "max_field_size" : 40000,
+         "original_string_topic" : "truncated",
          "parsing_app_type": "topic_routing_parsing"
        },
        "parsing_settings": {
@@ -138,6 +147,9 @@ public class ParsingApplicationFactoryImplTest {
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
+         "max_num_fields" : 100,
+         "max_field_size" : 40000,
+         "original_string_topic" : "truncated",
          "parsing_app_type": "header_routing_parsing"
        },
        "parsing_settings": {
