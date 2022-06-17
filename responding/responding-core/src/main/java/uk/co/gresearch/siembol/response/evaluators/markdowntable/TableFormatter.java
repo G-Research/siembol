@@ -41,11 +41,10 @@ public class TableFormatter implements Evaluable {
                 .withAlignment(Table.ALIGN_CENTER)
                 .addRow(firstColumn, secondColumn);
 
-        responseAlert.keySet().forEach(x -> {
-            if (fieldFilter.match(x)) {
-                tableBuilder.addRow(x, responseAlert.get(x).toString());
-            }
-        });
+        responseAlert.keySet().stream()
+                .filter(x -> fieldFilter.match(x))
+                .sorted()
+                .forEach(x -> tableBuilder.addRow(x, responseAlert.get(x).toString()));
 
         return tableBuilder.build().toString();
     }

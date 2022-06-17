@@ -29,9 +29,9 @@ public class TableFormatterTest {
             #### Test table
             |      Field Name       |    Field Value    |
             |:---------------------:|:-----------------:|
-            |    syslog_hostname    | mail_logs_syslog: |
-            | siembol:metadat:topic |    metasonport    |
             |       is_alert        |       true        |
+            | siembol:metadat:topic |    metasonport    |
+            |    syslog_hostname    | mail_logs_syslog: |
             """;
 
     private final String resultEmptyTable = """
