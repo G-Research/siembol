@@ -167,9 +167,9 @@ Siembol monitoring is a springboot application with components to monitor Siembo
 ##### Siembol Heartbeat
 Siembol heartbeat can be used to monitor all components of Siembol are working correctly. It has two main components:
 - kafka producers: send a heartbeat message to a kafka topic at an interval of time specified in the config. Multiple producers can be defined with different kafka properties, e.g. different kafka cluster or topics.
-- kafka consumer: reads the heartbeat message after it has been processed by Siembol services. Calculates the total latency and latency between services depending on the services enabled. 
+- kafka consumer: reads the heartbeat message after it has been processed by Siembol services. Calculates the total latency and latency between services depending on the services enabled. These metrics are exposed and ready to be scraped by Prometheus.
 
-For the heartbeat to work config has to be added to each Siembol service used to process the heartbeat message and write it to the topic read by the consumer. 
+For the heartbeat to work config has to be added to each Siembol service type used to process the heartbeat message and write it to the topic read by the consumer. 
 
 See [siembol monitoring](how-tos/how_to_setup_siembol_monitoring.md) for configuration details.
 
