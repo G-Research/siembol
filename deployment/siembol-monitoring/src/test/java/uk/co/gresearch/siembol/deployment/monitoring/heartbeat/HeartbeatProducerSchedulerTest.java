@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.actuate.health.Health;
-import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
-import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,18 +19,16 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 public class HeartbeatProducerSchedulerTest {
-    private SiembolMetricsTestRegistrar metricsTestRegistrar;
     private ScheduledExecutorService mockScheduledService;
     private final Map<String, HeartbeatProducerProperties> producerPropertiesMap= new HashMap<>();
     private final Map<String, Object> heartbeatMessageProperties = new HashMap<>();
     private final int heartbeatIntervalSeconds = 10;
     private HeartbeatProducer heartbeatProducer;
-    private HeartbeatProperties properties = new HeartbeatProperties();
+    private final HeartbeatProperties properties = new HeartbeatProperties();
     private BiFunction factory;
 
     @Before
     public void setUp() {
-        metricsTestRegistrar = new SiembolMetricsTestRegistrar();
         heartbeatProducer = Mockito.mock(HeartbeatProducer.class);
         factory = Mockito.mock(BiFunction.class);
         doNothing().when(heartbeatProducer).sendHeartbeat();
