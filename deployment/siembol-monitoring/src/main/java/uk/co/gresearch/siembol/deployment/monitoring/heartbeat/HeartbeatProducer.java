@@ -73,7 +73,7 @@ public class HeartbeatProducer implements Closeable {
 
     public void sendHeartbeat() {
         var now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-        this.message.setEventTime(now.toString());
+        this.message.setEventTime(now.toString()); // ISO format
         this.message.setProducerName(producerName);
         try {
             producer.send(new ProducerRecord<>(topicName, objectWriter.writeValueAsString(this.message))).get();
