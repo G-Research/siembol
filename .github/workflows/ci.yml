@@ -71,10 +71,10 @@ jobs:
           name: storm-topology-manager
           path: deployment/storm-topology-manager/target/storm-topology-manager-*.jar
       - name: Upload siembol-monitoring jar
-          uses: actions/upload-artifact@v3
-          with:
-            name: siembol-monitoring
-            path: deployment/siembol-monitoring/target/siembol-monitoring-*.jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: siembol-monitoring
+          path: deployment/siembol-monitoring/target/siembol-monitoring-*.jar
 
   build-docker-storm:
     runs-on: ubuntu-latest
