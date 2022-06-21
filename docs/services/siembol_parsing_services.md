@@ -120,9 +120,10 @@ Parsers are integrated in a stream application (storm topology) that combines on
     - `parsing_app_type`- The type of the parsing application - `single_parser`, `router_parsing`, `topic_routing_parsing` or `header_routing_parsing`
     - `input_topics` - The kafka topics for reading messages for parsing
     - `error_topic`- The kafka topic for publishing error messages
-    - `input_parallelism` - The number of parallel executors for reading messages from the input kafka topics
-    - `parsing_parallelism` - The number of parallel executors for parsing messages
-    - `output_parallelism` - The number of parallel executors for publishing parsed messages to kafka
+    - `num_workers` - The number of workers for the parsing application
+    - `input_parallelism` - The number of parallel executors per worker for reading messages from the input kafka topics
+    - `parsing_parallelism` - The number of parallel executors per worker for parsing messages
+    - `output_parallelism` - The number of parallel executors per worker for publishing parsed messages to kafka
     - `parse_metadata` - Parsing json metadata from input key records using `metadata_prefix` added to metadata field names, by default `metadata_`
     - `max_num_fields` - Maximum number of fields after parsing the message
     - `max_field_size` - Maximum field size after parsing the message in bytes
