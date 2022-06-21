@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.parsers.storm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.storm.Config;
@@ -51,6 +52,8 @@ public class StormParsingApplication {
             "with storm attributes: {}\nparsing application attributes: {}";
     private static final String UNKNOWN_SOURCE = "unknown";
 
+    private static final String UNKNOWN_SOURCE_HEADER = "unknown_header";
+
     private static KafkaSpoutConfig<String, byte[]> createKafkaSpoutConfig(
             StormParsingApplicationAttributesDto parsingApplicationAttributes,
             ParsingApplicationFactoryAttributes parsingAttributes) {
@@ -77,9 +80,16 @@ public class StormParsingApplication {
                 return r -> new Values(r.topic(), r.key(), r.value());
             case HEADER_ROUTING_PARSING:
                 final String headerName = parsingAttributes.getSourceHeaderName();
-                return r -> new Values(new String(r.headers().lastHeader(headerName).value(), StandardCharsets.UTF_8),
-                        r.key(),
-                        r.value());
+                return r -> {
+                    Header header = r.headers() != null
+                            ? r.headers().lastHeader(headerName)
+                            : null;
+                    String headerValue = header != null && header.value() != null
+                            ? new String(header.value(), StandardCharsets.UTF_8)
+                            : UNKNOWN_SOURCE_HEADER;
+
+                    return new Values(headerValue, r.key(), r.value());
+                };
             default:
                 throw new IllegalArgumentException();
         }
@@ -95,14 +105,15 @@ public class StormParsingApplication {
                 .put(CLIENT_ID_CONFIG, stormAppAttributes.getClientId(parsingAttributes.getName()));
         stormAppAttributes.getStormAttributes().setKafkaTopics(parsingAttributes.getInputTopics());
 
+        var numWorkers = parsingAttributes.getNumWorkers();
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout(KAFKA_SPOUT,
                 new KafkaSpout<>(createKafkaSpoutConfig(stormAppAttributes, parsingAttributes)),
-                parsingAttributes.getInputParallelism());
+                parsingAttributes.getInputParallelism() * numWorkers);
 
         builder.setBolt(parsingAttributes.getName(),
                 new ParsingApplicationBolt(stormAppAttributes, parsingAttributes, zooKeeperConnectorFactory, metricsFactory),
-                parsingAttributes.getParsingParallelism())
+                parsingAttributes.getParsingParallelism() * numWorkers)
                 .localOrShuffleGrouping(KAFKA_SPOUT);
 
         builder.setBolt(KAFKA_WRITER,
@@ -110,7 +121,7 @@ public class StormParsingApplication {
                         ParsingApplicationTuples.PARSING_MESSAGES.toString(),
                         ParsingApplicationTuples.COUNTERS.toString(),
                         metricsFactory),
-                parsingAttributes.getOutputParallelism())
+                parsingAttributes.getOutputParallelism() * numWorkers)
                 .localOrShuffleGrouping(parsingAttributes.getName());
 
         return builder.createTopology();
@@ -137,6 +148,8 @@ public class StormParsingApplication {
         ParsingApplicationFactoryAttributes parsingAttributes = result.getAttributes();
         Config config = new Config();
         config.putAll(stormAttributes.getStormAttributes().getStormConfig().getRawMap());
+        config.put(Config.TOPOLOGY_WORKERS, parsingAttributes.getNumWorkers());
+
         StormTopology topology = createTopology(stormAttributes,
                 parsingAttributes,
                 new ZooKeeperConnectorFactoryImpl(),

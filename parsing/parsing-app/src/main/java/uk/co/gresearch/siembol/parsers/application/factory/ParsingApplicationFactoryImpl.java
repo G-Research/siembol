@@ -330,6 +330,7 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
             attributes.setSourceHeaderName(
                     application.getParsingSettingsDto().getHeaderRoutingParserDto().getHeaderName());
         }
+        attributes.setNumWorkers(application.getParsingApplicationSettingsDto().getNumWorkers());
     }
 
     private String getParserFromMap(String parserName, Map<String, String> parserMap) {
