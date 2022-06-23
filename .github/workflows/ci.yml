@@ -138,7 +138,7 @@ jobs:
     needs: build-java
     strategy:
       matrix:
-        component: [config-editor-rest, responding-stream, storm-topology-manager, siembol-monitoring]
+        component: [config-editor-rest, responding-stream, storm-topology-manager, monitoring]
       fail-fast: false
     steps:
       - name: Checkout
