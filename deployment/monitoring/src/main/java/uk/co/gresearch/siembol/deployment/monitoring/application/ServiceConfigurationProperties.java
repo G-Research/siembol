@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import uk.co.gresearch.siembol.deployment.monitoring.heartbeat.HeartbeatProperties;
 
-@ConfigurationProperties(prefix = "siembol-monitoring")
+@ConfigurationProperties(prefix = "monitoring")
 public class ServiceConfigurationProperties {
     @NestedConfigurationProperty
     private HeartbeatProperties heartbeatProperties;
