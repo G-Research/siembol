@@ -1,0 +1,9 @@
+apiVersion: v2
+description: Helm charts for deploying Apache Storm
+name: storm
+version: 0.0.1
+
+dependencies:
+  - name: storm
+    version: 1.0.15
+    repository: https://g-research.github.io/charts

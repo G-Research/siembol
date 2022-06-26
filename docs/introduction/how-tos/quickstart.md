@@ -109,6 +109,22 @@ deployment/quickstart_install/ps-scripts/kafkaExtra.ps1
  ```
  4. Produce your message in terminal window
 
+### Monitoring
+
+We are scraping Siembol metrics using Prometheus and displaying the metrics in a Grafana dashboard. 
+
+1. To install these components:
+```bash
+helm install monitoring deployment/helm-k8s/monitoring/ -n=siembol
+```
+
+To see the dashboard:
+
+  * http://grafana.siembol.local/
+
+You can also see the raw Prometheus metrics from:
+
+  * http://prometheus.siembol.local/
 
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:
