@@ -1,0 +1,13 @@
+# Chart for siembol
+apiVersion: v2
+description: Helm charts for deploying monitoring tools such as prometheus and grafana
+name: monitoring
+version: 0.0.1
+
+dependencies:
+  - name: prometheus
+    version: 15.10.1
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    version: 6.31.1
+    repository: https://grafana.github.io/helm-charts
