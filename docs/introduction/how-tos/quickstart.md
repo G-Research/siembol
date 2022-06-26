@@ -119,7 +119,7 @@ To install these components:
 ```bash
 helm dependency update deployment/helm-k8s/monitoring/
 ```
-2. 
+2. Install the charts:
 ```bash
 helm install monitoring deployment/helm-k8s/monitoring/ -n=siembol
 ```
