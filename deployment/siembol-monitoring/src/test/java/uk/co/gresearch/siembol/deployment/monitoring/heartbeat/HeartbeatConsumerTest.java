@@ -10,6 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
+import reactor.core.publisher.Mono;
 import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
@@ -18,6 +21,9 @@ import uk.co.gresearch.siembol.common.testing.TestingDriverKafkaStreamsFactory;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
+
+import static org.mockito.Mockito.when;
 
 public class HeartbeatConsumerTest {
     private final String heartbeatMessageStr = """
@@ -119,5 +125,44 @@ public class HeartbeatConsumerTest {
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.getMetricName()), 0);
         Assert.assertEquals(823,
                 metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.getMetricName()), 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void missingEnabledServices() {
+        properties.setEnabledServices(null);
+        new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
+    }
+
+    @Test
+    public void healthUpCreated() {
+        var consumer = new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.CREATED);
+        Health health = consumer.checkHealth();
+        Assert.assertEquals(Status.UP, health.getStatus());
+    }
+
+    @Test
+    public void healthUpRunning() {
+        var consumer = new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.RUNNING);
+        Health health = consumer.checkHealth();
+        Assert.assertEquals(Status.UP, health.getStatus());
+    }
+
+
+    @Test
+    public void healthUpRebalancing() {
+        var consumer = new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.REBALANCING);
+        Health health = consumer.checkHealth();
+        Assert.assertEquals(Status.UP, health.getStatus());
+    }
+
+    @Test
+    public void healthDownError() {
+        var consumer = new HeartbeatConsumer(properties, metricsTestRegistrar, streamsFactory);
+        when(kafkaStreams.state()).thenReturn(KafkaStreams.State.ERROR);
+        Health health = consumer.checkHealth();
+        Assert.assertEquals(Status.DOWN, health.getStatus());
     }
 }
