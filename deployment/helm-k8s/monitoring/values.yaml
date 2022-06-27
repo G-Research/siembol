@@ -10,7 +10,7 @@ prometheus:
       hosts:
         - prometheus.siembol.local
     global:
-      scrape_interval: "30s"
+      scrape_interval: "10s"
   alertmanager:
     enabled: false
   pushgateway:
@@ -95,3 +95,4 @@ kafka-lag-exporter:
         sasl.mechanism: "PLAIN"
       adminClientProperties:
         sasl.mechanism: "PLAIN"
+  kafkaLagExporterLogLevel: DEBUG
