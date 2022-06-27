@@ -71,3 +71,27 @@ grafana:
     GF_USERS_ALLOW_SIGN_UP: 'false'
     GF_USERS_VIEWERS_CAN_EDIT: 'true'
     GF_AUTH_ANONYMOUS_ORG_ROLE: Editor
+
+kafka-lag-exporter:
+  image:
+    repository: seglo/kafka-lag-exporter
+    tag: 0.7.1
+  pollIntervalSeconds: 10
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  clusters:
+    - name: "local-cluster"
+      bootstrapBrokers: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
+      topicWhitelist:
+        - ".*"
+      groupWhitelist:
+        - ".*"
+      consumerProperties:
+        sasl.mechanism: "PLAIN"
+      adminClientProperties:
+        sasl.mechanism: "PLAIN"

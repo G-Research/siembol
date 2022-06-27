@@ -11,3 +11,6 @@ dependencies:
   - name: grafana
     version: 6.31.1
     repository: https://grafana.github.io/helm-charts
+  - name: kafka-lag-exporter
+    version: 0.7.1
+    repository: https://seglo.github.io/kafka-lag-exporter/repo
