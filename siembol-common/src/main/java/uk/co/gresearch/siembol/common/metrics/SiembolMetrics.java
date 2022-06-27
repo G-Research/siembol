@@ -57,7 +57,7 @@ public enum SiembolMetrics {
     CONFIG_EDITOR_REST_ADMIN_CONFIG_PR_SERVICE("siembol_counter_admin_counfig_pr_%s"),
 
     HEARTBEAT_MESSAGES_SENT("siembol_counter_hearbeat_messages_sent_%s"),
-    HEARTBEAT_MESSAGES_READ("siembol_counter_hearbeat_messages_read"),
+    HEARTBEAT_MESSAGES_READ("siembol_counter_heartbeat_messages_read"),
     HEARTBEAT_LATENCY_PARSING_MS("siembol_gauge_hearbeat_latency_ms_parsing"),
     HEARTBEAT_LATENCY_ENRICHING_MS("siembol_gauge_hearbeat_latency_ms_enriching"),
     HEARTBEAT_LATENCY_RESPONDING_MS("siembol_gauge_hearbeat_latency_ms_responding"),
