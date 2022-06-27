@@ -83,14 +83,14 @@ public class HeartbeatConsumerTest {
                 Serdes.String().serializer());
         testInputTopic.pipeInput(heartbeatMessageStr);
         Assert.assertEquals(1,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name()), 0);
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.getMetricName()), 0);
         Assert.assertEquals(19,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name()), 0);
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.getMetricName()), 0);
         Assert.assertEquals(11,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()), 0);
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.getMetricName()), 0);
         Assert.assertEquals(823,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name()), 0);
-        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_MESSAGES_READ.name()));
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.getMetricName()), 0);
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_MESSAGES_READ.getMetricName()));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class HeartbeatConsumerTest {
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
                 Serdes.String().serializer());
         testInputTopic.pipeInput("test");
-        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.name()));
+        Assert.assertEquals(1, metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.getMetricName()));
     }
 
     @Test
@@ -114,10 +114,10 @@ public class HeartbeatConsumerTest {
         testInputTopic.pipeInput(heartbeatMessageWithoutEnrichmentStr);
 
         Assert.assertEquals(1,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name()), 0);
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.getMetricName()), 0);
         Assert.assertEquals(30,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name()), 0);
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.getMetricName()), 0);
         Assert.assertEquals(823,
-                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name()), 0);
+                metricsTestRegistrar.getGaugeValue(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.getMetricName()), 0);
     }
 }
