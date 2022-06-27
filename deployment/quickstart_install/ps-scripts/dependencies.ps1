@@ -6,16 +6,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
-
-helm install storm gresearch/storm --namespace $namespace `
-    --set supervisor.replicaCount=1 `
-    --set supervisor.resources.requests.memory=1024 `
-    --set supervisor.resources.limits.memory=1024 `
-    --set supervisor.resources.requests.cpu=500m `
-    --set supervisor.childopts="-Xmx1g" `
-    --set supervisor.slots=3 `
-    --set zookeeper.fullnameOverride="siembol-zookeeper"
-
+helm install storm deployment/helm-k8s/storm/ --namespace $namespace
 
 helm install kafka bitnami/kafka --namespace $namespace `
     --set zookeeper.enabled=false `
