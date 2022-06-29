@@ -14,7 +14,7 @@ enabled_apps:
 - manager
 - dep_ingresses
 - enrichment_store
-- monitoring
+- siembol_monitoring
 
 # Enable certmanager 
 certmanager:
@@ -242,8 +242,8 @@ response:
 # -----------------------------------------------------------------------------
 # siembol monitoring parameters
 # -----------------------------------------------------------------------------
-monitoring:
-  appName: "monitoring"
+siembol_monitoring:
+  appName: "siembol-monitoring"
   image:
     repository: "gresearchdev/siembol-siembol-monitoring"
     tag: "latest"
