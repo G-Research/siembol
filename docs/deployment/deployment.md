@@ -184,7 +184,7 @@ By default the enabled_apps list consists of these components:
 - manager
 - dep_ingresses
 - enrichment_store
-- monitoring
+- siembol_monitoring
 ```
 Any component can be removed by removing it from the list in [values.yaml](../../deployment/helm-k8s/values.yaml) or you can add another component such as `response` e.g.
 ```bash
