@@ -32,7 +32,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------| -------------------------| ------------------- |
 | `namespace`                | Name of namespace        | siembol           |
 | `environment`              | Environment used         | dev               |
-| `enabled_apps`             | List of apps to deploy  | [ui, rest, manager, dep_ingresses, enrichment_store] |
+| `enabled_apps`             | List of apps to deploy  | [ui, rest, manager, dep_ingresses, enrichment_store, siembol_monitoring] |
 
 ### Certmanager
 | Parameter | Description         | Default  |
@@ -173,3 +173,22 @@ The command removes all the Kubernetes components associated with the chart and 
 | `dep_ingresses.storm.service.port` | Service port | 8080 |
 | `dep_ingresses.storm.oauth2_proxy.enabled` | Enable Oauth2 Proxy for Storm UI | false |
 | `dep_ingresses.storm.oauth2_proxy.host` | Oauth2 Proxy host name | oauth-proxy.siembol.local |
+
+
+### Siembol Monitoring
+| Parameter                  | Description              | Default             |
+| ---------------------------| -------------------------| ------------------- |
+| `siembol_monitoring.appName` | Siembol Monitoring app name | siembol-monitoring |
+| `siembol_monitoring.image.repository` | Siembol Monitoring image repository | gresearchdev/siembol-siembol-monitoring |
+| `siembol_monitoring.image.tag` | Siembol Monitoring image tag | latest |
+| `siembol_monitoring.image.pullPolicy` | Siembol Monitoring image pull policy | Always |
+| `siembol_monitoring.service.port` | Service target port | 8083 |
+| `siembol_monitoring.resources.requests.cpu` | Pod CPU requests | 0.1 |
+| `siembol_monitoring.resources.requests.memory` | Pod memory requests | 128Mi |
+| `siembol_monitoring.resources.limits.cpu` | Pod CPU limits | 0.4 |
+| `siembol_monitoring.resources.limits.memory` | Pod memory limits | 256Mi |
+| `siembol_monitoring.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe | 20 |
+| `siembol_monitoring.readinessProbe.periodSeconds` | Period seconds for readinessProbe | 30 |
+| `siembol_monitoring.livenessProbe.initialDelaySeconds` | Initial delay seconds for livenessProbe | 30 |
+| `siembol_monitoring.livenessProbe.periodSeconds` | Period seconds for livenessProbe | 30 |
+
