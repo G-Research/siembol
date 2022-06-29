@@ -9,6 +9,7 @@ public class ParsingApplicationFactoryAttributes {
     private String jsonSchema;
     private String name;
     private String applicationParserSpecification;
+    private Integer numWorkers;
     private Integer inputParallelism;
     private Integer outputParallelism;
     private Integer parsingParallelism;
@@ -104,5 +105,13 @@ public class ParsingApplicationFactoryAttributes {
 
     public void setApplicationType(ParsingApplicationTypeDto applicationType) {
         this.applicationType = applicationType;
+    }
+
+    public Integer getNumWorkers() {
+        return numWorkers;
+    }
+
+    public void setNumWorkers(Integer numWorkers) {
+        this.numWorkers = numWorkers;
     }
 }

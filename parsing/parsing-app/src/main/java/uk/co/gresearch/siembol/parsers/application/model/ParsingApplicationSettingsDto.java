@@ -19,18 +19,21 @@ public class ParsingApplicationSettingsDto {
     @Attributes(description = "The kafka topic for publishing error messages", required = true)
     private String errorTopic;
 
+    @JsonProperty("num_workers")
+    @Attributes(description = "The number of workers for the parsing application", minimum = 1, required = true)
+    private Integer numWorkers = 1;
     @JsonProperty("input_parallelism")
-    @Attributes(description = "The number of parallel executors for reading messages from the input kafka topics",
+    @Attributes(description = "The number of parallel executors per worker for reading messages from the input topics",
             required = true, minimum = 1)
     private Integer inputParallelism;
 
     @JsonProperty("parsing_parallelism")
-    @Attributes(description = "The number of parallel executors for parsing messages",
+    @Attributes(description = "The number of parallel executors per worker for parsing messages",
             required = true, minimum = 1)
     private Integer parsingParallelism;
 
     @JsonProperty("output_parallelism")
-    @Attributes(description = "The number of parallel executors for publishing to kafka",
+    @Attributes(description = "The number of parallel executors per worker for publishing to kafka",
             required = true, minimum = 1)
     private Integer outputParallelism;
 
@@ -140,5 +143,13 @@ public class ParsingApplicationSettingsDto {
 
     public void setOriginalStringTopic(String originalStringTopic) {
         this.originalStringTopic = originalStringTopic;
+    }
+
+    public Integer getNumWorkers() {
+        return numWorkers;
+    }
+
+    public void setNumWorkers(Integer numWorkers) {
+        this.numWorkers = numWorkers;
     }
 }

@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
 
@@ -50,6 +51,7 @@ public class HeartbeatProducerTest {
         heartbeatProducer.sendHeartbeat();
         Assert.assertEquals(2,
                 metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_MESSAGES_SENT.getMetricName("p")));
+        Assert.assertEquals(heartbeatProducer.checkHealth(), Health.up().build());
     }
 
     @Test
@@ -66,6 +68,19 @@ public class HeartbeatProducerTest {
         heartbeatProducer.sendHeartbeat();
         Assert.assertEquals(1,
                 metricsTestRegistrar.getCounterValue(SiembolMetrics.HEARTBEAT_PRODUCER_ERROR.getMetricName("p")));
+        Assert.assertEquals(heartbeatProducer.checkHealth(),
+                Health.down(new IllegalArgumentException("Topic cannot be null.")).build());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void propertiesNullError() {
+        var producer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
+        new HeartbeatProducer(
+                null,
+                "p",
+                heartbeatMessageProperties,
+                metricsTestRegistrar,
+                x -> producer);
     }
 
 }
