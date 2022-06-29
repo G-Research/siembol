@@ -32,7 +32,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------| -------------------------| ------------------- |
 | `namespace`                | Name of namespace        | siembol           |
 | `environment`              | Environment used         | dev               |
-| `enabled_apps`             | List of apps to deploy  | [ui, rest, manager, dep_ingresses, enrichment_store] |
+| `enabled_apps`             | List of apps to deploy  | [ui, rest, manager, dep_ingresses, enrichment_store, siembol_monitoring] |
 
 ### Certmanager
 | Parameter | Description         | Default  |
