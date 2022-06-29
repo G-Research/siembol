@@ -245,7 +245,7 @@ response:
 monitoring:
   appName: "monitoring"
   image:
-    repository: "gresearchdev/siembol-monitoring"
+    repository: "gresearchdev/siembol-siembol-monitoring"
     tag: "latest"
     pullPolicy: Always
 
