@@ -68,11 +68,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "siembol.manager.appname.cleanup.name" -}}
-{{- $name := default .Chart.Name .Values.manager.cleanupjob.name -}}
-{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
 {{/*
 Create a full nginx config store name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
