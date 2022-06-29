@@ -18,6 +18,7 @@ Docker images are built both from snapshots and releases.
     - [storm-topology-manager](https://hub.docker.com/r/gresearchdev/siembol-storm-topology-manager/)
     - [config-editor-rest](https://hub.docker.com/r/gresearchdev/siembol-config-editor-rest/)
     - [responding-stream](https://hub.docker.com/r/gresearchdev/siembol-responding-stream/)
+    - [siembol-monitoring](https://hub.docker.com/r/gresearchdev/siembol-monitoring/)
 
 - Config editor UI
     - A Single page Angular application 
@@ -160,6 +161,17 @@ We have a folder for ingress specifications for extra components which allows fo
 | `dep_ingresses.storm.oauth2_proxy.enabled` | Enable oauth2 proxy for this ingress | false |
 | `dep_ingresses.storm.oauth2_proxy.host` | Host for oauth2 proxy | oauth-proxy.siembol.local |
 
+#### Siembol Monitoring
+Siembol monitoring is a springboot application with components to monitor Siembol. It has one component: siembol heartbeat. 
+
+##### Siembol Heartbeat
+Siembol heartbeat can be used to monitor all components of Siembol are working correctly. It has two main components:
+- kafka producers: send a heartbeat message to a kafka topic at an interval of time specified in the config. Multiple producers can be defined with different kafka properties, e.g. different kafka cluster or topics.
+- kafka consumer: reads the heartbeat message after it has been processed by Siembol services. Calculates the total latency and latency between services depending on the services enabled. These metrics are exposed and ready to be scraped by Prometheus.
+
+For the heartbeat to work config has to be added to each Siembol service type used to process the heartbeat message and write it to the topic read by the consumer. 
+
+See [siembol monitoring](how-tos/how_to_setup_siembol_monitoring.md) for configuration details.
 
 
 ### Enable & Disable components
@@ -172,6 +184,7 @@ By default the enabled_apps list consists of these components:
 - manager
 - dep_ingresses
 - enrichment_store
+- siembol_monitoring
 ```
 Any component can be removed by removing it from the list in [values.yaml](../../deployment/helm-k8s/values.yaml) or you can add another component such as `response` e.g.
 ```bash

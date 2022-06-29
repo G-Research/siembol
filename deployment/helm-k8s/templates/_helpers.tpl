@@ -37,7 +37,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "siembol.ui.fullname" -}}
 {{- $name := default .Chart.Name .Values.ui.appName -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -46,7 +46,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "siembol.rest.fullname" -}}
 {{- $name := default .Chart.Name .Values.rest.appName -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -55,7 +55,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "siembol.response.fullname" -}}
 {{- $name := default .Chart.Name .Values.response.appName -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -65,12 +65,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 
 {{- define "siembol.manager.appname.fullname" -}}
 {{- $name := default .Chart.Name .Values.manager.appName -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{- define "siembol.manager.appname.cleanup.name" -}}
-{{- $name := default .Chart.Name .Values.manager.cleanupjob.name -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -79,7 +74,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "siembol.enrichment_store.fullname" -}}
 {{- $name := default .Chart.Name .Values.enrichment_store.appName -}}
-{{- printf "%s-%s" (include "siembol.fullname" .) $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -124,8 +119,10 @@ Set the ZooKeeper server for the siembol chart
 {{- end -}}
 
 {{/*
-Set the name for the Kafka chart
+Create a fully qualified siembol monitoring fullname.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "kafka.fullname" -}}
-{{- printf "%s-%s" .Release.Name "kafka" | trunc 63 | trimSuffix "-" -}}
+{{- define "siembol.siembol_monitoring.fullname" -}}
+{{- $name := default .Chart.Name .Values.siembol_monitoring.appName -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
