@@ -7,18 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.5.0] - 2022-06-30
 
-- Adding siembol-monitoring module
-- Simplifying parsing app settings
+- Adding siembol-monitoring module with siembol-heartbeat service
+- Simplifying parsing app parallelism settings
 - Adding field protection in parsing
 - Sorting fields in Markdown table formatter in Siembol response
-- Adding table metadata fields to enrichment tables
-- Adding gauge type in Siembol common
-- Upgrading spark and refactoring alerting spark
+- Adding metadata fields to enrichment tables
+- Adding gauge type in Siembol common metrics
+- Upgrading alerting spark dependencies and refactoring to be more generic
 - Adding time exclusion evaluator in Siembol response
 - Adding json path extractor in parsing
-- Fixing computing desired state in sync service
-- Rejecting rules with only negative matchers in alerting
-- Adding optional items in Siembol rest and Siembol UI
+- Fixing computing desired state in config editor rest sync service
+- Rejecting rules with only negated matchers in alerting
+- Adding optional items in Siembol UI and configurations
 
 ## [2.4.0] - 2022-04-29
 
