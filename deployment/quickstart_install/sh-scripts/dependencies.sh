@@ -3,9 +3,9 @@
 echo "************************************************************"
 echo "****************** Installing dependencies *****************"
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
+helm dependency update deployment/helm-k8s/storm/
 helm install storm deployment/helm-k8s/storm/ -n=siembol
 
 helm install kafka bitnami/kafka -n=siembol \
