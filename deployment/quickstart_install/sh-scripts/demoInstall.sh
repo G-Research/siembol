@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG_MAP_NAME_GIT="github-details"
-GIT_SECRET_NAME="siembol-config-editor-rest-secrets"
+GIT_SECRET_NAME="config-editor-rest-secrets"
 NAMESPACE="siembol"
 
 git_details () {

@@ -24,6 +24,7 @@ public class ParsingApplicationFactoryImplTest {
          "max_num_fields" : 100,
          "max_field_size" : 40000,
          "original_string_topic" : "truncated",
+         "num_workers" : 3,
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
@@ -49,6 +50,7 @@ public class ParsingApplicationFactoryImplTest {
            "secret"
          ],
          "error_topic": "error",
+         "num_workers" : 3,
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
@@ -96,6 +98,7 @@ public class ParsingApplicationFactoryImplTest {
            "public"
          ],
          "error_topic": "error",
+         "num_workers" : 3,
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
@@ -144,6 +147,7 @@ public class ParsingApplicationFactoryImplTest {
            "public"
          ],
          "error_topic": "error",
+         "num_workers" : 3,
          "input_parallelism": 1,
          "parsing_parallelism": 2,
          "output_parallelism": 3,
@@ -260,6 +264,7 @@ public class ParsingApplicationFactoryImplTest {
         ParsingApplicationFactoryResult result = factory.create(simpleSingleApplicationParser, testParsersConfigs);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals("test", result.getAttributes().getName());
+        Assert.assertEquals(3, result.getAttributes().getNumWorkers().intValue());
         Assert.assertEquals(1, result.getAttributes().getInputParallelism().intValue());
         Assert.assertEquals(2, result.getAttributes().getParsingParallelism().intValue());
         Assert.assertEquals(3, result.getAttributes().getOutputParallelism().intValue());
@@ -312,6 +317,7 @@ public class ParsingApplicationFactoryImplTest {
         ParsingApplicationFactoryResult result = factory.create(simpleRoutingApplicationParser, testParsersConfigs);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals("test", result.getAttributes().getName());
+        Assert.assertEquals(3, result.getAttributes().getNumWorkers().intValue());
         Assert.assertEquals(1, result.getAttributes().getInputParallelism().intValue());
         Assert.assertEquals(2, result.getAttributes().getParsingParallelism().intValue());
         Assert.assertEquals(3, result.getAttributes().getOutputParallelism().intValue());
@@ -397,6 +403,7 @@ public class ParsingApplicationFactoryImplTest {
         ParsingApplicationFactoryResult result = factory.create(headerRoutingApplicationParser, testParsersConfigs);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals("test", result.getAttributes().getName());
+        Assert.assertEquals(3, result.getAttributes().getNumWorkers().intValue());
         Assert.assertEquals(1, result.getAttributes().getInputParallelism().intValue());
         Assert.assertEquals(2, result.getAttributes().getParsingParallelism().intValue());
         Assert.assertEquals(3, result.getAttributes().getOutputParallelism().intValue());
@@ -452,6 +459,7 @@ public class ParsingApplicationFactoryImplTest {
         ParsingApplicationFactoryResult result = factory.create(topicRoutingApplicationParser, testParsersConfigs);
         Assert.assertSame(ParsingApplicationFactoryResult.StatusCode.OK, result.getStatusCode());
         Assert.assertEquals("test", result.getAttributes().getName());
+        Assert.assertEquals(3, result.getAttributes().getNumWorkers().intValue());
         Assert.assertEquals(1, result.getAttributes().getInputParallelism().intValue());
         Assert.assertEquals(2, result.getAttributes().getParsingParallelism().intValue());
         Assert.assertEquals(3, result.getAttributes().getOutputParallelism().intValue());

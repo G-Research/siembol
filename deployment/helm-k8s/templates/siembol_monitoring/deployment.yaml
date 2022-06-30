@@ -1,0 +1,61 @@
+{{- if (has "siembol_monitoring" .Values.enabled_apps) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "siembol.siembol_monitoring.fullname" $ }}
+  name: {{ include "siembol.siembol_monitoring.fullname" $ }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ include "siembol.siembol_monitoring.fullname" $ }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "siembol.siembol_monitoring.fullname" $ }}
+      name: {{ include "siembol.siembol_monitoring.fullname" $ }}
+    spec:
+      containers:
+      - image: {{ .Values.siembol_monitoring.image.repository }}:{{ .Values.siembol_monitoring.image.tag }}
+        imagePullPolicy: {{ .Values.siembol_monitoring.image.pullPolicy }}
+        name: {{ include "siembol.siembol_monitoring.fullname" $ }}
+        resources:
+          requests:
+            memory: {{ .Values.siembol_monitoring.resources.requests.memory }}
+            cpu: {{ .Values.siembol_monitoring.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.siembol_monitoring.resources.limits.memory }}
+            cpu: {{ .Values.siembol_monitoring.resources.limits.cpu }}
+        securityContext:
+          runAsUser: 101
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.siembol_monitoring.service.port }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.siembol_monitoring.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.siembol_monitoring.readinessProbe.periodSeconds }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.siembol_monitoring.service.port }}
+            scheme: HTTP
+        volumeMounts:
+        - name: cacerts
+          mountPath: /etc/ssl/certs/java/cacerts
+          subPath: cacerts
+          readOnly: true        
+      restartPolicy: Always
+      volumes:
+      - name: cacerts
+        secret:
+          secretName: cacerts
+      terminationGracePeriodSeconds: 300
+{{- end -}}

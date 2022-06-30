@@ -91,6 +91,6 @@ public class HeartbeatProducer implements Closeable {
     }
 
     public Health checkHealth() {
-        return exception.get() == null ? Health.down().withException(exception.get()).build(): Health.up().build();
+        return exception.get() == null ? Health.up().build(): Health.down().withException(exception.get()).build();
     }
 }

@@ -42,6 +42,7 @@ public class StormParsingApplicationTest {
           ],
           "parse_metadata" : false,
           "error_topic": "error",
+          "num_workers" : 1,
           "input_parallelism": 1,
           "parsing_parallelism": 1,
           "output_parallelism": 1,

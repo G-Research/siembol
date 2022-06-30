@@ -42,25 +42,25 @@ public class HeartbeatConsumer {
 
     HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar,
                       KafkaStreamsFactory streamsFactory) {
-        consumerErrorCount = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.name());
-        consumerMessageRead = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_MESSAGES_READ.name());
+        consumerErrorCount = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.getMetricName());
+        consumerMessageRead = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_MESSAGES_READ.getMetricName());
 
         if (properties.getEnabledServices() == null) {
             throw new IllegalArgumentException("Missing enabled services for heartbeat consumer.");
         }
         if (properties.getEnabledServices().contains(ServiceType.PARSING_APP)) {
             servicesMetrics.add(Pair.of(ServiceType.PARSING_APP,
-                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.name())));
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.getMetricName())));
         }
         if (properties.getEnabledServices().contains(ServiceType.ENRICHMENT)) {
             servicesMetrics.add(Pair.of(ServiceType.ENRICHMENT,
-                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.name())));
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_ENRICHING_MS.getMetricName())));
         }
         if (properties.getEnabledServices().contains(ServiceType.RESPONSE)) {
             servicesMetrics.add(Pair.of(ServiceType.RESPONSE,
-                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.name())));
+                    metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.getMetricName())));
         }
-        totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.name());
+        totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.getMetricName());
         streams = createStreams(streamsFactory, properties);
         streams.start();
     }
