@@ -86,7 +86,7 @@ deployment/quickstart_install/ps-scripts/enrichmentStore.ps1
 
 ### Kafka UI
 
-We are using Kafdrop UI to view topics and messages. You can send messages to parsing topics to test siembol configs. You should also see heartbeat messages coming through from siembol-monitoring (if enabled in `values.yaml`).
+We are using Kafdrop UI to view topics and messages.  You can send messages to parsing topics and to test siembol configs. 
 
 1. To install this and create a kafka client pod:
 ```bash
