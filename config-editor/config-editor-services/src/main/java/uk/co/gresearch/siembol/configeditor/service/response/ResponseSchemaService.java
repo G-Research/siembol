@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
+import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.model.testing.ResponseTestSpecificationDto;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
@@ -17,6 +20,7 @@ import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
 import uk.co.gresearch.siembol.response.compiler.RespondingCompilerImpl;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,30 +59,7 @@ public class ResponseSchemaService extends ConfigSchemaServiceAbstract {
         }
     }
 
-    @Override
-    public ConfigEditorResult testConfiguration(String configuration, String testSpecification) {
-        String rules = RespondingCompilerImpl.wrapRuleToRules(configuration);
-        return testConfigurations(rules, testSpecification);
-    }
-
-    @Override
-    public ConfigEditorResult testConfigurations(String configurations, String testSpecification) {
-        try {
-            RespondingResult result = responseHttpProvider.testRules(configurations, testSpecification);
-            ConfigEditorResult configEditorResult = fromRespondingResult(result);
-            if (configEditorResult.getStatusCode() == ConfigEditorResult.StatusCode.OK) {
-                configEditorResult.getAttributes().setTestResultOutput(result.getAttributes().getMessage());
-                result.getAttributes().setMessage(null);
-                configEditorResult.getAttributes()
-                        .setTestResultRawOutput(ATTRIBUTES_WRITER.writeValueAsString(result.getAttributes()));
-            }
-            return configEditorResult;
-        } catch (Exception e) {
-            return ConfigEditorResult.fromException(e);
-        }
-    }
-
-    private ConfigEditorResult fromRespondingResult(RespondingResult respondingResult) {
+    public static ConfigEditorResult fromRespondingResult(RespondingResult respondingResult) {
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
         if (respondingResult.getStatusCode() != RespondingResult.StatusCode.OK) {
             attributes.setMessage(respondingResult.getAttributes().getMessage());
@@ -105,20 +86,21 @@ public class ResponseSchemaService extends ConfigSchemaServiceAbstract {
         public ResponseSchemaService build() throws Exception {
             responseHttpProvider = new ResponseHttpProvider(httpProvider);
             RespondingResult ruleSchemaResult = responseHttpProvider.getRulesSchema(uiLayout);
-            RespondingResult testSchemaResult = responseHttpProvider.getTestSchema(uiLayout);
+            var testSchemaValidator = new SiembolJsonSchemaValidator(ResponseTestSpecificationDto.class);
+            String testSchema = testSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();
+
 
             LOG.info(RULES_SCHEMA_LOG, ruleSchemaResult.getAttributes().getRulesSchema());
-            LOG.info(TEST_SPECIFICATION_SCHEMA_LOG, testSchemaResult.getAttributes().getTestSpecificationSchema());
             if (ruleSchemaResult.getStatusCode() != RespondingResult.StatusCode.OK
                     || ruleSchemaResult.getAttributes().getRulesSchema() == null
-                    || testSchemaResult.getStatusCode() != RespondingResult.StatusCode.OK
-                    || testSchemaResult.getAttributes().getTestSpecificationSchema() == null) {
+                    || testSchema == null) {
                 LOG.error(INIT_ERROR_MESSAGE);
                 throw new IllegalStateException(INIT_ERROR_MESSAGE);
             }
 
             context.setConfigSchema(ruleSchemaResult.getAttributes().getRulesSchema());
-            context.setTestSchema(testSchemaResult.getAttributes().getTestSpecificationSchema());
+            var responseConfigTester = new ResponseConfigTester(testSchemaValidator, testSchema, responseHttpProvider);
+            context.setConfigTesters(List.of(responseConfigTester.withErrorMessage()));
             return new ResponseSchemaService(this);
         }
     }

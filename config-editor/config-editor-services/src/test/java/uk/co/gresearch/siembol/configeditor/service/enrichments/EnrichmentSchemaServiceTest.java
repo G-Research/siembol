@@ -43,7 +43,7 @@ public class EnrichmentSchemaServiceTest {
     private SiembolResult validationResult;
 
     @Before
-    public void setup() {
+    public void setUp() {
         compiler = Mockito.mock(EnrichmentCompiler.class);
         adminConfigValidator = Mockito.mock(SiembolJsonSchemaValidator.class);
         validationResult = new SiembolResult(SiembolResult.StatusCode.OK, new SiembolAttributes());
@@ -67,18 +67,20 @@ public class EnrichmentSchemaServiceTest {
     }
 
     @Test
-    public void getSchemaOK() {
+    public void getSchemaOk() {
         ConfigEditorResult ret = enrichmentsSchemaService.getSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertEquals(schema, ret.getAttributes().getRulesSchema());
     }
 
+    /**
     @Test
     public void getTestSchemaOK() {
         ConfigEditorResult ret = enrichmentsSchemaService.getTestSchema();
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getTestSchema());
     }
+     */
 
     @Test
     public void validateConfigurationsOK() {
@@ -112,54 +114,6 @@ public class EnrichmentSchemaServiceTest {
         Mockito.when(compiler.validateConfiguration(anyString())).thenReturn(enrichmentResult);
         ConfigEditorResult ret = enrichmentsSchemaService.validateConfiguration(testConfigs);
         Mockito.verify(compiler, times(1)).validateConfiguration(testConfigs);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        Assert.assertEquals("error", ret.getAttributes().getMessage());
-    }
-
-    @Test
-    public void testConfigurationOK() {
-        enrichmentAttributes.setTestResult(testResult);
-        enrichmentAttributes.setTestRawResult(testRawResult);
-        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
-        ConfigEditorResult ret = enrichmentsSchemaService.testConfiguration(testConfig, testSpecification);
-        Mockito.verify(compiler, times(1)).testConfiguration(testConfig, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertEquals(testResult, ret.getAttributes().getTestResultOutput());
-        Assert.assertEquals(testRawResult, ret.getAttributes().getTestResultRawOutput());
-    }
-
-    @Test
-    public void testConfigurationsOK() {
-        enrichmentAttributes.setTestResult(testResult);
-        enrichmentAttributes.setTestRawResult(testRawResult);
-        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
-        ConfigEditorResult ret = enrichmentsSchemaService.testConfigurations(testConfigs, testSpecification);
-        Mockito.verify(compiler, times(1)).testConfigurations(testConfigs, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertEquals(testResult, ret.getAttributes().getTestResultOutput());
-        Assert.assertEquals(testRawResult, ret.getAttributes().getTestResultRawOutput());
-    }
-
-    @Test
-    public void testConfigurationError() {
-        enrichmentAttributes.setMessage("error");
-        enrichmentResult = new EnrichmentResult(ERROR, enrichmentAttributes);
-        Mockito.when(compiler.testConfiguration(anyString(), anyString())).thenReturn(enrichmentResult);
-        ConfigEditorResult ret = enrichmentsSchemaService.testConfiguration(testConfig, testSpecification);
-        Mockito.verify(compiler, times(1)).testConfiguration(testConfig, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        Assert.assertEquals("error", ret.getAttributes().getMessage());
-    }
-
-    @Test
-    public void testConfigurationsError() {
-        enrichmentAttributes.setMessage("error");
-        enrichmentResult = new EnrichmentResult(ERROR, enrichmentAttributes);
-        Mockito.when(compiler.testConfigurations(anyString(), anyString())).thenReturn(enrichmentResult);
-        ConfigEditorResult ret = enrichmentsSchemaService.testConfigurations(testConfigs, testSpecification);
-        Mockito.verify(compiler, times(1)).testConfigurations(testConfigs, testSpecification);
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
     }

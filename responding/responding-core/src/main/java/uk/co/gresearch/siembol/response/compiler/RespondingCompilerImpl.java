@@ -16,7 +16,7 @@ import uk.co.gresearch.siembol.response.engine.ResponseEngine;
 import uk.co.gresearch.siembol.response.engine.ResponseRule;
 import uk.co.gresearch.siembol.response.engine.RulesEngine;
 import uk.co.gresearch.siembol.response.model.ResponseEvaluatorDto;
-import uk.co.gresearch.siembol.response.model.ResponseTestSpecificationDto;
+import uk.co.gresearch.siembol.common.model.testing.ResponseTestSpecificationDto;
 import uk.co.gresearch.siembol.response.model.RuleDto;
 import uk.co.gresearch.siembol.response.model.RulesDto;
 

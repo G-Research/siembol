@@ -46,11 +46,13 @@ public class ConfigSchemaController {
     @GetMapping(value = "/api/v1/{service}/configs/testschema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ConfigEditorAttributes> getTestSchema(
             @AuthenticationPrincipal Object principal,
-            @PathVariable("service") String serviceName) {
+            @PathVariable("service") String serviceName,
+            @RequestParam(required = false, defaultValue = "default") String testerName) {
         UserInfo user = userInfoProvider.getUserInfo(principal);
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
-                .getTestSchema()
+                .getConfigTester(testerName)
+                .getTestSpecificationSchema()
                 .toResponseEntity();
     }
 
@@ -101,6 +103,7 @@ public class ConfigSchemaController {
             @AuthenticationPrincipal Object principal,
             @PathVariable("service") String serviceName,
             @RequestParam(required = false, defaultValue = "false") boolean singleConfig,
+            @RequestParam(required = false, defaultValue = "default") String testerName,
             @RequestBody ConfigEditorAttributes attributes) {
 
         Optional<String> config = getFileContent(attributes);
@@ -109,10 +112,36 @@ public class ConfigSchemaController {
                     .toResponseEntity();
         }
         UserInfo user = userInfoProvider.getUserInfo(principal);
-        ConfigSchemaService service = serviceAggregator.getConfigSchema(user, serviceName);
+        var tester = serviceAggregator.getConfigSchema(user, serviceName).getConfigTester(testerName);
         return singleConfig
-                ? service.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
-                : service.testConfigurations(config.get(), attributes.getTestSpecification()).toResponseEntity();
+                ? tester.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
+                : tester.testConfigurations(config.get(), attributes.getTestSpecification()).toResponseEntity();
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/api/v1/{service}/configs/validatetest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> validateTest(
+            @AuthenticationPrincipal Object principal,
+            @PathVariable("service") String serviceName,
+            @RequestParam(required = false, defaultValue = "default") String testerName,
+            @RequestBody String body) {
+        UserInfo user = userInfoProvider.getUserInfo(principal);
+        var tester = serviceAggregator.getConfigSchema(user, serviceName).getConfigTester(testerName);
+        return tester
+                .validateTestSpecification(body)
+                .toResponseEntity();
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/v1/{service}/configs/testers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ConfigEditorAttributes> getConfigTesters(
+            @AuthenticationPrincipal Object principal,
+            @PathVariable("service") String serviceName) {
+        UserInfo user = userInfoProvider.getUserInfo(principal);
+        return serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .getConfigTesters()
+                .toResponseEntity();
     }
 
     @CrossOrigin

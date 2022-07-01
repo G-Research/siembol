@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.spark;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.gresearch.siembol.common.model.AlertingSparkTestingAttributesDto;
+import uk.co.gresearch.siembol.common.model.testing.AlertingSparkArgumentDto;
 
 import java.util.Base64;
 
@@ -15,8 +15,8 @@ public class AlertingSpark {
         }
 
         String input = new String(Base64.getDecoder().decode(args[0]));
-        AlertingSparkTestingAttributesDto attributes = new ObjectMapper()
-                .readerFor(AlertingSparkTestingAttributesDto.class)
+        AlertingSparkArgumentDto attributes = new ObjectMapper()
+                .readerFor(AlertingSparkArgumentDto.class)
                 .readValue(input);
 
         JavaSparkContext sc = new JavaSparkContext(new SparkConf()

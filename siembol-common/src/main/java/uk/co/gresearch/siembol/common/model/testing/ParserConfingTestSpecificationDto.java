@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.configeditor.service.parserconfig;
+package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;

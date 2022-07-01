@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
-import uk.co.gresearch.siembol.common.model.AlertingSparkTestingResultDto;
+import uk.co.gresearch.siembol.common.model.testing.AlertingSparkTestingResultDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;

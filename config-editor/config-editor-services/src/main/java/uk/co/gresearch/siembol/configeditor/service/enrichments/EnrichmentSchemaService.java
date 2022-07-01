@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.model.testing.EnrichmentTestingSpecificationDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
@@ -19,6 +20,7 @@ import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
@@ -47,16 +49,6 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
     }
 
     @Override
-    public ConfigEditorResult testConfiguration(String configuration, String testSpecification) {
-        return fromEnrichmentResult(compiler.testConfiguration(configuration, testSpecification));
-    }
-
-    @Override
-    public ConfigEditorResult testConfigurations(String configurations, String testSpecification) {
-        return fromEnrichmentResult(compiler.testConfigurations(configurations, testSpecification));
-    }
-
-    @Override
     public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
         try {
             StormEnrichmentAttributesDto adminConfig = ADMIN_CONFIG_READER.readValue(configuration);
@@ -68,14 +60,14 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
         }
     }
 
-    private ConfigEditorResult fromEnrichmentResult(EnrichmentResult enrichmentResultresult) {
+   public static ConfigEditorResult fromEnrichmentResult(EnrichmentResult enrichmentResult) {
         ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        attr.setMessage(enrichmentResultresult.getAttributes().getMessage());
-        attr.setTestResultRawOutput(enrichmentResultresult.getAttributes().getTestRawResult());
-        attr.setTestResultOutput(enrichmentResultresult.getAttributes().getTestResult());
+        attr.setMessage(enrichmentResult.getAttributes().getMessage());
+        attr.setTestResultRawOutput(enrichmentResult.getAttributes().getTestRawResult());
+        attr.setTestResultOutput(enrichmentResult.getAttributes().getTestResult());
 
         ConfigEditorResult.StatusCode statusCode =
-                enrichmentResultresult.getStatusCode() == EnrichmentResult.StatusCode.OK
+                enrichmentResult.getStatusCode() == EnrichmentResult.StatusCode.OK
                         ? ConfigEditorResult.StatusCode.OK
                         : ConfigEditorResult.StatusCode.BAD_REQUEST;
         return new ConfigEditorResult(statusCode, attr);
@@ -84,9 +76,9 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
     public static ConfigSchemaService createEnrichmentsSchemaService(ConfigEditorUiLayout uiLayout) throws Exception {
         LOG.info("Initialising enrichment config schema service");
         ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
-        EnrichmentCompiler compilerResult = EnrichmentCompilerImpl.createEnrichmentsCompiler();
-        String rulesSchema = compilerResult.getSchema().getAttributes().getRulesSchema();
-        String testSchema = compilerResult.getTestSpecificationSchema().getAttributes().getTestSchema();
+        EnrichmentCompiler compiler = EnrichmentCompilerImpl.createEnrichmentsCompiler();
+        String rulesSchema = compiler.getSchema().getAttributes().getRulesSchema();
+        String testSchema = compiler.getTestSpecificationSchema().getAttributes().getTestSchema();
 
         Optional<String> rulesSchemaUi = ConfigEditorUtils.patchJsonSchema(rulesSchema, uiLayout.getConfigLayout());
         Optional<String> testSchemaUi = ConfigEditorUtils.patchJsonSchema(testSchema, uiLayout.getTestLayout());
@@ -107,7 +99,12 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
         context.setTestSchema(testSchemaUi.get());
         context.setAdminConfigSchema(adminConfigSchemaUi.get());
         context.setAdminConfigValidator(adminConfigValidator);
+        var defaultConfigTester = new EnrichmentConfigTester(
+                new SiembolJsonSchemaValidator(EnrichmentTestingSpecificationDto.class),
+                testSchemaUi.get(),
+                compiler);
+        context.setConfigTesters(List.of(defaultConfigTester.withErrorMessage()));
         LOG.info("Initialising enrichment config schema service completed");
-        return new EnrichmentSchemaService(compilerResult, context);
+        return new EnrichmentSchemaService(compiler, context);
     }
 }

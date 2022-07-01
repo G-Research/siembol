@@ -1,19 +1,20 @@
 package uk.co.gresearch.siembol.configeditor.service.alerts;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.model.testing.AlertingSparkTestingSpecificationDto;
+import uk.co.gresearch.siembol.common.model.testing.AlertingTestSpecificationDto;
+import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
+import uk.co.gresearch.siembol.configeditor.common.ConfigTester;
+import uk.co.gresearch.siembol.configeditor.model.*;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.common.ConfigSchemaService;
 import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
@@ -21,38 +22,27 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingRulesCompiler;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
-import uk.co.gresearch.siembol.configeditor.model.ErrorMessages;
 import uk.co.gresearch.siembol.configeditor.service.alerts.sigma.SigmaRuleImporter;
+import uk.co.gresearch.siembol.configeditor.service.alerts.spark.AlertingSparkConfigTester;
+import uk.co.gresearch.siembol.configeditor.service.alerts.spark.AlertingSparkTestingProvider;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceAbstract;
 import uk.co.gresearch.siembol.configeditor.service.common.ConfigSchemaServiceContext;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
 
 public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final ObjectReader TEST_SPECIFICATION_READER = new ObjectMapper()
-            .readerFor(AlertingTestSpecificationDto.class);
-
-    private static final ObjectWriter ALERTING_ATTRIBUTES_WRITER = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .writerFor(AlertingAttributes.class)
-            .with(SerializationFeature.INDENT_OUTPUT);
-
     private static final ObjectReader ADMIN_CONFIG_READER = new ObjectMapper()
             .readerFor(AlertingStormAttributesDto.class);
 
     private static final String SCHEMA_INIT_ERROR = "Error during computing rules schema";
     private static final String SIGMA_IMPORTER_NAME = "sigma";
+    private static final String MISSING_SPARK_HDFS_TESTER_PROPS = "Missing spark hdfs additional tester properties";
     private final AlertingCompiler alertingCompiler;
 
     AlertingRuleSchemaService(AlertingCompiler alertingCompiler,
@@ -73,7 +63,9 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         return fromAlertingValidateResult(alertingResult);
     }
 
-    public static ConfigSchemaService createAlertingRuleSchemaService(ConfigEditorUiLayout uiLayout) throws Exception {
+    public static ConfigSchemaService createAlertingRuleSchemaService(
+            ConfigEditorUiLayout uiLayout,
+            Optional<AdditionalConfigTesters> additionalConfigTesters) throws Exception {
         LOG.info("Initialising alerts rule schema service");
         ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
         AlertingCompiler compiler = AlertingRulesCompiler.createAlertingRulesCompiler();
@@ -108,14 +100,43 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         context.setConfigSchema(computedSchema.get());
         context.setAdminConfigSchema(adminConfigSchemaUi.get());
         context.setAdminConfigValidator(adminConfigValidator);
-        context.setTestSchema(testSchema);
 
         Map<String, ConfigImporter> importerMap = new HashMap<>();
         importerMap.put(SIGMA_IMPORTER_NAME, new SigmaRuleImporter.Builder().configEditorUiLayout(uiLayout).build());
         context.setConfigImporters(importerMap);
 
+        var configTestersList = new ArrayList<ConfigTester>();
+        configTestersList.add(new AlertingConfigTester(testValidator, testSchemaUi.get(), compiler).withErrorMessage());
+        if (additionalConfigTesters.isPresent() && additionalConfigTesters.get().getSparkHdfs() != null) {
+            configTestersList.add(getSparkHdfsConfigTester(additionalConfigTesters.get().getSparkHdfs())
+                    .withErrorMessage());
+        }
+        context.setConfigTesters(configTestersList);
+
         LOG.info("Initialising alerts rule schema service completed");
         return new AlertingRuleSchemaService(compiler, context);
+    }
+
+    private static ConfigTester getSparkHdfsConfigTester(
+            SparkHdfsTesterProperties sparkHdfsProperties) throws Exception {
+        if (sparkHdfsProperties.getUrl() == null
+                || sparkHdfsProperties.getFileExtension() == null
+                || sparkHdfsProperties.getFolderPath() == null
+                || sparkHdfsProperties.getAttributes() == null) {
+            throw new IllegalArgumentException(MISSING_SPARK_HDFS_TESTER_PROPS);
+        }
+        HttpProvider httpProvider = new HttpProvider(
+                sparkHdfsProperties.getUrl(),
+                HttpProvider::getHttpClient);
+        AlertingSparkTestingProvider sparkTestingProvider = new AlertingSparkTestingProvider(
+                httpProvider,
+                sparkHdfsProperties.getAttributes());
+
+        SiembolJsonSchemaValidator testValidator = new SiembolJsonSchemaValidator(
+                AlertingSparkTestingSpecificationDto.class);
+        String testSchema = testValidator.getJsonSchema().getAttributes().getJsonSchema();
+
+        return new AlertingSparkConfigTester(testValidator, testSchema, sparkTestingProvider, sparkHdfsProperties);
     }
 
     public static ConfigSchemaService createAlertingCorrelationRuleSchemaService(
@@ -152,27 +173,7 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         return new AlertingRuleSchemaService(compiler, context);
     }
 
-    @Override
-    public ConfigEditorResult testConfiguration(String rule, String testSpecification) {
-        AlertingTestSpecificationDto specificationDto;
-        try {
-            specificationDto = TEST_SPECIFICATION_READER.readValue(testSpecification);
-        } catch (IOException e) {
-            return ConfigEditorResult.fromException(BAD_REQUEST, e);
-        }
-        return fromAlertingTestResult(alertingCompiler.testRule(rule, specificationDto.getEventContent()));
-    }
 
-    @Override
-    public ConfigEditorResult testConfigurations(String rule, String testSpecification) {
-        AlertingTestSpecificationDto specificationDto;
-        try {
-            specificationDto = TEST_SPECIFICATION_READER.readValue(testSpecification);
-        } catch (IOException e) {
-            return ConfigEditorResult.fromException(BAD_REQUEST, e);
-        }
-        return fromAlertingTestResult(alertingCompiler.testRules(rule, specificationDto.getEventContent()));
-    }
 
     @Override
     public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
@@ -196,32 +197,5 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         attr.setException(alertingResult.getAttributes().getException());
 
         return new ConfigEditorResult(statusCode, attr);
-    }
-
-    private ConfigEditorResult fromAlertingTestResult(AlertingResult alertingResult) {
-        ConfigEditorAttributes attr = new ConfigEditorAttributes();
-        if (alertingResult.getStatusCode() != AlertingResult.StatusCode.OK) {
-            attr.setMessage(alertingResult.getAttributes().getMessage());
-            attr.setException(alertingResult.getAttributes().getException());
-            return new ConfigEditorResult(BAD_REQUEST, attr);
-        }
-
-        if (alertingResult.getAttributes().getMessage() == null) {
-            return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR,
-                    ErrorMessages.UNEXPECTED_TEST_RESULT.getMessage());
-        }
-
-        attr.setTestResultOutput(alertingResult.getAttributes().getMessage());
-        AlertingAttributes alertingAttributes = new AlertingAttributes();
-        alertingAttributes.setOutputEvents(alertingResult.getAttributes().getOutputEvents());
-        alertingAttributes.setExceptionEvents(alertingResult.getAttributes().getExceptionEvents());
-        try {
-            String rawTestOutput = ALERTING_ATTRIBUTES_WRITER.writeValueAsString(alertingAttributes);
-            attr.setTestResultRawOutput(rawTestOutput);
-        } catch (JsonProcessingException e) {
-            return ConfigEditorResult.fromException(e);
-        }
-
-        return new ConfigEditorResult(OK, attr);
     }
 }

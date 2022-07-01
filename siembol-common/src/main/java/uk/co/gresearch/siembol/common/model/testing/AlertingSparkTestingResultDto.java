@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.common.model;
+package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
