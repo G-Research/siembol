@@ -23,7 +23,7 @@ public class AlertingSparkTestingProvider {
     private final Map<String, Object> sparkAttributes;
 
     public AlertingSparkTestingProvider(HttpProvider httpProvider,
-                                        Map<String, Object> sparkAttributes) throws Exception {
+                                        Map<String, Object> sparkAttributes) {
         this.sparkAttributes = new HashMap<>();
         this.sparkAttributes.put(CLASS_NAME_ATTRIBUTE, "uk.co.gresearch.siembol.spark.AlertingSpark");
         this.sparkAttributes.put(NAME_ATTRIBUTE, "siembol_alerting_tester");
@@ -31,9 +31,9 @@ public class AlertingSparkTestingProvider {
         this.httpProvider = httpProvider;
     }
 
-    public String submitJob(List<String> arguments) throws Exception {
+    public String submitJob(String argument) throws Exception {
         var currentAttributes = new HashMap<>(sparkAttributes);
-        currentAttributes.put(ARGS_NAME_ATTRIBUTE, arguments);
+        currentAttributes.put(ARGS_NAME_ATTRIBUTE, List.of(argument));
         String body = ATTRIBUTES_WRITER.writeValueAsString(currentAttributes);
         return httpProvider.post(BATCHES_API, body);
     }

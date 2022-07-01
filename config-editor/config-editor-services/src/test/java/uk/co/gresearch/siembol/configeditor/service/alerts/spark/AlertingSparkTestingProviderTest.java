@@ -39,7 +39,7 @@ public class AlertingSparkTestingProviderTest {
 
     @Test
     public void submitJobOk() throws Exception {
-        var currentResult = alertingSparkTestingProvider.submitJob(List.of(arg));
+        var currentResult = alertingSparkTestingProvider.submitJob(arg);
         String body = argumentBodyCaptor.getValue();
         Assert.assertNotNull(body);
         var reader = new ObjectMapper().readerFor(new TypeReference<Map<String, Object>>() {
@@ -53,11 +53,12 @@ public class AlertingSparkTestingProviderTest {
         var args = (List)bodyMap.get("args");
         Assert.assertEquals(1, args.size());
         Assert.assertEquals("arg1", args.get(0));
+        Assert.assertEquals(result, currentResult);
     }
 
     @Test(expected = IllegalStateException.class)
     public void submitJobException() throws Exception {
         Mockito.when(httpProvider.post(eq("batches"), anyString())).thenThrow(new IllegalStateException());
-        alertingSparkTestingProvider.submitJob(List.of(arg));
+        alertingSparkTestingProvider.submitJob(arg);
     }
 }

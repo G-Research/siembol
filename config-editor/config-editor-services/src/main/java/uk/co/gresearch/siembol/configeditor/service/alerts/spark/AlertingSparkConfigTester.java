@@ -68,7 +68,7 @@ public class AlertingSparkConfigTester  extends ConfigTesterBase<AlertingSparkTe
         }
 
         try {
-            String result = testProvider.submitJob(List.of(argBase64));
+            String result = testProvider.submitJob(argBase64);
             var retAttributes = new ConfigEditorAttributes();
             retAttributes.setTestResultRawOutput(result);
             return new ConfigEditorResult(OK, retAttributes);
