@@ -9,7 +9,7 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: /metrics
-    prometheus.io/port: {{ .Values.siembol_monitoring.service.port }}
+    prometheus.io/port: "{{ .Values.siembol_monitoring.service.port }}"
 spec:
   selector:
     app: {{ include "siembol.siembol_monitoring.fullname" $ }}
