@@ -6,6 +6,8 @@ helm delete siembol -n=siembol
 
 helm delete kafdrop -n=siembol
 
+helm delete monitoring -n=siembol
+
 kubectl delete pod kafka-client -n siembol
 
 kubectl delete --all jobs -n siembol
