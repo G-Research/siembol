@@ -106,10 +106,10 @@ public class AlertingRuleSchemaService extends ConfigSchemaServiceAbstract {
         context.setConfigImporters(importerMap);
 
         var configTestersList = new ArrayList<ConfigTester>();
-        configTestersList.add(new AlertingConfigTester(testValidator, testSchemaUi.get(), compiler).withErrorMessage());
-        if (additionalConfigTesters.isPresent() && additionalConfigTesters.get().getSparkHdfs() != null) {
-            configTestersList.add(getSparkHdfsConfigTester(additionalConfigTesters.get().getSparkHdfs())
-                    .withErrorMessage());
+        configTestersList.add(new AlertingConfigTester(testValidator, testSchemaUi.get(), compiler));
+        if (additionalConfigTesters.isPresent()
+                && additionalConfigTesters.get().getSparkHdfs() != null) {
+            configTestersList.add(getSparkHdfsConfigTester(additionalConfigTesters.get().getSparkHdfs()));
         }
         context.setConfigTesters(configTestersList);
 

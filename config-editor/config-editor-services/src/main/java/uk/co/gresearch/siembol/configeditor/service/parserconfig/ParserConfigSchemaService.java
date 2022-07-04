@@ -72,7 +72,7 @@ public class ParserConfigSchemaService extends ConfigSchemaServiceAbstract {
 
         context.setConfigSchema(computedSchema.get());
         var defaultConfigTester = new ParserConfigTester(testValidator, testSchema.get(), parserFactory);
-        context.setConfigTesters(List.of(defaultConfigTester.withErrorMessage()));
+        context.setConfigTesters(List.of(defaultConfigTester));
 
         LOG.info("Initialising parser config schema service completed");
         return new ParserConfigSchemaService(parserFactory, context);

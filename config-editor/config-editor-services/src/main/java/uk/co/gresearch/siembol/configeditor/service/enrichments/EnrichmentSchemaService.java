@@ -103,7 +103,7 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
                 new SiembolJsonSchemaValidator(EnrichmentTestingSpecificationDto.class),
                 testSchemaUi.get(),
                 compiler);
-        context.setConfigTesters(List.of(defaultConfigTester.withErrorMessage()));
+        context.setConfigTesters(List.of(defaultConfigTester));
         LOG.info("Initialising enrichment config schema service completed");
         return new EnrichmentSchemaService(compiler, context);
     }

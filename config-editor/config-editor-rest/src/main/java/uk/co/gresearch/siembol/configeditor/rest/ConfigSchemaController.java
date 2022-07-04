@@ -52,6 +52,7 @@ public class ConfigSchemaController {
         return serviceAggregator
                 .getConfigSchema(user, serviceName)
                 .getConfigTester(testerName)
+                .withErrorMessage()
                 .getTestSpecificationSchema()
                 .toResponseEntity();
     }
@@ -112,7 +113,11 @@ public class ConfigSchemaController {
                     .toResponseEntity();
         }
         UserInfo user = userInfoProvider.getUserInfo(principal);
-        var tester = serviceAggregator.getConfigSchema(user, serviceName).getConfigTester(testerName);
+        var tester = serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .getConfigTester(testerName)
+                .withErrorMessage();
+
         return singleConfig
                 ? tester.testConfiguration(config.get(), attributes.getTestSpecification()).toResponseEntity()
                 : tester.testConfigurations(config.get(), attributes.getTestSpecification()).toResponseEntity();
@@ -126,7 +131,10 @@ public class ConfigSchemaController {
             @RequestParam(required = false, defaultValue = "default") String testerName,
             @RequestBody String body) {
         UserInfo user = userInfoProvider.getUserInfo(principal);
-        var tester = serviceAggregator.getConfigSchema(user, serviceName).getConfigTester(testerName);
+        var tester = serviceAggregator
+                .getConfigSchema(user, serviceName)
+                .getConfigTester(testerName)
+                .withErrorMessage();
         return tester
                 .validateTestSpecification(body)
                 .toResponseEntity();

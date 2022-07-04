@@ -100,7 +100,7 @@ public class ResponseSchemaService extends ConfigSchemaServiceAbstract {
 
             context.setConfigSchema(ruleSchemaResult.getAttributes().getRulesSchema());
             var responseConfigTester = new ResponseConfigTester(testSchemaValidator, testSchema, responseHttpProvider);
-            context.setConfigTesters(List.of(responseConfigTester.withErrorMessage()));
+            context.setConfigTesters(List.of(responseConfigTester));
             return new ResponseSchemaService(this);
         }
     }

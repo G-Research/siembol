@@ -17,12 +17,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 
 public class AlertingSparkTestingProviderTest {
+
     private HttpProvider httpProvider;
     private Map<String, Object> sparkAttributes;
     private AlertingSparkTestingProvider alertingSparkTestingProvider;
 
-    private String arg = "arg1";
-    private String result = "result";
+    private final String arg = "arg1";
+    private final String result = "result";
     private ArgumentCaptor<String> argumentBodyCaptor;
 
     @Before
