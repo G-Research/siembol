@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.enrichments.model;
+package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,7 +10,7 @@ import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 
 @Attributes(title = "enrichments test specification",
         description = "The specification for testing enrichments")
-public class TestingSpecificationDto {
+public class EnrichmentTestingSpecificationDto {
     @Attributes(required = true, description = "Event for testing an enriching rule")
     private JsonRawStringDto event;
     @JsonIgnore

@@ -2,9 +2,9 @@ package uk.co.gresearch.siembol.configeditor.service.common;
 
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.configeditor.common.ConfigImporter;
+import uk.co.gresearch.siembol.configeditor.common.ConfigTester;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ConfigSchemaServiceContext {
     private String configSchema;
@@ -12,6 +12,8 @@ public class ConfigSchemaServiceContext {
     private String adminConfigSchema;
     private SiembolJsonSchemaValidator adminConfigValidator;
     private Map<String, ConfigImporter> configImporters = new HashMap<>();
+
+    private List<ConfigTester> configTesters = new ArrayList<>();
 
     public String getConfigSchema() {
         return configSchema;
@@ -52,4 +54,13 @@ public class ConfigSchemaServiceContext {
     public void setConfigImporters(Map<String, ConfigImporter> configImporters) {
         this.configImporters = configImporters;
     }
+
+    public List<ConfigTester> getConfigTesters() {
+        return configTesters;
+    }
+
+    public void setConfigTesters(List<ConfigTester> configTesters) {
+        this.configTesters = configTesters;
+    }
+
 }

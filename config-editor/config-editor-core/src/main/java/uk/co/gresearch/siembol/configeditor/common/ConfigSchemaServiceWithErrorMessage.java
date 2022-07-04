@@ -43,6 +43,16 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
     }
 
     @Override
+    public ConfigEditorResult getConfigTesters() {
+        return service.getConfigTesters();
+    }
+
+    @Override
+    public ConfigTester getConfigTester(String name) {
+        return service.getConfigTester(name);
+    }
+
+    @Override
     public Health checkHealth() {
         return service.checkHealth();
     }
@@ -61,27 +71,6 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
                 importerName, importerAttributes, configToImport);
         return executeInternally(fun, ErrorTitles.IMPORTING_CONFIG_GENERIC.getTitle(),
                 ErrorMessages.GENERIC_CONFIG_IMPORTER.getMessage(importerName),
-                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
-    }
-
-    @Override
-    public ConfigEditorResult getTestSchema() {
-        return service.getTestSchema();
-    }
-
-    @Override
-    public ConfigEditorResult testConfiguration(String configuration, String testSpecification) {
-        Supplier<ConfigEditorResult> fun = () -> service.testConfiguration(configuration, testSpecification);
-        return executeInternally(fun, ErrorTitles.TESTING_GENERIC.getTitle(),
-                ErrorMessages.TESTING_GENERIC.getMessage(),
-                ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
-    }
-
-    @Override
-    public ConfigEditorResult testConfigurations(String configurations, String event) {
-        Supplier<ConfigEditorResult> fun = () -> service.testConfigurations(configurations, event);
-        return executeInternally(fun, ErrorTitles.TESTING_GENERIC.getTitle(),
-                ErrorMessages.VALIDATION_GENERIC.getMessage(),
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 

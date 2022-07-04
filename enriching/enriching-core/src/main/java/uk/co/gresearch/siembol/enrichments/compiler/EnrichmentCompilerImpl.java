@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
+import uk.co.gresearch.siembol.common.model.testing.EnrichmentTestingSpecificationDto;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 import uk.co.gresearch.siembol.common.testing.StringTestingLogger;
 import uk.co.gresearch.siembol.common.testing.TestingLogger;
@@ -48,7 +49,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writerFor(RulesDto.class);
     private static final ObjectReader JSON_TEST_SPEC_READER = new ObjectMapper()
-            .readerFor(TestingSpecificationDto.class);
+            .readerFor(EnrichmentTestingSpecificationDto.class);
 
     private final JsonSchemaValidator rulesSchemaValidator;
     private final JsonSchemaValidator testSchemaValidator;
@@ -116,7 +117,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return Pair.of(ruleDto.getSourceType(), rule);
     }
 
-    private Map<String, EnrichmentTable> createTestingTable(TestingSpecificationDto test) throws IOException {
+    private Map<String, EnrichmentTable> createTestingTable(EnrichmentTestingSpecificationDto test) throws IOException {
         Map<String, EnrichmentTable> ret = new HashMap<>();
         try (InputStream is = new ByteArrayInputStream(test.getTestingTableMappingContent().getBytes())) {
             EnrichmentMemoryTable current = EnrichmentMemoryTable.fromJsonStream(is);
@@ -214,7 +215,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         logger.appendMessage(String.format(TEST_START_MESSAGE, rules, testSpecification));
 
         try {
-            TestingSpecificationDto specification = JSON_TEST_SPEC_READER.readValue(testSpecification);
+            EnrichmentTestingSpecificationDto specification = JSON_TEST_SPEC_READER.readValue(testSpecification);
             Map<String, EnrichmentTable> tables = createTestingTable(specification);
 
             EnrichmentResult result = evaluator.evaluate(specification.getEventContent());
@@ -255,7 +256,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
 
     public static EnrichmentCompiler createEnrichmentsCompiler() throws Exception {
         JsonSchemaValidator rulesSchemaValidator = new SiembolJsonSchemaValidator(RulesDto.class);
-        JsonSchemaValidator testSchemaValidator = new SiembolJsonSchemaValidator(TestingSpecificationDto.class);
+        JsonSchemaValidator testSchemaValidator = new SiembolJsonSchemaValidator(EnrichmentTestingSpecificationDto.class);
         return new EnrichmentCompilerImpl(rulesSchemaValidator, testSchemaValidator);
     }
 }

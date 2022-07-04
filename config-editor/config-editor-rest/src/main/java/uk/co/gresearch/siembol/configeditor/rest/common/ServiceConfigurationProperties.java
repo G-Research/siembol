@@ -2,6 +2,7 @@ package uk.co.gresearch.siembol.configeditor.rest.common;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import uk.co.gresearch.siembol.common.model.ZooKeeperAttributesDto;
+import uk.co.gresearch.siembol.configeditor.model.AdditionalConfigTesters;
 import uk.co.gresearch.siembol.configeditor.model.ConfigStoreProperties;
 import uk.co.gresearch.siembol.configeditor.sync.common.SynchronisationType;
 
@@ -21,6 +22,9 @@ public class ServiceConfigurationProperties {
 
     private String uiConfigFileName = UNKNOWN_FILE_NAME;
     private Map<String, String> attributes;
+
+    @NestedConfigurationProperty
+    private AdditionalConfigTesters additionalConfigTesters;
 
     public String getType() {
         return type;
@@ -76,5 +80,13 @@ public class ServiceConfigurationProperties {
 
     public void setSynchronisation(SynchronisationType synchronisation) {
         this.synchronisation = synchronisation;
+    }
+
+    public AdditionalConfigTesters getAdditionalConfigTesters() {
+        return additionalConfigTesters;
+    }
+
+    public void setAdditionalConfigTesters(AdditionalConfigTesters additionalConfigTesters) {
+        this.additionalConfigTesters = additionalConfigTesters;
     }
 }

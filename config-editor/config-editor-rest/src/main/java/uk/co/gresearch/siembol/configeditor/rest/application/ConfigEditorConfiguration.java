@@ -64,8 +64,12 @@ public class ConfigEditorConfiguration implements DisposableBean {
             ConfigEditorServiceFactory serviceFactory = ConfigEditorServiceFactory.fromServiceType(serviceType);
 
             ConfigEditorUiLayout uiLayout = ConfigEditorUtils.readUiLayoutFile(serviceProperties.getUiConfigFileName());
-            Optional<Map<String, String>> attributes = Optional.ofNullable(serviceProperties.getAttributes());
-            ConfigSchemaService schemaService = serviceFactory.createConfigSchemaService(uiLayout, attributes);
+            var attributes = Optional.ofNullable(serviceProperties.getAttributes());
+            var additionalTesters = Optional.ofNullable(
+                    serviceProperties.getAdditionalConfigTesters());
+            ConfigSchemaService schemaService = serviceFactory.createConfigSchemaService(uiLayout,
+                    attributes,
+                    additionalTesters);
 
             builder.addService(name,
                     serviceType,

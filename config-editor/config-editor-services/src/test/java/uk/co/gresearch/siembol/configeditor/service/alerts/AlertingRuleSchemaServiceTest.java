@@ -29,14 +29,6 @@ import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
 
 
 public class AlertingRuleSchemaServiceTest {
-    private final String testEvent = """
-            {"test_event":"true"}""";
-
-    private final String testSpecification = """
-            {
-              "event" : {"test_event":"true"}
-            }
-            """;
 
     private AlertingRuleSchemaService alertingRuleSchemaService;
     private final String ruleSchema = "dummy schema";
@@ -56,7 +48,7 @@ public class AlertingRuleSchemaServiceTest {
     private UserInfo userInfo;
 
     @Before
-    public void Setup() {
+    public void setUp() {
         userInfo = Mockito.mock(UserInfo.class);
         alertingCompiler = Mockito.mock(AlertingCompiler.class);
         adminConfigValidator = Mockito.mock(SiembolJsonSchemaValidator.class);
@@ -80,8 +72,6 @@ public class AlertingRuleSchemaServiceTest {
         alertingResult = new AlertingResult(AlertingResult.StatusCode.OK, alertingAttributes);
         Mockito.when(alertingCompiler.validateRules(anyString())).thenReturn(alertingResult);
         Mockito.when(alertingCompiler.validateRule(anyString())).thenReturn(alertingResult);
-        Mockito.when(alertingCompiler.testRule(testRule, testEvent.trim())).thenReturn(alertingResult);
-        Mockito.when(alertingCompiler.testRule(testRules, testEvent.trim())).thenReturn(alertingResult);
     }
 
     @Test
@@ -115,13 +105,6 @@ public class AlertingRuleSchemaServiceTest {
     }
 
     @Test
-    public void getTestSchemaOK() {
-        ConfigEditorResult ret = alertingRuleSchemaService.getTestSchema();
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertNotNull(ret.getAttributes().getTestSchema());
-    }
-
-    @Test
     public void validateRulesOK() {
         ConfigEditorResult ret = alertingRuleSchemaService.validateConfigurations(testRules);
         verify(alertingCompiler, times(1)).validateRules(testRules);
@@ -143,7 +126,7 @@ public class AlertingRuleSchemaServiceTest {
     }
 
     @Test
-    public void ValidateRulesError() {
+    public void validateRulesException() {
         alertingAttributes.setMessage("error");
         alertingAttributes.setException("exception");
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);
@@ -156,7 +139,7 @@ public class AlertingRuleSchemaServiceTest {
     }
 
     @Test
-    public void ValidateRuleError() {
+    public void validateRuleException() {
         alertingAttributes.setMessage("error");
         alertingAttributes.setException("exception");
         alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);
@@ -166,50 +149,6 @@ public class AlertingRuleSchemaServiceTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
         Assert.assertEquals("exception", ret.getAttributes().getException());
-    }
-
-    @Test
-    public void TestRuleOK() {
-        alertingAttributes.setMessage(testResultOutput);
-        ConfigEditorResult ret = alertingRuleSchemaService.testConfiguration(testRule, testSpecification);
-        verify(alertingCompiler, times(1)).testRule(testRule, testEvent.trim());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertEquals(testResultOutput, ret.getAttributes().getTestResultOutput());
-    }
-
-    @Test
-    public void TestRulesError() {
-        alertingAttributes.setMessage("error");
-        alertingAttributes.setException("exception");
-        alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);
-        Mockito.when(alertingCompiler.testRules(testRules, testEvent.trim())).thenReturn(alertingResult);
-        ConfigEditorResult ret = alertingRuleSchemaService.testConfigurations(testRules, testSpecification);
-        verify(alertingCompiler, times(1)).testRules(testRules, testEvent.trim());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        Assert.assertEquals("error", ret.getAttributes().getMessage());
-        Assert.assertEquals("exception", ret.getAttributes().getException());
-    }
-
-    @Test
-    public void TestRuleError() {
-        alertingAttributes.setMessage("error");
-        alertingAttributes.setException("exception");
-        alertingResult = new AlertingResult(AlertingResult.StatusCode.ERROR, alertingAttributes);
-        Mockito.when(alertingCompiler.testRule(testRule, testEvent.trim())).thenReturn(alertingResult);
-        ConfigEditorResult ret = alertingRuleSchemaService.testConfiguration(testRule, testSpecification);
-        verify(alertingCompiler, times(1)).testRule(testRule, testEvent.trim());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        Assert.assertEquals("error", ret.getAttributes().getMessage());
-        Assert.assertEquals("exception", ret.getAttributes().getException());
-    }
-
-    @Test
-    public void TestRuleInternalError() {
-        alertingResult = new AlertingResult(AlertingResult.StatusCode.OK, alertingAttributes);
-        Mockito.when(alertingCompiler.testRule(testRule, testEvent.trim())).thenReturn(alertingResult);
-        ConfigEditorResult ret = alertingRuleSchemaService.testConfiguration(testRule, testSpecification);
-        verify(alertingCompiler, times(1)).testRule(testRule, testEvent.trim());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
     }
 
     @Test

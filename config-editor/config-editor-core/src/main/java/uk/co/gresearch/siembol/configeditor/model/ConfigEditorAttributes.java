@@ -87,6 +87,9 @@ public class ConfigEditorAttributes {
     @JsonProperty("resolution")
     private String errorResolution;
 
+    @JsonProperty("config_testers")
+    private List<ConfigTesterDto> configTesters;
+
     @JsonIgnore
     private EnrichmentTablesUpdateDto enrichmentTablesUpdate;
 
@@ -343,5 +346,13 @@ public class ConfigEditorAttributes {
 
     public void setErrorResolutionIfNotPresent(String errorResolution) {
         this.errorResolution = this.errorResolution != null ? this.errorResolution : errorResolution;
+    }
+
+    public List<ConfigTesterDto> getConfigTesters() {
+        return configTesters;
+    }
+
+    public void setConfigTesters(List<ConfigTesterDto> configTesters) {
+        this.configTesters = configTesters;
     }
 }

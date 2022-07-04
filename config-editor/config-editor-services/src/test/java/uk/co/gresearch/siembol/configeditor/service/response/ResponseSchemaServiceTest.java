@@ -213,10 +213,6 @@ public class ResponseSchemaServiceTest {
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getRulesSchema());
-        ConfigEditorResult resultTestSchema = responseSchemaService.getTestSchema();
-        Assert.assertEquals(OK, resultTestSchema.getStatusCode());
-        Assert.assertNotNull(resultTestSchema.getAttributes());
-        Assert.assertNotNull(resultTestSchema.getAttributes().getTestSchema());
     }
 
     @Test
@@ -229,22 +225,11 @@ public class ResponseSchemaServiceTest {
         Assert.assertEquals(OK, result.getStatusCode());
         Assert.assertNotNull(result.getAttributes());
         Assert.assertNotNull(result.getAttributes().getRulesSchema());
-        ConfigEditorResult resultTestSchema = responseSchemaService.getTestSchema();
-        Assert.assertEquals(OK, resultTestSchema.getStatusCode());
-        Assert.assertNotNull(resultTestSchema.getAttributes());
-        Assert.assertNotNull(resultTestSchema.getAttributes().getTestSchema());
     }
 
     @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
     public void buildErrorGetSchema() throws Exception {
         Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_SCHEMA.toString())))
-                .thenReturn("errorMessage");
-        responseSchemaService = builder.build();
-    }
-
-    @Test(expected = com.fasterxml.jackson.core.JsonParseException.class)
-    public void buildErrorGetTestSchema() throws Exception {
-        Mockito.when(httpProvider.get(eq(ResponseApplicationPaths.GET_TEST_SCHEMA.toString())))
                 .thenReturn("errorMessage");
         responseSchemaService = builder.build();
     }
@@ -287,50 +272,6 @@ public class ResponseSchemaServiceTest {
                 .thenReturn(errorMessage);
         responseSchemaService = builder.build();
         ConfigEditorResult result = responseSchemaService.validateConfiguration(dummyJsonObject);
-        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-    }
-
-    @Test
-    public void testRulesOk() throws Exception {
-        responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
-        Assert.assertEquals(OK, result.getStatusCode());
-        Assert.assertNotNull(result.getAttributes().getTestResultOutput());
-        Assert.assertNotNull(result.getAttributes().getTestResultRawOutput());
-        Assert.assertEquals("dummy", result.getAttributes().getTestResultOutput());
-    }
-
-    @Test
-    public void testRuleOk() throws Exception {
-        responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.testConfiguration(dummyJsonObject, dummyJsonObject2);
-        Assert.assertEquals(OK, result.getStatusCode());
-    }
-
-    @Test
-    public void testRulesError() throws Exception {
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
-                .thenReturn(errorMessage);
-        responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
-        Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
-    }
-
-    @Test
-    public void testRulesException() throws Exception {
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
-                .thenThrow(new IOException());
-        responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.testConfigurations(dummyJsonObject, dummyJsonObject2);
-        Assert.assertEquals(ERROR, result.getStatusCode());
-    }
-
-    @Test
-    public void testRuleError() throws Exception {
-        Mockito.when(httpProvider.post(eq(ResponseApplicationPaths.TEST_RULES.toString()), any()))
-                .thenReturn(errorMessage);
-        responseSchemaService = builder.build();
-        ConfigEditorResult result = responseSchemaService.testConfiguration(dummyJsonObject, dummyJsonObject2);
         Assert.assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 
