@@ -25,7 +25,7 @@ public interface ConfigSchemaService extends HealthCheckable {
 
     default ConfigEditorResult getConfigTesters() {
         ConfigEditorAttributes attributes = new ConfigEditorAttributes();
-        attributes.setConfigImporters(new ArrayList<>());
+        attributes.setConfigTesters(new ArrayList<>());
         return new ConfigEditorResult(OK, attributes);
     }
 
