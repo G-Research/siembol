@@ -3,11 +3,11 @@ namespace: siembol
 storm: 
   nimbus:
     image:
-      repository: dpejcev/storm
+      repository: storm
       tag: latest
   supervisor:
     image:
-      repository: dpejcev/storm
+      repository: storm
       tag: latest
     replicaCount: 1
     childopts: "-Xmx512m -ea"
@@ -18,16 +18,16 @@ storm:
       limits:
         cpu: 2
         memory: 2048
-    slots: 3
+    slots: 4
   ui:
     image:
-      repository: dpejcev/storm
+      repository: storm
       tag: latest
   zookeeper:
     fullnameOverride: "siembol-zookeeper"
 
 jmx:
-  enabled: true
+  enabled: false
   config: |-
     lowercaseOutputName: false
     lowercaseOutputLabelNames: false
