@@ -41,7 +41,6 @@ deployment/quickstart_install/ps-scripts/dependencies.ps1
 
 #### 3. Run demoInstall.sh
 1. This will ask for your github details related to the Siembol Config repository and the token created in previous step.
-2. This will also initialise Zookeeper nodes.
 
 ```bash
 deployment/quickstart_install/sh-scripts/demoInstall.sh
