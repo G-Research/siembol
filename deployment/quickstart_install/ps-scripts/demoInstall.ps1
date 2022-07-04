@@ -32,14 +32,7 @@ function Git-Details {
 
 Write-Output "************** Install Script For Demo **************"
 Write-Output "*****************************************************"
-
-$zookeeper_status=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/component=zookeeper,app.kubernetes.io/instance=storm,app.kubernetes.io/name=zookeeper" -o jsonpath="{.items[0].status.containerStatuses[0].ready}")
-if ($zookeeper_status -eq 'True')  {
-    Git-Details
-    Write-Output "************************************************************"
-    Write-Output "******  You can now deploy siembol from helm charts   ******"
-    Write-Output "************************************************************"
-} else {
-    Write-Output "Zookeeper pod is not running yet, please try again in a few seconds"
-    exit 1
-}
+Git-Details
+Write-Output "************************************************************"
+Write-Output "******  You can now deploy siembol from helm charts   ******"
+Write-Output "************************************************************"

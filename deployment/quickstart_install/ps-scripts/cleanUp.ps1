@@ -14,6 +14,6 @@ kubectl delete --all jobs -n siembol
 
 kubectl delete configmap github-details -n siembol
 
-kubectl delete secret siembol-config-editor-rest-secrets -n siembol
+kubectl delete secret config-editor-rest-secrets -n siembol
 
 kubectl delete --all pvc -n siembol
