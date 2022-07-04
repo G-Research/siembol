@@ -26,53 +26,53 @@ storm:
   zookeeper:
     fullnameOverride: "siembol-zookeeper"
 
-jmx:
-  enabled: false
-  config: |-
-    lowercaseOutputName: false
-    lowercaseOutputLabelNames: false
-    blacklistObjectNames: ["kafka.consumer:*", "kafka.producer:*"]
-    rules:
-      - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(app)_(parsed|error|filered)_(.*)'
-        # per parsing app: parsed, filtered and error messages
-        type: COUNTER
-        name: parsing_app_$8_$9_messages
-        labels:
-          message_type: "$10"
-          application_type: "$1"
-      - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(parsing_configs)_([\w]*)(.*)'
-        # per parsing app: configs, update or error update
-        name: parsing_app_configs
-        labels:
-          message_type: "$10"
-          application_type: "$1"
-          source: "$5"
-      - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(parsed|filered)_messages_([\w_-]*|[\d-]*)(.*)'
-        # parsing app: per source type; parsed, filtered and error messages
-        name: parsing_app_sourcetype_$8_messages
-        labels:
-          source_type: "$10"
-          message_type: "$9"
-          application_type: "$1"
-      - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(alerting_rule)_(matches|protection|error_match)_([\w]*)(.*)'
-        # alerting rule: per rule name; matches, protection and error matches
-        name: $1_$8_$9
-        labels:
-          rule_name: "$11"
-          alerting_rule_type: "$10"
-          topology: "$1"
-      - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(alerting_engine)_([\w]*)(.*)'
-        # alerting engine: matches, protection, error and correlation_matches
-        name: $1_$8_$9
-        labels:
-          alerting_engine_rule_type: "$10"
-          topology: "$1"
-      - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(enrichment_rules)_([\w_-]*|[\d-]*)(.*)'
-        # enrichment rules, updated or error_update
-        name: $1_$8_$9_$10
-        labels:
-          topology: "$1"
-      - pattern: ".*"
-prometheus:
-  exporter:
-    enabled: true
+  jmx:
+    enabled: false
+    config: |-
+      lowercaseOutputName: false
+      lowercaseOutputLabelNames: false
+      blacklistObjectNames: ["kafka.consumer:*", "kafka.producer:*"]
+      rules:
+        - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(app)_(parsed|error|filered)_(.*)'
+          # per parsing app: parsed, filtered and error messages
+          type: COUNTER
+          name: parsing_app_$8_$9_messages
+          labels:
+            message_type: "$10"
+            application_type: "$1"
+        - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(parsing_configs)_([\w]*)(.*)'
+          # per parsing app: configs, update or error update
+          name: parsing_app_configs
+          labels:
+            message_type: "$10"
+            application_type: "$1"
+            source: "$5"
+        - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(parsed|filered)_messages_([\w_-]*|[\d-]*)(.*)'
+          # parsing app: per source type; parsed, filtered and error messages
+          name: parsing_app_sourcetype_$8_messages
+          labels:
+            source_type: "$10"
+            message_type: "$9"
+            application_type: "$1"
+        - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(alerting_rule)_(matches|protection|error_match)_([\w]*)(.*)'
+          # alerting rule: per rule name; matches, protection and error matches
+          name: $1_$8_$9
+          labels:
+            rule_name: "$11"
+            alerting_rule_type: "$10"
+            topology: "$1"
+        - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(alerting_engine)_([\w]*)(.*)'
+          # alerting engine: matches, protection, error and correlation_matches
+          name: $1_$8_$9
+          labels:
+            alerting_engine_rule_type: "$10"
+            topology: "$1"
+        - pattern: 'metrics<name=storm.topology.([\D_-]*).([\d_]*).([\d_]*).([\w_-]*|[\d-]*).([\D]*).(\d).([\d]*)-(siembol_counter)_(enrichment_rules)_([\w_-]*|[\d-]*)(.*)'
+          # enrichment rules, updated or error_update
+          name: $1_$8_$9_$10
+          labels:
+            topology: "$1"
+        - pattern: ".*"
+  prometheus:
+    exporter:
+      enabled: true
