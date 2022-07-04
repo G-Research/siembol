@@ -21,6 +21,9 @@ search_order 1
 timeout 5
 EOF
 
+echo == add host names == 
+echo "127.0.0.1  rest.siembol.local    ui.siembol.local    storm.siembol.local    response.siembol.local     enrichment.siembol.local    prometheus.siembol.local     grafana.siembol.local" >> /etc/hosts
+
 echo == install cert-manager ==
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
