@@ -16,7 +16,7 @@ public class ResponseConfigurationProperties {
     private Map<String, Object> streamConfig;
     private Boolean inactiveStreamService = false;
     @NestedConfigurationProperty
-    private ZooKeeperAttributesDto zookeeperAttributes;
+    private ZooKeeperAttributesDto zooKeeperAttributes;
     @NestedConfigurationProperty
     private ProvidedEvaluatorsProperties evaluatorsProperties;
     private int initialisationSleepTimeMs = 1;
@@ -37,12 +37,12 @@ public class ResponseConfigurationProperties {
         this.errorTopic = errorTopic;
     }
 
-    public ZooKeeperAttributesDto getZookeeperAttributes() {
-        return zookeeperAttributes;
+    public ZooKeeperAttributesDto getZooKeeperAttributes() {
+        return zooKeeperAttributes;
     }
 
-    public void setZookeeperAttributes(ZooKeeperAttributesDto zookeeperAttributes) {
-        this.zookeeperAttributes = zookeeperAttributes;
+    public void setZooKeeperAttributes(ZooKeeperAttributesDto zooKeeperAttributes) {
+        this.zooKeeperAttributes = zooKeeperAttributes;
     }
 
     public Boolean getInactiveStreamService() {

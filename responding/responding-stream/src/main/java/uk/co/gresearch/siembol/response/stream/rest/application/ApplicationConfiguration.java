@@ -79,7 +79,7 @@ public class ApplicationConfiguration implements DisposableBean {
             @Autowired SiembolMetricsRegistrar metricsRegistrar) throws Exception {
         return properties.getInactiveStreamService()
                 ? () -> null :
-                new ZooKeeperRulesProvider(properties.getZookeeperAttributes(), respondingCompiler, metricsRegistrar);
+                new ZooKeeperRulesProvider(properties.getZooKeeperAttributes(), respondingCompiler, metricsRegistrar);
     }
 
     @Override

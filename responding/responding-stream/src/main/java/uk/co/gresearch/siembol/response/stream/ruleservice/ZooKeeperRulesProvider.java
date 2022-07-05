@@ -38,14 +38,14 @@ public class ZooKeeperRulesProvider implements RulesProvider {
     private final SiembolCounter updateErrorCounter;
 
 
-    public ZooKeeperRulesProvider(ZooKeeperAttributesDto zookeeperAttributes,
+    public ZooKeeperRulesProvider(ZooKeeperAttributesDto zooKeeperAttributes,
                                   RespondingCompiler respondingCompiler,
                                   SiembolMetricsRegistrar metricsRegistrar) throws Exception {
-        this(new ZooKeeperConnectorFactoryImpl(), zookeeperAttributes, respondingCompiler, metricsRegistrar);
+        this(new ZooKeeperConnectorFactoryImpl(), zooKeeperAttributes, respondingCompiler, metricsRegistrar);
     }
 
     ZooKeeperRulesProvider(ZooKeeperConnectorFactory factory,
-                           ZooKeeperAttributesDto zookeeperAttributes,
+                           ZooKeeperAttributesDto zooKeeperAttributes,
                            RespondingCompiler respondingCompiler,
                            SiembolMetricsRegistrar metricsRegistrar) throws Exception {
         LOG.info(INIT_START);
@@ -53,7 +53,7 @@ public class ZooKeeperRulesProvider implements RulesProvider {
         this.updateCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName());
         this.updateErrorCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_ERROR_UPDATE.getMetricName());
         this.respondingCompiler = respondingCompiler;
-        zooKeeperConnector = factory.createZookeeperConnector(zookeeperAttributes);
+        zooKeeperConnector = factory.createZookeeperConnector(zooKeeperAttributes);
 
         updateRules();
         if (currentEngine.get() == null) {
