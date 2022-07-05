@@ -19,7 +19,7 @@ public class ResponseConfigurationProperties {
     private ZooKeeperAttributesDto zookeeperAttributes;
     @NestedConfigurationProperty
     private ProvidedEvaluatorsProperties evaluatorsProperties;
-    private int initialisationSleepTimeMs = 1;
+    private int initialisationSleepTimeMs = 1000;
 
     public String getInputTopic() {
         return inputTopic;
