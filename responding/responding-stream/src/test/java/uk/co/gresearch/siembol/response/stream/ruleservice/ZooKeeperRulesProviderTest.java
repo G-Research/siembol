@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.metrics.test.SiembolMetricsTestRegistrar;
@@ -101,13 +102,14 @@ public class ZooKeeperRulesProviderTest {
         Assert.assertEquals(testingRules, engine.getRulesMetadata().getAttributes().getJsonRules());
     }
 
-    @Test(expected = java.lang.IllegalStateException.class)
+    @Test
     public void testInvalidRulesInit() throws Exception {
         when(rulesZooKeeperConnector.getData()).thenReturn("INVALID");
         rulesProvider = new ZooKeeperRulesProvider(zooKeeperConnectorFactory,
                 zooKeeperAttributes,
                 compiler,
                 cachedMetricsRegistrar);
+        Assert.assertFalse(rulesProvider.isInitialised());
     }
 
     @Test

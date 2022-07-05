@@ -73,6 +73,7 @@ public class KafkaStreamRuleServiceTest {
         properties.setErrorTopic(errorTopic);
         properties.setStreamConfig(new HashMap<>());
         properties.getStreamConfig().put("application.id", "siembol-response-" + UUID.randomUUID());
+        properties.setInitialisationSleepTimeMs(1);
         streamService = new KafkaStreamRulesService(rulesProvider, properties, streamsFactory);
         testDriver = streamsFactory.getTestDriver();
         testInputTopic = testDriver.createInputTopic(inputTopic, Serdes.String().serializer(),
@@ -135,29 +136,59 @@ public class KafkaStreamRuleServiceTest {
 
     @Test
     public void testHealthUpCreated() {
+        when(rulesProvider.isInitialised()).thenReturn(true);
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.CREATED);
         Mono<Health> health = streamService.checkHealth();
         Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
     }
 
     @Test
-    public void testHealthUpRunning() {
+    public void healthUpRunning() {
+        when(rulesProvider.isInitialised()).thenReturn(true);
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.RUNNING);
         Mono<Health> health = streamService.checkHealth();
         Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
     }
 
     @Test
-    public void testHealthUpRebalancing() {
+    public void healthUpRebalancing() {
+        when(rulesProvider.isInitialised()).thenReturn(true);
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.REBALANCING);
         Mono<Health> health = streamService.checkHealth();
         Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
     }
 
     @Test
-    public void testHealthDownError() {
+    public void healthDownError() {
+        when(rulesProvider.isInitialised()).thenReturn(true);
         when(kafkaStreams.state()).thenReturn(KafkaStreams.State.ERROR);
         Mono<Health> health = streamService.checkHealth();
         Assert.assertEquals(Status.DOWN, Objects.requireNonNull(health.block()).getStatus());
     }
+
+    @Test
+    public void healthUpNotInitialised() {
+        when(rulesProvider.isInitialised()).thenReturn(false);
+        Mono<Health> health = streamService.checkHealth();
+        Assert.assertEquals(Status.UP, Objects.requireNonNull(health.block()).getStatus());
+    }
+
+    @Test
+    public void initialiseRulesSleepOnce() throws InterruptedException {
+        when(rulesProvider.isInitialised()).thenReturn(false, false, true);
+        streamService.initialise();
+        Thread.sleep(4);
+        verify(rulesProvider, times(3)).isInitialised();
+        verify(kafkaStreams, times(1)).start();
+    }
+
+    @Test
+    public void initialiseRulesNoSleep() throws InterruptedException {
+        when(rulesProvider.isInitialised()).thenReturn(true);
+        streamService.initialise();
+        Thread.sleep(4);
+        verify(rulesProvider, times(2)).isInitialised();
+        verify(kafkaStreams, times(1)).start();
+    }
+
 }

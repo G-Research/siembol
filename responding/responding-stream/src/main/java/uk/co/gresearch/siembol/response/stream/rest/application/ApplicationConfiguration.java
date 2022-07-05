@@ -68,6 +68,7 @@ public class ApplicationConfiguration implements DisposableBean {
         streamService = properties.getInactiveStreamService()
                 ? new InactiveRulesService()
                 : new KafkaStreamRulesService(rulesProvider, properties);
+        streamService.initialise();
         return streamService;
     }
 
@@ -78,7 +79,7 @@ public class ApplicationConfiguration implements DisposableBean {
             @Autowired SiembolMetricsRegistrar metricsRegistrar) throws Exception {
         return properties.getInactiveStreamService()
                 ? () -> null :
-                new ZooKeeperRulesProvider(properties.getZookeperAttributes(), respondingCompiler, metricsRegistrar);
+                new ZooKeeperRulesProvider(properties.getZookeeperAttributes(), respondingCompiler, metricsRegistrar);
     }
 
     @Override

@@ -25,11 +25,11 @@ public class ZooKeeperRulesProvider implements RulesProvider {
     private static final String COMPILE_RULES_ERROR_MSG_FORMAT =
             "Compilation of response rules has failed with error message: {}";
     private static final String UPDATE_EXCEPTION_LOG = "Exception during response engine update: {}";
-    private static final String ERROR_INIT_MESSAGE = "Response exception: Response rules initialisation error";
     private static final String INIT_START = "Response application initialisation start";
     private static final String INIT_COMPLETED = "Response application initialisation completed";
     private static final String PARSERS_UPDATE_START = "Response rules update start";
     private static final String PARSERS_UPDATE_COMPLETED = "Response rules update completed";
+    private static final String RESPONSE_RULES_NOT_INITIALISED = "Response rules have not been loaded into zookeeper during initialisation";
 
     private final AtomicReference<ResponseEngine> currentEngine = new AtomicReference<>();
     private final ZooKeeperConnector zooKeeperConnector;
@@ -38,14 +38,14 @@ public class ZooKeeperRulesProvider implements RulesProvider {
     private final SiembolCounter updateErrorCounter;
 
 
-    public ZooKeeperRulesProvider(ZooKeeperAttributesDto zookeperAttributes,
+    public ZooKeeperRulesProvider(ZooKeeperAttributesDto zookeeperAttributes,
                                   RespondingCompiler respondingCompiler,
                                   SiembolMetricsRegistrar metricsRegistrar) throws Exception {
-        this(new ZooKeeperConnectorFactoryImpl(), zookeperAttributes, respondingCompiler, metricsRegistrar);
+        this(new ZooKeeperConnectorFactoryImpl(), zookeeperAttributes, respondingCompiler, metricsRegistrar);
     }
 
     ZooKeeperRulesProvider(ZooKeeperConnectorFactory factory,
-                           ZooKeeperAttributesDto zookeperAttributes,
+                           ZooKeeperAttributesDto zookeeperAttributes,
                            RespondingCompiler respondingCompiler,
                            SiembolMetricsRegistrar metricsRegistrar) throws Exception {
         LOG.info(INIT_START);
@@ -53,11 +53,11 @@ public class ZooKeeperRulesProvider implements RulesProvider {
         this.updateCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_UPDATE.getMetricName());
         this.updateErrorCounter = metricsRegistrar.registerCounter(SiembolMetrics.RESPONSE_RULES_ERROR_UPDATE.getMetricName());
         this.respondingCompiler = respondingCompiler;
-        zooKeeperConnector = factory.createZookeeperConnector(zookeperAttributes);
+        zooKeeperConnector = factory.createZookeeperConnector(zookeeperAttributes);
 
         updateRules();
         if (currentEngine.get() == null) {
-            throw new IllegalStateException(ERROR_INIT_MESSAGE);
+            LOG.warn(RESPONSE_RULES_NOT_INITIALISED);
         }
         zooKeeperConnector.addCacheListener(this::updateRules);
         LOG.info(INIT_COMPLETED);
@@ -74,7 +74,6 @@ public class ZooKeeperRulesProvider implements RulesProvider {
                 LOG.error(COMPILE_RULES_ERROR_MSG_FORMAT, result.getAttributes().getMessage());
                 return;
             }
-
             currentEngine.set(result.getAttributes().getResponseEngine());
             updateCounter.increment();
             LOG.info(PARSERS_UPDATE_COMPLETED);
