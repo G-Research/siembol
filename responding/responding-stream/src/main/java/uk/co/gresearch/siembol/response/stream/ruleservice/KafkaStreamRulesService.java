@@ -61,8 +61,8 @@ public class KafkaStreamRulesService implements RulesService {
     private void initialiseRules() {
         while (!rulesProvider.isInitialised()) {
             try {
-                Thread.sleep(initSleepTimeMs);
                 LOG.warn(RULES_NOT_INITIALISED);
+                Thread.sleep(initSleepTimeMs);
             } catch (InterruptedException e) {
                 LOG.error(RULES_INIT_ERROR);
             }
