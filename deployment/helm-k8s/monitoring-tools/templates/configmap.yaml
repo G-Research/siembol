@@ -7,6 +7,6 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: Helm
 data:
-  siembol_dashboard.json: |-
+  siembol_monitoring_dashboard.json: |-
 {{ .Files.Get .Values.grafana.prometheusDashboardName | indent 4 }}
 ---
