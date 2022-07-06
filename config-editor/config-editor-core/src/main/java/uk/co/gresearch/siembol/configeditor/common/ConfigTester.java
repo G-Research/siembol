@@ -23,6 +23,7 @@ public interface ConfigTester {
         ret.setTestCaseTesting(flags.contains(ConfigTesterFlag.TEST_CASE_TESTING));
         ret.setReleaseTesting(flags.contains(ConfigTesterFlag.RELEASE_TESTING));
         ret.setIncompleteResult(flags.contains(ConfigTesterFlag.INCOMPLETE_RESULT));
+        ret.setTestSchema(getTestSpecificationSchema().getAttributes().getTestSchema());
         return ret;
     }
 

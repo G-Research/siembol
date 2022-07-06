@@ -7,6 +7,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.model.testing.ParserConfingTestSpecificationDto;
+import uk.co.gresearch.siembol.configeditor.common.ConfigTester;
 import uk.co.gresearch.siembol.configeditor.common.ConfigTesterFlag;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
@@ -154,5 +155,16 @@ public class ParserConfigTesterTest {
         Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getTestSchema());
         Assert.assertEquals(schema, ret.getAttributes().getTestSchema());
+    }
+
+    @Test
+    public void getTesterInfo() {
+        var ret = configTester.getConfigTesterInfo();
+        Assert.assertEquals(ConfigTester.DEFAULT_NAME, ret.getName());
+        Assert.assertNotNull(ret.getTestSchema());
+        Assert.assertTrue(ret.isConfigTesting());
+        Assert.assertFalse(ret.isReleaseTesting());
+        Assert.assertTrue(ret.isTestCaseTesting());
+        Assert.assertFalse(ret.isIncompleteResult());
     }
 }
