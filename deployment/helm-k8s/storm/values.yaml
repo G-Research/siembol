@@ -19,6 +19,16 @@ storm:
         cpu: 2
         memory: 2048
     slots: 4
+    extraVolumes:
+    - name: storm-metrics-reporter 
+      configMap:
+        name: storm-metrics-reporter
+    extraVolumeMounts:
+    - name: storm-metrics-reporter
+      mountPath: /opt/siembol/metrics_reporter_agent.jar
+      subPath: metrics_reporter_agent.jar
+    worker:
+      childopts: "-javaagent:/opt/siembol/metrics_reporter_agent.jar=2%ID%:/jmx/config.yaml -Xmx%HEAP-MEM%m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=artifacts/heapdump"
   ui:
     image:
       repository: storm
@@ -27,7 +37,7 @@ storm:
     fullnameOverride: "siembol-zookeeper"
 
   jmx:
-    enabled: false
+    enabled: true
     config: |-
       lowercaseOutputName: false
       lowercaseOutputLabelNames: false
