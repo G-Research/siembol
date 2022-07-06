@@ -1,6 +1,6 @@
 # Chart for siembol
 apiVersion: v2
-description: Helm charts for deploying monitoring tools such as prometheus and grafana
+description: Helm charts for deploying monitoring tools such as Prometheus, Grafana and Kafka Lag exporter
 name: monitoring
 version: 0.0.1
 

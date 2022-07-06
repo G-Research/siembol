@@ -59,7 +59,7 @@ grafana:
   
   # config map for dashboard
   configmapName: "grafana-dashboard"
-  prometheusDashboardName: "dashboards/siembol_dashboard.json"
+  prometheusDashboardName: "dashboards/siembol_monitoring_dashboard.json"
   dashboardsConfigMaps:
     prometheus: grafana-dashboard
 

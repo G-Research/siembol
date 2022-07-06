@@ -82,6 +82,28 @@ or
 deployment/quickstart_install/ps-scripts/enrichmentStore.ps1
 ```
 
+### Monitoring
+
+We are scraping Siembol metrics using Prometheus and displaying the metrics in a Grafana dashboard. 
+
+To install these components:
+
+1. Download charts:
+```bash
+helm dependency update deployment/helm-k8s/monitoring-tools/
+```
+2. Install the charts:
+```bash
+helm install monitoring deployment/helm-k8s/monitoring-tools/ -n=siembol
+```
+
+To see the dashboard:
+
+  * http://grafana.siembol.local/
+
+You can also see the raw Prometheus metrics from:
+
+  * http://prometheus.siembol.local/
 
 ### Kafka UI
 
@@ -107,29 +129,6 @@ deployment/quickstart_install/ps-scripts/kafkaExtra.ps1
 --topic <your-topic>
  ```
  4. Produce your message in terminal window
-
-### Monitoring
-
-We are scraping Siembol metrics using Prometheus and displaying the metrics in a Grafana dashboard. 
-
-To install these components:
-
-1. Download charts:
-```bash
-helm dependency update deployment/helm-k8s/monitoring/
-```
-2. Install the charts:
-```bash
-helm install monitoring deployment/helm-k8s/monitoring/ -n=siembol
-```
-
-To see the dashboard:
-
-  * http://grafana.siembol.local/
-
-You can also see the raw Prometheus metrics from:
-
-  * http://prometheus.siembol.local/
 
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:
