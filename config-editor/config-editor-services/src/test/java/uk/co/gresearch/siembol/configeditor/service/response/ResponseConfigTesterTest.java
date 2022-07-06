@@ -9,6 +9,7 @@ import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
 import uk.co.gresearch.siembol.common.model.testing.ParserConfingTestSpecificationDto;
 import uk.co.gresearch.siembol.common.model.testing.ResponseTestSpecificationDto;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
+import uk.co.gresearch.siembol.configeditor.common.ConfigTester;
 import uk.co.gresearch.siembol.configeditor.common.ConfigTesterFlag;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
@@ -106,5 +107,16 @@ public class ResponseConfigTesterTest {
         Assert.assertEquals(OK, ret.getStatusCode());
         Assert.assertNotNull(ret.getAttributes().getTestSchema());
         Assert.assertEquals(testSchema, ret.getAttributes().getTestSchema());
+    }
+
+    @Test
+    public void getTesterInfo() {
+        var ret = configTester.getConfigTesterInfo();
+        Assert.assertEquals(ConfigTester.DEFAULT_NAME, ret.getName());
+        Assert.assertNotNull(ret.getTestSchema());
+        Assert.assertTrue(ret.isConfigTesting());
+        Assert.assertTrue(ret.isReleaseTesting());
+        Assert.assertFalse(ret.isTestCaseTesting());
+        Assert.assertFalse(ret.isIncompleteResult());
     }
 }
