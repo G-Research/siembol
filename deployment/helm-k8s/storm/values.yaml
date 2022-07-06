@@ -4,11 +4,11 @@ storm:
   nimbus:
     image:
       repository: storm
-      tag: latest
+      tag: 2.4.0
   supervisor:
     image:
       repository: storm
-      tag: latest
+      tag: 2.4.0
     replicaCount: 1
     childopts: "-Xmx512m -ea"
     resources:
@@ -22,7 +22,7 @@ storm:
   ui:
     image:
       repository: storm
-      tag: latest
+      tag: 2.4.0
   zookeeper:
     fullnameOverride: "siembol-zookeeper"
 
