@@ -1,7 +1,15 @@
 $namespace="siembol"
+$JMX_DIR=jmx   
+$JMX_AGENT_NAME="agent.jar"
 
 Write-Output "************************************************************"
 Write-Output "****************** Installing dependencies *****************"
+
+$file_url="https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.17.0/jmx_prometheus_javaagent-0.17.0.jar"
+mkdir $JMX_DIR
+wget -O "$JMX_DIR/$JMX_AGENT_NAME" $file_url
+kubectl -n $namespace create cm storm-metrics-reporter --from-file=metrics_reporter_agent.jar=$JMX_DIR/$JMX_AGENT_NAME    
+
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
