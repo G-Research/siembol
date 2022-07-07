@@ -1,8 +1,8 @@
 {
-    "job1": {
+    "cloudtrail": {
         "key": "value"
     },
-    "job2": {
+    "eventlogs": {
         "key": "value2"
     }
 }
