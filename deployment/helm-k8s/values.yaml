@@ -284,13 +284,13 @@ demo_kafka_producer:
     cloudtrail:
       KAFKA_TOPIC: "aws.cloudtrail"
       MESSAGE_FREQUENCY_PER_SECOND: 10
-      MESSAGE_KEY: "job1"
+      MESSAGE_KEY: "cloudtrail"
       KAFKA_SERVERS: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
       PYTHONUNBUFFERED: 1
     eventlogs:
       KAFKA_TOPIC: "win.eventlogs"
       MESSAGE_FREQUENCY_PER_SECOND: 20
-      MESSAGE_KEY: "job2"
+      MESSAGE_KEY: "eventlogs"
       KAFKA_SERVERS: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
       PYTHONUNBUFFERED: 1
    
