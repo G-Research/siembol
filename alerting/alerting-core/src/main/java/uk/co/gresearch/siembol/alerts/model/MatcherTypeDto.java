@@ -9,7 +9,8 @@ public enum MatcherTypeDto {
     @JsonProperty("IS_IN_SET") IS_IN_SET("IS_IN_SET"),
     @JsonProperty("CONTAINS") CONTAINS("CONTAINS"),
     @JsonProperty("COMPOSITE_AND") COMPOSITE_AND("COMPOSITE_AND"),
-    @JsonProperty("COMPOSITE_OR") COMPOSITE_OR("COMPOSITE_OR");
+    @JsonProperty("COMPOSITE_OR") COMPOSITE_OR("COMPOSITE_OR"),
+    @JsonProperty("NUMERIC_COMPARE") NUMERIC_COMPARE("NUMERIC_COMPARE");
     private final String name;
 
     MatcherTypeDto(String name) {

@@ -27,8 +27,8 @@ public class RegexMatcher extends BasicMatcher {
     }
 
     @Override
-    protected EvaluationResult matchInternally(Map<String, Object> map, String fieldValue) {
-        Matcher matcher = pattern.matcher(fieldValue);
+    protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
+        Matcher matcher = pattern.matcher(fieldValue.toString());
         if (!matcher.matches()) {
             return EvaluationResult.NO_MATCH;
         }

@@ -28,14 +28,14 @@ public class ContainsMatcher extends BasicMatcher {
     }
 
     @Override
-    protected EvaluationResult matchInternally(Map<String, Object> map, String fieldValue) {
+    protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
         if (fieldValue == null) {
             throw new IllegalStateException(NULL_FIELD_VALUE);
         }
 
         String stringToCheck = flags.contains(Flags.CASE_INSENSITIVE)
-                ? fieldValue.toLowerCase()
-                : fieldValue;
+                ? fieldValue.toString().toLowerCase()
+                : fieldValue.toString();
 
         String currentPattern = pattern;
         if (flags.contains(Flags.CONTAINS_VARIABLE)) {

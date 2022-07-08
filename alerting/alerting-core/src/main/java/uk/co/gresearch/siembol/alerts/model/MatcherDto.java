@@ -38,6 +38,9 @@ public class MatcherDto {
     @Attributes(description = "The field value ends with the pattern")
     private Boolean endsWith = false;
 
+    @JsonProperty("compare_type")
+    @Attributes(description = "The type of comparing numbers")
+    NumericCompareTypeDto compareType;
     @Attributes(description = "Matcher expression as defined by matcher type")
     private String data;
 
@@ -122,6 +125,14 @@ public class MatcherDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public NumericCompareTypeDto getCompareType() {
+        return compareType;
+    }
+
+    public void setCompareType(NumericCompareTypeDto compareType) {
+        this.compareType = compareType;
     }
 }
 

@@ -20,10 +20,10 @@ public class IsInSetMatcher extends BasicMatcher {
     }
 
     @Override
-    protected EvaluationResult matchInternally(Map<String, Object> map, String fieldValue) {
+    protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
         String stringToMatch = caseInsensitiveCompare && fieldValue != null
-                ? fieldValue.toLowerCase()
-                : fieldValue;
+                ? fieldValue.toString().toLowerCase()
+                : fieldValue.toString();
 
         boolean matchedVariable = false;
         for (String variableString : variableStrings) {
