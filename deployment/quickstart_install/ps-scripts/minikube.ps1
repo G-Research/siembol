@@ -8,8 +8,8 @@ Write-Output == create and install CA ==
 mkcert -install
 
 Write-Output == create k8s cluster ==
-sudo minikube start --profile $namespace --driver hyperv --cpus 8 --memory 10g --disk-size 40g --addons ingress
-sudo minikube profile $namespace
+minikube start --profile $namespace --driver hyperv --cpus 8 --memory 10g --disk-size 40g --addons ingress
+minikube profile $namespace
 
 Write-Output == install dns host entries ==
 Set-CHostsEntry -IPAddress $(minikube ip) -HostName 'ui.siembol.local' -Description 'resolver for ui.siembol.local'
