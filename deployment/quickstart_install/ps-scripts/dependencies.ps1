@@ -14,7 +14,10 @@ helm install storm gresearch/storm --namespace $namespace `
     --set supervisor.resources.requests.cpu=500m `
     --set supervisor.childopts="-Xmx1g" `
     --set supervisor.slots=3 `
-    --set zookeeper.fullnameOverride="siembol-zookeeper"
+    --set zookeeper.fullnameOverride="siembol-zookeeper" `
+    --set provisioning.enabled=true `
+    --set "provisioning.topics[0].name=siembol.alerts" `
+    --set "provisioning.topics[1].name=siembol.response.heartbeat"
 
 
 helm install kafka bitnami/kafka --namespace $namespace `
