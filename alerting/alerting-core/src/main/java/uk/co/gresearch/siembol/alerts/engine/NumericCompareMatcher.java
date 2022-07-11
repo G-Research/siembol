@@ -7,13 +7,13 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public class NumericMatcher extends BasicMatcher {
+public class NumericCompareMatcher extends BasicMatcher {
     private static final String MISSING_ARGUMENTS_MSG = "Missing attributes in NumericMatcher";
     private static final String WRONG_CONSTANT_FORMAT = "Can not convert %s into a number";
     private final BiPredicate<Double, Double> comparator;
     private final Function<Map<String, Object>, Optional<Double>> valueSupplier;
 
-    private NumericMatcher(NumericMatcher.Builder<?> builder) {
+    private NumericCompareMatcher(NumericCompareMatcher.Builder<?> builder) {
         super(builder);
         this.comparator = builder.comparator;
         this.valueSupplier = builder.valueSupplier;
@@ -63,11 +63,11 @@ public class NumericMatcher extends BasicMatcher {
         return getDoubleFrom(substituted.get());
     }
 
-    public static NumericMatcher.Builder<NumericMatcher> builder() {
+    public static NumericCompareMatcher.Builder<NumericCompareMatcher> builder() {
 
-        return new NumericMatcher.Builder<>() {
+        return new NumericCompareMatcher.Builder<>() {
             @Override
-            public NumericMatcher build() {
+            public NumericCompareMatcher build() {
                 if (expression == null || comparator == null) {
                     throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
                 }
@@ -83,22 +83,22 @@ public class NumericMatcher extends BasicMatcher {
                     valueSupplier = x -> constant;
                 }
 
-                return new NumericMatcher(this);
+                return new NumericCompareMatcher(this);
             }
         };
     }
 
-    public static abstract class Builder<T extends NumericMatcher> extends BasicMatcher.Builder<T> {
+    public static abstract class Builder<T extends NumericCompareMatcher> extends BasicMatcher.Builder<T> {
         protected BiPredicate<Double, Double> comparator;
         protected Function<Map<String, Object>, Optional<Double>> valueSupplier;
         protected String expression;
 
-        public NumericMatcher.Builder<T> comparator(BiPredicate<Double, Double> comparator) {
+        public NumericCompareMatcher.Builder<T> comparator(BiPredicate<Double, Double> comparator) {
             this.comparator = comparator;
             return this;
         }
 
-        public NumericMatcher.Builder<T> expression(String expression) {
+        public NumericCompareMatcher.Builder<T> expression(String expression) {
             this.expression = expression;
             return this;
         }

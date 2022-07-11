@@ -74,8 +74,8 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                         .isNegated(matcherDto.getNegated())
                         .build();
             case NUMERIC_COMPARE:
-                return NumericMatcher.builder()
-                        .expression(matcherDto.getData())
+                return NumericCompareMatcher.builder()
+                        .expression(matcherDto.getExpression())
                         .comparator(matcherDto.getCompareType().getComparator())
                         .expression(matcherDto.getData())
                         .fieldName(matcherDto.getField())
