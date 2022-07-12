@@ -17,9 +17,12 @@ if message is None:
 
 producer = KafkaProducer(bootstrap_servers=os.getenv('KAFKA_SERVERS'))
 count = 0
+start_time = time.time()
 while True:
-    producer.send(topic, str.encode(message))
-    time.sleep(1/frequency_per_second)
+    producer.send(topic, str.encode(message))   
     count += 1
     if count%frequency_per_second == 0:
         print(f'Sent {count} messages to topic {topic}')
+        end_time = time.time()
+        time.sleep(max(1-(end_time - start_time), 0))
+        start_time += 1
