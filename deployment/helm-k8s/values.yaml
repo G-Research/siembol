@@ -210,7 +210,7 @@ response:
   appName: "response"
   image:
     name: "gresearchdev/siembol-responding-stream"
-    tag: "snapshot"
+    tag: "latest"
     pullPolicy: Always
 
   ingress:
@@ -248,7 +248,7 @@ siembol_monitoring:
   appName: "siembol-monitoring"
   image:
     repository: "gresearchdev/siembol-siembol-monitoring"
-    tag: "snapshot"
+    tag: "latest"
     pullPolicy: Always
 
   service:
