@@ -13,8 +13,9 @@ public enum NumericCompareTypeDto {
     LESSER_EQUAL("lesser_equal", (x, y) -> x.compareTo(y) <= 0),
     @JsonProperty("lesser")
     LESSER("lesser", (x, y) -> x.compareTo(y) < 0),
-
+    @JsonProperty("greater")
     GREATER("greater", (x, y) -> x.compareTo(y) > 0),
+    @JsonProperty("greater_equal")
     GREATER_EQUAL("greater_equal", (x, y) -> x.compareTo(y) >= 0);
     private final String name;
     private final BiPredicate<Double, Double> comparator;
