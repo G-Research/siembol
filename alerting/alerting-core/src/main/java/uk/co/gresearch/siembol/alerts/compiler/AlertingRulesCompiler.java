@@ -100,7 +100,6 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                 throw new IllegalArgumentException(String.format(UNSUPPORTED_MATCHER_TYPE,
                         matcherDto.getType().toString()));
         }
-
     }
 
     @Override
