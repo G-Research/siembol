@@ -30,7 +30,7 @@ Tip: if you want to match on multiple data sources, set the source type to be * 
 Matchers allow you to select the events you want the rule to alert on.
 - `is_enabled` - The matcher is enabled
 - `description` - The description of the matcher
-- `matcher_type` - Type of matcher, either `REGEX_MATCH`, `IS_IN_SET`, `CONTAINS`, `COMPOSITE_AND` or `COMPOSITE_OR`
+- `matcher_type` - Type of matcher, either `REGEX_MATCH`, `IS_IN_SET`, `CONTAINS`, `NUMERIC_COMPARE`, `COMPOSITE_AND` or `COMPOSITE_OR`
 - `is_negated`- The matcher is negated
     private Boolean negated = false;
 - `field` - The name of the field on which the matcher will be evaluated
@@ -46,6 +46,9 @@ There are four types of matchers:
     - `case_insensitive` - Use case-insensitive string compare
     - `starts_with`- The field value starts with the pattern
     - `ends_with` - The field value ends with the pattern
+- `NUMERIC_COMPARE` - A matcher compares field numeric value with the expression using various comparing types
+    - `compare_type` - The type of comparing numbers, either `equal`, `lesser_equal`, `lesser`, `greater` or `greater_equal`
+    - `expression` - A field numeric value will be compared with the expression. The expression can be a numeric constant or a string that contains a variable.
 - `COMPOSITE_AND` - Used to combine matchers from the list `matchers` with AND logic operation
 - `COMPOSITE_OR` - Used to combine matchers from the list `matchers` with OR logic operation
 
