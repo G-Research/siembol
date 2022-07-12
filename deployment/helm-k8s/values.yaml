@@ -15,6 +15,7 @@ enabled_apps:
 - dep_ingresses
 - enrichment_store
 - siembol_monitoring
+- response
 
 # Enable certmanager 
 certmanager:
@@ -116,10 +117,10 @@ rest:
       memory: "512Mi"
 
   readinessProbe:
-    initialDelaySeconds: 100
+    initialDelaySeconds: 150
     periodSeconds: 30
   livenessProbe:
-    initialDelaySeconds: 100
+    initialDelaySeconds: 150
     periodSeconds: 10
 
 # -----------------------------------------------------------------------------
@@ -194,10 +195,10 @@ manager:
 
   resources:
     requests:
-      cpu: "250m"
+      cpu: "400m"
       memory: "128Mi"
     limits:
-      cpu: "500m"
+      cpu: "800m"
       memory: "512Mi"
 
 
@@ -261,8 +262,8 @@ siembol_monitoring:
       memory: "256Mi"
 
   readinessProbe:
-    initialDelaySeconds: 20
+    initialDelaySeconds: 60
     periodSeconds: 30
   livenessProbe:
-    initialDelaySeconds: 30
+    initialDelaySeconds: 60
     periodSeconds: 30
