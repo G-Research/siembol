@@ -3,7 +3,7 @@ apiVersion: v2
 description: Siembol is an open-source, real-time Security Information & Event Management tool based on big data technologies, providing a scalable, advanced security analytics framework
 name: siembol
 type: application
-version: 0.1.8
+version: 0.1.9
 keywords:
 - kafka
 - zookeeper

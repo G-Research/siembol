@@ -76,9 +76,6 @@ spec:
           mountPath: {{ .Values.rest.rulesDir }}
         - name: config-dir
           mountPath: /config
-        - name: config
-          mountPath: /opt/config-editor-rest/application.properties
-          subPath: application.properties
       restartPolicy: Always
       volumes:
       - name: cacerts
@@ -88,8 +85,5 @@ spec:
         emptyDir: {}
       - name: config-dir
         emptyDir: {}
-      - name: config
-        configMap:
-          name: config-editor-rest
       terminationGracePeriodSeconds: 300
 {{- end -}}

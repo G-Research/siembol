@@ -55,15 +55,9 @@ spec:
           mountPath: /etc/ssl/certs/java/cacerts
           subPath: cacerts
           readOnly: true
-        - name: config
-          mountPath: /opt/responding-stream/application.properties
-          subPath: application.properties
       restartPolicy: Always
       volumes:
       - name: cacerts
         secret:
           secretName: cacerts
-      - name: config
-        configMap:
-          name: response
 {{- end -}}

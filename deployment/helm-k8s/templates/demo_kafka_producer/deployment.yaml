@@ -57,7 +57,6 @@ spec:
       - name: resources
         configMap:
           name: {{ $.Values.demo_kafka_producer.appName }}
-      terminationGracePeriodSeconds: 300
 ---
 {{- end}}
 {{- end}}
