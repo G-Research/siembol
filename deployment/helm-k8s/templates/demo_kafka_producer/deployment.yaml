@@ -1,0 +1,62 @@
+{{- if (has "demo_kafka_producer" .Values.enabled_apps) }}
+{{- range $name, $job := .Values.demo_kafka_producer.jobs }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ $.Values.demo_kafka_producer.appName }}-{{ $name }}
+  name: {{ $.Values.demo_kafka_producer.appName }}-{{ $name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: {{ $.Values.demo_kafka_producer.appName }}-{{ $name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ $.Values.demo_kafka_producer.appName }}-{{ $name }}
+      name: {{ $.Values.demo_kafka_producer.appName }}-{{ $name }}
+    spec:
+      containers:
+      - image: {{ $.Values.demo_kafka_producer.image.repository }}:{{ $.Values.demo_kafka_producer.image.tag }}
+        imagePullPolicy: {{ $.Values.demo_kafka_producer.image.pullPolicy }}
+        name: {{ $.Values.demo_kafka_producer.appName }}
+        resources:
+          requests:
+            memory: {{ $.Values.demo_kafka_producer.resources.requests.memory }}
+            cpu: {{ $.Values.demo_kafka_producer.resources.requests.cpu }}
+          limits:
+            memory: {{ $.Values.demo_kafka_producer.resources.limits.memory }}
+            cpu: {{ $.Values.demo_kafka_producer.resources.limits.cpu }}
+        command: ["/bin/bash"] 
+        args: ["-c", "pip install kafka-python && python3 {{ $.Values.appPath }}/kafka_producer.py"]
+        env: 
+        {{- range $key, $val := $job }}
+        - name: {{ $key }}
+          value: "{{ $val }}"
+        {{- end}}
+        - name: DEMO_MESSAGES_FILE
+          value: {{ $.Values.appPath }}/demo_messages.json
+        volumeMounts:
+        - name: resources
+          mountPath: {{ $.Values.appPath }}/kafka_producer.py
+          subPath: kafka_producer.py
+          readOnly: true  
+        - name: resources
+          mountPath: {{ $.Values.appPath }}/demo_messages.json
+          subPath: demo_messages.json
+          readOnly: true        
+      restartPolicy: Always
+      volumes:
+      - name: resources
+        configMap:
+          name: {{ $.Values.demo_kafka_producer.appName }}
+---
+{{- end}}
+{{- end}}

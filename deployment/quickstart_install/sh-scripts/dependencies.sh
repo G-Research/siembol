@@ -14,8 +14,10 @@ helm install storm gresearch/storm -n=siembol \
 
 helm install kafka bitnami/kafka -n=siembol \
     --set zookeeper.enabled=false \
-    --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc}
-
+    --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc} \
+    --set provisioning.enabled=true \
+    --set "provisioning.topics[0].name=siembol.alerts" \
+    --set "provisioning.topics[1].name=siembol.response.heartbeat"
 
 echo "************************************************************"
 echo "Checking status by running: 'kubectl get pods -n siembol'"

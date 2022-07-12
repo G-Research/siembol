@@ -47,6 +47,8 @@ spec:
             path: /health
             port: {{ .Values.siembol_monitoring.service.port }}
             scheme: HTTP
+          initialDelaySeconds: {{ .Values.siembol_monitoring.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.siembol_monitoring.readinessProbe.periodSeconds }}
         volumeMounts:
         - name: cacerts
           mountPath: /etc/ssl/certs/java/cacerts
