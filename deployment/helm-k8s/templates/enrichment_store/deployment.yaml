@@ -50,6 +50,12 @@ spec:
             - name: config
               mountPath: "/usr/local/etc/php/conf.d/upload.ini"
               subPath: "php.ini-local"
+            - name: config
+              mountPath: "/etc/apache2/ports.conf"
+              subPath: "ports.conf"
+            - name: config
+              mountPath: "/etc/apache2/sites-enabled/000-default.conf"
+              subPath: "000-default.conf"
       restartPolicy: Always
       securityContext:
         runAsUser: {{ .Values.enrichment_store.security.user }}
