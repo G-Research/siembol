@@ -130,6 +130,15 @@ deployment/quickstart_install/ps-scripts/kafkaExtra.ps1
  ```
  4. Produce your message in terminal window
 
+### Traffic Generator
+
+We have a simple deployment which generates messages which Siembol processes. The Kafka topics, frequency and messages can be modified [here](../../../deployment/helm-k8s/kafka-traffic-generator/values.yaml)
+
+1. To run this:
+```bash
+helm install traffic-generator deployment/helm-k8s/traffic-generator/ -n=siembol
+```
+
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:
 

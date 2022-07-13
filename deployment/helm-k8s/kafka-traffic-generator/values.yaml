@@ -1,0 +1,34 @@
+namespace: siembol
+
+# -----------------------------------------------------------------------------
+# demo Kafka traffic generator
+# -----------------------------------------------------------------------------
+demo_kafka_producer:
+  appName: "demo-kafka-producer"
+  appPath: "/opt/app"
+  image:
+    repository: "python"
+    tag: "3.10-slim-bullseye"
+    pullPolicy: Always
+
+  jobs:
+    cloudtrail:
+      KAFKA_TOPIC: "aws.cloudtrail"
+      MESSAGE_FREQUENCY_PER_SECOND: 50
+      MESSAGE_KEY: "cloudtrail"
+      KAFKA_SERVERS: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
+      PYTHONUNBUFFERED: 1
+    eventlogs:
+      KAFKA_TOPIC: "win.eventlogs"
+      MESSAGE_FREQUENCY_PER_SECOND: 100
+      MESSAGE_KEY: "eventlogs"
+      KAFKA_SERVERS: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
+      PYTHONUNBUFFERED: 1
+   
+  resources:
+    requests:
+      cpu: 0.5
+      memory: "256Mi"
+    limits:
+      cpu: 0.7
+      memory: "512Mi"
