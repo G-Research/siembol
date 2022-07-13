@@ -1,0 +1,8 @@
+{
+    "cloudtrail": {
+        "key": "value"
+    },
+    "eventlogs": {
+        "key": "value2"
+    }
+}

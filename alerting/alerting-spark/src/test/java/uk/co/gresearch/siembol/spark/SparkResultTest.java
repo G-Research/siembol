@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
-import uk.co.gresearch.siembol.common.model.AlertingSparkTestingResultDto;
+import uk.co.gresearch.siembol.common.model.testing.AlertingSparkTestingResultDto;
 
 import java.util.*;
 

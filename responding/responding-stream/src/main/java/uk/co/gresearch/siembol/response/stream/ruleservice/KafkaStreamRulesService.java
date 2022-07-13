@@ -20,6 +20,7 @@ import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 import java.lang.invoke.MethodHandles;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
@@ -28,8 +29,13 @@ public class KafkaStreamRulesService implements RulesService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Kafka stream service initialisation started";
     private static final String INIT_COMPLETED = "Kafka stream service initialisation completed";
+    private static final String RULES_INIT_COMPLETED = "Response rules have been initialised";
+    private static final String RULES_NOT_INITIALISED = "Response rules have not been initialised yet";
+    private static final String RULES_INIT_ERROR = "Error during waiting for initialisation";
     private final KafkaStreams streams;
     private final RulesProvider rulesProvider;
+    private final int initSleepTimeMs;
+
 
     public KafkaStreamRulesService(RulesProvider rulesProvider,
                                    ResponseConfigurationProperties properties) {
@@ -40,7 +46,28 @@ public class KafkaStreamRulesService implements RulesService {
                             ResponseConfigurationProperties properties,
                             KafkaStreamsFactory kafkaStreamsFactory) {
         this.rulesProvider = rulesProvider;
+        this.initSleepTimeMs = properties.getInitialisationSleepTimeMs();
         streams = createStreams(kafkaStreamsFactory, properties);
+    }
+
+    public void initialise() {
+        if (rulesProvider.isInitialised()) {
+            initialiseRules();
+            return;
+        }
+        CompletableFuture.runAsync(this::initialiseRules);
+    }
+
+    private void initialiseRules() {
+        while (!rulesProvider.isInitialised()) {
+            try {
+                LOG.warn(RULES_NOT_INITIALISED);
+                Thread.sleep(initSleepTimeMs);
+            } catch (InterruptedException e) {
+                LOG.error(RULES_INIT_ERROR);
+            }
+        }
+        LOG.info(RULES_INIT_COMPLETED);
         streams.start();
     }
 
@@ -105,7 +132,7 @@ public class KafkaStreamRulesService implements RulesService {
 
     @Override
     public Mono<Health> checkHealth() {
-        return Mono.just(streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
+        return Mono.just(!this.rulesProvider.isInitialised() || streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
                 ? Health.up().build() :
                 Health.down().build());
     }

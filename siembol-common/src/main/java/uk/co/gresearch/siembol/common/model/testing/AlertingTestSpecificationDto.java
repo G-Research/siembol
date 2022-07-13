@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.response.model;
+package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -7,9 +7,9 @@ import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
 import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 
-@Attributes(title = "response test specification", description = "Specification for testing responding rules")
-public class ResponseTestSpecificationDto {
-    @Attributes(required = true, description = "Alert for response alerts evaluation")
+@Attributes(title = "alerts test specification", description = "Specification for testing alerting rules")
+public class AlertingTestSpecificationDto {
+    @Attributes(required = true, description = "Event for alerts evaluation")
     JsonRawStringDto event;
 
     @JsonIgnore

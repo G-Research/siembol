@@ -1,10 +1,10 @@
-package uk.co.gresearch.siembol.common.model;
+package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class AlertingSparkTestingAttributesDto {
+public class AlertingSparkArgumentDto {
     @JsonProperty("max_result_size")
     private Integer maxResultSize = 100;
     private String rules;

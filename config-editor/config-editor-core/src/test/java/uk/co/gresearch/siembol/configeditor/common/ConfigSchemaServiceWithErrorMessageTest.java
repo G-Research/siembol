@@ -16,7 +16,6 @@ public class ConfigSchemaServiceWithErrorMessageTest {
     private ConfigEditorResult result;
     private ConfigEditorAttributes attributes;
     private final String configuration = "dummy config";
-    private final String testSpecification = "dummy config";
     private final String configurations = "dummy configs";
     private UserInfo user;
 
@@ -39,14 +38,6 @@ public class ConfigSchemaServiceWithErrorMessageTest {
     }
 
     @Test
-    public void getTestSchemaOk() {
-        when(service.getTestSchema()).thenReturn(result);
-        var ret = serviceWithErrorMessage.getTestSchema();
-        Assert.assertEquals(ret, result);
-        verify(service, times(1)).getTestSchema();
-    }
-
-    @Test
     public void getAdminConfigSchemaOk() {
         when(service.getAdminConfigurationSchema()).thenReturn(result);
         var ret = serviceWithErrorMessage.getAdminConfigurationSchema();
@@ -60,6 +51,23 @@ public class ConfigSchemaServiceWithErrorMessageTest {
         var ret = serviceWithErrorMessage.getImporters();
         Assert.assertEquals(result, ret);
         verify(service, times(1)).getImporters();
+    }
+
+    @Test
+    public void getConfigTestersOk() {
+        when(service.getConfigTesters()).thenReturn(result);
+        var ret = serviceWithErrorMessage.getConfigTesters();
+        Assert.assertEquals(result, ret);
+        verify(service, times(1)).getConfigTesters();
+    }
+
+    @Test
+    public void getConfigTesterOk() {
+        ConfigTester tester = Mockito.mock(ConfigTester.class);
+        when(service.getConfigTester(eq("dummy"))).thenReturn(tester);
+        var ret = serviceWithErrorMessage.getConfigTester("dummy");
+        Assert.assertEquals(tester, ret);
+        verify(service, times(1)).getConfigTester(eq("dummy"));
     }
 
     @Test
@@ -134,49 +142,6 @@ public class ConfigSchemaServiceWithErrorMessageTest {
         Assert.assertNotNull(ret.getAttributes().getErrorTitle());
     }
 
-
-    @Test
-    public void testConfigurationOk() {
-        when(service.testConfiguration(eq(configuration), eq(testSpecification))).thenReturn(result);
-        var ret = serviceWithErrorMessage.testConfiguration(configuration, testSpecification);
-        Assert.assertEquals(ret, result);
-        verify(service, times(1)).testConfiguration(eq(configuration), eq(testSpecification));
-    }
-
-    @Test
-    public void testConfigurationBadRequest() {
-        result = new ConfigEditorResult(ConfigEditorResult.StatusCode.BAD_REQUEST, attributes);
-
-        when(service.testConfiguration(eq(configuration), eq(testSpecification))).thenReturn(result);
-        var ret = serviceWithErrorMessage.testConfiguration(configuration, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        verify(service, times(1)).testConfiguration(eq(configuration), eq(testSpecification));
-        Assert.assertNotNull(ret.getAttributes().getMessage());
-        Assert.assertNotNull(ret.getAttributes().getErrorResolution());
-        Assert.assertNotNull(ret.getAttributes().getErrorTitle());
-    }
-
-    @Test
-    public void testConfigurationsOk() {
-        when(service.testConfigurations(eq(configurations), eq(testSpecification))).thenReturn(result);
-        var ret = serviceWithErrorMessage.testConfigurations(configurations, testSpecification);
-        Assert.assertEquals(ret, result);
-        verify(service, times(1)).testConfigurations(eq(configurations), eq(testSpecification));
-    }
-
-    @Test
-    public void testConfigurationsBadRequest() {
-        result = new ConfigEditorResult(ConfigEditorResult.StatusCode.BAD_REQUEST, attributes);
-
-        when(service.testConfigurations(eq(configurations), eq(testSpecification))).thenReturn(result);
-        var ret = serviceWithErrorMessage.testConfigurations(configurations, testSpecification);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        verify(service, times(1)).testConfigurations(eq(configurations), eq(testSpecification));
-        Assert.assertNotNull(ret.getAttributes().getMessage());
-        Assert.assertNotNull(ret.getAttributes().getErrorResolution());
-        Assert.assertNotNull(ret.getAttributes().getErrorTitle());
-    }
-
     @Test
     public void testImportConfigurationsOk() {
         when(service.importConfig(eq(user), eq("a"), eq("b"), eq("c"))).thenReturn(result);
@@ -200,5 +165,4 @@ public class ConfigSchemaServiceWithErrorMessageTest {
         verify(service, times(1))
                 .importConfig(eq(user), eq("a"), eq("b"), eq("c"));
     }
-
 }

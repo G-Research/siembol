@@ -8,4 +8,5 @@ public interface RulesService {
     RespondingResult getRulesMetadata();
     Mono<Health> checkHealth();
     default void close() {}
+    default void initialise() {};
 }

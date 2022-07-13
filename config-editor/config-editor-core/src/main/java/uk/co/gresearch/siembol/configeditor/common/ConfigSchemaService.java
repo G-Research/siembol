@@ -1,11 +1,10 @@
 package uk.co.gresearch.siembol.configeditor.common;
 
 import org.springframework.boot.actuate.health.Health;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorAttributes;
-import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
-import uk.co.gresearch.siembol.configeditor.model.ConfigImporterDto;
-import uk.co.gresearch.siembol.configeditor.model.ErrorMessages;
+import uk.co.gresearch.siembol.configeditor.model.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,6 +22,14 @@ public interface ConfigSchemaService extends HealthCheckable {
     ConfigEditorResult validateConfigurations(String configurations);
 
     Map<String, ConfigImporter> getConfigImporters();
+
+    default ConfigEditorResult getConfigTesters() {
+        ConfigEditorAttributes attributes = new ConfigEditorAttributes();
+        attributes.setConfigTesters(new ArrayList<>());
+        return new ConfigEditorResult(OK, attributes);
+    }
+
+    ConfigTester getConfigTester(String name);
 
     default Health checkHealth() { return Health.up().build(); }
 
@@ -58,18 +65,6 @@ public interface ConfigSchemaService extends HealthCheckable {
         }
 
         return importResult;
-    }
-
-    default ConfigEditorResult getTestSchema() {
-        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
-    }
-
-    default ConfigEditorResult testConfiguration(String configuration, String testSpecification ) {
-        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
-    }
-
-    default ConfigEditorResult testConfigurations(String configurations, String event) {
-        return ConfigEditorResult.fromMessage(ConfigEditorResult.StatusCode.ERROR, NOT_IMPLEMENTED_MSG);
     }
 
     default ConfigEditorResult getAdminConfigurationSchema() {

@@ -73,7 +73,6 @@ public class ResponseHttpProvider {
                 .patchJsonSchema(result.getAttributes().getTestSpecificationSchema(), uiLayout.getTestLayout());
         result.getAttributes().setTestSpecificationSchema(enrichedSchema.get());
         return result;
-
     }
 
     public RespondingResult validateRules(String rules) throws Exception {

@@ -72,13 +72,6 @@ public class ParserConfigSchemaServiceTest {
     }
 
     @Test
-    public void getTestSchemaOK() {
-        ConfigEditorResult ret = parserConfigSchemaService.getTestSchema();
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertNotNull(ret.getAttributes().getTestSchema());
-    }
-
-    @Test
     public void validateConfigurationsOK() {
         ConfigEditorResult ret = parserConfigSchemaService.validateConfigurations(testConfigs);
         Mockito.verify(parserFactory, times(1)).validateConfigurations(testConfigs);
@@ -120,91 +113,6 @@ public class ParserConfigSchemaServiceTest {
         Mockito.verify(parserFactory, times(1)).validateConfiguration(testConfig);
         Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
         Assert.assertEquals("error", ret.getAttributes().getMessage());
-    }
-
-    @Test
-    public void testConfigurationOK() {
-        parserResult.setParsedMessages(new ArrayList<>());
-        parserFactoryAttributes.setParserResult(parserResult);
-        ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logUtf8);
-        Mockito.verify(parserFactory, times(1)).test(testConfig, null, testLog.getBytes());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-    }
-
-    @Test
-    public void testConfigurationHexOK() {
-        parserResult.setParsedMessages(new ArrayList<>());
-        parserFactoryAttributes.setParserResult(parserResult);
-        ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logHex);
-        Mockito.verify(parserFactory, times(1)).test(testConfig,
-                null,
-                testLog.getBytes());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-    }
-
-    @Test
-    public void testConfigurationHexError() {
-        parserResult.setParsedMessages(new ArrayList<>());
-        parserFactoryAttributes.setParserResult(parserResult);
-        ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig,
-                logHex.replace("64", "XX"));
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getException().contains("Unrecognized character: X"));
-    }
-
-    @Test
-    public void testConfigurationsError() {
-        parserFactoryAttributes.setMessage("error");
-        parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
-        Mockito.when(parserFactory.test(testConfigs, null, testLog.getBytes())).thenReturn(parserFactoryResult);
-        ConfigEditorResult ret = parserConfigSchemaService.testConfigurations(testConfigs, testLog);
-        Assert.assertEquals(ConfigEditorResult.StatusCode.ERROR, ret.getStatusCode());
-        Assert.assertEquals("Not implemented", ret.getAttributes().getMessage());
-    }
-
-    @Test
-    public void testConfigurationError() {
-        parserFactoryAttributes.setMessage("error");
-        parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.ERROR, parserFactoryAttributes);
-        Mockito.when(parserFactory.test(testConfig, null, testLog.getBytes())).thenReturn(parserFactoryResult);
-        ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logUtf8);
-        Mockito.verify(parserFactory, times(1)).test(testConfig,
-                null,
-                testLog.getBytes());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.BAD_REQUEST, ret.getStatusCode());
-        Assert.assertEquals("error", ret.getAttributes().getMessage());
-    }
-
-    @Test
-    public void testConfigurationParserResultError() {
-        parserResult.setException(new IllegalStateException("dummy"));
-        parserFactoryAttributes.setParserResult(parserResult);
-
-        parserFactoryResult = new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, parserFactoryAttributes);
-        Mockito.when(parserFactory.test(testConfig, null, testLog.getBytes())).thenReturn(parserFactoryResult);
-        ConfigEditorResult ret = parserConfigSchemaService.testConfiguration(testConfig, logUtf8);
-        Mockito.verify(parserFactory, times(1)).test(testConfig,
-                null,
-                testLog.getBytes());
-        Assert.assertEquals(ConfigEditorResult.StatusCode.OK, ret.getStatusCode());
-        Assert.assertTrue(ret.getAttributes().getTestResultOutput().contains("dummy"));
-        Assert.assertTrue(ret.getAttributes().getTestResultRawOutput().contains("dummy"));
-    }
-
-    @Test
-    public void createSchemaEmptyTestConfigs() throws Exception {
-        ConfigSchemaService service = ParserConfigSchemaService
-                .createParserConfigSchemaService(new ConfigEditorUiLayout());
-        Assert.assertNotNull(service.getSchema());
-        Assert.assertNotNull(service.getTestSchema());
-    }
-
-    @Test
-    public void createSchemaConfigs() throws Exception {
-        ConfigSchemaService service = ParserConfigSchemaService
-                .createParserConfigSchemaService(new ConfigEditorUiLayout());
-        Assert.assertNotNull(service.getSchema());
-        Assert.assertNotNull(service.getTestSchema());
     }
 
     @Test

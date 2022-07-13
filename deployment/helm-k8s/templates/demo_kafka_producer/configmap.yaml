@@ -1,0 +1,11 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.demo_kafka_producer.appName }}
+  namespace: {{ .Values.namespace }}
+data:
+  kafka_producer.py: |- 
+{{ .Files.Get "resources/kafka_producer.py" | indent 4 }}
+  demo_messages.json: |- 
+{{ .Files.Get "resources/demo_messages.json" | indent 4 }}
