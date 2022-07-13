@@ -22,7 +22,7 @@ prometheus:
   
 grafana:
   image:
-    tag: 8.5.3
+    tag: 9.0.2
   
   service:
     port: 80
