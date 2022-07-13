@@ -80,7 +80,6 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                         .fieldName(matcherDto.getField())
                         .isNegated(matcherDto.getNegated())
                         .build();
-
             case COMPOSITE_AND:
             case COMPOSITE_OR:
                 if (matcherDto.getMatchers() == null) {
