@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 
 import java.util.function.BiPredicate;
 
-@Attributes(title = "numeric compare operation", description = "Type of time computation")
+@Attributes(title = "numeric compare type", description = "Type of numeric comparison")
 public enum NumericCompareTypeDto {
     @JsonProperty("equal")
     EQUAL("equal", (x, y) -> x.compareTo(y) == 0),

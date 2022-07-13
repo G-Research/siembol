@@ -222,7 +222,7 @@ public class NumericCompareTest {
     }
 
     @Test
-    public void MissingFieldNoMatch() {
+    public void missingFieldNoMatch() {
         matcher = NumericCompareMatcher.builder()
                 .expression("1")
                 .comparator(NumericCompareTypeDto.EQUAL.getComparator())
