@@ -21,7 +21,7 @@ public class NumericCompareMatcher extends BasicMatcher {
 
     @Override
     protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
-        var doubleFieldValue = getDoubleFrom(fieldValue);
+        var doubleFieldValue = getDoubleFromObject(fieldValue);
         if (doubleFieldValue.isEmpty()) {
             return EvaluationResult.NO_MATCH;
         }
@@ -36,7 +36,7 @@ public class NumericCompareMatcher extends BasicMatcher {
                 : EvaluationResult.NO_MATCH;
     }
 
-    private static Optional<Double> getDoubleFrom(Object obj) {
+    private static Optional<Double> getDoubleFromObject(Object obj) {
         if (obj instanceof String) {
             try {
                 var strValue = (String)obj;
@@ -53,18 +53,17 @@ public class NumericCompareMatcher extends BasicMatcher {
         return Optional.empty();
     }
 
-    private static Optional<Double> getValueFromVariable(Map<String, Object> map,
-                                                        String expression) {
+    private static Optional<Double> getDoubleFromVariableExpression(Map<String, Object> map,
+                                                                    String expression) {
         var substituted = EvaluationLibrary.substitute(map, expression);
         if (substituted.isEmpty()) {
             return Optional.empty();
         }
 
-        return getDoubleFrom(substituted.get());
+        return getDoubleFromObject(substituted.get());
     }
 
     public static NumericCompareMatcher.Builder<NumericCompareMatcher> builder() {
-
         return new NumericCompareMatcher.Builder<>() {
             @Override
             public NumericCompareMatcher build() {
@@ -73,9 +72,9 @@ public class NumericCompareMatcher extends BasicMatcher {
                 }
 
                 if (EvaluationLibrary.containsVariables(expression)) {
-                    valueSupplier = x -> getValueFromVariable(x, expression);
+                    valueSupplier = x -> getDoubleFromVariableExpression(x, expression);
                 } else {
-                    final var constant = getDoubleFrom(expression);
+                    final var constant = getDoubleFromObject(expression);
                     if (constant.isEmpty()) {
                         throw new IllegalArgumentException(
                                 String.format(WRONG_CONSTANT_FORMAT, expression));
