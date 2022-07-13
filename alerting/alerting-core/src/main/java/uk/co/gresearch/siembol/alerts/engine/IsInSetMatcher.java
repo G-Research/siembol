@@ -21,9 +21,10 @@ public class IsInSetMatcher extends BasicMatcher {
 
     @Override
     protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
-        String stringToMatch = caseInsensitiveCompare && fieldValue != null
-                ? fieldValue.toString().toLowerCase()
-                : fieldValue.toString();
+        var fieldStringValue = fieldValue.toString();
+        var stringToMatch = caseInsensitiveCompare
+                ? fieldStringValue.toLowerCase()
+                : fieldStringValue;
 
         boolean matchedVariable = false;
         for (String variableString : variableStrings) {

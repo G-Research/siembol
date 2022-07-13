@@ -15,7 +15,6 @@ public class ContainsMatcher extends BasicMatcher {
     }
 
     private final static String EMPTY_PATTERN_MSG = "Empty pattern in the Contains matcher";
-    private final static String NULL_FIELD_VALUE = "Null field value during matching by Contains matcher";
     protected final EnumSet<Flags> flags;
     protected final String pattern;
     protected final BiPredicate<String, String> checkPredicate;
@@ -29,13 +28,10 @@ public class ContainsMatcher extends BasicMatcher {
 
     @Override
     protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
-        if (fieldValue == null) {
-            throw new IllegalStateException(NULL_FIELD_VALUE);
-        }
-
-        String stringToCheck = flags.contains(Flags.CASE_INSENSITIVE)
-                ? fieldValue.toString().toLowerCase()
-                : fieldValue.toString();
+        var fieldStringValue = fieldValue.toString();
+        var stringToCheck = flags.contains(Flags.CASE_INSENSITIVE)
+                ? fieldStringValue.toLowerCase()
+                : fieldStringValue;
 
         String currentPattern = pattern;
         if (flags.contains(Flags.CONTAINS_VARIABLE)) {
