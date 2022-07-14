@@ -1,7 +1,7 @@
 $namespace="siembol"
 
 Write-Output == install prerequisites ==
-choco upgrade kubernetes-helm kubernetes-cli minikube mkcert carbon
+choco upgrade kubernetes-helm kubernetes-cli minikube mkcert carbon wget
 Import-Module 'Carbon'
 
 Write-Output == create and install CA ==

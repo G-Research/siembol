@@ -11,7 +11,7 @@ demo_messages_file = os.getenv('DEMO_MESSAGES_FILE')
 with open(demo_messages_file, "r") as f:
     messages = json.load(f)
     
-message = json.dumps(messages.get(message_key))
+message = messages.get(message_key)
 if message is None:
     raise Exception(f'Message not found in json: key {message_key} not found')
 
