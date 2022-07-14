@@ -136,7 +136,7 @@ We have a simple deployment which generates messages which Siembol processes. Th
 
 1. To run this:
 ```bash
-helm install traffic-generator deployment/helm-k8s/traffic-generator/ -n=siembol
+helm install traffic-generator deployment/helm-k8s/kafka-traffic-generator/ -n=siembol
 ```
 
 ## Cleaning up
