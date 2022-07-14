@@ -73,6 +73,13 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                         .fieldName(matcherDto.getField())
                         .isNegated(matcherDto.getNegated())
                         .build();
+            case NUMERIC_COMPARE:
+                return NumericCompareMatcher.builder()
+                        .expression(matcherDto.getExpression())
+                        .comparator(matcherDto.getCompareType().getComparator())
+                        .fieldName(matcherDto.getField())
+                        .isNegated(matcherDto.getNegated())
+                        .build();
             case COMPOSITE_AND:
             case COMPOSITE_OR:
                 if (matcherDto.getMatchers() == null) {
@@ -91,7 +98,6 @@ public class AlertingRulesCompiler implements AlertingCompiler {
                 throw new IllegalArgumentException(String.format(UNSUPPORTED_MATCHER_TYPE,
                         matcherDto.getType().toString()));
         }
-
     }
 
     @Override

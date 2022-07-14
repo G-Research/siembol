@@ -62,6 +62,14 @@ public class AlertingRulesCompilerTest {
                   "is_negated": false,
                   "field": "is_alert",
                   "data": "(?i)true"
+                },
+                {
+                  "is_enabled": true,
+                  "matcher_type": "NUMERIC_COMPARE",
+                  "is_negated": false,
+                  "field": "dummy_field_int",
+                  "compare_type" : "equal",
+                  "expression" : "1"
                 }
               ]
             }
@@ -159,7 +167,7 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
-    public void testGetSchema() {
+    public void getSchema() {
         AlertingResult ret = compiler.getSchema();
 
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
@@ -167,7 +175,7 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
-    public void validationRulesOK() {
+    public void validationRulesOk() {
         AlertingResult ret = compiler.validateRules(alertRules);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
         AlertingResult matchResult = ret.getAttributes().getEngine().evaluate(goodAlert);
@@ -225,7 +233,7 @@ public class AlertingRulesCompilerTest {
 
     @Test
     public void validationRuleDisabledMatchers() {
-        AlertingResult ret = compiler.validateRule(alertRule.replace("\"is_enabled\": true",
+        AlertingResult ret = compiler.validateRule(alertRule.replaceAll("\"is_enabled\": true",
                 "\"is_enabled\" : false"));
         Assert.assertEquals(AlertingResult.StatusCode.ERROR, ret.getStatusCode());
         Assert.assertTrue(ret.getAttributes().getException().contains("Empty matchers in a rule"));
@@ -248,7 +256,7 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
-    public void testRuleOK() {
+    public void testRuleOk() {
         AlertingResult ret = compiler.testRule(alertRule, goodAlert);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertFalse(ret.getAttributes().getMessage().isEmpty());
@@ -292,7 +300,7 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
-    public void testRulesOK() {
+    public void testRulesOk() {
         AlertingResult ret = compiler.testRules(alertRules, goodAlert);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
         Assert.assertFalse(ret.getAttributes().getMessage().isEmpty());
@@ -322,7 +330,7 @@ public class AlertingRulesCompilerTest {
     }
 
     @Test
-    public void validationRuleWithCompositeMatchersOK() {
+    public void validationRuleWithCompositeMatchersOk() {
         AlertingResult ret = compiler.validateRule(ruleWithCompositeMatchers);
         Assert.assertEquals(AlertingResult.StatusCode.OK, ret.getStatusCode());
     }

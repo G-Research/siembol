@@ -43,6 +43,7 @@
                             "REGEX_MATCH",
                             "IS_IN_SET",
                             "CONTAINS",
+                            "NUMERIC_COMPARE",
                             "COMPOSITE_AND",
                             "COMPOSITE_OR"
                         ],
@@ -103,6 +104,25 @@
                             }
                         }
                     },
+                    "compare_type" : {
+                        "enum" : [ "equal", "lesser_equal", "lesser", "greater", "greater_equal" ],
+                        "type" : "string",
+                        "description" : "The type of comparing numbers",
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "!['NUMERIC_COMPARE'].includes(model.matcher_type)"
+                            }
+                        }
+                    },
+                    "expression" : {
+                        "type" : "string",
+                        "description" : "A field numeric value will be compared with the expression. The expression can be a numeric constant or a string that contains a variable",
+                        "widget": {
+                            "formlyConfig": {
+                                "hideExpression": "!['NUMERIC_COMPARE'].includes(model.matcher_type)"
+                            }
+                        }
+                    },
                     "matchers": {
                         "widget": {
                             "formlyConfig": {
@@ -142,6 +162,7 @@
                                         "REGEX_MATCH",
                                         "IS_IN_SET",
                                         "CONTAINS",
+                                        "NUMERIC_COMPARE",
                                         "COMPOSITE_AND",
                                         "COMPOSITE_OR"
                                     ],
@@ -207,6 +228,25 @@
                                         }
                                     }
                                 },
+                                "compare_type" : {
+                                    "enum" : [ "equal", "lesser_equal", "lesser", "greater", "greater_equal" ],
+                                    "type" : "string",
+                                    "description" : "The type of comparing numbers",
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!model || !['NUMERIC_COMPARE'].includes(model.matcher_type)"
+                                        }
+                                    }
+                                },
+                                "expression" : {
+                                    "type": "string",
+                                    "description": "A field numeric value will be compared with the expression. The expression can be a numeric constant or a string that contains a variable",
+                                    "widget": {
+                                        "formlyConfig": {
+                                            "hideExpression": "!model || !['NUMERIC_COMPARE'].includes(model.matcher_type)"
+                                        }
+                                    }
+                                },
                                 "matchers": {
                                     "widget": {
                                         "formlyConfig": {
@@ -245,7 +285,8 @@
                                                 "enum": [
                                                     "REGEX_MATCH",
                                                     "IS_IN_SET",
-                                                    "CONTAINS"
+                                                    "CONTAINS",
+                                                    "NUMERIC_COMPARE"
                                                 ],
                                                 "type": "string",
                                                 "description": "Type of matcher, either Regex match, Contains match or list of strings (newline delimited)"
@@ -306,6 +347,25 @@
                                                     "formlyConfig": {
                                                         "type": "textarea",
                                                         "hideExpression": "!model"
+                                                    }
+                                                }
+                                            },
+                                            "compare_type" : {
+                                                "enum" : [ "equal", "lesser_equal", "lesser", "greater", "greater_equal" ],
+                                                "type" : "string",
+                                                "description" : "The type of comparing numbers",
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!model || !['NUMERIC_COMPARE'].includes(model.matcher_type)"
+                                                    }
+                                                }
+                                            },
+                                            "expression" : {
+                                                "type" : "string",
+                                                "description" : "A field numeric value will be compared with the expression. The expression can be a numeric constant or a string that contains a variable",
+                                                "widget": {
+                                                    "formlyConfig": {
+                                                        "hideExpression": "!model || !['NUMERIC_COMPARE'].includes(model.matcher_type)"
                                                     }
                                                 }
                                             }

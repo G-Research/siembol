@@ -38,8 +38,15 @@ public class MatcherDto {
     @Attributes(description = "The field value ends with the pattern")
     private Boolean endsWith = false;
 
+    @JsonProperty("compare_type")
+    @Attributes(description = "The type of comparing numbers")
+    NumericCompareTypeDto compareType;
     @Attributes(description = "Matcher expression as defined by matcher type")
     private String data;
+
+    @Attributes(description = "A field numeric value will be compared with the expression. " +
+            "The expression can be a numeric constant or a string that contains a variable")
+    private String expression;
 
     @Attributes(description = "List of matchers of the composite matcher")
     private List<MatcherDto> matchers;
@@ -122,6 +129,22 @@ public class MatcherDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public NumericCompareTypeDto getCompareType() {
+        return compareType;
+    }
+
+    public void setCompareType(NumericCompareTypeDto compareType) {
+        this.compareType = compareType;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 }
 

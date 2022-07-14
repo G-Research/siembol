@@ -22,7 +22,7 @@ public abstract class BasicMatcher implements Matcher {
             return isNegated ? EvaluationResult.MATCH : EvaluationResult.NO_MATCH;
         }
 
-        String fieldValue = log.get(fieldName).toString();
+        var fieldValue = log.get(fieldName);
         EvaluationResult result = matchInternally(log, fieldValue);
 
         if (isNegated) {
@@ -41,7 +41,7 @@ public abstract class BasicMatcher implements Matcher {
         return isNegated;
     }
 
-    protected abstract EvaluationResult matchInternally(Map<String, Object> map, String fieldValue);
+    protected abstract EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue);
 
     public static abstract class Builder<T extends BasicMatcher> {
         private String fieldName;
