@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.grafana.configmapName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: Helm
+data:
+  siembol_monitoring_dashboard.json: |-
+{{ .Files.Get .Values.grafana.prometheusDashboardName | indent 4 }}
+---

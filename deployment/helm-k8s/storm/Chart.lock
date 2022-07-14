@@ -1,0 +1,6 @@
+dependencies:
+- name: storm
+  repository: https://g-research.github.io/charts
+  version: 1.2.0
+digest: sha256:d2f365aa6b382911ef6b6901ddf3414adda2c968cac7c25ef81dd79760c56043
+generated: "2022-07-14T08:14:09.738152+01:00"

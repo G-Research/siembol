@@ -34,14 +34,7 @@ git_details () {
 
 echo "************** Install Script For Demo **************"
 echo "*****************************************************"
-
-zookeeper_status=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/component=zookeeper,app.kubernetes.io/instance=storm,app.kubernetes.io/name=zookeeper" -o jsonpath="{.items[0].status.containerStatuses[0].ready}")
-if [ "$zookeeper_status" = true ]; then
-    git_details
-    echo "************************************************************"
-    echo "******  You can now deploy siembol from helm charts   ******"
-    echo "************************************************************"
-else
-    echo "Zookeeper pod is not running yet, please try again in a few seconds"
-    exit 1
-fi
+git_details
+echo "************************************************************"
+echo "******  You can now deploy siembol from helm charts   ******"
+echo "************************************************************"

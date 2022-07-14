@@ -3,7 +3,7 @@
 profile=siembol
 
 echo == install prerequisites ==
-brew install helm kubernetes-cli minikube mkcert nss
+brew install helm kubernetes-cli minikube mkcert nss wget
 
 echo == create and install CA ==
 mkcert -install

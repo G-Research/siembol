@@ -2,17 +2,22 @@
 
 echo "************************************************************"
 echo "****************** Installing dependencies *****************"
+JMX_DIR=jmx   
+JMX_AGENT_NAME="agent.jar"
+NAMESPACE="siembol"
+
+file_url="https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.17.0/jmx_prometheus_javaagent-0.17.0.jar"
+mkdir $JMX_DIR
+wget -O "$JMX_DIR/$JMX_AGENT_NAME" $file_url
+kubectl -n $NAMESPACE create cm storm-metrics-reporter --from-file=metrics_reporter_agent.jar=$JMX_DIR/$JMX_AGENT_NAME    
+
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
-helm install storm gresearch/storm -n=siembol \
-    --set supervisor.replicaCount=1  \
-    --set supervisor.childopts="-Xmx1g" \
-    --set supervisor.slots=3 \
-    --set zookeeper.fullnameOverride="siembol-zookeeper"
+helm dependency update deployment/helm-k8s/storm/
+helm install storm deployment/helm-k8s/storm/ -n=$NAMESPACE
 
-helm install kafka bitnami/kafka -n=siembol \
+helm install kafka bitnami/kafka -n=$NAMESPACE \
     --set zookeeper.enabled=false \
     --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc} \
     --set provisioning.enabled=true \

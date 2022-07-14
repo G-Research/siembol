@@ -1,0 +1,98 @@
+namespace: siembol
+
+prometheus: 
+  server: 
+    enabled: true
+    service:
+      servicePort: 8080
+    ingress:
+      enabled: true
+      hosts:
+        - prometheus.siembol.local
+    global:
+      scrape_interval: "10s"
+  alertmanager:
+    enabled: false
+  pushgateway:
+    enabled: false
+  kubeStateMetrics:
+    enabled: false
+  nodeExporter:
+    enabled: false
+  
+grafana:
+  image:
+    tag: 9.0.2
+  
+  service:
+    port: 80
+    targetPort: 3000
+
+  ingress:
+    enabled: true
+    hosts: 
+      - grafana.siembol.local
+  
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://monitoring-prometheus-server:8080
+          access: proxy
+          isDefault: true
+          editable: true
+  
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'prometheus'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/prometheus
+  
+  # config map for dashboard
+  configmapName: "grafana-dashboard"
+  prometheusDashboardName: "dashboards/siembol_monitoring_dashboard.json"
+  dashboardsConfigMaps:
+    prometheus: grafana-dashboard
+
+  env:
+    GF_AUTH_DISABLE_LOGIN_FORM: 'true'
+    GF_AUTH_DISABLE_SIGNOUT_MENU: 'true'
+    GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: 'true'
+    GF_AUTH_ANONYMOUS_ENABLED: 'true'
+    GF_USERS_ALLOW_SIGN_UP: 'false'
+    GF_USERS_VIEWERS_CAN_EDIT: 'true'
+    GF_AUTH_ANONYMOUS_ORG_ROLE: Editor
+
+kafka-lag-exporter:
+  image:
+    repository: seglo/kafka-lag-exporter
+    tag: 0.7.1
+  pollIntervalSeconds: 10
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  clusters:
+    - name: "local-cluster"
+      bootstrapBrokers: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
+      topicWhitelist:
+        - ".*"
+      groupWhitelist:
+        - ".*"
+      consumerProperties:
+        sasl.mechanism: "PLAIN"
+      adminClientProperties:
+        sasl.mechanism: "PLAIN"
+  kafkaLagExporterLogLevel: DEBUG

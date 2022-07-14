@@ -1,28 +1,27 @@
 $namespace="siembol"
+$JMX_DIR=jmx   
+$JMX_AGENT_NAME="agent.jar"
 
 Write-Output "************************************************************"
 Write-Output "****************** Installing dependencies *****************"
+
+$file_url="https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.17.0/jmx_prometheus_javaagent-0.17.0.jar"
+mkdir $JMX_DIR
+wget -O "$JMX_DIR/$JMX_AGENT_NAME" $file_url
+kubectl -n $namespace create cm storm-metrics-reporter --from-file=metrics_reporter_agent.jar=$JMX_DIR/$JMX_AGENT_NAME    
+
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo add gresearch https://g-research.github.io/charts
 helm repo update
 
-
-helm install storm gresearch/storm --namespace $namespace `
-    --set supervisor.replicaCount=1 `
-    --set supervisor.resources.requests.memory=1024 `
-    --set supervisor.resources.limits.memory=1024 `
-    --set supervisor.resources.requests.cpu=500m `
-    --set supervisor.childopts="-Xmx1g" `
-    --set supervisor.slots=3 `
-    --set zookeeper.fullnameOverride="siembol-zookeeper" `
-    --set provisioning.enabled=true `
-    --set "provisioning.topics[0].name=siembol.alerts" `
-    --set "provisioning.topics[1].name=siembol.response.heartbeat"
-
+helm dependency update deployment/helm-k8s/storm/
+helm install storm deployment/helm-k8s/storm/ --namespace $namespace
 
 helm install kafka bitnami/kafka --namespace $namespace `
     --set zookeeper.enabled=false `
-    --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc}
+    --set externalZookeeper.servers={siembol-zookeeper-0.siembol-zookeeper-headless.siembol.svc} `
+    --set provisioning.enabled=true `
+    --set "provisioning.topics[0].name=siembol.alerts" `
+    --set "provisioning.topics[1].name=siembol.response.heartbeat"
 
 
 Write-Output "************************************************************"

@@ -7,6 +7,10 @@ metadata:
 data:
   php.ini-local: |-
 {{ .Files.Get "resources/php.ini-local" | indent 4 }}
+  ports.conf: |-
+{{ .Files.Get "resources/ports.conf" | indent 4 }}
+  000-default.conf: |-
+{{ .Files.Get "resources/000-default.conf" | indent 4 }}
 ---
 apiVersion: v1
 kind: ConfigMap

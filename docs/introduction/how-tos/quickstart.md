@@ -41,7 +41,6 @@ deployment/quickstart_install/ps-scripts/dependencies.ps1
 
 #### 3. Run demoInstall.sh
 1. This will ask for your github details related to the Siembol Config repository and the token created in previous step.
-2. This will also initialise Zookeeper nodes.
 
 ```bash
 deployment/quickstart_install/sh-scripts/demoInstall.sh
@@ -83,6 +82,28 @@ or
 deployment/quickstart_install/ps-scripts/enrichmentStore.ps1
 ```
 
+### Monitoring
+
+We are scraping Siembol metrics using Prometheus and displaying the metrics in a Grafana dashboard. 
+
+To install these components:
+
+1. Download charts:
+```bash
+helm dependency update deployment/helm-k8s/monitoring-tools/
+```
+2. Install the charts:
+```bash
+helm install monitoring deployment/helm-k8s/monitoring-tools/ -n=siembol
+```
+
+To see the dashboard:
+
+  * http://grafana.siembol.local/
+
+You can also see the raw Prometheus metrics from:
+
+  * http://prometheus.siembol.local/
 
 ### Kafka UI
 
@@ -109,6 +130,14 @@ deployment/quickstart_install/ps-scripts/kafkaExtra.ps1
  ```
  4. Produce your message in terminal window
 
+### Traffic Generator
+
+We have a simple deployment which generates messages which Siembol processes. The Kafka topics, frequency and messages can be modified [here](../../../deployment/helm-k8s/kafka-traffic-generator/values.yaml)
+
+1. To run this:
+```bash
+helm install traffic-generator deployment/helm-k8s/kafka-traffic-generator/ -n=siembol
+```
 
 ## Cleaning up
 If you're done poking about on a local instance, you can clean up with:

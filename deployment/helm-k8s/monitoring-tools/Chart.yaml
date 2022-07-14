@@ -1,0 +1,16 @@
+# Chart for siembol
+apiVersion: v2
+description: Helm charts for deploying monitoring tools such as Prometheus, Grafana and Kafka Lag exporter
+name: monitoring
+version: 0.0.1
+
+dependencies:
+  - name: prometheus
+    version: 15.10.1
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    version: 6.32.2
+    repository: https://grafana.github.io/helm-charts
+  - name: kafka-lag-exporter
+    version: 0.7.1
+    repository: https://seglo.github.io/kafka-lag-exporter/repo

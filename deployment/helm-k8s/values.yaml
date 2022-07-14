@@ -16,7 +16,6 @@ enabled_apps:
 - enrichment_store
 - siembol_monitoring
 - response
-- demo_kafka_producer
 
 # Enable certmanager 
 certmanager:
@@ -59,9 +58,9 @@ enrichment_store:
     pullPolicy: Always
   securityContext:
     runAsUser: 82
-  containerPort: 80
+  containerPort: 8080
   service:
-    port: 80
+    port: 8080
   pvc:
     name: "files-store"
     storageclass: ""
@@ -268,36 +267,3 @@ siembol_monitoring:
   livenessProbe:
     initialDelaySeconds: 60
     periodSeconds: 30
-
-# -----------------------------------------------------------------------------
-# demo kafka producer
-# -----------------------------------------------------------------------------
-demo_kafka_producer:
-  appName: "demo-kafka-producer"
-  appPath: "/opt/app"
-  image:
-    repository: "python"
-    tag: "3.10-slim-bullseye"
-    pullPolicy: Always
-
-  jobs:
-    cloudtrail:
-      KAFKA_TOPIC: "aws.cloudtrail"
-      MESSAGE_FREQUENCY_PER_SECOND: 10
-      MESSAGE_KEY: "cloudtrail"
-      KAFKA_SERVERS: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
-      PYTHONUNBUFFERED: 1
-    eventlogs:
-      KAFKA_TOPIC: "win.eventlogs"
-      MESSAGE_FREQUENCY_PER_SECOND: 20
-      MESSAGE_KEY: "eventlogs"
-      KAFKA_SERVERS: "kafka-0.kafka-headless.siembol.svc.cluster.local:9092"
-      PYTHONUNBUFFERED: 1
-   
-  resources:
-    requests:
-      cpu: 0.1
-      memory: "128Mi"
-    limits:
-      cpu: 0.3
-      memory: "256Mi"

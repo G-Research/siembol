@@ -1,0 +1,4 @@
+apiVersion: v2
+description: Helm chart for generating traffic using Kafka
+name: traffic-generator
+version: 0.0.1
