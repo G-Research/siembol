@@ -6,7 +6,12 @@ import { FieldArrayType } from '@ngx-formly/core';
   template: `
     <div>
       <mat-tab-group animationDuration="0ms" [(selectedIndex)]="selectedTab">
-        <mat-tab *ngFor="let tab of field.fieldGroup; let i = index" [label]="getUnionType(tab?.model)">
+        <mat-tab *ngFor="let tab of field.fieldGroup; let i = index">
+          <ng-template mat-tab-label>
+            <mat-icon *ngIf="i != 0" (click)="moveLeft(i)">arrow_left</mat-icon>
+            {{ getUnionType(tab?.model) }}
+            <mat-icon *ngIf="i != field.fieldGroup.length - 1" (click)="moveRight(i)">arrow_right</mat-icon>
+          </ng-template>
           <span class="align-right">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -60,6 +65,16 @@ import { FieldArrayType } from '@ngx-formly/core';
         display: table;
         padding-top: 5px;
       }
+
+      ::ng-deep .mat-tab-label {
+        padding: 0 4px;
+        min-width: 200px;
+      }
+
+      ::ng-deep .mat-tab-label .mat-tab-label-content {
+        width: 100%;
+        justify-content: space-around;
+      }
     `,
   ],
 })
@@ -71,16 +86,24 @@ export class TabArrayTypeComponent extends FieldArrayType {
     return keys[keys.length - 1];
   }
 
-  add(i: number) {
+  add(i: number, m) {
     const modelLength = this.model ? this.model.length : 0;
-    super.add(modelLength);
-    this.selectedTab = i;
+    super.add(modelLength, m);
     for (let j = this.model.length - 1; j >= i; j--) {
-      this.moveDown(j);
+      this.moveRight(j);
     }
+    this.selectedTab = i;
   }
 
-  moveDown(i: number) {
+  moveLeft(i: number) {
+    if (i === 0) {
+      return;
+    }
+
+    this.reorder(i - 1, i);
+  }
+
+  moveRight(i: number) {
     if (i === this.model.length - 1) {
       return;
     }
@@ -89,23 +112,9 @@ export class TabArrayTypeComponent extends FieldArrayType {
   }
 
   private reorder(oldI: number, newI: number) {
-    this.reorderFields(this.field.fieldGroup, oldI, newI);
-    this.reorderItems(this.model, oldI, newI);
-    this.reorderItems(this.formControl.controls, oldI, newI);
+    const m = this.model[oldI];
+    this.remove(oldI);
+    this.add(newI, m);
   }
 
-  private reorderItems(obj: any[], oldI: number, newI: number) {
-    const old = obj[oldI];
-    obj[oldI] = obj[newI];
-    obj[newI] = old;
-  }
-
-  private reorderFields(obj: any[], oldI: number, newI: number) {
-    const old = obj[oldI];
-    obj[oldI] = obj[newI];
-    obj[oldI].key = `${oldI}`;
-
-    obj[newI] = old;
-    obj[newI].key = `${newI}`;
-  }
 }
