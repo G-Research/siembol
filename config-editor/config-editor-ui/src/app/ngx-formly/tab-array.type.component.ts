@@ -8,9 +8,9 @@ import { FieldArrayType } from '@ngx-formly/core';
       <mat-tab-group animationDuration="0ms" [(selectedIndex)]="selectedTab">
         <mat-tab *ngFor="let tab of field.fieldGroup; let i = index">
           <ng-template mat-tab-label>
-            <mat-icon *ngIf="i != 0" (click)="moveLeft(i)">arrow_left</mat-icon>
+            <mat-icon *ngIf="i != 0" (click)="moveDown(i)">arrow_left</mat-icon>
             {{ getUnionType(tab?.model) }}
-            <mat-icon *ngIf="i != field.fieldGroup.length - 1" (click)="moveRight(i)">arrow_right</mat-icon>
+            <mat-icon *ngIf="i != field.fieldGroup.length - 1" (click)="moveUp(i)">arrow_right</mat-icon>
           </ng-template>
           <span class="align-right">
             <svg
@@ -86,35 +86,35 @@ export class TabArrayTypeComponent extends FieldArrayType {
     return keys[keys.length - 1];
   }
 
-  add(i: number, m = null) {
+  add(index: number, unionModel = null) {
     const modelLength = this.model ? this.model.length : 0;
-    super.add(modelLength, m);
-    for (let j = this.model.length - 1; j >= i; j--) {
-      this.moveRight(j);
+    super.add(modelLength, unionModel);
+    for (let j = this.model.length - 1; j >= index; j--) {
+      this.moveUp(j);
     }
-    this.selectedTab = i;
+    this.selectedTab = index;
   }
 
-  moveLeft(i: number) {
-    if (i === 0) {
+  moveDown(index: number) {
+    if (index === 0) {
       return;
     }
 
-    this.reorder(i - 1, i);
+    this.reorder(index - 1, index);
   }
 
-  moveRight(i: number) {
-    if (i === this.model.length - 1) {
+  moveUp(index: number) {
+    if (index === this.model.length - 1) {
       return;
     }
 
-    this.reorder(i, i + 1);
+    this.reorder(index, index + 1);
   }
 
-  private reorder(oldI: number, newI: number) {
-    const m = this.model[oldI];
-    this.remove(oldI);
-    this.add(newI, m);
+  private reorder(oldIndex: number, newIndex: number) {
+    const unionModel = this.model[oldIndex];
+    this.remove(oldIndex);
+    this.add(newIndex, unionModel);
   }
 
 }
