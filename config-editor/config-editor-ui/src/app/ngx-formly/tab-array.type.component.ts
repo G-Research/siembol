@@ -68,7 +68,6 @@ import { FieldArrayType } from '@ngx-formly/core';
 
       ::ng-deep .mat-tab-label {
         padding: 0 4px;
-        min-width: 200px;
       }
 
       ::ng-deep .mat-tab-label .mat-tab-label-content {
@@ -80,7 +79,7 @@ import { FieldArrayType } from '@ngx-formly/core';
 })
 export class TabArrayTypeComponent extends FieldArrayType {
   selectedTab = 0;
-
+  
   getUnionType(model): string {
     const keys = Object.keys(model);
     return keys[keys.length - 1];
