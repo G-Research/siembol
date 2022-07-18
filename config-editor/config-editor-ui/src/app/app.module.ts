@@ -256,7 +256,7 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
     ReactiveFormsModule,
     FormlyMaterialModule,
     NgxPopperModule.forRoot({}),
-    AgGridModule.withComponents([]),
+    AgGridModule,
   ],
   providers: [
     environment.production ? PROD_PROVIDERS : DEV_PROVIDERS,
