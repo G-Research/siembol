@@ -197,9 +197,11 @@ export class SchemaService {
     for (const part of path) {
       sub = sub[part];
     }
-    for (let i = 0; i < sub.length; i++) {
-      const temp = sub[i];
-      sub[i] = { [sub[i][this.selectorName]]: temp };
+    if (sub) {
+        for (let i = 0; i < sub.length; i++) {
+        const temp = sub[i];
+        sub[i] = { [sub[i][this.selectorName]]: temp };
+      }
     }
   }
 
@@ -242,7 +244,6 @@ export class SchemaService {
   private wrapSchemaUnion(obj: any): any {
     for (const item of obj) {
       const temp = item.properties;
-
       const required = item.required;
       item.properties = { [item.title]: { properties: temp, required, type: 'object' } };
       item.required = [item.title];

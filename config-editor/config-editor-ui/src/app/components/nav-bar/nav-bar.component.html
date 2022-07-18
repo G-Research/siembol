@@ -12,7 +12,7 @@
         <mat-menu #menu="matMenu">
           <button *ngFor="let service of serviceNames" [routerLink]="['/' + getPath(service)]" mat-menu-item>
             <mat-icon *ngIf="service === (serviceName$ | async); else blank">check</mat-icon>
-            <ng-template #blank><mat-icon>blank</mat-icon></ng-template>
+            <ng-template #blank></ng-template>
             {{service | titlecase}}
           </button>
         </mat-menu>

@@ -18,8 +18,7 @@
             "perConfigTestEnabled": true,
             "releaseTestEnabled": true,
             "testCaseEnabled": false
-        },
-        "disableEditingFeatures": true
+        }
     },
     "alert": {
         "release": {
