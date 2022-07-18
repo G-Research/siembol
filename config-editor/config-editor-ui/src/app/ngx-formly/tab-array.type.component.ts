@@ -86,7 +86,7 @@ export class TabArrayTypeComponent extends FieldArrayType {
     return keys[keys.length - 1];
   }
 
-  add(i: number, m) {
+  add(i: number, m = null) {
     const modelLength = this.model ? this.model.length : 0;
     super.add(modelLength, m);
     for (let j = this.model.length - 1; j >= i; j--) {
