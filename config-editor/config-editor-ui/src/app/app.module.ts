@@ -238,8 +238,8 @@ const DEV_PROVIDERS = [...PROD_PROVIDERS];
       validationMessages: [
         { message: 'This field is required', name: 'required' },
         { message: 'should be null', name: 'null' },
-        { message: 'Min length is', name: 'minlength' },
-        { message: 'Max length is', name: 'maxlength' },
+        { message: 'Min length is', name: 'minLength' },
+        { message: 'Max length is', name: 'maxLength' },
         { message: 'Min is', name: 'min' },
         { message: 'Max is', name: 'max' },
         { message: 'Min items required', name: 'minItems' },

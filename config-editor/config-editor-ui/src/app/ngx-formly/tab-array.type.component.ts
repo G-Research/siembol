@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'formly-tab-array',
@@ -9,7 +10,7 @@ import { FieldArrayType } from '@ngx-formly/core';
         <mat-tab *ngFor="let tab of field.fieldGroup; let i = index">
           <ng-template mat-tab-label>
             <mat-icon *ngIf="i != 0" (click)="moveDown(i)">arrow_left</mat-icon>
-            {{ getUnionType(tab?.model) }}
+            {{ getUnionType(i) }}
             <mat-icon *ngIf="i != field.fieldGroup.length - 1" (click)="moveUp(i)">arrow_right</mat-icon>
           </ng-template>
           <span class="align-right">
@@ -80,18 +81,14 @@ import { FieldArrayType } from '@ngx-formly/core';
 export class TabArrayTypeComponent extends FieldArrayType {
   selectedTab = 0;
 
-  getUnionType(model): string {
-    const keys = Object.keys(model);
-    return keys[keys.length - 1];
+  getUnionType(index): string {
+    return this.form.value.evaluators[index].evaluator_type;
   }
 
-  add(index: number, unionModel = null) {
-    const modelLength = this.model ? this.model.length : 0;
-    super.add(modelLength, unionModel);
-    for (let j = this.model.length - 1; j >= index; j--) {
-      this.moveUp(j);
-    }
-    this.selectedTab = index;
+
+  add(index: number, unionModel = undefined) {
+    super.add(index, unionModel);
+    this.options.build();
   }
 
   moveDown(index: number) {
