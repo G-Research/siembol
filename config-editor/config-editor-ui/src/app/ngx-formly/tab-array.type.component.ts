@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FieldArrayType } from '@ngx-formly/core';
-import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'formly-tab-array',
