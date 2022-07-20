@@ -80,13 +80,14 @@ import { FieldArrayType } from '@ngx-formly/core';
 export class TabArrayTypeComponent extends FieldArrayType {
   selectedTab = 0;
 
-  getUnionType(index): string {
+  getUnionType(index: number): string {
     return this.form.value.evaluators[index].evaluator_type;
   }
 
 
   add(index: number, unionModel = undefined) {
     super.add(index, unionModel);
+    this.selectedTab = index;
     this.options.build();
   }
 
