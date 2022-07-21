@@ -7,6 +7,7 @@ import { FormlyFieldConfig } from '@ngx-formly/core';
 
 export class SchemaService {
   titleCasePipe: TitleCasePipe = new TitleCasePipe();
+  protected unionPath: string;
   protected selectorName: string;
   private optionalObjects: string[] = [];
   private modelOrder = {};
@@ -28,11 +29,17 @@ export class SchemaService {
   wrapConfig(obj: any): any {
     const ret = cloneDeep(obj);
     this.wrapOptionalsInArray(ret);
+    if (this.unionPath && Object.keys(ret).length !== 0) {
+      this.wrapUnionConfig(ret, this.unionPath);
+    }
     return ret;
   }
 
   unwrapConfig(obj: any): any {
     let returnObject = cloneDeep(obj);
+    if (this.unionPath) {
+      returnObject = this.unwrapConfigFromUnion(returnObject, this.unionPath);
+    }
     return this.unwrapOptionalsFromArrays(returnObject);
   }
 
@@ -169,6 +176,10 @@ export class SchemaService {
       }
     } else if (obj.type === 'array') {
       path = path === '/' ? path : path + '/';
+      if (obj.items.hasOwnProperty('oneOf')) {
+        this.wrapSchemaUnion(obj.items.oneOf);
+        this.unionPath = path + propKey;
+      }
       if (obj.items.type === 'object') {
         this.wrapOptionalsInSchema(obj.items, propKey, path);
       }
@@ -176,6 +187,20 @@ export class SchemaService {
       path = path === '/' ? path + propKey : path + '/' + propKey;
       for (const key of Object.keys(obj)) {
         this.wrapOptionalsInSchema(obj[key], key, path);
+      }
+    }
+  }
+
+  private wrapUnionConfig(obj, oneOfPath: string) {
+    const path = oneOfPath.split('/').filter(f => f !== '');
+    let sub = obj;
+    for (const part of path) {
+      sub = sub[part];
+    }
+    if (sub) {
+        for (let i = 0; i < sub.length; i++) {
+        const temp = sub[i];
+        sub[i] = { [sub[i][this.selectorName]]: temp };
       }
     }
   }
@@ -196,6 +221,32 @@ export class SchemaService {
         }
         this.findAndWrap(obj[key], optionalKey);
       }
+    }
+  }
+
+  private unwrapConfigFromUnion(obj, oneOfPath: string): any {
+    const path = oneOfPath.split('/').filter(f => f !== '');
+    let sub = obj;
+    for (const part of path) {
+      sub = sub[part];
+    }
+    if (sub) {
+      for (let i = 0; i < sub.length; i++) {
+        const keys = Object.keys(sub[i]);
+        const temp = sub[i][keys[0]];
+        sub[i][keys[0]] = undefined;
+        sub[i] = { ...temp };
+      }
+    }
+    return obj;
+  }
+
+  private wrapSchemaUnion(obj: any): any {
+    for (const item of obj) {
+      const temp = item.properties;
+      const required = item.required;
+      item.properties = { [item.title]: { properties: temp, required, type: 'object' } };
+      item.required = [item.title];
     }
   }
 
