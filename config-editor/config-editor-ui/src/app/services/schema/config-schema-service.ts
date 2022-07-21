@@ -11,8 +11,12 @@ export class ConfigSchemaService extends SchemaService {
 
   constructor(protected uiMetadata: UiMetadata, protected user: string, protected originalSchema: JSONSchema7) {
     super(uiMetadata, user, originalSchema);
+    if (this.uiMetadata.unionType) {
+      this.unionPath = this.uiMetadata.unionType.unionPath ?? undefined;
+      this.selectorName = this.uiMetadata.unionType.unionSelectorName ?? undefined;
+    }
 
-    //NOTE: we need to modify the schema to handle optionals and remove metadata
+    //NOTE: we need to modify the schema to handle optionals, unions and remove metadata
     this._schema = this.returnSubTree(this.originalSchema, this.uiMetadata.perConfigSchemaPath) as JSONSchema7;
     this.wrapOptionalsInSchema(this._schema, '', '');
     this.formatTitlesInSchema(this._schema, '');
