@@ -55,7 +55,7 @@
     "rxjs-compat": "^6.6.7",
     "rxjs-marbles": "^7.0.1",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.7"
   },
   "devDependencies": {
     "@angular-eslint/builder": "^13.1.0",
