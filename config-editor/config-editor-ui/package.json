@@ -91,6 +91,6 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.6.0",
     "typescript": "~4.6.4",
-    "webpack": "^5.69.1"
+    "webpack": "^5.74.0"
   }
 }
