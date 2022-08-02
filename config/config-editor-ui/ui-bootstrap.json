@@ -13,12 +13,7 @@
         "version": "rule_version",
         "author": "rule_author",
         "description": "rule_description",
-        "labelsFunc": "const ret = []; if (model.evaluators && model.evaluators.length > 0){for(const e of model.evaluators) {ret.push(e.evaluator_type);} } return ret;",
-        "testing": {
-            "perConfigTestEnabled": true,
-            "releaseTestEnabled": true,
-            "testCaseEnabled": false
-        }
+        "labelsFunc": "const ret = []; if (model.evaluators && model.evaluators.length > 0){for(const e of model.evaluators) {ret.push(e.evaluator_type);} } return ret;"
     },
     "alert": {
         "release": {
@@ -34,12 +29,7 @@
         "version": "rule_version",
         "author": "rule_author",
         "description": "rule_description",
-        "labelsFunc": "const ret = ['SourceType:' + model.source_type]; if (model.tags !== undefined) { ret.push(...model.tags.map(t => t.tag_name + ':' + t.tag_value));} return ret;",
-        "testing": {
-            "perConfigTestEnabled": true,
-            "releaseTestEnabled": true,
-            "testCaseEnabled": true
-        }
+        "labelsFunc": "const ret = ['SourceType:' + model.source_type]; if (model.tags !== undefined) { ret.push(...model.tags.map(t => t.tag_name + ':' + t.tag_value));} return ret;"
     },
     "correlationalert": {
         "release": {
@@ -55,12 +45,7 @@
         "version": "rule_version",
         "author": "rule_author",
         "description": "rule_description",
-        "labelsFunc": "const ret = []; if(model.correlation_attributes.length > 0) { for(const alert of model.correlation_attributes[0].alerts){ret.push(alert.alert);}} if(model.tags !== undefined) { ret.push(...model.tags.map(t => t.tag_name + ':' + t.tag_value));} return ret;",
-        "testing": {
-            "perConfigTestEnabled": false,
-            "releaseTestEnabled": false,
-            "testCaseEnabled": false
-        }
+        "labelsFunc": "const ret = []; if(model.correlation_attributes.length > 0) { for(const alert of model.correlation_attributes[0].alerts){ret.push(alert.alert);}} if(model.tags !== undefined) { ret.push(...model.tags.map(t => t.tag_name + ':' + t.tag_value));} return ret;"
     },
     "parserconfig": {
         "release": {
@@ -72,12 +57,7 @@
         "version": "parser_version",
         "author": "parser_author",
         "description": "parser_description",
-        "labelsFunc": "const ret = []; if (model.parser_attributes) {ret.push(model.parser_attributes.parser_type);} if (model.parser_extractors && model.parser_extractors.length > 0){for(const p of model.parser_extractors) {ret.push(p.extractor_type)} } return ret;",
-        "testing": {
-            "perConfigTestEnabled": true,
-            "releaseTestEnabled": false,
-            "testCaseEnabled": true
-        }
+        "labelsFunc": "const ret = []; if (model.parser_attributes) {ret.push(model.parser_attributes.parser_type);} if (model.parser_extractors && model.parser_extractors.length > 0){for(const p of model.parser_extractors) {ret.push(p.extractor_type)} } return ret;"
     },
     "parsingapp": {
         "release": {
@@ -89,12 +69,7 @@
         "version": "parsing_app_version",
         "author": "parsing_app_author",
         "description": "parsing_app_description",
-        "labelsFunc": "const ret = []; if (model.parsing_app_settings) {ret.push(model.parsing_app_settings.parsing_app_type); for(const topic of model.parsing_app_settings.input_topics){ ret.push(topic);}} return ret;",
-        "testing": {
-            "perConfigTestEnabled": false,
-            "releaseTestEnabled": false,
-            "testCaseEnabled": false
-        }
+        "labelsFunc": "const ret = []; if (model.parsing_app_settings) {ret.push(model.parsing_app_settings.parsing_app_type); for(const topic of model.parsing_app_settings.input_topics){ ret.push(topic);}} return ret;"
     },
     "enrichment": {
         "release": {
@@ -106,11 +81,6 @@
         "version": "rule_version",
         "author": "rule_author",
         "description": "rule_description",
-        "labelsFunc": "const ret = []; if(model.source_type) {ret.push(model.source_type);} if(model.table_mapping) {if(model.table_mapping.table_name){ret.push(model.table_mapping.table_name);} if(model.table_mapping.joining_key){ret.push(model.table_mapping.joining_key);}} return ret;",
-        "testing": {
-            "perConfigTestEnabled": true,
-            "releaseTestEnabled": false,
-            "testCaseEnabled": true
-        }
+        "labelsFunc": "const ret = []; if(model.source_type) {ret.push(model.source_type);} if(model.table_mapping) {if(model.table_mapping.table_name){ret.push(model.table_mapping.table_name);} if(model.table_mapping.joining_key){ret.push(model.table_mapping.joining_key);}} return ret;"
     }
 }
