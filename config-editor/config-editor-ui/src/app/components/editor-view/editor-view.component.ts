@@ -10,7 +10,7 @@ import { cloneDeep } from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { EditorComponent } from '../editor/editor.component';
-import { FILTER_PARAM_KEY, SEARCH_PARAM_KEY, TestingType } from '@app/model/config-model';
+import { FILTER_PARAM_KEY, SEARCH_PARAM_KEY, DEFAULT_CONFIG_TESTER_NAME, TestingType } from '@app/model/config-model';
 import { SchemaService } from '@app/services/schema/schema.service';
 
 @Component({
@@ -74,10 +74,13 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.configData = config.configData;
+      const testConfig = this.editorService.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+      const testConfigIsEnabled = testConfig === undefined ? false : testConfig.config_testing;
+      const testCaseConfigIsEnabled = testConfig === undefined ? false : testConfig.test_case_testing;
       this.testingEnabled = () =>
-        this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
+      testConfigIsEnabled && this.editorComponent.form.valid;
       this.testCaseEnabled = () =>
-        this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
+      testCaseConfigIsEnabled && this.editorComponent.form.valid && !config.isNew;
     });
   }
 

@@ -14,7 +14,7 @@ import { take, catchError } from 'rxjs/operators';
 import { throwError, of, mergeMap } from 'rxjs';
 import { DiffResults } from 'ngx-text-diff/lib/ngx-text-diff.model';
 import { AppService } from '@app/services/app.service';
-import { ReleaseWrapper, TestingType } from '@app/model/config-model';
+import { ReleaseWrapper, TestingType, DEFAULT_CONFIG_TESTER_NAME } from '@app/model/config-model';
 
 
 @Component({
@@ -91,7 +91,9 @@ export class ReleaseDialogComponent implements AfterViewChecked {
           }
         });
     }
-    this.testEnabled = this.uiMetadata.testing.releaseTestEnabled;
+
+    const testConfig = this.service.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+    this.testEnabled = testConfig !== undefined ? testConfig.release_testing : false; 
     this.environment = this.config.environment;
 
     this.service.configStore.initialRelease$.subscribe((d: Release) => {

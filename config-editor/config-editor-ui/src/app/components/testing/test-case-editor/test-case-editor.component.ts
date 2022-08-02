@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
-import { Type } from '@app/model/config-model';
+import { Type, TestConfigSpec, DEFAULT_CONFIG_TESTER_NAME } from '@app/model/config-model';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { EditorService } from '@app/services/editor.service';
@@ -33,6 +33,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   testStoreService: TestStoreService;
   form: FormGroup = new FormGroup({});
   private markHistoryChange = false;
+  private testConfigSpec: TestConfigSpec = undefined;
   constructor(
     private appService: AppService,
     private editorService: EditorService,
@@ -45,8 +46,9 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.editorService.metaDataMap.testing.testCaseEnabled) {
-      const subschema = cloneDeep(this.editorService.testSpecificationSchema);
+    this.testConfigSpec = this.editorService.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+    if (this.testConfigSpec.test_case_testing) {
+      const subschema = cloneDeep(this.testConfigSpec.test_schema);
       const schema = cloneDeep(this.appService.testCaseSchema);
       schema.properties.test_specification = subschema;
       const schemaConverter = new FormlyJsonschema();

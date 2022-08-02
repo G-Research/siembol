@@ -1,4 +1,7 @@
 <mat-card>
+    <form [formGroup]="form">
+        <formly-form [model]="model" [fields]="fields" [options]="options" [form]="formDropDown"></formly-form>
+    </form>
     <div class="console">
         <span class="title">
             <h4>

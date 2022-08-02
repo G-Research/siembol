@@ -7,7 +7,7 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, DEFAULT_CONFIG_TESTER_NAME, Type } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
@@ -225,12 +225,18 @@ export class ConfigStoreService {
   }
 
   reloadStoreAndRelease(): Observable<any> {
-    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled ? this.configLoaderService.getTestCases() : of({});
     return forkJoin(
       this.configLoaderService.getConfigs(),
       this.configLoaderService.getRelease(),
-      testCaseMapFun
-    ).pipe(map(([configs, release, testCaseMap]) => {
+      this.configLoaderService.getTestSpecification()
+    ).pipe(mergeMap(([configs, release, testConfig]) => {
+      return forkJoin(
+        of(configs),
+        of(release),
+        testConfig.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME).test_case_testing ? this.configLoaderService.getTestCases() : of({})
+      )
+    }))
+    .pipe(map(([configs, release, testCaseMap]) => {
       if (configs && release && testCaseMap) {
         this.initialise(configs, release, testCaseMap, this.user, this.metaDataMap);
       }

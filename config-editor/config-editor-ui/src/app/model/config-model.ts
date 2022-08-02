@@ -291,3 +291,18 @@ export interface ErrorDialog {
   icon_name: string,
   icon_color: string,
 }
+
+export interface TestConfigSpec {
+  name: string;
+  test_schema: JSONSchema7;
+  config_testing: boolean;
+  test_case_testing: boolean;
+  release_testing: boolean;
+  incomplete_result: boolean;
+}
+
+export interface TestConfigSpecTesters {
+  config_testers: TestConfigSpec[];
+}
+
+export const DEFAULT_CONFIG_TESTER_NAME = "default";

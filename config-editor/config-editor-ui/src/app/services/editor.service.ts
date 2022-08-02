@@ -10,7 +10,7 @@ import { AppService } from './app.service';
 import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
-import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearch } from '@app/model/config-model';
+import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearch, TestConfigSpec, DEFAULT_CONFIG_TESTER_NAME } from '@app/model/config-model';
 import { SearchHistoryService } from './search-history.service';
 import { ParamMap } from '@angular/router';
 
@@ -21,9 +21,9 @@ export class ServiceContext {
   adminSchema?: AdminSchemaService;
   configStore: ConfigStoreService;
   serviceName: string;
-  testSpecificationSchema?: JSONSchema7;
   adminMode: boolean;
   searchHistoryService?: SearchHistoryService;
+  testConfigSpec: TestConfigSpec[];
 }
 
 @Injectable({
@@ -56,12 +56,11 @@ export class EditorService {
   get adminMode() {
     return this.serviceContext.adminMode;
   }
-  get testSpecificationSchema() {
-    return this.serviceContext.testSpecificationSchema;
-  }
-
   get searchHistoryService() {
     return this.serviceContext.searchHistoryService;
+  }
+  get testConfigSpec() {
+    return this.serviceContext.testConfigSpec;
   }
 
   constructor(
@@ -78,27 +77,23 @@ export class EditorService {
   }
 
   createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
-    const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);
-    const testSpecificationFun = metaDataMap.testing.perConfigTestEnabled
-      ? configLoader.getTestSpecificationSchema()
-      : of({});
-    const testCaseMapFun = metaDataMap.testing.testCaseEnabled ? configLoader.getTestCases() : of({});
+    const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);  
 
-    return configLoader
-      .getSchema()
-      .pipe(
-        mergeMap(schema =>
-          forkJoin(
-            configLoader.getConfigs(),
-            configLoader.getRelease(),
-            of(schema),
-            testCaseMapFun,
-            testSpecificationFun
-          )
+    return forkJoin(configLoader.getSchema(), configLoader.getTestSpecification())
+      .pipe(mergeMap(([schema, testConfig]) => {
+        const testConfigInfo = testConfig.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+        const testCasesConfig = testConfigInfo === undefined ? false : testConfigInfo.test_case_testing;
+        return forkJoin(
+          configLoader.getConfigs(),
+          configLoader.getRelease(),
+          of(schema),
+          of(testConfig),
+          testCasesConfig ? configLoader.getTestCases() : of({})
         )
-      )
-      .pipe(map(([configs, release, originalSchema, testCaseMap, testSpecSchema]) => {
-        if (configs && release && originalSchema && testCaseMap && testSpecSchema) {
+      }))
+      .pipe(map(([configs, release, originalSchema, testSpec, testCaseMap]) => {
+        if (configs && release && originalSchema && testSpec && testCaseMap) {
+          
           configStore.initialise(configs, release, testCaseMap, user, metaDataMap);
           return {
             adminMode: false,
@@ -107,7 +102,7 @@ export class EditorService {
             configStore,
             metaDataMap,
             serviceName,
-            testSpecificationSchema: testSpecSchema,
+            testConfigSpec: testSpec,
             searchHistoryService: new SearchHistoryService(this.config, serviceName),
           };
         }
@@ -121,9 +116,9 @@ export class EditorService {
     return configLoader
       .getAdminSchema()
       .pipe(
-        mergeMap(schema => forkJoin([configLoader.getAdminConfig(), of(schema)])),
-        map(([adminConfig, originalSchema]) => {
-        if (adminConfig && originalSchema) {
+        mergeMap(schema => forkJoin([configLoader.getAdminConfig(), of(schema), configLoader.getTestSpecification()])),
+        map(([adminConfig, originalSchema, testSpec]) => {
+        if (adminConfig && originalSchema && testSpec) {
           configStore.updateAdmin(adminConfig);
           return {
             adminMode: true,
@@ -132,6 +127,7 @@ export class EditorService {
             configStore,
             metaDataMap,
             serviceName,
+            testConfigSpec: testSpec,
           };
         }
         throwError(() => 'Can not load admin service');

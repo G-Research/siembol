@@ -11,7 +11,8 @@ import {
   GitFiles,
   PullRequestInfo,
   SchemaInfo,
-  TestSchemaInfo,
+  TestConfigSpecTesters,
+  TestConfigSpec,
   AdminSchemaInfo,
   AdminConfig,
   AdminConfigGitFiles,
@@ -28,7 +29,7 @@ import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
 import { JSONSchema7 } from 'json-schema';
-import { TestCaseEvaluation, TestCaseResultAttributes } from '../model/config-model';
+import { TestCaseEvaluation, TestCaseResultAttributes, DEFAULT_CONFIG_TESTER_NAME } from '../model/config-model';
 import { TestCaseEvaluationResult, isNewTestCase } from '../model/test-case';
 import { replacer } from '@app/commons/helper-functions';
 
@@ -79,10 +80,10 @@ export class ConfigLoaderService {
       }));
   }
 
-  getTestSpecificationSchema(): Observable<JSONSchema7> {
+  getTestSpecification(): Observable<TestConfigSpec[]> {
     return this.http
-      .get<TestSchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testschema`)
-      .pipe(map(x => x.test_schema));
+      .get<TestConfigSpecTesters>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testers`)
+      .pipe(map(result => result.config_testers));
   }
 
   getSchema(): Observable<JSONSchema7> {
@@ -374,7 +375,10 @@ export class ConfigLoaderService {
         null
       )
       .pipe(map(result => {
-        if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.testCaseEnabled)) {
+        const testCaseIsEnabled = this.getTestSpecification().pipe(map( resp => {
+          return resp ? resp.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME).test_case_testing : false;      
+        }));
+        if (!result.configs_files || (!result.test_cases_files && testCaseIsEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
         const configAndTestCases = {
