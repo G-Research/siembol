@@ -232,7 +232,7 @@ export class ConfigStoreService {
       return forkJoin(
         of(configs),
         of(release),
-        this.configLoaderService.getConfigTester().config_testing ? this.configLoaderService.getTestCases() : of({})
+        this.configLoaderService.getConfigTester().test_case_testing ? this.configLoaderService.getTestCases() : of({})
       )
     }))
     .pipe(map(([configs, release, testCaseMap]) => {
