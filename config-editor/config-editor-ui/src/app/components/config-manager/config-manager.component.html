@@ -42,7 +42,7 @@
                     </a>
                     <a 
                         *ngIf="useImporters && (importers$ | async)?.config_importers.length > 1"
-                        mat-button 
+                        mat-button
                         [matMenuTriggerFor]="menu" 
                         color="primary" 
                         title="Import Config from Clipboard" >
@@ -55,7 +55,7 @@
                             mat-menu-item>
                             {{importer.importer_name | titlecase}} Importer
                         </button>
-                        </mat-menu>
+                    </mat-menu>
                 </div>
                 <span *ngIf="(pullRequestPending$ | async)?.pull_request_pending === false && (releaseSubmitInFlight$ | async) === false; else prMessage">
                     <button [disabled]="(countChangesInRelease$ | async) === 0" class="button" mat-raised-button color="accent" title="Release Configs in PR" (click)="onRelease()">
