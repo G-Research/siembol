@@ -43,6 +43,7 @@ export class ConfigTestingComponent implements OnInit {
   configTesterModel = {};
   formDropDown: FormGroup = new FormGroup({});
   private testConfigSpec: TestConfigSpec = undefined;
+  numTesters = 0;
 
   constructor(private editorService: EditorService, private cd: ChangeDetectorRef) {}
 
@@ -72,6 +73,7 @@ export class ConfigTestingComponent implements OnInit {
   }
 
   initDropdown() {
+    this.numTesters = this.editorService.testConfigSpec.length;
     return this.configTestersFields.map(f => {
       if (f.key === this.CONFIG_TESTER_KEY) {
         f.templateOptions.options = this.editorService.testConfigSpec.map( tester => {
