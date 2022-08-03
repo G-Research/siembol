@@ -25,7 +25,7 @@ export class ConfigTestingComponent implements OnInit {
   public output: any;
 
   private CONFIG_TESTER_KEY = "config_tester";
-  fields: FormlyFieldConfig[] = [ 
+  configTestersFields: FormlyFieldConfig[] = [ 
     {
       key: this.CONFIG_TESTER_KEY,
       type: "enum",
@@ -49,11 +49,15 @@ export class ConfigTestingComponent implements OnInit {
   ngOnInit() {
     this.testConfigSpec = this.editorService.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
     if (this.testConfigSpec !== undefined && this.testConfigSpec.config_testing) {
-      let schema = this.testConfigSpec.test_schema;
-      this.editorService.configSchema.formatTitlesInSchema(schema, '');
-      this.field = new FormlyJsonschema().toFieldConfig(schema, { map: SchemaService.renameDescription });
+      this.initSchema();
       this.initDropdown();
     }
+  }
+
+  initSchema() {
+    let schema = this.testConfigSpec.test_schema;
+    this.editorService.configSchema.formatTitlesInSchema(schema, '');
+    this.field = new FormlyJsonschema().toFieldConfig(schema, { map: SchemaService.renameDescription });
   }
 
   runTest() {
@@ -68,7 +72,7 @@ export class ConfigTestingComponent implements OnInit {
   }
 
   initDropdown() {
-    return this.fields.map(f => {
+    return this.configTestersFields.map(f => {
       if (f.key === this.CONFIG_TESTER_KEY) {
         f.templateOptions.options = this.editorService.testConfigSpec.map( tester => {
           return { value: tester.name, label: tester.name}
@@ -82,9 +86,7 @@ export class ConfigTestingComponent implements OnInit {
     if (tester !== undefined) {
       this.testConfigSpec = tester;
       if (this.testConfigSpec.config_testing) {
-        let schema = this.testConfigSpec.test_schema;
-        this.editorService.configSchema.formatTitlesInSchema(schema, '');
-        this.field = new FormlyJsonschema().toFieldConfig(schema, { map: SchemaService.renameDescription });
+        this.initSchema();
       }
     }
 

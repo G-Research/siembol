@@ -29,7 +29,7 @@ import { ADMIN_VERSION_FIELD_NAME, UiMetadata } from '@model/ui-metadata-map';
 import { cloneDeep } from 'lodash';
 import { map, mergeMap } from 'rxjs/operators';
 import { JSONSchema7 } from 'json-schema';
-import { TestCaseEvaluation, TestCaseResultAttributes, DEFAULT_CONFIG_TESTER_NAME } from '../model/config-model';
+import { TestCaseEvaluation, TestCaseResultAttributes } from '../model/config-model';
 import { TestCaseEvaluationResult, isNewTestCase } from '../model/test-case';
 import { replacer } from '@app/commons/helper-functions';
 
@@ -417,6 +417,10 @@ export class ConfigLoaderService {
 
   setConfigTester(testConfig: TestConfigSpec) {
     this.testConfigSpec = testConfig;
+  }
+
+  getConfigTester() {
+    return this.testConfigSpec;
   }
 
   private testCaseFilesToMap(files: any[]): TestCaseMap {

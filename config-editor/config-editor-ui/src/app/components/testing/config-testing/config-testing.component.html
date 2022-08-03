@@ -1,6 +1,6 @@
 <mat-card>
-    <form [formGroup]="form">
-        <formly-form [model]="configTesterModel" [fields]="fields" [options]="options" [form]="formDropDown"></formly-form>
+    <form *ngIf="this.editorService.testConfigSpec.length > 1" [formGroup]="form">
+        <formly-form [model]="configTesterModel" [fields]="configTestersFields" [options]="options" [form]="formDropDown"></formly-form>
     </form>
     <div class="console">
         <span class="title">

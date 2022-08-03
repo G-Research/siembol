@@ -227,13 +227,12 @@ export class ConfigStoreService {
   reloadStoreAndRelease(): Observable<any> {
     return forkJoin(
       this.configLoaderService.getConfigs(),
-      this.configLoaderService.getRelease(),
-      this.configLoaderService.getTestSpecification()
-    ).pipe(mergeMap(([configs, release, testConfig]) => {
+      this.configLoaderService.getRelease()
+    ).pipe(mergeMap(([configs, release]) => {
       return forkJoin(
         of(configs),
         of(release),
-        testConfig.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME).test_case_testing ? this.configLoaderService.getTestCases() : of({})
+        this.configLoaderService.getConfigTester().config_testing ? this.configLoaderService.getTestCases() : of({})
       )
     }))
     .pipe(map(([configs, release, testCaseMap]) => {
