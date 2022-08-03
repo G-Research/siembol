@@ -57,7 +57,7 @@
                         </button>
                         </mat-menu>
                 </div>
-                <span *ngIf="(pullRequestPending$ | async).pull_request_pending === false && (releaseSubmitInFlight$ | async) === false; else prMessage">
+                <span *ngIf="(pullRequestPending$ | async)?.pull_request_pending === false && (releaseSubmitInFlight$ | async) === false; else prMessage">
                     <button [disabled]="(countChangesInRelease$ | async) === 0" class="button" mat-raised-button color="accent" title="Release Configs in PR" (click)="onRelease()">
                         RELEASE PR ({{ countChangesInRelease$ | async }})
                     </button>
@@ -67,7 +67,7 @@
                         <a mat-button 
                             color="accent" 
                             style="padding: 0"
-                            *ngIf="(pullRequestPending$ | async).pull_request_url !== undefined" 
+                            *ngIf="(pullRequestPending$ | async)?.pull_request_url !== undefined"
                             href="{{(pullRequestPending$ | async)?.pull_request_url}}"
                             rel="noopener noreferrer"
                             target="_blank">PR for release pending</a>
