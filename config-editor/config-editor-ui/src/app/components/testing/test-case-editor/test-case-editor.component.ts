@@ -46,7 +46,7 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.testConfigSpec = this.editorService.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+    this.testConfigSpec = this.editorService.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
     if (this.testConfigSpec.test_case_testing) {
       const subschema = cloneDeep(this.testConfigSpec.test_schema);
       const schema = cloneDeep(this.appService.testCaseSchema);

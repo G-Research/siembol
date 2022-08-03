@@ -29,7 +29,7 @@ export class ConfigTestingComponent implements OnInit {
     {
       key: this.CONFIG_TESTER_KEY,
       type: "enum",
-      defaultValue: "default",
+      defaultValue: DEFAULT_CONFIG_TESTER_NAME,
       templateOptions: {
         label: "Config tester",
         hintEnd: "The name of the config tester selected",
@@ -40,15 +40,15 @@ export class ConfigTestingComponent implements OnInit {
       },
     },
   ];
-  model = {};
+  configTesterModel = {};
   formDropDown: FormGroup = new FormGroup({});
   private testConfigSpec: TestConfigSpec = undefined;
 
   constructor(private editorService: EditorService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.testConfigSpec = this.editorService.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
-    if (this.testConfigSpec.config_testing) {
+    this.testConfigSpec = this.editorService.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
+    if (this.testConfigSpec !== undefined && this.testConfigSpec.config_testing) {
       let schema = this.testConfigSpec.test_schema;
       this.editorService.configSchema.formatTitlesInSchema(schema, '');
       this.field = new FormlyJsonschema().toFieldConfig(schema, { map: SchemaService.renameDescription });
@@ -78,7 +78,7 @@ export class ConfigTestingComponent implements OnInit {
   }
 
   updateConfigTester(testerName: string) {
-    const tester = this.editorService.testConfigSpec.find(x => x.name === testerName);
+    const tester = this.editorService.getTestConfig(testerName);
     if (tester !== undefined) {
       this.testConfigSpec = tester;
       if (this.testConfigSpec.config_testing) {

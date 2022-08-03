@@ -36,6 +36,7 @@ import { replacer } from '@app/commons/helper-functions';
 export class ConfigLoaderService {
   // eslint-disable-next-line @typescript-eslint/ban-types
   private labelsFunc: Function;
+  private testConfigSpec: TestConfigSpec = undefined;
 
   constructor(
     private http: HttpClient,
@@ -375,9 +376,7 @@ export class ConfigLoaderService {
         null
       )
       .pipe(map(result => {
-        const testCaseIsEnabled = this.getTestSpecification().pipe(map( resp => {
-          return resp ? resp.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME).test_case_testing : false;      
-        }));
+        const testCaseIsEnabled = this.testConfigSpec !== undefined ? this.testConfigSpec.test_case_testing : false;
         if (!result.configs_files || (!result.test_cases_files && testCaseIsEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
@@ -414,6 +413,10 @@ export class ConfigLoaderService {
         config
       )
       .pipe(map(result => result));
+  }
+
+  setConfigTester(testConfig: TestConfigSpec) {
+    this.testConfigSpec = testConfig;
   }
 
   private testCaseFilesToMap(files: any[]): TestCaseMap {

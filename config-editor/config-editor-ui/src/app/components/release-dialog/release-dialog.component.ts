@@ -92,7 +92,7 @@ export class ReleaseDialogComponent implements AfterViewChecked {
         });
     }
 
-    const testConfig = this.service.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+    const testConfig = this.service.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
     this.testEnabled = testConfig !== undefined ? testConfig.release_testing : false; 
     this.environment = this.config.environment;
 

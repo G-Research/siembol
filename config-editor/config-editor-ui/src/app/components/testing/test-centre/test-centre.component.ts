@@ -40,7 +40,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const testConfig = this.editorService.testConfigSpec.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
+    const testConfig = this.editorService.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
     const testCaseConfigEnabled = testConfig !== undefined ? testConfig.test_case_testing : false;
     if (testCaseConfigEnabled) {
       this.testCases$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCases => {

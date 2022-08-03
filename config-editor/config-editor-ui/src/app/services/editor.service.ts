@@ -23,7 +23,7 @@ export class ServiceContext {
   serviceName: string;
   adminMode: boolean;
   searchHistoryService?: SearchHistoryService;
-  testConfigSpec: TestConfigSpec[];
+  testConfigSpec?: TestConfigSpec[];
 }
 
 @Injectable({
@@ -83,6 +83,7 @@ export class EditorService {
       .pipe(mergeMap(([schema, testConfig]) => {
         const testConfigInfo = testConfig.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
         const testCasesConfig = testConfigInfo === undefined ? false : testConfigInfo.test_case_testing;
+        configLoader.setConfigTester(testConfigInfo);
         return forkJoin(
           configLoader.getConfigs(),
           configLoader.getRelease(),
@@ -116,9 +117,9 @@ export class EditorService {
     return configLoader
       .getAdminSchema()
       .pipe(
-        mergeMap(schema => forkJoin([configLoader.getAdminConfig(), of(schema), configLoader.getTestSpecification()])),
-        map(([adminConfig, originalSchema, testSpec]) => {
-        if (adminConfig && originalSchema && testSpec) {
+        mergeMap(schema => forkJoin([configLoader.getAdminConfig(), of(schema)])),
+        map(([adminConfig, originalSchema]) => {
+        if (adminConfig && originalSchema) {
           configStore.updateAdmin(adminConfig);
           return {
             adminMode: true,
@@ -127,7 +128,6 @@ export class EditorService {
             configStore,
             metaDataMap,
             serviceName,
-            testConfigSpec: testSpec,
           };
         }
         throwError(() => 'Can not load admin service');
@@ -145,6 +145,10 @@ export class EditorService {
       filters.push(event.name);
     }
     return filters;
+  }
+
+  getTestConfig(name: string): TestConfigSpec {
+    return this.testConfigSpec.find(x => x.name === name); 
   }
 
   onSaveSearch(currentParams: ParamMap): ServiceSearch[] {
