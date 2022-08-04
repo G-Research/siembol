@@ -31,7 +31,7 @@ function spyPropertyGetter<T, K extends keyof T>(
   return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
 }
 
-fdescribe('ConfigManagerComponent', () => {
+describe('ConfigManagerComponent', () => {
   let mockRouter: any;
   let mockEditorService: any;
   let mockConfigStore: any;
