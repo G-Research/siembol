@@ -43,6 +43,7 @@ export class SideNavComponent implements OnInit {
         trigger.closeMenu();  
     } 
 
+    // Note: hack so menu opens and previous is closed on hover 
     buttonEnter(trigger) {
         setTimeout(() => {
             if(this.prevButtonTrigger && this.prevButtonTrigger != trigger){

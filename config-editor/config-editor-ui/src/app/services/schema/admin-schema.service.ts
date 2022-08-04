@@ -9,6 +9,7 @@ import { areJsonEqual } from '@app/commons/helper-functions';
 export class AdminSchemaService extends SchemaService {
   private readonly _schema: JSONSchema7;
   private rawObjectsPaths: string[];
+  // Note: issue with dots in field keys so replacing with dummy chars
   private readonly SPECIAL_CHAR_TO_REPLACE_DOT = '___';
 
   constructor(protected uiMetadata: UiMetadata, protected user: string, protected originalSchema: JSONSchema7) {

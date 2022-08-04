@@ -27,6 +27,7 @@ export class ErrorDialogBuilder {
     private title = "Error Details";
 
     build(data: Error): ErrorDialog {
+        // Note: message sometimes wrapped in rejection
         data = data["rejection"] ? data["rejection"] : data;
         if (data instanceof HttpErrorResponse) {
             this.fromBackendErrorMessage(data);

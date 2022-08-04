@@ -20,6 +20,7 @@ export class SchemaService {
       typeof schema['type'] === 'string' &&
       ['string', 'textarea', 'number', 'boolean', 'integer'].includes(schema['type'])
     ) {
+      // Note: hintEnd is on the bottom right side of the field (description would have been bottom left)
       field.templateOptions['hintEnd'] = schema.description;
       delete field.templateOptions['description'];
     }

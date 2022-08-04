@@ -65,6 +65,7 @@ export class SearchHistoryService {
     return Object.keys(obj1).every(key =>  {
       let value1 = obj1[key];
       let value2 = obj2[key];
+      // Note: params can be string or array
       if (!Array.isArray(value1)) {
         value1 = [value1];
       }

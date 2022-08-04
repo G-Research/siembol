@@ -95,6 +95,7 @@ export class CloneDialogComponent {
     }
 
     private mapFields() {
+      // Note: serviceOptions have to be computed, so cannot be added into field as constant
       return this.fields.map(f => {
         if (f.key === 'service_instance') {
           f.defaultValue = this.currentService;
