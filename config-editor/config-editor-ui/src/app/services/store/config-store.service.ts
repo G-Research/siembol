@@ -72,7 +72,7 @@ export class ConfigStoreService {
   public readonly isAnyFilterPresent$ = this.store.asObservable().pipe(map(x => x.isAnyFilterPresent));
   public readonly serviceFilterConfig$ = this.store.asObservable().pipe(map(x => x.serviceFilterConfig));
   public readonly serviceFilters$ = this.store.asObservable().pipe(map(x => x.serviceFilters));
-  public readonly testSpecificationTesters$ = this.store.asObservable();
+  public readonly testSpecificationTesters$ = this.store.asObservable().pipe(map(x => x.testSpecificationTesters));
 
   /*eslint-enable */
 
@@ -110,7 +110,8 @@ export class ConfigStoreService {
     release: any, 
     testCaseMap: TestCaseMap, 
     user: string,
-    uiMetadata: UiMetadata
+    uiMetadata: UiMetadata,
+    testers?: TestSpecificationTesters
   ) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .user(user)
@@ -124,6 +125,7 @@ export class ConfigStoreService {
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
       .computeConfigManagerRowData()
+      .updateConfigTesters(testers)
       .build();
 
     this.store.next(newState);
@@ -131,11 +133,6 @@ export class ConfigStoreService {
     if (this.configService.useImporters) {
       this.loadImporters();
     }
-  }
-
-  updateConfigTesters(testers: TestSpecificationTesters) {
-    const newState = new ConfigStoreStateBuilder(this.store.getValue()).updateConfigTesters(testers).build();
-    this.store.next(newState);
   }
 
   updateAdmin(config: AdminConfig) {
@@ -232,17 +229,12 @@ export class ConfigStoreService {
   }
 
   reloadStoreAndRelease(): Observable<any> {
+    const testCaseMapFun = this.store.getValue().testSpecificationTesters.test_case_testing.length > 0 ? this.configLoaderService.getTestCases() : of({});
     return forkJoin(
       this.configLoaderService.getConfigs(),
-      this.configLoaderService.getRelease()
-    ).pipe(mergeMap(([configs, release]) => {
-      return forkJoin(
-        of(configs),
-        of(release),
-        this.store.getValue().testSpecificationTesters.test_case_testing.length > 0 ? this.configLoaderService.getTestCases() : of({})
-      )
-    }))
-    .pipe(map(([configs, release, testCaseMap]) => {
+      this.configLoaderService.getRelease(),
+      testCaseMapFun
+    ).pipe(map(([configs, release, testCaseMap]) => {
       if (configs && release && testCaseMap) {
         this.initialise(configs, release, testCaseMap, this.user, this.metaDataMap);
       }

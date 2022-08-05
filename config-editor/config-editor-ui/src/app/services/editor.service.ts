@@ -98,8 +98,7 @@ export class EditorService {
       .pipe(map(([configs, release, originalSchema, testSpec, testCaseMap, testersType]) => {
         if (configs && release && originalSchema && testSpec && testCaseMap && testersType) {
           
-          configStore.initialise(configs, release, testCaseMap, user, metaDataMap);
-          configStore.updateConfigTesters(testersType);
+          configStore.initialise(configs, release, testCaseMap, user, metaDataMap, testersType);
           return {
             adminMode: false,
             configLoader,
