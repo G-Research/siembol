@@ -40,8 +40,8 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
       key: this.TEST_CASE_TESTER_KEY,
       type: "enum",
       templateOptions: {
-        label: "Config tester",
-        hintEnd: "The name of the config tester selected",
+        label: "Test case tester",
+        hintEnd: "The name of the test case tester selected",
         change: (field, $event) => {
             this.updateConfigTester($event.value);
         },
@@ -65,7 +65,6 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("here");
     this.numTesters = this.editorService.testSpecificationTesters.test_case_testing.length;
     if (this.numTesters > 0) {
       this.testConfigSpec = this.editorService.getTestConfig(this.editorService.testSpecificationTesters.test_case_testing[0]);
