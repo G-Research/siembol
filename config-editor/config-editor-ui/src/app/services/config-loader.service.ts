@@ -36,7 +36,6 @@ import { replacer } from '@app/commons/helper-functions';
 export class ConfigLoaderService {
   // eslint-disable-next-line @typescript-eslint/ban-types
   private labelsFunc: Function;
-  private testConfigSpec: TestConfigSpec = undefined;
 
   constructor(
     private http: HttpClient,
@@ -81,7 +80,7 @@ export class ConfigLoaderService {
       }));
   }
 
-  getTestSpecification(): Observable<TestConfigSpec[]> {
+  getConfigTesters(): Observable<TestConfigSpec[]> {
     return this.http
       .get<TestConfigSpecTesters>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testers`)
       .pipe(map(result => result.config_testers));
@@ -369,14 +368,13 @@ export class ConfigLoaderService {
       .pipe(map(x => x.test_case_result));
   }
 
-  deleteConfig(configName: string): Observable<ConfigAndTestCases> {
+  deleteConfig(configName: string, testCaseIsEnabled: boolean): Observable<ConfigAndTestCases> {
     return this.http
       .post<GitFilesDelete<any>>(
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs/delete?configName=${configName}`,
         null
       )
-      .pipe(map(result => {
-        const testCaseIsEnabled = this.testConfigSpec !== undefined ? this.testConfigSpec.test_case_testing : false;
+      .pipe(map(result => { 
         if (!result.configs_files || (!result.test_cases_files && testCaseIsEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
@@ -413,14 +411,6 @@ export class ConfigLoaderService {
         config
       )
       .pipe(map(result => result));
-  }
-
-  setConfigTester(testConfig: TestConfigSpec) {
-    this.testConfigSpec = testConfig;
-  }
-
-  getConfigTester() {
-    return this.testConfigSpec;
   }
 
   private testCaseFilesToMap(files: any[]): TestCaseMap {

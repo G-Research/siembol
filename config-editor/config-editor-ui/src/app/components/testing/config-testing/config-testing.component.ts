@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { EditorService } from '@app/services/editor.service';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { FormlyForm } from '@ngx-formly/core';
-import { ConfigTestResult, TestingType, TestConfigSpec, DEFAULT_CONFIG_TESTER_NAME } from '../../../model/config-model';
+import { ConfigTestResult, TestingType, TestConfigSpec } from '../../../model/config-model';
 import { take } from 'rxjs/operators';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { SchemaService } from '@app/services/schema/schema.service';
@@ -29,7 +29,6 @@ export class ConfigTestingComponent implements OnInit {
     {
       key: this.CONFIG_TESTER_KEY,
       type: "enum",
-      defaultValue: DEFAULT_CONFIG_TESTER_NAME,
       templateOptions: {
         label: "Config tester",
         hintEnd: "The name of the config tester selected",
@@ -48,8 +47,9 @@ export class ConfigTestingComponent implements OnInit {
   constructor(private editorService: EditorService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.testConfigSpec = this.editorService.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
-    if (this.testConfigSpec !== undefined && this.testConfigSpec.config_testing) {
+    this.numTesters = this.editorService.testSpecificationTesters.config_testing.length;
+    if (this.numTesters > 0) {
+      this.testConfigSpec = this.editorService.getTestConfig(this.editorService.testSpecificationTesters.config_testing[0]);
       this.initSchema();
       this.initDropdown();
     }
@@ -73,11 +73,11 @@ export class ConfigTestingComponent implements OnInit {
   }
 
   initDropdown() {
-    this.numTesters = this.editorService.testConfigSpec.length;
     return this.configTestersFields.map(f => {
       if (f.key === this.CONFIG_TESTER_KEY) {
-        f.templateOptions.options = this.editorService.testConfigSpec.map( tester => {
-          return { value: tester.name, label: tester.name}
+        f.defaultValue = this.editorService.testSpecificationTesters.config_testing[0];
+        f.templateOptions.options = this.editorService.testSpecificationTesters.config_testing.map(testerName => {
+          return { value: testerName, label: testerName}
         })
       }
     })
@@ -91,6 +91,6 @@ export class ConfigTestingComponent implements OnInit {
         this.initSchema();
       }
     }
-
   }
+
 }

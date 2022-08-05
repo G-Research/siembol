@@ -10,7 +10,7 @@ import { AppService } from './app.service';
 import { mergeMap, map } from 'rxjs/operators';
 import { ConfigSchemaService } from './schema/config-schema-service';
 import { AdminSchemaService } from './schema/admin-schema.service';
-import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearch, TestConfigSpec, DEFAULT_CONFIG_TESTER_NAME } from '@app/model/config-model';
+import { CheckboxEvent, FILTER_PARAM_KEY, ServiceSearch, TestConfigSpec, TestSpecificationTesters } from '@app/model/config-model';
 import { SearchHistoryService } from './search-history.service';
 import { ParamMap } from '@angular/router';
 
@@ -24,6 +24,7 @@ export class ServiceContext {
   adminMode: boolean;
   searchHistoryService?: SearchHistoryService;
   testConfigSpec?: TestConfigSpec[];
+  testSpecificationTesters?: TestSpecificationTesters;
 }
 
 @Injectable({
@@ -62,6 +63,9 @@ export class EditorService {
   get testConfigSpec() {
     return this.serviceContext.testConfigSpec;
   }
+  get testSpecificationTesters() {
+    return this.serviceContext.testSpecificationTesters;
+  }
 
   constructor(
     private http: HttpClient, 
@@ -79,23 +83,23 @@ export class EditorService {
   createConfigServiceContext(serviceName: string): Observable<ServiceContext> {
     const [metaDataMap, user, configLoader, configStore] = this.initialiseContext(serviceName);  
 
-    return forkJoin(configLoader.getSchema(), configLoader.getTestSpecification())
+    return forkJoin(configLoader.getSchema(), configLoader.getConfigTesters())
       .pipe(mergeMap(([schema, testConfig]) => {
-        const testConfigInfo = testConfig.find(x => x.name === DEFAULT_CONFIG_TESTER_NAME);
-        const testCasesConfig = testConfigInfo === undefined ? false : testConfigInfo.test_case_testing;
-        configLoader.setConfigTester(testConfigInfo);
+        let testers: TestSpecificationTesters = this.getTestersPerType(testConfig);
         return forkJoin(
           configLoader.getConfigs(),
           configLoader.getRelease(),
           of(schema),
           of(testConfig),
-          testCasesConfig ? configLoader.getTestCases() : of({})
+          testers.config_testing.length > 0 ? configLoader.getTestCases() : of({}),
+          of(testers)
         )
       }))
-      .pipe(map(([configs, release, originalSchema, testSpec, testCaseMap]) => {
-        if (configs && release && originalSchema && testSpec && testCaseMap) {
+      .pipe(map(([configs, release, originalSchema, testSpec, testCaseMap, testersType]) => {
+        if (configs && release && originalSchema && testSpec && testCaseMap && testersType) {
           
           configStore.initialise(configs, release, testCaseMap, user, metaDataMap);
+          configStore.updateConfigTesters(testersType);
           return {
             adminMode: false,
             configLoader,
@@ -104,6 +108,7 @@ export class EditorService {
             metaDataMap,
             serviceName,
             testConfigSpec: testSpec,
+            testSpecificationTesters: testersType,
             searchHistoryService: new SearchHistoryService(this.config, serviceName),
           };
         }
@@ -149,6 +154,22 @@ export class EditorService {
 
   getTestConfig(name: string): TestConfigSpec {
     return this.testConfigSpec.find(x => x.name === name); 
+  }
+
+  getTestersPerType(testConfig: TestConfigSpec[]): TestSpecificationTesters {
+    let testers: TestSpecificationTesters = {config_testing: [], test_case_testing: [], release_testing: []};
+    testConfig.forEach((tester: TestConfigSpec) => {
+      if (tester.config_testing) {
+        testers.config_testing.push(tester.name);
+      }
+      if (tester.test_case_testing) {
+        testers.test_case_testing.push(tester.name);
+      }
+      if (tester.release_testing) {
+        testers.release_testing.push(tester.name);
+      }
+     });
+     return testers;
   }
 
   onSaveSearch(currentParams: ParamMap): ServiceSearch[] {

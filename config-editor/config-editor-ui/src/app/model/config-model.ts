@@ -305,4 +305,8 @@ export interface TestConfigSpecTesters {
   config_testers: TestConfigSpec[];
 }
 
-export const DEFAULT_CONFIG_TESTER_NAME = "default";
+export interface TestSpecificationTesters {
+  config_testing: string[];
+  test_case_testing: string[];
+  release_testing: string[];
+}

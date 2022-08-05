@@ -24,4 +24,5 @@ export const mockStore: ConfigStoreState = {
   isAnyFilterPresent: false,
   serviceFilterConfig: {},
   user: "siembol",
+  testSpecificationTesters: undefined
 };

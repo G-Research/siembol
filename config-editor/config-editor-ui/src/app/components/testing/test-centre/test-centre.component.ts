@@ -8,7 +8,7 @@ import { TestStoreService } from '@app/services/store/test-store.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { AppConfigService } from '@app/services/app-config.service';
-import { Type, DEFAULT_CONFIG_TESTER_NAME } from '@app/model/config-model';
+import { Type } from '@app/model/config-model';
 
 @Component({
   selector: 're-test-centre',
@@ -40,9 +40,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const testConfig = this.editorService.getTestConfig(DEFAULT_CONFIG_TESTER_NAME);
-    const testCaseConfigEnabled = testConfig !== undefined ? testConfig.test_case_testing : false;
-    if (testCaseConfigEnabled) {
+    if (this.editorService.testSpecificationTesters.test_case_testing.length > 0) {
       this.testCases$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCases => {
         this.testCases = testCases;
       });
