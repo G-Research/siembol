@@ -39,7 +39,7 @@ jobs:
         shell: bash
 
       - name: Publish unit test results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           check_name: unit-test-results
           comment_title: Unit Test Results
