@@ -18,36 +18,44 @@ import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.utils.KafkaStreamsFactoryImpl;
 import uk.co.gresearch.siembol.common.utils.KafkaStreamsFactory;
+import uk.co.gresearch.siembol.deployment.monitoring.model.HeartbeatConsumerProperties;
+import uk.co.gresearch.siembol.deployment.monitoring.model.HeartbeatProcessedMessage;
 
+import java.io.Closeable;
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.util.*;
 
 
-public class HeartbeatConsumer {
+public class HeartbeatConsumer implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Kafka stream service initialisation started";
     private static final String INIT_COMPLETED = "Kafka stream service initialisation completed";
+    private static final String MISSING_SERVICES_PROPERTIES = "Missing enabled services for heartbeat consumer";
+    private static final String ERROR_READING_MESSAGE = "Error reading heartbeat message from kafka:  {}";
     private static final ObjectReader MESSAGE_READER = new ObjectMapper()
             .readerFor(HeartbeatProcessedMessage.class);
     private final KafkaStreams streams;
     private final SiembolGauge totalLatencyGauge;
     private final SiembolCounter consumerErrorCount;
     private final SiembolCounter consumerMessageRead;
-    private final List<Pair<ServiceType, SiembolGauge>> servicesMetrics = new ArrayList<>();
+    private final List<Pair<ServiceType, SiembolGauge>> servicesMetrics;
 
     public HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar) {
         this(properties, metricsRegistrar, new KafkaStreamsFactoryImpl());
     }
 
-    HeartbeatConsumer(HeartbeatConsumerProperties properties, SiembolMetricsRegistrar metricsRegistrar,
+    HeartbeatConsumer(HeartbeatConsumerProperties properties,
+                      SiembolMetricsRegistrar metricsRegistrar,
                       KafkaStreamsFactory streamsFactory) {
         consumerErrorCount = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_CONSUMER_ERROR.getMetricName());
         consumerMessageRead = metricsRegistrar.registerCounter(SiembolMetrics.HEARTBEAT_MESSAGES_READ.getMetricName());
 
         if (properties.getEnabledServices() == null) {
-            throw new IllegalArgumentException("Missing enabled services for heartbeat consumer.");
+            throw new IllegalArgumentException(MISSING_SERVICES_PROPERTIES);
         }
+
+        servicesMetrics = new ArrayList<>();
         if (properties.getEnabledServices().contains(ServiceType.PARSING_APP)) {
             servicesMetrics.add(Pair.of(ServiceType.PARSING_APP,
                     metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_PARSING_MS.getMetricName())));
@@ -60,6 +68,7 @@ public class HeartbeatConsumer {
             servicesMetrics.add(Pair.of(ServiceType.RESPONSE,
                     metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_RESPONDING_MS.getMetricName())));
         }
+
         totalLatencyGauge = metricsRegistrar.registerGauge(SiembolMetrics.HEARTBEAT_LATENCY_TOTAL_MS.getMetricName());
         streams = createStreams(streamsFactory, properties);
         streams.start();
@@ -88,7 +97,7 @@ public class HeartbeatConsumer {
             HeartbeatProcessedMessage message = MESSAGE_READER.readValue(value);
             var lastTimestamp = message.getTimestamp().longValue();
 
-            for(var serviceMetric: servicesMetrics) {
+            for (var serviceMetric : servicesMetrics) {
                 switch (serviceMetric.getKey()) {
                     case PARSING_APP:
                         serviceMetric.getValue().setValue(message.getParsingTime().longValue() - lastTimestamp);
@@ -102,22 +111,23 @@ public class HeartbeatConsumer {
                         serviceMetric.getValue().setValue(message.getResponseTime().longValue() - lastTimestamp);
                         lastTimestamp = message.getResponseTime().longValue();
                 }
-
             }
+
             totalLatencyGauge.setValue(currentTimestamp - message.getTimestamp().longValue());
             consumerMessageRead.increment();
         } catch (Exception e) {
-            LOG.error("Error reading heartbeat message from kafka:  {}", e.toString());
+            LOG.error(ERROR_READING_MESSAGE, e.toString());
             consumerErrorCount.increment();
         }
     }
 
     public Health checkHealth() {
         return streams.state().isRunningOrRebalancing() || streams.state().equals(KafkaStreams.State.CREATED)
-                ? Health.up().build() :
-                Health.down().build();
+                ? Health.up().build()
+                : Health.down().build();
     }
 
+    @Override
     public void close() {
         streams.close();
     }

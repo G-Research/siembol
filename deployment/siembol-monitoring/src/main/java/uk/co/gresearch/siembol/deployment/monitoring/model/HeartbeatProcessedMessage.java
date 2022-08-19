@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
+package uk.co.gresearch.siembol.deployment.monitoring.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.co.gresearch.siembol.common.constants.SiembolConstants;
