@@ -1,4 +1,4 @@
-package uk.co.gresearch.siembol.deployment.monitoring.heartbeat;
+package uk.co.gresearch.siembol.deployment.monitoring.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -18,9 +18,10 @@ public class HeartbeatMessage {
     private Map<String, Object> message = new LinkedHashMap<>();
 
     @JsonAnySetter
-    void setMessage(String key, Object value) {
+    public void setMessage(String key, Object value) {
         message.put(key, value);
     }
+
     @JsonAnyGetter
     public Map<String, Object> getMessage() {
         return message;
