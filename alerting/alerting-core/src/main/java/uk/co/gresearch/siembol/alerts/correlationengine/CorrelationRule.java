@@ -5,8 +5,10 @@ import uk.co.gresearch.siembol.alerts.common.AlertingAttributes;
 import uk.co.gresearch.siembol.alerts.common.AlertingFields;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.engine.AbstractRule;
+import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_KEY_TAG_NAME;
 
@@ -14,7 +16,7 @@ public class CorrelationRule extends AbstractRule {
     public enum Flags {
         USE_EVENT_TIME,
     }
-    private static final String EVENT_TIMESTAMP_FIELD = "timestamp";
+    private static final String EVENT_TIMESTAMP_FIELD = SiembolConstants.TIMESTAMP;
     private final EnumSet<Flags> flags;
     private final int alertsThresholds;
     private final long timeWindowInMs;
@@ -24,6 +26,8 @@ public class CorrelationRule extends AbstractRule {
     private final Map<String, Integer> alertToCounterIndex;
     private final Map<String, ArrayList<AlertCounter>> alertCounters = new HashMap<>();
 
+    private final List<String> fieldNamesToSend;
+
     protected CorrelationRule(Builder<?> builder) {
         super(builder);
         this.alertsThresholds = builder.alertsThresholds;
@@ -32,6 +36,7 @@ public class CorrelationRule extends AbstractRule {
         this.flags = builder.flags;
         this.alertCountersMetadata = builder.alertCountersMetadata;
         this.alertToCounterIndex = builder.alertToCounterIndex;
+        this.fieldNamesToSend = builder.fieldNamesToSend;
     }
     @Override
     public AlertingResult match(Map<String, Object> alert) {
@@ -42,17 +47,23 @@ public class CorrelationRule extends AbstractRule {
                 && (alert.get(EVENT_TIMESTAMP_FIELD) instanceof Number)
                 ? ((Number)alert.get(EVENT_TIMESTAMP_FIELD)).longValue()
                 : processingTime;
+
+        Object[] fieldsToSend = new Object[fieldNamesToSend.size()];
+        for (int i = 0; i < fieldNamesToSend.size(); i++) {
+            fieldsToSend[i] = alert.get(fieldNamesToSend.get(i));
+        }
+        AlertContext alertContext = new AlertContext(eventTime, fieldsToSend);
         try {
-            if (EvaluationResult.NO_MATCH == evaluate(key, alertName, eventTime, processingTime)) {
+            if (EvaluationResult.NO_MATCH == evaluate(key, alertName, alertContext, processingTime)) {
                 return AlertingResult.fromEvaluationResult(EvaluationResult.NO_MATCH, alert);
             }
 
-            Map<String, Object> outAlert = createOutputAlert(alert);
+            Map<String, Object> outAlert = createOutputAlert(alert, key);
             alertCounters.remove(key);
             return AlertingResult.fromEvaluationResult(EvaluationResult.MATCH, outAlert);
         } catch (Exception e) {
             AlertingAttributes attr = new AlertingAttributes();
-            Map<String, Object> outAlert = createOutputAlert(alert);
+            Map<String, Object> outAlert = createOutputAlert(alert, key);
             outAlert.put(AlertingFields.EXCEPTION.getCorrelationAlertingName(), ExceptionUtils.getStackTrace(e));
             attr.setEvent(outAlert);
             return new AlertingResult(AlertingResult.StatusCode.ERROR, attr);
@@ -69,7 +80,7 @@ public class CorrelationRule extends AbstractRule {
     }
 
 
-    private EvaluationResult evaluate(String key, String ruleName, long eventTime, long processingTime) {
+    private EvaluationResult evaluate(String key, String ruleName, AlertContext alertContext, long processingTime) {
         ArrayList<AlertCounter> currentCounterList = alertCounters.get(key);
         if (currentCounterList == null) {
             currentCounterList = createAlertCounters();
@@ -80,7 +91,8 @@ public class CorrelationRule extends AbstractRule {
 
         int index = alertToCounterIndex.get(ruleName);
         AlertCounter currentCounter = currentCounterList.get(index);
-        currentCounter.update(eventTime);
+
+        currentCounter.update(alertContext);
         if (currentCounter.matchThreshold()) {
             return evaluateRule(currentCounterList);
         } else {
@@ -88,10 +100,19 @@ public class CorrelationRule extends AbstractRule {
         }
     }
 
-    private Map<String, Object> createOutputAlert(Map<String, Object> alert) {
+    private Map<String, Object> createOutputAlert(Map<String, Object> alert, String key) {
         Map<String, Object> ret = new HashMap<>(alert);
         ret.put(AlertingFields.RULE_NAME.getCorrelationAlertingName(), getRuleName());
         ret.put(AlertingFields.FULL_RULE_NAME.getCorrelationAlertingName(), getFullRuleName());
+
+        List<Map<String, Object>> correlatedAlerts = alertCounters.get(key).stream()
+                .flatMap(x -> x.getCorrelatedAlerts(fieldNamesToSend).stream())
+                .filter(x -> !x.isEmpty())
+                .collect(Collectors.toList());
+
+        if (!correlatedAlerts.isEmpty()) {
+            ret.put(AlertingFields.CORRELATED_ALERTS.getCorrelationAlertingName(), correlatedAlerts);
+        }
         return ret;
     }
 
@@ -143,6 +164,7 @@ public class CorrelationRule extends AbstractRule {
         protected ArrayList<AlertCounterMetadata> alertCountersMetadata = new ArrayList<>();
         protected Map<String, Integer> alertToCounterIndex = new HashMap<>();
         protected EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
+        protected List<String> fieldNamesToSend = new ArrayList<>();
 
         public Builder<T> alertsThresholds(Integer alertThresholds) {
             this.alertsThresholds = alertThresholds;
@@ -173,6 +195,11 @@ public class CorrelationRule extends AbstractRule {
             alertCountersMetadataTemp.add(metadata);
             return this;
         }
+
+        public Builder<T> fieldNamesToSend(List<String> fieldNames) {
+            this.fieldNamesToSend = fieldNames;
+            return this;
+        }
     }
 
     public static CorrelationRule.Builder<CorrelationRule> builder() {
@@ -186,7 +213,7 @@ public class CorrelationRule extends AbstractRule {
                 if (alertCountersMetadataTemp.isEmpty()) {
                     throw new IllegalArgumentException(EMPTY_ALERT_COUNTERS_MSG);
                 }
-                if (timeWindowInMs == null || maxLagTimeInSec == null) {
+                if (timeWindowInMs == null || maxLagTimeInSec == null || fieldNamesToSend == null) {
                     throw new IllegalArgumentException(MISSING_REQUIRED_ATTRIBUTES);
                 }
                 maxLagTimeInMs = maxLagTimeInSec * MILLI_MULTIPLIER;
