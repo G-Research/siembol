@@ -9,7 +9,8 @@ public enum AlertingFields {
     MAX_PER_HOUR_FIELD("max_per_hour"),
     MAX_PER_DAY_FIELD("max_per_day"),
     EXCEPTION("exception"),
-    PROCESSING_TIME("processing_time");
+    PROCESSING_TIME("processing_time"),
+    CORRELATED_ALERTS("correlated_alerts");
 
     private final String name;
     private static final String ALERTS_PREFIX = "siembol_alerts";

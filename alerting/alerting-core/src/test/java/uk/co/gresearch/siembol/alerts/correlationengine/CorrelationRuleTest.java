@@ -25,9 +25,11 @@ public class CorrelationRuleTest {
     private List<Map<String, Object>> alerts;
     private final String correlationKey = "1.2.3.4";
 
+    private List<String> fieldNames;
 
     @Before
     public void setUp() {
+        fieldNames = Arrays.asList("constant", "variable");
         builder = CorrelationRule.builder();
         builder
                 .timeWindowInMs(timeWindowInMs)
@@ -35,6 +37,7 @@ public class CorrelationRuleTest {
                 .addAlertCounter("alert1", 1, counterFlags)
                 .addAlertCounter("alert2", 2, counterFlags)
                 .addAlertCounter("alert3", 3, counterFlags)
+                .fieldNamesToSend(fieldNames)
                 .name(ruleName)
                 .version(1);
     }
@@ -132,11 +135,96 @@ public class CorrelationRuleTest {
         AlertingResult ret = rule.match(alerts.get(0));
         Assert.assertEquals(OK, ret.getStatusCode());
         Assert.assertEquals(MATCH, ret.getAttributes().getEvaluationResult());
+        Assert.assertNotNull(ret.getAttributes().getEvent()
+                .get(AlertingFields.CORRELATED_ALERTS.getCorrelationAlertingName()));
+
+        Assert.assertTrue(ret.getAttributes().getEvent()
+                .get(AlertingFields.CORRELATED_ALERTS.getCorrelationAlertingName()) instanceof List<?>);
+        Assert.assertEquals(6, ((List<?>) ret.getAttributes().getEvent()
+                .get(AlertingFields.CORRELATED_ALERTS.getCorrelationAlertingName())).size());
+
         alerts = createAlert(1, correlationKey, "alert3", 30003);
 
         ret = rule.match(alerts.get(0));
         Assert.assertEquals(OK, ret.getStatusCode());
         Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+    }
+
+    @Test
+    public void matchEventTimeNoFieldsToSend() {
+        ruleFlags = EnumSet.of(CorrelationRule.Flags.USE_EVENT_TIME);
+        rule = builder
+                .flags(ruleFlags)
+                .fieldNamesToSend(new ArrayList<>())
+                .build();
+
+        alerts = createAlert(1, correlationKey, "alert1", 30000);
+        for (Map<String, Object> alert : alerts) {
+            AlertingResult ret = rule.match(alert);
+            Assert.assertEquals(OK, ret.getStatusCode());
+            Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+        }
+
+        alerts = createAlert(2, correlationKey, "alert2", 30001);
+        for (Map<String, Object> alert : alerts) {
+            AlertingResult ret = rule.match(alert);
+            Assert.assertEquals(OK, ret.getStatusCode());
+            Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+        }
+
+        alerts = createAlert(2, correlationKey, "alert3", 30002);
+        for (Map<String, Object> alert : alerts) {
+            AlertingResult ret = rule.match(alert);
+            Assert.assertEquals(OK, ret.getStatusCode());
+            Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+        }
+        alerts = createAlert(1, correlationKey, "alert3", 30003);
+        AlertingResult ret = rule.match(alerts.get(0));
+        Assert.assertEquals(OK, ret.getStatusCode());
+        Assert.assertEquals(MATCH, ret.getAttributes().getEvaluationResult());
+        Assert.assertNull(ret.getAttributes().getEvent()
+                .get(AlertingFields.CORRELATED_ALERTS.getCorrelationAlertingName()));
+    }
+
+    @Test
+    public void matchEventTimeTimeNoFieldsToSendInEvent() {
+        ruleFlags = EnumSet.of(CorrelationRule.Flags.USE_EVENT_TIME);
+        rule = builder.flags(ruleFlags).build();
+
+        alerts = createAlert(1, correlationKey, "alert1", 30000);
+        alerts.forEach(x -> x.remove("constant"));
+        alerts.forEach(x -> x.remove("variable"));
+        for (Map<String, Object> alert : alerts) {
+            AlertingResult ret = rule.match(alert);
+            Assert.assertEquals(OK, ret.getStatusCode());
+            Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+        }
+
+        alerts = createAlert(2, correlationKey, "alert2", 30001);
+        alerts.forEach(x -> x.remove("constant"));
+        alerts.forEach(x -> x.remove("variable"));
+        for (Map<String, Object> alert : alerts) {
+            AlertingResult ret = rule.match(alert);
+            Assert.assertEquals(OK, ret.getStatusCode());
+            Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+        }
+
+        alerts = createAlert(2, correlationKey, "alert3", 30002);
+        alerts.forEach(x -> x.remove("constant"));
+        alerts.forEach(x -> x.remove("variable"));
+        for (Map<String, Object> alert : alerts) {
+            AlertingResult ret = rule.match(alert);
+            Assert.assertEquals(OK, ret.getStatusCode());
+            Assert.assertEquals(NO_MATCH, ret.getAttributes().getEvaluationResult());
+        }
+        alerts = createAlert(1, correlationKey, "alert3", 30003);
+        alerts.forEach(x -> x.remove("constant"));
+        alerts.forEach(x -> x.remove("variable"));
+        AlertingResult ret = rule.match(alerts.get(0));
+        Assert.assertEquals(OK, ret.getStatusCode());
+        Assert.assertEquals(MATCH, ret.getAttributes().getEvaluationResult());
+        Assert.assertNull(ret.getAttributes().getEvent()
+                .get(AlertingFields.CORRELATED_ALERTS.getCorrelationAlertingName()));
     }
 
     @Test
@@ -223,16 +311,18 @@ public class CorrelationRuleTest {
         Assert.assertEquals(MATCH, ret.getAttributes().getEvaluationResult());
     }
 
-
     private List<Map<String, Object>> createAlert(int numbers, String key, String alertName, long processingTime) {
         Map<String, Object> alert = new HashMap<>();
+        alert.put("constant", "secret");
+
         alert.put(AlertingFields.RULE_NAME.getAlertingName(), alertName);
         alert.put(CORRELATION_KEY_TAG_NAME.toString(), key);
         alert.put(AlertingFields.PROCESSING_TIME.getCorrelationAlertingName(), processingTime);
         alert.put("timestamp", processingTime);
-        return new ArrayList<>(Collections.nCopies(numbers, alert));
+        List<Map<String, Object>> ret =  Collections.nCopies(numbers, alert);
+        for (int i = 0; i < ret.size(); i++) {
+            ret.get(i).put("variable", i);
+        }
+        return ret;
     }
-
-
-
 }

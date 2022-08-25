@@ -69,12 +69,13 @@ The correlation alert allows you to group several detections together before rai
   - `time_computation_type` - You can configure how the time window is calculated 
     - `event_time` - The time window is calculated using the `timestamp` field in the events, the `timestamp` field is usually computed during parsing from the log  
     - `processing_time` - The time window is calculated using the current time (when an alert is evaluated), the events need to be processed by the correlation alert component within the time window
-    - `max_time_lag_in_sec` - The event with timestamp older than the current time minus the lag (in seconds) will be discarded
-     - `alerts_threshold` - The alert's threshold allows you to configure how many detections (you can specify which detections later) need to trigger in the time window for the alert to trigger. This field accepts an integer value, if it is left empty then all detections need to trigger before an alert is created
-     - `alerts` - The list of alerts for correlation
-        - `alert` - The alert name used for correlation
-        - `threshold` - The number of times the alert has to trigger in the time window
-        - `mandatory` - The alert must pass the threshold for the rule to match 
+  - `max_time_lag_in_sec` - The event with timestamp older than the current time minus the lag (in seconds) will be discarded
+  - `alerts_threshold` - The alert's threshold allows you to configure how many detections (you can specify which detections later) need to trigger in the time window for the alert to trigger. This field accepts an integer value, if it is left empty then all detections need to trigger before an alert is created
+    - `alerts` - The list of alerts for correlation
+       - `alert` - The alert name used for correlation
+       - `threshold` - The number of times the alert has to trigger in the time window
+       - `mandatory` - The alert must pass the threshold for the rule to match 
+  - `fields_to_send` - The list of fields of correlated alerts that will be included in the triggered alert after matching
 ## Admin config
 ### Common admin config fields
 - `alerts.topology.name` - The name of storm topology

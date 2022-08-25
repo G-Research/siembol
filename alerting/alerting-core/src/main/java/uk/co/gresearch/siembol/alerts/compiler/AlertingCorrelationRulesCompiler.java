@@ -94,6 +94,10 @@ public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
                         .protections(protections)
                         .version(ruleDto.getRuleVersion());
 
+                if (attr.getFieldsToSend() != null) {
+                    builder.fieldNamesToSend(attr.getFieldsToSend());
+                }
+
                 for (CorrelationAlertDto alert : attr.getAlerts()) {
                     EnumSet<AlertCounterMetadata.Flags> flags = alert.getMandatory()
                             ? EnumSet.of(AlertCounterMetadata.Flags.MANDATORY)

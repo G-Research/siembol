@@ -1,50 +1,60 @@
 package uk.co.gresearch.siembol.alerts.correlationengine;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 public class AlertCounter {
     private final AlertCounterMetadata counterMetadata;
-    private final PriorityQueue<Long> timestampsHeap = new PriorityQueue<>();
+    private final PriorityQueue<AlertContext> alertContextHeap = new PriorityQueue<>();
 
     public AlertCounter(AlertCounterMetadata counterMetadata) {
         this.counterMetadata = counterMetadata;
     }
 
-    public void update(long eventTime) {
+    public void update(AlertContext alertContext) {
         if (getSize() == counterMetadata.getThreshold()) {
-            timestampsHeap.poll();
+            alertContextHeap.poll();
         }
 
-        timestampsHeap.add(eventTime);
+        alertContextHeap.add(alertContext);
     }
 
     public void clean(long waterMark) {
-        if (!timestampsHeap.isEmpty() && timestampsHeap.peek() < waterMark - counterMetadata.getExtendedWindowSize()) {
-            timestampsHeap.clear();
+        if (!alertContextHeap.isEmpty()
+                && alertContextHeap.peek().getTimestamp() < waterMark - counterMetadata.getExtendedWindowSize()) {
+            alertContextHeap.clear();
             return;
         }
 
-        while (!timestampsHeap.isEmpty() && timestampsHeap.peek() < waterMark) {
-            timestampsHeap.poll();
+        while (!alertContextHeap.isEmpty() && alertContextHeap.peek().getTimestamp() < waterMark) {
+            alertContextHeap.poll();
         }
     }
 
     public boolean isEmpty() {
-        return timestampsHeap.isEmpty();
+        return alertContextHeap.isEmpty();
     }
 
     public int getSize() {
-        return timestampsHeap.size();
+        return alertContextHeap.size();
     }
 
     public Long getOldest() {
-        return timestampsHeap.peek();
+        return alertContextHeap.isEmpty() ? null : alertContextHeap.peek().getTimestamp();
     }
 
     public boolean matchThreshold() {
-        return timestampsHeap.size() >= counterMetadata.getThreshold();
+        return alertContextHeap.size() >= counterMetadata.getThreshold();
     }
 
     public boolean isMandatory() {
         return counterMetadata.isMandatory();
+    }
+
+    public List<Map<String, Object>> getCorrelatedAlerts(List<String> fieldNames) {
+        List<Map<String, Object>> ret = new ArrayList<>();
+        alertContextHeap.forEach(x -> ret.add(x.getFields(fieldNames)));
+        return ret;
     }
 }

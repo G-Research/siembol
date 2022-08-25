@@ -35,6 +35,12 @@ public class CorrelationAttributesDto {
     @Attributes(required = true, description = "The alerts used for the correlation", minItems = 1)
     private List<CorrelationAlertDto> alerts;
 
+    @JsonProperty("fields_to_send")
+    @Attributes(required = true, description = "The list of fields of correlated alerts " +
+            "that will be included in the triggered alert", minItems = 1)
+    private List<String> fieldsToSend;
+
+
     public Integer getTimeWindow() {
         return timeWindow;
     }
@@ -81,5 +87,13 @@ public class CorrelationAttributesDto {
 
     public void setMaxTimeLagInSec(Integer maxTimeLagInSec) {
         this.maxTimeLagInSec = maxTimeLagInSec;
+    }
+
+    public List<String> getFieldsToSend() {
+        return fieldsToSend;
+    }
+
+    public void setFieldsToSend(List<String> fieldsToSend) {
+        this.fieldsToSend = fieldsToSend;
     }
 }
