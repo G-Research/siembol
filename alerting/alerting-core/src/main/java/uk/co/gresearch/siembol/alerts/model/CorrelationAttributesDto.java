@@ -36,7 +36,7 @@ public class CorrelationAttributesDto {
     private List<CorrelationAlertDto> alerts;
 
     @JsonProperty("fields_to_send")
-    @Attributes(required = true, description = "The list of fields of correlated alerts " +
+    @Attributes(description = "The list of fields of correlated alerts " +
             "that will be included in the triggered alert", minItems = 1)
     private List<String> fieldsToSend;
 
