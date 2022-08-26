@@ -247,6 +247,7 @@ export class ConfigManagerComponent implements OnInit, OnDestroy {
 
   onSyncWithGit() {
     this.blockUI.start('loading store and releases');
+    // I do not think this works anymore since caching the release -> release not actually updated
     this.configStore.reloadStoreAndRelease().subscribe(() => {
       this.configStore.resetChangesInRelease();
       this.blockUI.stop();

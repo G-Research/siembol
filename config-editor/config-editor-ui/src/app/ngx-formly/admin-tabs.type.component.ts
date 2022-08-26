@@ -39,6 +39,7 @@ import { FieldType, FieldTypeConfig } from '@ngx-formly/core';
 })
 export class AdminTabTypeComponent extends FieldType<FieldTypeConfig> implements OnInit {
   selectedTab = 0;
+  // Note: different tabs for these types, others are in general tab (unless genericSettingTab set)
   tabTypes = ['array', 'object', 'rawobject'];
 
   ngOnInit() {

@@ -12,6 +12,7 @@ const storeColumns = [
     maxWidth: 350,
     headerName: "Config Name",
     cellRenderer: ConfigNameCellRendererComponent,
+    // Note: only allow dragging for released configs
     rowDrag: params => params.node.data.releasedVersion > 0,
   },
   { 
@@ -31,6 +32,7 @@ const storeColumns = [
     cellRenderer: StoreActionCellRendererComponent,
     editable: false,
     colId: "action",
+    // Note: searching not on this column
     getQuickFilterText: () => '',
   },
 ];
@@ -43,6 +45,7 @@ const releaseColumns = [
     cellRenderer: ReleaseActionsCellRendererComponent,
     editable: false,
     colId: "status",
+    // Note: searching not on this column
     getQuickFilterText: () => '',
   },
 ]
