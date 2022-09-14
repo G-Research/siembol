@@ -94,8 +94,7 @@ public class ReleasePullRequestService {
                 throw new IllegalArgumentException(MISSING_ARGUMENTS_MSG);
             }
 
-            repoId = RepositoryId.createFromId(repoName);
-
+            repoId = RepositoryId.createFromId(user+"/"+repoName);
             GitHubClient client = GitHubClient.createClient(uri);
             client.setCredentials(user, password);
             service = new PullRequestService(client);

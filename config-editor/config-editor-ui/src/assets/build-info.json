@@ -1,0 +1,7 @@
+{
+    "appName": "Config Editor UI",
+     "appVersion": "v2.5.0",
+     "angularVersion": "13.3.2",
+     "buildDate": "$(date -u +%Y%m%d-%H:%M:%S)",
+     "siembolCompileTimeVersion": ".siembolCompileTimeVersion"
+}
