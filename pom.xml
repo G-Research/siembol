@@ -39,7 +39,7 @@
         <java_test_version>17</java_test_version>
         <maven.compiler.release>11</maven.compiler.release>
         <maven_compiler_version>3.10.1</maven_compiler_version>
-        <jackson_version>2.13.3</jackson_version>
+        <jackson_version>2.13.4</jackson_version>
         <junit_version>4.13.2</junit_version>
         <mockito_version>4.8.0</mockito_version>
         <shade_version>3.3.0</shade_version>
