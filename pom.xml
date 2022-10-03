@@ -67,7 +67,7 @@
         <kubernetes_client_version>6.1.1</kubernetes_client_version>
         <reactor_core_version>3.4.23</reactor_core_version>
         <io_micrometer_version>1.9.3</io_micrometer_version>
-        <byte_buddy_version>1.12.14</byte_buddy_version>
+        <byte_buddy_version>1.12.17</byte_buddy_version>
         <json_path_version>2.7.0</json_path_version>
     </properties>
     <modules>
