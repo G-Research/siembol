@@ -10,7 +10,7 @@ In order to deploy the project on such devices, you have to procede with deploym
 Deployment in the cloud
 ------------------------
 
-Here, I will put all the steps how to deploy. (After, I succesfully do so).
+Here, I will put all the steps how to deploy. (After, I successfully do so).
 
 Local Install
 ----------------
