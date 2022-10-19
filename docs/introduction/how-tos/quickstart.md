@@ -5,18 +5,18 @@ Quickstart Guide
 2. [Deployment in the cloud](#deployment-in-the-cloud)
 3. [Local Install](#local-install)
 
-##Compatibility 
+Compatibility 
 ----------------
 
 Local install is not feasible for MacBooks with M1/M2 Apple Sillicone chips. 
 In order to deploy the project on such devices, you have to procede with deployment in the cloud. 
 
-##Deployment in the cloud
+Deployment in the cloud
 ------------------------
 
 Here, I will put all the steps how to deploy. (After, I successfully do so).
 
-##Local Install
+Local Install
 ----------------
 
 ### 1. Run minikube.sh
