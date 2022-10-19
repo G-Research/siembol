@@ -1,6 +1,17 @@
 Quickstart Guide
 ================
 
+Compatiblity 
+----------------
+
+Local install is not feasible for MacBooks with M1/M2 Apple Sillicone chips. 
+In order to deploy the project on such devices, you have to procede with deployment in the cloud. 
+
+Deployment in the cloud
+------------------------
+
+Here, I will put all the steps how to deploy. (After, I succesfully do so).
+
 Local Install
 ----------------
 
