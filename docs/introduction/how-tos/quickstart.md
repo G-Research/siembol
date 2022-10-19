@@ -1,9 +1,9 @@
 Quickstart Guide
 ================
 
-1. [Compatibility](#compatibility)
-2. [Deployment in the cloud](#deployment-in-the-cloud)
-3. [Local Install](#local-install)
+1. [Compatibility.](#compatibility)
+2. [Deployment in the cloud.](#deployment-in-the-cloud)
+3. [Local Install.](#local-install)
 
 Compatibility 
 ----------------
