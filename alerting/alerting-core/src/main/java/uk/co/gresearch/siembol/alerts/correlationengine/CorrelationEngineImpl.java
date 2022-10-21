@@ -130,7 +130,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
         private List<Pair<String, Object>> outputFields = new ArrayList<>();
 
         /**
-         * Set time provider for providing the current time
+         * Sets time provider for providing the current time
          *
          * @param timeProvider time provider
          * @return this builder
@@ -141,7 +141,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set correlation rules that should be prepared in advance
+         * Sets correlation rules that should be prepared in advance
          *
          * @param rules list of correlation alerting rules
          * @return this builder
@@ -152,7 +152,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set key-value pairs that will be putted into event after matching a rule
+         * Sets key-value pairs that will be putted into event after matching a rule
          *
          * @param constants list of key-value pairs
          * @return this builder
@@ -163,7 +163,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set key-value pairs with rule protection information
+         * Sets key-value pairs with rule protection information
          * that will be putted into event after matching a rule
          *
          * @param protections list of key-value pairs
@@ -175,7 +175,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Build the correlation alerting engine
+         * Builds the correlation alerting engine
          *
          * @return correlation engine built from the builder state
          * @throws IllegalArgumentException in case of wrong arguments

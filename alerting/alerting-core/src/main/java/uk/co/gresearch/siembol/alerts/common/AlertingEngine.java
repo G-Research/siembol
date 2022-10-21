@@ -25,7 +25,7 @@ public interface AlertingEngine {
             .readerFor(new TypeReference<Map<String, Object>>() { });
 
     /**
-     * Evaluate event and returns alerting result with a matching result and additional attributes.
+     * Evaluates event and returns alerting result with a matching result and additional attributes
      *
      * @param event serialized event as json string
      * @return      alerting result after evaluation
@@ -41,7 +41,7 @@ public interface AlertingEngine {
     }
 
     /**
-     * Evaluate event and returns alerting result with a matching result and additional attributes.
+     * Evaluates event and returns alerting result with a matching result and additional attributes
      *
      * @param event deserialized event as map of string to object
      * @return      alerting result after evaluation
@@ -50,7 +50,7 @@ public interface AlertingEngine {
     AlertingResult evaluate(Map<String, Object> event);
 
     /**
-     * Returns an alerting engine type.
+     * Returns an alerting engine type
      *
      * @return      alerting engine type
      * @see         AlertingEngineType

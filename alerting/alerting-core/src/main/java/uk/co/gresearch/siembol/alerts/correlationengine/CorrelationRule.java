@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_KEY_TAG_NAME;
 /**
- * An object for alerting rule
+ * An object for correlation alerting rule
  *
  * <p>This derived class of AbstractRule is implementing a correlation alerting rule
  *
@@ -207,7 +207,7 @@ public class CorrelationRule extends AbstractRule {
         protected EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
         protected List<String> fieldNamesToSend = new ArrayList<>();
         /**
-         * Set the number of alerts that needs to match
+         * Sets the number of alerts that needs to match
          *
          * @param alertThresholds threshold for number of alerts to match
          * @return this builder
@@ -218,7 +218,7 @@ public class CorrelationRule extends AbstractRule {
         }
 
         /**
-         * Set the time sliding window in milliseconds
+         * Sets the time sliding window in milliseconds
          *
          * @param timeWindowInMs sliding window for evaluation in milliseconds
          * @return this builder
@@ -229,7 +229,7 @@ public class CorrelationRule extends AbstractRule {
         }
 
         /**
-         * Set the maximum lag of alerts in milliseconds.
+         * Sets the maximum lag of alerts in milliseconds.
          * The alerts older than this time can be cleaned and will be not considered during evaluation.
          *
          * @param maxLagTimeInSec maximum lag of alerts
@@ -241,7 +241,7 @@ public class CorrelationRule extends AbstractRule {
         }
 
         /**
-         * Set correlation rule flags
+         * Sets correlation rule flags
          *
          * @param flags correlation rule flags
          * @return this builder
@@ -272,7 +272,7 @@ public class CorrelationRule extends AbstractRule {
         }
 
         /**
-         * Set alert field namesthat will be included in the correlated alerts field after triggering the rule
+         * Sets alert field names that will be included in the correlated alerts' field after triggering the rule
          *
          * @param fieldNames the list of field names
          * @return this builder

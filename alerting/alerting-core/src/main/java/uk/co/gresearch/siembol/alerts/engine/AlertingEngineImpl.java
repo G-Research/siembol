@@ -133,7 +133,7 @@ public class AlertingEngineImpl implements AlertingEngine {
         private List<Pair<String, Object>> outputFields = new ArrayList<>();
 
         /**
-         * Set source fields in builder with default value: `source_type`
+         * Sets source fields in builder with default value: `source_type`
          *
          * @param sourceField name of the field for source type
          * @return this builder
@@ -144,7 +144,7 @@ public class AlertingEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set wildcard  in builder with default value: `*`
+         * Sets wildcard  in builder with default value: `*`
          *
          * @param wildcardSource string that will match all source type
          * @return this builder
@@ -155,7 +155,7 @@ public class AlertingEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set alerting rules that should be prepared in advance
+         * Sets alerting rules that should be prepared in advance
          *
          * @param rules list of pairs of source type and alerting rule
          * @return this builder
@@ -166,7 +166,7 @@ public class AlertingEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set key-value pairs that will be putted into event after matching a rule
+         * Sets key-value pairs that will be putted into event after matching a rule
          *
          * @param constants list of key-value pairs
          * @return this builder
@@ -177,7 +177,7 @@ public class AlertingEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Set key-value pairs with rule protection information
+         * Sets key-value pairs with rule protection information
          * that will be putted into event after matching a rule
          *
          * @param protections list of key-value pairs
@@ -189,7 +189,7 @@ public class AlertingEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Build the alerting engine
+         * Builds the alerting engine
          *
          * @return alerting engine built from the builder state
          * @throws IllegalArgumentException in case of wrong arguments

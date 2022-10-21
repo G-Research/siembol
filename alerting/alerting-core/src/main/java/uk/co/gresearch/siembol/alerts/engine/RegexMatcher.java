@@ -35,7 +35,7 @@ public class RegexMatcher extends BasicMatcher {
     }
 
     /**
-     * Provide information whether the matcher can modify the event and
+     * Provides information whether the matcher can modify the event and
      * the caller needs to consider it before matching.
      *
      * @return true if the regex matcher contains variables - named group matching

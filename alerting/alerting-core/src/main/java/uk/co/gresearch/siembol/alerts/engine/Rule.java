@@ -61,7 +61,7 @@ public class Rule extends AbstractRule {
     }
 
     /**
-     * Provide information whether the rule can modify the event during evaluation.
+     * Provides information whether the rule can modify the event during evaluation.
      * It is used by match method
      *
      * @return true if the rule can modify the event otherwise false
@@ -85,7 +85,7 @@ public class Rule extends AbstractRule {
         protected EnumSet<RuleFlags> flags = EnumSet.noneOf(RuleFlags.class);
 
         /**
-         * Set the list of matchers
+         * Sets the list of matchers
          *
          * @param matchers list of matchers
          * @return this builder
@@ -96,7 +96,7 @@ public class Rule extends AbstractRule {
         }
 
         /**
-         * Set the flags of the rule
+         * Sets the flags of the rule
          *
          * @param flags flags of the rule
          * @return this builder

@@ -112,7 +112,7 @@ public class IsInSetMatcher extends BasicMatcher {
         protected List<String> variableStrings;
 
         /**
-         * Set wordDelimiter in builder
+         * Sets wordDelimiter in builder
          *
          * @param wordDelimiter is using for splitting words from data string
          * @return this builder
@@ -123,7 +123,7 @@ public class IsInSetMatcher extends BasicMatcher {
         }
 
         /**
-         * Set case-insensitive comparing in builder
+         * Sets case-insensitive comparing in builder
          *
          * @param caseInsensitiveCompare matcher is comparing strings case-insensitively
          * @return this builder
@@ -134,7 +134,7 @@ public class IsInSetMatcher extends BasicMatcher {
         }
 
         /**
-         * Set of words as one string in builder
+         * Sets words as one string in builder
          *
          * @param data set of words in one string delimited using word delimiter
          * @return this builder
@@ -145,7 +145,7 @@ public class IsInSetMatcher extends BasicMatcher {
         }
 
         /**
-         * Set of words as list of strings in builder
+         * Sets words as list of strings in builder
          *
          * @param words list of words for
          * @return this builder

@@ -116,7 +116,7 @@ public class ContainsMatcher extends BasicMatcher {
         protected BiPredicate<String, String> checkPredicate;
 
         /**
-         * Set startsWith flag in builder
+         * Sets startsWith flag in builder
          *
          * @param startsWith matcher is checking whether substring starts with the string
          * @return this builder
@@ -129,7 +129,7 @@ public class ContainsMatcher extends BasicMatcher {
         }
 
         /**
-         * Set endsWith flag in builder
+         * Sets endsWith flag in builder
          *
          * @param endsWith matcher is checking whether substring ends with the string
          * @return this builder
@@ -142,7 +142,7 @@ public class ContainsMatcher extends BasicMatcher {
         }
 
         /**
-         * Set case-insensitive comparing in builder
+         * Sets case-insensitive comparing in builder
          *
          * @param caseInsensitiveCompare matcher is comparing strings case-insensitively
          * @return this builder
@@ -155,7 +155,7 @@ public class ContainsMatcher extends BasicMatcher {
         }
 
         /**
-         * Set string to search builder
+         * Sets string to search builder
          *
          * @param data string to search
          * @return this builder
