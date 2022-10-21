@@ -146,7 +146,7 @@ public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
     /**
      * This method is not implemented yet
      *
-     * @throw UnsupportedOperationException
+     * @throws UnsupportedOperationException
      */
     @Override
     public AlertingResult testRule(String rule, String event) {
@@ -156,7 +156,7 @@ public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
     /**
      * This method is not implemented yet
      *
-     * @throw UnsupportedOperationException
+     * @throws UnsupportedOperationException
      */
     @Override
     public AlertingResult testRules(String rules, String event) {
