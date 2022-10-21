@@ -3,7 +3,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-
+/**
+ * An object that implements alerting counters using heap data structure
+ *
+ * <p>This object implements alerting counters using PriorityQueue of alerting contexts.
+ * It evaluates a new alert and supports cleaning of old alerting contexts.
+ *
+ *
+ * @author  Marian Novotny
+ * @see AlertContext
+ * @see AlertCounterMetadata
+ *
+ */
 public class AlertCounter {
     private final AlertCounterMetadata counterMetadata;
     private final PriorityQueue<AlertContext> alertContextHeap = new PriorityQueue<>();
