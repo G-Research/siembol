@@ -14,10 +14,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingResult.StatusCode.OK;
-
+/**
+ * An object that validates, test and compiles alerting rules
+ *
+ * <p>This interface provides functionality for validating, testing and compiling alerting rules.
+ * Moreover, it computes and provides json schema for alerting rules.
+ *
+ *
+ * @author  Marian Novotny
+ * @see AlertingRulesCompiler
+ * @see AlertingCorrelationRulesCompiler
+ *
+ */
 public interface AlertingCompiler {
+    /**
+     * Compile rules into alerting engine
+     *
+     * @param rules json string with alerting rules
+     * @param logger logger for debugging
+     * @return alerting result with alerting engine
+     * @see AlertingResult
+     * @see AlertingEngine
+     */
     AlertingResult compile(String rules, TestingLogger logger);
 
+    /**
+     * Compile list of rules into alerting engine
+     *
+     * @param rulesList list of json strings with alerting rules
+     * @param logger logger for debugging
+     * @return alerting result with alerting engines
+     * @see AlertingResult
+     * @see AlertingEngine
+     */
     default AlertingResult compile(List<String> rulesList, TestingLogger logger) {
         if (rulesList.size() == 1) {
             return compile(rulesList.get(0), logger);

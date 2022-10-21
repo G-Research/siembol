@@ -1,7 +1,15 @@
 package uk.co.gresearch.siembol.alerts.common;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * An object that collects attributes that can be returned by alerting components
+ *
+ * <p>This bean object collects attributes and it is included in an Alerting result object.
+ *
+ * @author  Marian Novotny
+ * @see AlertingResult
+ *
+ */
 public class AlertingAttributes {
     private EvaluationResult evaluationResult;
     private String exception;

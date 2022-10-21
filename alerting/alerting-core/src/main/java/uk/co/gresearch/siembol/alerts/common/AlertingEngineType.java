@@ -1,7 +1,14 @@
 package uk.co.gresearch.siembol.alerts.common;
 
 import java.io.Serializable;
-
+/**
+ * An enum of alerting engine types
+ *
+ * @author  Marian Novotny
+ * @see #SIEMBOL_ALERTS
+ * @see #SIEMBOL_CORRELATION_ALERTS
+ *
+ */
 public enum AlertingEngineType implements Serializable {
     SIEMBOL_ALERTS("siembol_alerts"),
     SIEMBOL_CORRELATION_ALERTS("siembol_correlation_alerts");

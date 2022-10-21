@@ -2,7 +2,19 @@ package uk.co.gresearch.siembol.alerts.common;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * An enum of fields that can be added into the event after matching the rule
+ *
+ * @author  Marian Novotny
+ * @see #FULL_RULE_NAME
+ * @see #RULE_NAME
+ * @see #MAX_PER_HOUR_FIELD
+ * @see #MAX_PER_DAY_FIELD
+ * @see #EXCEPTION
+ * @see #PROCESSING_TIME
+ * @see #CORRELATED_ALERTS
+ *
+ */
 public enum AlertingFields {
     FULL_RULE_NAME("full_rule_name"),
     RULE_NAME("rule_name"),

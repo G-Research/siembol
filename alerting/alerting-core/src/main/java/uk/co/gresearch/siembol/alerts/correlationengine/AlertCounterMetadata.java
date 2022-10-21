@@ -1,7 +1,16 @@
 package uk.co.gresearch.siembol.alerts.correlationengine;
 
 import java.util.EnumSet;
-
+/**
+ * An object that represents constant alert counter information
+ *
+ * <p>This object stores the constant alert counter metadata.
+ * It is shared between all counters of the same type in order to save the space.
+ *
+ * @author  Marian Novotny
+ * @see AlertCounter
+ *
+ */
 public class AlertCounterMetadata {
     public enum Flags {
         MANDATORY
