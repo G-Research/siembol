@@ -100,7 +100,7 @@ public abstract class BasicMatcher implements Matcher {
         private boolean isNegated = false;
 
         /**
-         * Set fieldName in builder
+         * Sets fieldName in builder
          *
          * @param name field in which matcher will be registered
          * @return this builder
@@ -111,7 +111,7 @@ public abstract class BasicMatcher implements Matcher {
         }
 
         /**
-         * Set negated in builder
+         * Sets negated in builder
          *
          * @param isNegated matcher is negated
          * @return this builder

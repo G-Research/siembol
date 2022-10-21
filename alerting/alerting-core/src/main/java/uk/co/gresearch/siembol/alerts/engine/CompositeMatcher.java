@@ -113,7 +113,7 @@ public class CompositeMatcher implements Matcher {
         private boolean canModifyEvent;
 
         /**
-         * Set the matcher type for evaluating the composition
+         * Sets the matcher type for evaluating the composition
          *
          * @param matcherType COMPOSITE_OR or COMPOSITE_AND
          * @return this builder
@@ -125,7 +125,7 @@ public class CompositeMatcher implements Matcher {
         }
 
         /**
-         * Set the matcher is negated
+         * Sets the matcher is negated
          *
          * @param negated the matcher is negated
          * @return this builder
@@ -136,7 +136,7 @@ public class CompositeMatcher implements Matcher {
         }
 
         /**
-         * Set the list of underlying matchers that shoudl be created in advance
+         * Sets the list of underlying matchers that shoudl be created in advance
          *
          * @param matchers the list fo underlying matchers
          * @return this builder

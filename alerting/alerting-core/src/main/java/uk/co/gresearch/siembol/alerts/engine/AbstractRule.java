@@ -133,7 +133,7 @@ public abstract class AbstractRule {
         }
 
         /**
-         * Set name of the rule in builder
+         * Sets name of the rule in builder
          *
          * @param name name of the rule
          * @return this builder
@@ -144,7 +144,7 @@ public abstract class AbstractRule {
         }
 
         /**
-         * Set version of the rule in builder
+         * Sets version of the rule in builder
          *
          * @param version version of the rule
          * @return this builder
@@ -155,7 +155,7 @@ public abstract class AbstractRule {
         }
 
         /**
-         * Set the tags - list of  key value pairs
+         * Sets the tags - list of  key value pairs
          *
          * @param tags list of key value pairs. Values can include variables for substitution
          * @return this builder
@@ -166,7 +166,7 @@ public abstract class AbstractRule {
         }
 
         /**
-         * Set the protections - list of  key value pairs with maximum allowed matches
+         * Sets the protections - list of  key value pairs with maximum allowed matches
          *
          * @param protections list of key value pairs for rule protection
          * @return this builder
@@ -177,7 +177,7 @@ public abstract class AbstractRule {
         }
 
         /**
-         * Set the testing logger
+         * Sets the testing logger
          *
          * @param logger testign logger with debugging information about matching
          * @return this builder

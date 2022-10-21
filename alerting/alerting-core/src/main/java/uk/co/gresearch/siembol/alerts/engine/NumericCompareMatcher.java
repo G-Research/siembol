@@ -35,7 +35,7 @@ public class NumericCompareMatcher extends BasicMatcher {
     }
 
     /**
-     * Interpret fieldValue as a number and compares it with an expression.
+     * Interprets fieldValue as a number and compares it with an expression.
      * It substitutes the variable in expression if needed.
      *
      * @param map event as map of string to object
@@ -131,7 +131,7 @@ public class NumericCompareMatcher extends BasicMatcher {
         protected String expression;
 
         /**
-         * Set a numeric comparator in builder
+         * Sets a numeric comparator in builder
          *
          * @param comparator numeric comparator bi-predicate that will be used during matching
          * @return this builder
@@ -142,7 +142,7 @@ public class NumericCompareMatcher extends BasicMatcher {
         }
 
         /**
-         * Set a numeric expression in builder
+         * Sets a numeric expression in builder
          *
          * @param expression string numeric constant or a variable
          * @return this builder
