@@ -8,6 +8,16 @@ Introduction
   * [3.2 Integration with Other Systems – Siembol Response](#32-integration-with-other-systems–siembol-response)
   * [3.3 Advanced Parsing Framework for Building Fault-Tolerant Parsers](#33-advanced-parsing-framework-for-building-fault-tolerant-parsers)
   * [3.4 Advanced Enrichment Component](#34-advanced-enrichment-component)
+  * [3.5 Configurations and Rules are Defined by a Web Application Siembol UI](#35-configurations-and-rules-are-defined-by-a-web-application-siembol-ui)\
+  * [3.6 Easy Installation to Try Out with Prepared Docker Images and Helm Charts](#36-easy-installation-to-try-out-with-prepared-docker-images-and-helm- charts)
+- [4. Use Cases](#4-use-cases)
+  * [4.1 SIEM Log Collection Using Open Source Technologies](#41-siem-log-collection-using-open-source-technologies)
+  * [4.2 Detection Tool for Detection of Leaks and Attacks on Infrastructure](#42-detection-tool-for-detection-of-leaks-and-attacks-on-infrastructure)
+- [5. High Level Architecture](#4-high-level-architecture)
+  * [5.1 Data Pipelines](#51-data-pipelines)
+  * [5.2 Services](#52-services)
+  * [5.3 Infrastructure dependencies](#53-infrastructure-dependencies)
+  * [5.4 Architecture](#54-architecture)
 
 Siembol
 --------
