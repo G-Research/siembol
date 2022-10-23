@@ -1,12 +1,13 @@
 Introduction
 =============
 
-1. [Siembol](#siembol)
-2. [History](#history)
-3. [How Siembol Improves upon Metron](#how-siembol-improves-upon-metron)
-    - [Components for Alert Escalation](#components-for-alert-escalation]
-4. [Use Cases](#use-cases)
-5. [High Level Architecture](#high-level-architecture) 
+- [1. Siembol](#1-siembol)
+- [2. History](#2-history)
+- [3. How Siembol Improves upon Metron](#3-how-siembol-improves-upon-metron)
+  * [3.1 Components for Alert Escalation](#31-components-for-alert-escalation)
+  * [3.2 Integration with Other Systems – Siembol Response](#32-integration-with-other-systems–siembol-response)
+  * [3.3 Advanced Parsing Framework for Building Fault-Tolerant Parsers](#33-advanced-parsing-framework-for-building-fault-tolerant-parsers)
+  * [3.4 Advanced Enrichment Component](#34-advanced-enrichment-component)
 
 Siembol
 --------
