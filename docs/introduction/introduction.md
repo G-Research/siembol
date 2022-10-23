@@ -1,5 +1,15 @@
+Introduction
+=============
+
+1. [Siembol](#siembol)
+2. [History](#history)
+3. [How Siembol Improves upon Metron](#how-siembol-improves-upon-metron)
+    - [Components for Alert Escalation](#components-for-alert-escalation]
+4. [Use Cases](#use-cases)
+5. [High Level Architecture](#high-level-architecture) 
+
 Siembol
-=======
+--------
 
 Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, allowing security teams to respond to attacks before they become incidents.
 
