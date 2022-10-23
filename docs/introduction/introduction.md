@@ -5,7 +5,7 @@ Introduction
 - [2. History](#history)
 - [3. How Siembol Improves upon Metron](#how-siembol-improves-upon-metron)
     * [3.1 Components for Alert Escalation](#components-for-alert-escalation)
-    * [3.2 Integration with Other Systems: Siembol Response](#integration-with-other-systems:-siembol-response)
+    * [3.2 Integration with Other Systems: Siembol Response](#integration-with-other-systems-:-siembol-response)
     * [3.3 Advanced Parsing Framework for Building Fault-Tolerant Parsers](#advanced-parsing-framework-for-building-fault-tolerant-parsers)
     * [3.4 Advanced Enrichment Component](#advanced-enrichment-component)
     * [3.5 Configurations and Rules are Defined by a Web Application Siembol UI](#configurations-and-rules-are-defined-by-a-web-application-siembol-ui)
