@@ -1,8 +1,8 @@
 Introduction
 =============
 
-- [1. Siembol](#1-siembol)
-- [2. History](#2-history)
+- [1. Siembol](#siembol)
+- [2. History](#history)
 - [3. How Siembol Improves upon Metron](#3-how-siembol-improves-upon-metron)
     * [3.1 Components for Alert Escalation](#31-components-for-alert-escalation)
     * [3.2 Integration with Other Systems – Siembol Response](#32-integration-with-other-systems–siembol-response)
@@ -13,13 +13,13 @@ Introduction
 - [4. Use Cases](#4-use-cases)
   * [4.1 SIEM Log Collection Using Open Source Technologies](#41-siem-log-collection-using-open-source-technologies)
   * [4.2 Detection Tool for Detection of Leaks and Attacks on Infrastructure](#42-detection-tool-for-detection-of-leaks-and-attacks-on-infrastructure)
-- [5. High Level Architecture](#4-high-level-architecture)
+- [5. High Level Architecture](#5-high-level-architecture)
   * [5.1 Data Pipelines](#51-data-pipelines)
   * [5.2 Services](#52-services)
   * [5.3 Infrastructure dependencies](#53-infrastructure-dependencies)
   * [5.4 Architecture](#54-architecture)
 
-1.Siembol
+Siembol
 --------
 
 Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, allowing security teams to respond to attacks before they become incidents.
