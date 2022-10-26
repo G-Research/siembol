@@ -1,6 +1,21 @@
 How to Contribute
 =================
 
+- [1. How to contribute to the siembol Java project](#how-to-contribute-to-the-siembol-java-project)
+    * [1.1 Environment](#environment)
+    * [1.2 How to compile and install](#how-to-compile-and-install)
+    * [1.3 How to solve dependencies conflicts](#how-to-solve-dependencies-conflicts)
+    * [1.4 How to increase the version of submodules](#how-to-increase-the-version-of-submodules)
+- [2. How to contribute to config editor UI project](#how-to-contribute-to-config-editor-UI-project)
+    * [2.1 NodeJS version](#nodejs-version)
+    * [2.2 Angular version](#angular-version)
+    * [2.3 Build](#build)
+    * [2.4 Development server](#development server)
+    * [2.5 Running unit tests](#running-unit-tests)
+    * [2.6 Linting](#linting)
+    * [2.7 Package lock file](#package-lock-file)
+    * [2.8 Increase the config editor's UI version](#increase-the-config-editor's-UI-version)
+
 How to contribute to the siembol Java project
 ---------------------------------------------
 
