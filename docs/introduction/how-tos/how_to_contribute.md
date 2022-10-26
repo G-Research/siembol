@@ -10,11 +10,11 @@ How to Contribute
     * [2.1 NodeJS version](#nodejs-version)
     * [2.2 Angular version](#angular-version)
     * [2.3 Build](#build)
-    * [2.4 Development server](#development server)
+    * [2.4 Development server](#development-server)
     * [2.5 Running unit tests](#running-unit-tests)
     * [2.6 Linting](#linting)
     * [2.7 Package lock file](#package-lock-file)
-    * [2.8 Increase the config editor's UI version](#increase-the-config-editor's-UI-version)
+    * [2.8 Increase the config editor's UI version](#increase-the-config-editors-UI-version)
 
 How to contribute to the siembol Java project
 ---------------------------------------------
