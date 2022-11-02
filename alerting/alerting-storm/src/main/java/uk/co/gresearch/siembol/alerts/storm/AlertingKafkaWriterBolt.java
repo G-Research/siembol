@@ -18,7 +18,21 @@ import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterAnchor;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterBoltBase;
 import uk.co.gresearch.siembol.common.storm.KafkaWriterMessage;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 
+/**
+ * An object for evaluating alerting protection matches and writing alerts to a kafka topic
+ *
+ * <p>This class extends a Storm BaseRichBolt class in order to implement a Storm bolt, that
+ *  evaluates events using an engine initialised from the rules cached in the ZooKeeper,
+ *  watches for the rules update in ZooKeeper and updates the rules without need to restart the topology or the bolt and
+ *  emits alerts and exceptions after matching.
+ *
+ * @author Marian Novotny
+ * @see KafkaWriterBoltBase
+ * @see ZooKeeperConnector
+ *
+ */
 public class AlertingKafkaWriterBolt extends KafkaWriterBoltBase {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

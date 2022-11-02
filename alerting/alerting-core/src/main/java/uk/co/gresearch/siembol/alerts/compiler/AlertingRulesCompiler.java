@@ -17,7 +17,17 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import static uk.co.gresearch.siembol.alerts.common.AlertingResult.StatusCode.OK;
-
+/**
+ * An object that validates, test and compiles standard alerting rules
+ *
+ * <p>This object provides functionality for validating, testing and compiling alerting rules.
+ * Moreover, it computes and provides json schema for alerting rules.
+ *
+ *
+ * @author  Marian Novotny
+ * @see AlertingCompiler
+ *
+ */
 public class AlertingRulesCompiler implements AlertingCompiler {
     private static final ObjectReader JSON_RULES_READER =
             new ObjectMapper().readerFor(RulesDto.class);
@@ -100,6 +110,9 @@ public class AlertingRulesCompiler implements AlertingCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult compile(String rules, TestingLogger logger) {
         AlertingResult validateSchemaResult = validateRulesSyntax(rules);
@@ -171,11 +184,17 @@ public class AlertingRulesCompiler implements AlertingCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JsonSchemaValidator getSchemaValidator() {
         return jsonSchemaValidator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult testRules(String rules, String event) {
         TestingLogger logger = new StringTestingLogger();
@@ -212,6 +231,9 @@ public class AlertingRulesCompiler implements AlertingCompiler {
         return testResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String wrapRuleToRules(String ruleStr) throws IOException {
         RuleDto rule = JSON_RULE_READER.readValue(ruleStr);
@@ -222,6 +244,12 @@ public class AlertingRulesCompiler implements AlertingCompiler {
         return JSON_RULES_WRITER.writeValueAsString(rules);
     }
 
+    /**
+     * Factory method for creating AlertingRulesCompiler instance
+     *
+     * @return AlertingRulesCompiler instance
+     * @throws Exception if creation of the instance fails
+     */
     public static AlertingCompiler createAlertingRulesCompiler() throws Exception {
         JsonSchemaValidator validator = new SiembolJsonSchemaValidator(RulesDto.class);
         return new AlertingRulesCompiler(validator);

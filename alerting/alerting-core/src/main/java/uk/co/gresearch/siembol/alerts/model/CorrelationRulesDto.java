@@ -6,7 +6,16 @@ import uk.co.gresearch.siembol.alerts.common.AlertingTags;
 
 import java.util.Arrays;
 import java.util.List;
-
+/**
+ * A data transfer object for representing alerting correlation rules
+ *
+ * <p>This class is used for json (de)serialisation of alerting correlation rules and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 @Attributes(title = "correlation rules", description = "Correlation rules for real-time correlation alert matching")
 public class CorrelationRulesDto {
     public CorrelationRulesDto() {

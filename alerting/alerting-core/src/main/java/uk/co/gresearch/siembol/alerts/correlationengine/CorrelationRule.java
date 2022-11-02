@@ -11,7 +11,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_KEY_TAG_NAME;
-
+/**
+ * An object for representing correlation alerting rule
+ *
+ * <p>This derived class of AbstractRule is implementing a correlation alerting rule
+ *
+ *
+ * @author  Marian Novotny
+ * @see AbstractRule
+ */
 public class CorrelationRule extends AbstractRule {
     public enum Flags {
         USE_EVENT_TIME,
@@ -28,6 +36,11 @@ public class CorrelationRule extends AbstractRule {
 
     private final List<String> fieldNamesToSend;
 
+    /**
+     * Creates correlation rule using builder pattern.
+     *
+     * @param builder CorrelationRule builder
+     */
     protected CorrelationRule(Builder<?> builder) {
         super(builder);
         this.alertsThresholds = builder.alertsThresholds;
@@ -38,6 +51,21 @@ public class CorrelationRule extends AbstractRule {
         this.alertToCounterIndex = builder.alertToCounterIndex;
         this.fieldNamesToSend = builder.fieldNamesToSend;
     }
+
+    /**
+     * Evaluates the rule by correlating the alert with other alerts based on the correlation key.
+     * It uses alert counters to count alerts with thresholds specified in the alert counter metadata.
+     * It includes the matching result with attributes in alerting result.
+     * It includes correlated alerts into the attributes after triggering the rule.
+     *
+     *
+     * @param alert map of string to object
+     * @return alerting result after evaluation
+     * @see AlertingResult
+     * @see AlertCounter
+     * @see AlertCounterMetadata
+     *
+     */
     @Override
     public AlertingResult match(Map<String, Object> alert) {
         String alertName = (String)alert.get(AlertingFields.RULE_NAME.getAlertingName());
@@ -70,6 +98,11 @@ public class CorrelationRule extends AbstractRule {
         }
     }
 
+    /**
+     * Removes unused old internal state in rule counters
+     *
+     * @param currentTime current time in milliseconds
+     */
     public void clean(long currentTime) {
         long waterMark = currentTime - timeWindowInMs - maxLagTimeInMs;
         alertCounters.keySet().removeIf(x -> cleanAlertCounters(alertCounters.get(x), waterMark));
@@ -147,6 +180,14 @@ public class CorrelationRule extends AbstractRule {
         return ret;
     }
 
+    /**
+     * A builder for a correlation alerting rule
+     *
+     * <p>This abstract class is derived from AbstractRule.Builder class
+     *
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends CorrelationRule> extends AbstractRule.Builder<T>{
         protected static final String ALERT_ALREADY_EXISTS_MSG = "Duplicate alert names for correlation";
         protected static final String INVALID_ALERT_COUNTER = "Invalid alert counter specification";
@@ -165,27 +206,61 @@ public class CorrelationRule extends AbstractRule {
         protected Map<String, Integer> alertToCounterIndex = new HashMap<>();
         protected EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
         protected List<String> fieldNamesToSend = new ArrayList<>();
-
+        /**
+         * Sets the number of alerts that needs to match
+         *
+         * @param alertThresholds threshold for number of alerts to match
+         * @return this builder
+         */
         public Builder<T> alertsThresholds(Integer alertThresholds) {
             this.alertsThresholds = alertThresholds;
             return this;
         }
 
+        /**
+         * Sets the time sliding window in milliseconds
+         *
+         * @param timeWindowInMs sliding window for evaluation in milliseconds
+         * @return this builder
+         */
         public Builder<T> timeWindowInMs(long timeWindowInMs) {
             this.timeWindowInMs = timeWindowInMs;
             return this;
         }
 
+        /**
+         * Sets the maximum lag of alerts in milliseconds.
+         * The alerts older than this time can be cleaned and will be not considered during evaluation.
+         *
+         * @param maxLagTimeInSec maximum lag of alerts
+         * @return this builder
+         */
         public Builder<T> maxLagTimeInSec(Integer maxLagTimeInSec) {
             this.maxLagTimeInSec = maxLagTimeInSec;
             return this;
         }
 
+        /**
+         * Sets correlation rule flags
+         *
+         * @param flags correlation rule flags
+         * @return this builder
+         * @see Flags
+         */
         public Builder<T> flags(EnumSet<Flags> flags) {
             this.flags = flags;
             return this;
         }
 
+        /**
+         * Adds alert counter into the rule
+         *
+         * @param alertName the name of the alert for correlation
+         * @param threshold threshold of alerts for the counter
+         * @param flags alert counter metadata flags
+         * @return this builder
+         * @see AlertCounterMetadata.Flags
+         */
         public Builder<T> addAlertCounter(String alertName, int threshold, EnumSet<AlertCounterMetadata.Flags> flags) {
             if (threshold <= 0 || threshold > MAX_ALERT_THRESHOLD || alertName == null) {
                 throw new IllegalArgumentException(INVALID_ALERT_COUNTER);
@@ -196,12 +271,23 @@ public class CorrelationRule extends AbstractRule {
             return this;
         }
 
+        /**
+         * Sets alert field names that will be included in the correlated alerts' field after triggering the rule
+         *
+         * @param fieldNames the list of field names
+         * @return this builder
+         */
         public Builder<T> fieldNamesToSend(List<String> fieldNames) {
             this.fieldNamesToSend = fieldNames;
             return this;
         }
     }
 
+    /**
+     * Creates CorrelationRule builder instance
+     *
+     * @return CorrelationRule builder
+     */
     public static CorrelationRule.Builder<CorrelationRule> builder() {
 
         return new CorrelationRule.Builder<>() {

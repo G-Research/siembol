@@ -34,7 +34,18 @@ import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-
+/**
+ * An object for integration of an alerting engine into a storm bolt
+ *
+ * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
+ *  evaluates events using an engine initialised from the rules cached in the ZooKeeper,
+ *  watches for the rules update in ZooKeeper and updates the rules without need to restart the topology or the bolt,
+ *  emits alerts and exceptions after matching.
+ * @author Marian Novotny
+ * @see AlertingEngine
+ * @see ZooKeeperConnector
+ *
+ */
 public class AlertingEngineBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final String EXCEPTION_MSG_FORMAT = "Alerting Engine exception: %s during evaluating event: %s";

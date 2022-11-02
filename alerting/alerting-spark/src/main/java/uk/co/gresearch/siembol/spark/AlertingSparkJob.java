@@ -6,7 +6,21 @@ import org.apache.spark.api.java.JavaSparkContext;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * An object for a spark job that evaluates events using an alerting spark engine
+ *
+ * <p>This class implements Serializable interface.
+ *  It uses initialised AlertingSparkEngine instance to evaluate
+ *  resilient distributed dataset (RDD) of json strings of events using the MapReduce technique.
+ *  AlertingSparkEngine, RDD of events and a Spark context  are provided by the builder in the constructor.
+ *
+ * @author Marian Novotny
+ * @see AlertingSparkEngine
+ * @see JavaRDD
+ * @see Builder
+ * @see AlertingSparkResult
+ *
+ */
 public class AlertingSparkJob implements Serializable {
     private static final long serialVersionUID = 1L;
     private final JavaRDD<String> rdd;
@@ -27,6 +41,19 @@ public class AlertingSparkJob implements Serializable {
                 .fold(AlertingSparkResult.emptyResult(maxResult), AlertingSparkResult::merge);
     }
 
+    /**
+     * An object for construction AlertingSparkJob instance
+     *
+     * <p>This class uses Builder pattern.
+     *  It initialises AlertingSparkEngine from rules, RDD of events from files paths and a Spark context.
+     *
+     * @author Marian Novotny
+     * @see AlertingSparkEngine
+     * @see JavaRDD
+     * @see AlertingSparkJob
+     * @see JavaSparkContext
+     *
+     */
     public static class Builder {
         private static final String MISSING_ARGUMENTS_MSG = "Missing arguments for alerts spark job";
         private static final String EMPTY_FILES_PATHS_MSG = "Files paths are empty";

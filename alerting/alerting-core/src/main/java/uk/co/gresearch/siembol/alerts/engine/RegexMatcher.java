@@ -4,7 +4,15 @@ import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * An object for basic regular matching of an event
+ *
+ * <p>This derived class of BasicMatcher provides functionality for regular expression matching.
+ * It supports extracting fields and put them into an event using regular expression named groups.
+ *
+ * @author  Marian Novotny
+ * @see BasicMatcher
+ */
 public class RegexMatcher extends BasicMatcher {
     private static final String EMPTY_PATTERN = "Empty pattern";
     private static final Pattern VARIABLE_PATTERN =
@@ -15,17 +23,36 @@ public class RegexMatcher extends BasicMatcher {
     private final Pattern pattern;
     private final List<String> variableNames;
 
+    /**
+     * Creates regex matcher using builder pattern.
+     *
+     * @param builder Regex matcher builder
+     */
     private RegexMatcher(Builder<?> builder) {
         super(builder);
         this.pattern = builder.pattern;
         this.variableNames = builder.variableNames;
     }
 
+    /**
+     * Provides information whether the matcher can modify the event and
+     * the caller needs to consider it before matching.
+     *
+     * @return true if the regex matcher contains variables - named group matching
+     */
     @Override
     public boolean canModifyEvent() {
         return !variableNames.isEmpty();
     }
 
+    /**
+     * Evaluates fieldValue internally using pattern. It puts extracted fields if the pattern contains named groups.
+     *
+     * @param map event as map of string to object
+     * @param fieldValue value of the field for matching
+     * @return EvaluationResult.MATCH if pattern matches otherwise EvaluationResult.NO_MATCH
+     *
+     */
     @Override
     protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
         var fieldStringValue = fieldValue.toString();
@@ -42,6 +69,11 @@ public class RegexMatcher extends BasicMatcher {
         return EvaluationResult.MATCH;
     }
 
+    /**
+     * Creates regex matcher builder instance.
+     *
+     * @return regex matcher builder
+     */
     public static RegexMatcher.Builder<RegexMatcher> builder() {
 
         return new RegexMatcher.Builder<>() {
@@ -55,11 +87,26 @@ public class RegexMatcher extends BasicMatcher {
         };
     }
 
+    /**
+     * A builder for regular expression matchers
+     *
+     * <p>This abstract class is derived from BasicMatcher.Builder class
+     *
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends RegexMatcher>
             extends BasicMatcher.Builder<T> {
         protected Pattern pattern;
         protected List<String> variableNames;
 
+        /**
+         * Compiles pattern from string in builder. Renames named groups since regular expression supports
+         * characters: `_`, `:`, which are forbidden in Java patterns
+         *
+         * @param patternStr regular expression specification
+         * @return this builder
+         */
         public RegexMatcher.Builder<T> pattern(String patternStr) {
             //NOTE: java regex does not support : _ in variable names but we want it
             variableNames = new ArrayList<>();

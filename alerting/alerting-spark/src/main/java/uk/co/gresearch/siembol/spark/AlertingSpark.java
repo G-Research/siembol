@@ -5,7 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.gresearch.siembol.common.model.testing.AlertingSparkArgumentDto;
 
 import java.util.Base64;
-
+/**
+ * A main class of alerting spark application
+ *
+ * <p>This class provides the main function that is executed during submission of a spark job.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class AlertingSpark {
     private static final String APP_NAME = "SiembolAlertingSpark";
     private static final String MISSING_ATTRIBUTES = "Missing testing attributes";

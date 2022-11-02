@@ -26,7 +26,17 @@ import java.util.Base64;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
-
+/**
+ * A main class of alerting storm topology
+ *
+ * <p>This class provides helper function to build an alerting topology and
+ * provides main function that is executed during submission of a storm topology.
+ *
+ * @author Marian Novotny
+ * @see AlertingEngineBolt
+ * @see AlertingKafkaWriterBolt
+ *
+ */
 public class AlertingStorm {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String KAFKA_SPOUT = "kafka-spout";

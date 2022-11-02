@@ -2,7 +2,18 @@ package uk.co.gresearch.siembol.alerts.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing a tag used in alerting rules
+ *
+ * <p>This class is used for json (de)serialisation of a tag and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see RuleDto
+ * @see CorrelationRuleDto
+ */
 @Attributes(title = "tag", description = "The tag pair added to the event after matching")
 public class TagDto {
     @JsonProperty("tag_name")

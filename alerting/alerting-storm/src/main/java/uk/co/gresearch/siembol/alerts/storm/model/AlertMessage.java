@@ -8,7 +8,15 @@ import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * A serializable object for representing an alerting message after triggering by an alerting engine
+ *
+ * <p>This class implements serializable interface and is used for representing an alerting message after
+ * being triggered by an alerting engine.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public class AlertMessage implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String MISSING_FIELDS_MSG = "Missing siembol alerting fields in alert: %s";

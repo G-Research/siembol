@@ -1,7 +1,15 @@
 package uk.co.gresearch.siembol.alerts.protection;
 
 import uk.co.gresearch.siembol.common.utils.TimeProvider;
-
+/**
+ * An object that counts hourly and daily matches
+ *
+ * <p>This object counts hourly and daily matches using simple counting and
+ * current time provided by TimeProvider.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public class SimpleCounter {
     private final TimeProvider timeProvider;
     private int lastDay = -1;

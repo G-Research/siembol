@@ -4,7 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing alerting correlation attributes
+ *
+ * <p>This class is used for json (de)serialisation of an alerting correlation attributes and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see CorrelationRuleDto
+ */
 @Attributes(title = "correlation attributes", description = "Correlation attributes of real-time correlation alert matching")
 public class CorrelationAttributesDto {
     @JsonProperty("time_unit")

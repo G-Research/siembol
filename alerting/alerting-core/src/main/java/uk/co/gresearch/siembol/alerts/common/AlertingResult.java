@@ -3,7 +3,14 @@ package uk.co.gresearch.siembol.alerts.common;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Map;
-
+/**
+ * An object that combines alerting result status with attributes
+ *
+ * @author  Marian Novotny
+ * @see StatusCode
+ * @see AlertingAttributes
+ *
+ */
 public class AlertingResult {
     public enum StatusCode {
         OK,

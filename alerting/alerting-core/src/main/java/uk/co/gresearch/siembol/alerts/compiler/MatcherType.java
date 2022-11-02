@@ -1,5 +1,16 @@
 package uk.co.gresearch.siembol.alerts.compiler;
-
+/**
+ * An enum of matcher types
+ *
+ * @author  Marian Novotny
+ * @see #REGEX_MATCH
+ * @see #IS_IN_SET
+ * @see #CONTAINS
+ * @see #COMPOSITE_OR
+ * @see #COMPOSITE_AND
+ * @see #NUMERIC_COMPARE
+ *
+ */
 public enum MatcherType {
     REGEX_MATCH("REGEX_MATCH"),
     IS_IN_SET("IS_IN_SET"),

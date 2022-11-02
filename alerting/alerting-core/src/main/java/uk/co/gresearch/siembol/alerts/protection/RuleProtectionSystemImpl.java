@@ -5,12 +5,24 @@ import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 import java.util.Map;
 import java.util.HashMap;
-
+/**
+ * An object for counting rule matches using simple in memory counter
+ *
+ * <p>This class implements RuleProtectionSystem interface using simple in-memory counting.
+ *
+ *
+ * @author  Marian Novotny
+ * @see RuleProtectionSystem
+ * @see SimpleCounter
+ *
+ */
 public class RuleProtectionSystemImpl implements RuleProtectionSystem {
     private static final String UNKNOWN_RULE = "No matches of the rule %s";
     private final Map<String, SimpleCounter> ruleCounters = new HashMap<>();
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult incrementRuleMatches(String fullRuleName) {
         if (!ruleCounters.containsKey(fullRuleName)) {
@@ -26,6 +38,9 @@ public class RuleProtectionSystemImpl implements RuleProtectionSystem {
         return new AlertingResult(AlertingResult.StatusCode.OK, attr);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult getRuleMatches(String fullRuleName) {
         if (!ruleCounters.containsKey(fullRuleName)) {

@@ -21,6 +21,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingResult.StatusCode.OK;
+/**
+ * An object that validates and compiles correlation alerting rules
+ *
+ * <p>This objects provides functionality for validating and compiling correlation alerting rules.
+ * Moreover, it computes and provides json schema for correlation rules.
+ *
+ *
+ * @author  Marian Novotny
+ * @see AlertingCompiler
+ *
+ */
 
 public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
     private static final ObjectReader JSON_RULES_READER =
@@ -38,6 +49,9 @@ public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
         this.jsonSchemaValidator = jsonSchemaValidator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult compile(String rules, TestingLogger logger) {
         AlertingResult validateSchemaResult = validateRulesSyntax(rules);
@@ -121,26 +135,48 @@ public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JsonSchemaValidator getSchemaValidator() {
         return jsonSchemaValidator;
     }
 
+    /**
+     * This method is not implemented yet
+     *
+     * @throws UnsupportedOperationException
+     */
     @Override
     public AlertingResult testRule(String rule, String event) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET_MSG);
     }
 
+    /**
+     * This method is not implemented yet
+     *
+     * @throws UnsupportedOperationException
+     */
     @Override
     public AlertingResult testRules(String rules, String event) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET_MSG);
     }
 
+    /**
+     * Factory method for creating AlertingCorrelationRulesCompiler instance
+     *
+     * @return AlertingCorrelationRulesCompiler instance
+     * @throws Exception if creation of the instance fails
+     */
     public static AlertingCompiler createAlertingCorrelationRulesCompiler() throws Exception {
         JsonSchemaValidator validator = new SiembolJsonSchemaValidator(CorrelationRulesDto.class);
         return new AlertingCorrelationRulesCompiler(validator);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String wrapRuleToRules(String ruleStr) throws IOException {
         CorrelationRuleDto rule = JSON_RULE_READER.readValue(ruleStr);
@@ -149,5 +185,4 @@ public class AlertingCorrelationRulesCompiler implements AlertingCompiler {
         rules.setRules(Arrays.asList(rule));
         return JSON_RULES_WRITER.writeValueAsString(rules);
     }
-
 }

@@ -5,7 +5,17 @@ import uk.co.gresearch.siembol.common.utils.EvaluationLibrary;
 
 import java.util.*;
 import java.util.function.BiPredicate;
-
+/**
+ * An object for basic matching of substring for an event
+ *
+ * <p>This derived class of BasicMatcher provides functionality for matching a substring.
+ * It supports case-insensitive string comparisons and
+ * substituting variables using current map and string search after the substitution and
+ * specifying matching at start or end of the string.
+ *
+ * @author  Marian Novotny
+ * @see BasicMatcher
+ */
 public class ContainsMatcher extends BasicMatcher {
     enum Flags {
         CONTAINS_VARIABLE,
@@ -19,6 +29,11 @@ public class ContainsMatcher extends BasicMatcher {
     protected final String pattern;
     protected final BiPredicate<String, String> checkPredicate;
 
+    /**
+     * Creates contains matcher using builder pattern.
+     *
+     * @param builder ContainsMatcher builder
+     */
     private ContainsMatcher(ContainsMatcher.Builder<?> builder) {
         super(builder);
         this.flags = builder.flags;
@@ -26,6 +41,15 @@ public class ContainsMatcher extends BasicMatcher {
         this.checkPredicate = builder.checkPredicate;
     }
 
+    /**
+     * Evaluates fieldValue internally using substring search. It substitutes the variables if needed.
+     * it supports case-insensitive compare if specified and checks for starting or ending requirements if needed.
+     *
+     * @param map event as map of string to object
+     * @param fieldValue value of the field for matching
+     * @return EvaluationResult.MATCH if field value contains the string otherwise EvaluationResult.NO_MATCH
+     *
+     */
     @Override
     protected EvaluationResult matchInternally(Map<String, Object> map, Object fieldValue) {
         var fieldStringValue = fieldValue.toString();
@@ -49,6 +73,11 @@ public class ContainsMatcher extends BasicMatcher {
                 : EvaluationResult.NO_MATCH;
     }
 
+    /**
+     * Creates Contains matcher builder instance.
+     *
+     * @return Contains matcher builder
+     */
     public static Builder<ContainsMatcher> builder() {
 
         return new Builder<>() {
@@ -72,12 +101,26 @@ public class ContainsMatcher extends BasicMatcher {
         };
     }
 
+    /**
+     * A builder for Contains matchers
+     *
+     * <p>This abstract class is derived from BasicMatcher.Builder class.
+     *
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends ContainsMatcher>
             extends BasicMatcher.Builder<T> {
         protected EnumSet<Flags> flags = EnumSet.noneOf(Flags.class);
         protected String pattern;
         protected BiPredicate<String, String> checkPredicate;
 
+        /**
+         * Sets startsWith flag in builder
+         *
+         * @param startsWith matcher is checking whether the substring starts with the string
+         * @return this builder
+         */
         public ContainsMatcher.Builder<T> isStartsWith(boolean startsWith) {
             if (startsWith) {
                 flags.add(Flags.STARTS_WITH);
@@ -85,6 +128,12 @@ public class ContainsMatcher extends BasicMatcher {
             return this;
         }
 
+        /**
+         * Sets endsWith flag in builder
+         *
+         * @param endsWith matcher is checking whether the substring ends with the string
+         * @return this builder
+         */
         public ContainsMatcher.Builder<T> isEndsWith(boolean endsWith) {
             if (endsWith) {
                 flags.add(Flags.ENDS_WITH);
@@ -92,6 +141,12 @@ public class ContainsMatcher extends BasicMatcher {
             return this;
         }
 
+        /**
+         * Sets case-insensitive comparing in builder
+         *
+         * @param caseInsensitiveCompare matcher is comparing strings case-insensitively
+         * @return this builder
+         */
         public ContainsMatcher.Builder<T> isCaseInsensitiveCompare(boolean caseInsensitiveCompare) {
             if (caseInsensitiveCompare) {
                 flags.add(Flags.CASE_INSENSITIVE);
@@ -99,6 +154,12 @@ public class ContainsMatcher extends BasicMatcher {
             return this;
         }
 
+        /**
+         * Sets input string to search
+         *
+         * @param data string to search
+         * @return this builder
+         */
         public ContainsMatcher.Builder<T> data(String data) {
             if (data == null) {
                 throw new IllegalArgumentException(EMPTY_PATTERN_MSG);

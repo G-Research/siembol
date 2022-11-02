@@ -2,12 +2,24 @@ package uk.co.gresearch.siembol.spark;
 
 import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingRulesCompiler;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
+/**
+ * An object for integration of an alerting engine into a spark application
+ *
+ * <p>This class implements Serializable interface.
+ *  It serializes engine using alerting rules json string.
+ *  It provides functionality for evaluating an event using the alerting engine.
+ *
+ * @author Marian Novotny
+ * @see AlertingEngine
+ * @see AlertingSparkResult
+ *
+ */
 public class AlertingSparkEngine implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String ALERTING_RULE_COMPILATION_ERROR = "Exception during compiling alerting rules";

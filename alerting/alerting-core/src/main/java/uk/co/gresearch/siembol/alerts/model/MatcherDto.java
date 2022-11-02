@@ -4,7 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing an alerting matcher used in alerting rules
+ *
+ * <p>This class is used for json (de)serialisation of an alerting matcher and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see RuleDto
+ */
 @Attributes(title = "matcher", description = "Matcher for matching fields")
 public class MatcherDto {
     @Attributes(description = "The matcher is enabled", required = false)

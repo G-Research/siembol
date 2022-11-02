@@ -2,9 +2,19 @@ package uk.co.gresearch.siembol.alerts.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 
 import java.util.function.BiPredicate;
-
+/**
+ * An enum for representing a comparing type used in numeric matcher
+ *
+ * <p>This enum is used for json (de)serialisation of comparing type and providing a comparator for the type.
+ *
+ * @author  Marian Novotny
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see MatcherDto
+ *
+ */
 @Attributes(title = "numeric compare type", description = "Type of numeric comparison")
 public enum NumericCompareTypeDto {
     @JsonProperty("equal")
@@ -30,6 +40,11 @@ public enum NumericCompareTypeDto {
         return name;
     }
 
+    /**
+     * Provides the comparator predicate for the numeric compare type.
+     *
+     * @return      the comparator for the compare type
+     */
     public BiPredicate<Double, Double> getComparator() {
         return comparator;
     }

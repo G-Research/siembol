@@ -3,7 +3,17 @@ package uk.co.gresearch.siembol.alerts.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 import java.util.List;
-
+/**
+ * A data transfer object for representing alerting rule
+ *
+ * <p>This class is used for json (de)serialisation of an alerting rule and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see RulesDto
+ */
 @Attributes(title = "rule", description = "Rule for real-time alert matching")
 public class RuleDto {
     @JsonProperty("rule_name")
