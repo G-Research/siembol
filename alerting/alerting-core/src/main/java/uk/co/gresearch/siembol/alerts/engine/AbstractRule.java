@@ -61,7 +61,7 @@ public abstract class AbstractRule {
     }
 
     /**
-     * Putting into event metadata about the rule that can be added after matching the rule
+     * Puts metadata about the rule into the event
      *
      * @param event the metadata will be put in the event map
      */
@@ -108,7 +108,7 @@ public abstract class AbstractRule {
         /**
          * Builds the alerting rule
          *
-         * @return alerting rule built from the builder state and calling buildInternally method
+         * @return alerting rule built from the builder state and by calling buildInternally method
          * @throws IllegalArgumentException in case of wrong arguments
          */
         public T build() {
@@ -157,7 +157,7 @@ public abstract class AbstractRule {
         /**
          * Sets the tags - list of  key value pairs
          *
-         * @param tags list of key value pairs. Values can include variables for substitution
+         * @param tags list of key value pairs. Values can include variables for substitution.
          * @return this builder
          */
         public Builder<T> tags(List<Pair<String, String>> tags) {
@@ -179,7 +179,7 @@ public abstract class AbstractRule {
         /**
          * Sets the testing logger
          *
-         * @param logger testign logger with debugging information about matching
+         * @param logger testing logger with debugging information about matching
          * @return this builder
          * @see TestingLogger
          */

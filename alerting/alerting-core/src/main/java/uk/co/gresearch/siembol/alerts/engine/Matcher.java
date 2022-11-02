@@ -8,7 +8,7 @@ import java.util.Map;
  * An object for matching an event
  *
  * <p>This interface for matching an event and providing metadata for a caller such us
- * the matcher is negated, or it can modify the event.
+ * the matcher is negated, or whether it can modify the event.
  *
  *
  * @author  Marian Novotny

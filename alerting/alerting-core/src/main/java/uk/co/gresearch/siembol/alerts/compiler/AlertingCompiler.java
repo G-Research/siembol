@@ -15,7 +15,7 @@ import java.util.List;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingResult.StatusCode.OK;
 /**
- * An object that validates, test and compiles alerting rules
+ * An object that validates, tests and compiles alerting rules
  *
  * <p>This interface provides functionality for validating, testing and compiling alerting rules.
  * Moreover, it computes and provides json schema for alerting rules.
@@ -86,7 +86,7 @@ public interface AlertingCompiler {
     String wrapRuleToRules(String rule) throws IOException;
 
     /**
-     * Compiles rules into alerting engine and evaluate an event using the engine
+     * Compiles rules into alerting engine and evaluates an event using the engine
      *
      * @param rules json string with alerting rules
      * @param event string json for evaluation
@@ -96,7 +96,7 @@ public interface AlertingCompiler {
     AlertingResult testRules(String rules, String event);
 
     /**
-     * Compiles a rule into alerting engine and evaluate an event using the engine
+     * Compiles a rule into alerting engine and evaluates an event using the engine
      *
      * @param rule json string with an alerting rule
      * @param event string json for evaluation

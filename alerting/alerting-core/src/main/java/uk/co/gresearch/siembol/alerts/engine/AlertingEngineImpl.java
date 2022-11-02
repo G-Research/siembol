@@ -35,7 +35,7 @@ public class AlertingEngineImpl implements AlertingEngine {
     }
 
     /**
-     * Evaluate event using alerting rules and returns alerting result with
+     * Evaluates event using alerting rules and returns alerting result with
      * a matching result and additional attributes such as matching events or exceptions.
      * It returns matches of all rules.
      *

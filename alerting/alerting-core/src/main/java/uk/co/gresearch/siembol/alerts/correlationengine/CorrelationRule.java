@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.alerts.common.AlertingTags.CORRELATION_KEY_TAG_NAME;
 /**
- * An object for correlation alerting rule
+ * An object for representing correlation alerting rule
  *
  * <p>This derived class of AbstractRule is implementing a correlation alerting rule
  *
@@ -53,7 +53,7 @@ public class CorrelationRule extends AbstractRule {
     }
 
     /**
-     * Evaluates the rule by correlating teh alert with other alerts based on the correlation key.
+     * Evaluates the rule by correlating the alert with other alerts based on the correlation key.
      * It uses alert counters to count alerts with thresholds specified in the alert counter metadata.
      * It includes the matching result with attributes in alerting result.
      * It includes correlated alerts into the attributes after triggering the rule.

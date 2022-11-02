@@ -136,7 +136,7 @@ public class CompositeMatcher implements Matcher {
         }
 
         /**
-         * Sets the list of underlying matchers that shoudl be created in advance
+         * Sets the list of underlying matchers that should be created in advance
          *
          * @param matchers the list fo underlying matchers
          * @return this builder

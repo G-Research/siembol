@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * An object that represents alerts context stored in alerting counters
+ * An object that represents an alert context stored in alerting counters
  *
- * <p>This object stores the context of the alert used in alerting counters.
+ * <p>This object stores the context of the alert used by alerting counters.
  * It stores timestamp and field values that will be included after triggering the rule.
  * It implements Comparable interface by comparing timestamps.
  *

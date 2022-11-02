@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * <p>This class implements Serializable interface.
  *  It uses initialised AlertingSparkEngine instance to evaluate
- *  resilient distributed dataset (RDD) of json string of events using the MapReduce technique.
+ *  resilient distributed dataset (RDD) of json strings of events using the MapReduce technique.
  *  AlertingSparkEngine, RDD of events and a Spark context  are provided by the builder in the constructor.
  *
  * @author Marian Novotny
@@ -42,7 +42,7 @@ public class AlertingSparkJob implements Serializable {
     }
 
     /**
-     * An object for construction AlertingSParkJob instance
+     * An object for construction AlertingSparkJob instance
      *
      * <p>This class uses Builder pattern.
      *  It initialises AlertingSparkEngine from rules, RDD of events from files paths and a Spark context.
