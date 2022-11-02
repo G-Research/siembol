@@ -10,13 +10,27 @@ import uk.co.gresearch.siembol.alerts.common.AlertingEngine;
 import uk.co.gresearch.siembol.alerts.common.AlertingResult;
 import uk.co.gresearch.siembol.alerts.compiler.AlertingCorrelationRulesCompiler;
 import uk.co.gresearch.siembol.common.model.AlertingStormAttributesDto;
+import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import static org.apache.storm.utils.TupleUtils.isTick;
 import static org.apache.storm.utils.TupleUtils.putTickFrequencyIntoComponentConfig;
-
+/**
+ * An object for integration of a correlation alerting engine into a storm bolt
+ *
+ * <p>This class extends a Storm AlertingBolt class to implement a Storm bolt, that
+ *  evaluates events using an correlation engine initialised form the rules cached in the ZooKeeper,
+ *  watches for the rules update in ZooKeeper and updates the rules without need to restart the topology or the bolt,
+ *  emits alerts and exceptions after matching.
+ *  It cleans regularly internal state of counters by calling clean method of the alerting engine.
+ *
+ * @author Marian Novotny
+ * @see AlertingEngine
+ * @see ZooKeeperConnector
+ *
+ */
 public class CorrelationAlertingEngineBolt extends AlertingEngineBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

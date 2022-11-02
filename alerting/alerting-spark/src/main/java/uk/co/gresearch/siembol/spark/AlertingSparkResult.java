@@ -11,7 +11,17 @@ import uk.co.gresearch.siembol.common.model.testing.AlertingSparkTestingResultDt
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
-
+/**
+ * An object for representing alerting spark result
+ *
+ * <p>This class implements Serializable interface. It contains a list of matched events (json strings) and
+ *  the list of exceptions (json strings of ErrorMessages).
+ *  It provides functionality for merging two alerting results that is used in the map reduce job.
+ *
+ * @author Marian Novotny
+ * @see AlertingSparkTestingResultDto
+ *
+ */
 public class AlertingSparkResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
