@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * An object for integration of an alerting engine into a storm bolt
  *
  * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
- *  evaluates events using an engine initialised form the rules cached in the ZooKeeper,
+ *  evaluates events using an engine initialised from the rules cached in the ZooKeeper,
  *  watches for the rules update in ZooKeeper and updates the rules without need to restart the topology or the bolt,
  *  emits alerts and exceptions after matching.
  * @author Marian Novotny

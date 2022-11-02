@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 /**
  * An enum for representing a matcher type used in alerting rules
  *
- * <p>This enum is using for json (de)serialisation of matcher type.
+ * <p>This enum is used for json (de)serialisation of matcher type.
  *
  * @author  Marian Novotny
  * @see com.fasterxml.jackson.annotation.JsonProperty

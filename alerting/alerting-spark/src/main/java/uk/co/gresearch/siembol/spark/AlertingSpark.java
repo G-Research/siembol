@@ -8,7 +8,7 @@ import java.util.Base64;
 /**
  * A main class of alerting spark application
  *
- * <p>This class provides the main function that is executed during submitting a spark job.
+ * <p>This class provides the main function that is executed during submission of a spark job.
  *
  * @author Marian Novotny
  *

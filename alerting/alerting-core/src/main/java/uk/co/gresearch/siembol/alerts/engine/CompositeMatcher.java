@@ -138,7 +138,7 @@ public class CompositeMatcher implements Matcher {
         /**
          * Sets the list of underlying matchers that should be created in advance
          *
-         * @param matchers the list fo underlying matchers
+         * @param matchers the list of underlying matchers
          * @return this builder
          */
         public Builder matchers(List<Matcher> matchers) {

@@ -29,7 +29,7 @@ public class CompositeAlertingEngine implements AlertingEngine {
     }
 
     /**
-     * Evaluates an event by calling to evaluate of all alerting engines and
+     * Evaluates an event by underlying alerting engines and
      * returns alerting result with a matching result and additional attributes.
      *
      * @param event serialized event as json string

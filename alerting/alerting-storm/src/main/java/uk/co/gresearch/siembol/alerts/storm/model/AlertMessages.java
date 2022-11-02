@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * A serializable object for representing list of alerting messages after triggering by an alerting engine
  *
  * <p>This class implements serializable interface and is used for representing list of alerting messages after
- * triggering an alert by an alerting engine.
+ * being triggered by an alerting engine.
  *
  * @author Marian Novotny
  * @see AlertMessage

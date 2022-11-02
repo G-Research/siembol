@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 /**
  * An enum for representing a time unit type used in correlation attributes
  *
- * <p>This enum is using for json (de)serialisation of time unit type.
+ * <p>This enum is used for json (de)serialisation of time unit type.
  *
  * @author  Marian Novotny
  * @see com.fasterxml.jackson.annotation.JsonProperty

@@ -33,8 +33,7 @@ public class Rule extends AbstractRule {
     }
 
     /**
-     * Evaluates the rule by calling underlying matchers - all matchers are required to match for
-     * returning MATCH result.
+     * Evaluates the rule by calling underlying matchers - all matchers are required to match to return MATCH result.
      * It includes the matching result with attributes in alerting result.
      * It creates a copy of the event if the rule can modify the event during the evaluation.
      *

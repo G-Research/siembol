@@ -152,7 +152,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Sets key-value pairs that will be putted into event after matching a rule
+         * Sets key-value pairs that will be put into the event after matching a rule
          *
          * @param constants list of key-value pairs
          * @return this builder
@@ -164,7 +164,7 @@ public class CorrelationEngineImpl implements AlertingEngine {
 
         /**
          * Sets key-value pairs with rule protection information
-         * that will be putted into event after matching a rule
+         * that will be put into the event after matching a rule
          *
          * @param protections list of key-value pairs
          * @return this builder

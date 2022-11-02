@@ -144,9 +144,9 @@ public class AlertingEngineImpl implements AlertingEngine {
         }
 
         /**
-         * Sets wildcard  in builder with default value: `*`
+         * Sets wildcard in builder with default value: `*`
          *
-         * @param wildcardSource string that will match all source type
+         * @param wildcardSource string that will match all source types
          * @return this builder
          */
         public Builder wildcardSource(String wildcardSource) {

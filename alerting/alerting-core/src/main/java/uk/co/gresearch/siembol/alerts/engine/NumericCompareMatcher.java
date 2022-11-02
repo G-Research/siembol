@@ -24,7 +24,7 @@ public class NumericCompareMatcher extends BasicMatcher {
     private final Function<Map<String, Object>, Optional<Double>> valueSupplier;
 
     /**
-     * Creates numeric compare matcher using builder pattern.
+     * Creates numeric comparison matcher using builder pattern.
      *
      * @param builder NumericCompare matcher builder
      */

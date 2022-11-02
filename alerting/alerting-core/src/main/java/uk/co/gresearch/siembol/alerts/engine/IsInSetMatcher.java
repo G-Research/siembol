@@ -6,10 +6,10 @@ import uk.co.gresearch.siembol.alerts.common.EvaluationResult;
 import java.util.*;
 import java.util.stream.Collectors;
 /**
- * An object for basic matching of set of strings on an event
+ * An object for basic matching of a set of strings for an event
  *
  * <p>This derived class of BasicMatcher provides functionality for matching set of strings.
- * It supports case-insensitive string compare  and
+ * It supports case-insensitive string comparisons and
  * substituting variables using current map and matching the field after the substitution.
  *
  * @author  Marian Novotny
@@ -114,7 +114,7 @@ public class IsInSetMatcher extends BasicMatcher {
         /**
          * Sets wordDelimiter in builder
          *
-         * @param wordDelimiter is using for splitting words from data string
+         * @param wordDelimiter is used for splitting words from data string
          * @return this builder
          */
         public IsInSetMatcher.Builder<T> wordDelimiter(String wordDelimiter) {

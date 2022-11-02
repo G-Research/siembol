@@ -6,10 +6,10 @@ import uk.co.gresearch.siembol.common.utils.EvaluationLibrary;
 import java.util.*;
 import java.util.function.BiPredicate;
 /**
- * An object for basic matching of substring  on an event
+ * An object for basic matching of substring for an event
  *
  * <p>This derived class of BasicMatcher provides functionality for matching a substring.
- * It supports case-insensitive string compare  and
+ * It supports case-insensitive string comparisons and
  * substituting variables using current map and string search after the substitution and
  * specifying matching at start or end of the string.
  *
@@ -43,7 +43,7 @@ public class ContainsMatcher extends BasicMatcher {
 
     /**
      * Evaluates fieldValue internally using substring search. It substitutes the variables if needed.
-     * it supports case-insensitive compare if specified and check for starting or ending requirements if needed.
+     * it supports case-insensitive compare if specified and checks for starting or ending requirements if needed.
      *
      * @param map event as map of string to object
      * @param fieldValue value of the field for matching
@@ -118,7 +118,7 @@ public class ContainsMatcher extends BasicMatcher {
         /**
          * Sets startsWith flag in builder
          *
-         * @param startsWith matcher is checking whether substring starts with the string
+         * @param startsWith matcher is checking whether the substring starts with the string
          * @return this builder
          */
         public ContainsMatcher.Builder<T> isStartsWith(boolean startsWith) {
@@ -131,7 +131,7 @@ public class ContainsMatcher extends BasicMatcher {
         /**
          * Sets endsWith flag in builder
          *
-         * @param endsWith matcher is checking whether substring ends with the string
+         * @param endsWith matcher is checking whether the substring ends with the string
          * @return this builder
          */
         public ContainsMatcher.Builder<T> isEndsWith(boolean endsWith) {
@@ -155,7 +155,7 @@ public class ContainsMatcher extends BasicMatcher {
         }
 
         /**
-         * Sets string to search builder
+         * Sets input string to search
          *
          * @param data string to search
          * @return this builder

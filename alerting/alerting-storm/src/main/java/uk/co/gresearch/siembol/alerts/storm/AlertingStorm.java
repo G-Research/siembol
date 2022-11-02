@@ -30,7 +30,7 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
  * A main class of alerting storm topology
  *
  * <p>This class provides helper function to build an alerting topology and
- * provides main function that is executed during submitting storm topology.
+ * provides main function that is executed during submission of a storm topology.
  *
  * @author Marian Novotny
  * @see AlertingEngineBolt

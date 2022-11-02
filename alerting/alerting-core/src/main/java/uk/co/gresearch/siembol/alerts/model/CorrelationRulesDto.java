@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * A data transfer object for representing alerting correlation rules
  *
- * <p>This class is using for json (de)serialisation of alerting correlation rules and
+ * <p>This class is used for json (de)serialisation of alerting correlation rules and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

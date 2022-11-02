@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 /**
  * A data transfer object for representing a rule protection specification used in alerting rules
  *
- * <p>This class is using for json (de)serialisation of a rule protection specification and
+ * <p>This class is used for json (de)serialisation of a rule protection specification and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

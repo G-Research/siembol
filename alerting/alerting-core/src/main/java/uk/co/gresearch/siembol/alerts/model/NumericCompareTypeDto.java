@@ -8,7 +8,7 @@ import java.util.function.BiPredicate;
 /**
  * An enum for representing a comparing type used in numeric matcher
  *
- * <p>This enum is using for json (de)serialisation of comparing type and providing a comparator for the type.
+ * <p>This enum is used for json (de)serialisation of comparing type and providing a comparator for the type.
  *
  * @author  Marian Novotny
  * @see com.fasterxml.jackson.annotation.JsonProperty

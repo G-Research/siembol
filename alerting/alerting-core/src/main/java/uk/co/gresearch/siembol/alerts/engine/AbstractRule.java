@@ -155,7 +155,7 @@ public abstract class AbstractRule {
         }
 
         /**
-         * Sets the tags - list of  key value pairs
+         * Sets the tags - list of key value pairs
          *
          * @param tags list of key value pairs. Values can include variables for substitution.
          * @return this builder

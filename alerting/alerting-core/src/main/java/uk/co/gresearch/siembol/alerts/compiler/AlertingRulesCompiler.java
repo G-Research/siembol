@@ -20,7 +20,7 @@ import static uk.co.gresearch.siembol.alerts.common.AlertingResult.StatusCode.OK
 /**
  * An object that validates, test and compiles standard alerting rules
  *
- * <p>This objects provides functionality for validating, testing and compiling alerting rules.
+ * <p>This object provides functionality for validating, testing and compiling alerting rules.
  * Moreover, it computes and provides json schema for alerting rules.
  *
  *

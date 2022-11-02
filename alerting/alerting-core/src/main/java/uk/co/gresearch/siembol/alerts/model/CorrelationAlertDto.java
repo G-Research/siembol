@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 /**
  * A data transfer object for representing correlation alerts used in correlation attributes
  *
- * <p>This class is using for json (de)serialisation of a correlation alert and
+ * <p>This class is used for json (de)serialisation of a correlation alert and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

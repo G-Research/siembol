@@ -13,7 +13,7 @@ import java.io.Serializable;
  *
  * <p>This class implements Serializable interface.
  *  It serializes engine using alerting rules json string.
- *  It provides a functionality for evaluating an event using the alerting engine.
+ *  It provides functionality for evaluating an event using the alerting engine.
  *
  * @author Marian Novotny
  * @see AlertingEngine

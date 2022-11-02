@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * An object for basic regular matching of an event
  *
  * <p>This derived class of BasicMatcher provides functionality for regular expression matching.
- * It supports extracting fields and put them into event using regular expression named groups.
+ * It supports extracting fields and put them into an event using regular expression named groups.
  *
  * @author  Marian Novotny
  * @see BasicMatcher

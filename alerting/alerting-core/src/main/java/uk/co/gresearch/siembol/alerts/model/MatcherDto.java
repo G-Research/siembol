@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A data transfer object for representing an alerting matcher used in alerting rules
  *
- * <p>This class is using for json (de)serialisation of an alerting matcher and
+ * <p>This class is used for json (de)serialisation of an alerting matcher and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

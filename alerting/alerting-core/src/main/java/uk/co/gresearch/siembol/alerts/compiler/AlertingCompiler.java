@@ -80,7 +80,7 @@ public interface AlertingCompiler {
      *
      * @param rule json string with alerting rule
      * @return json string with rules that contain the rule on input
-     * @throws IOException is rule is not valid json alerting rule
+     * @throws IOException if rule is not valid json alerting rule
      *
      */
     String wrapRuleToRules(String rule) throws IOException;
@@ -89,7 +89,7 @@ public interface AlertingCompiler {
      * Compiles rules into alerting engine and evaluates an event using the engine
      *
      * @param rules json string with alerting rules
-     * @param event string json for evaluation
+     * @param event json string for evaluation
      * @return alerting result with testing result
      * @see AlertingResult
      */
@@ -99,7 +99,7 @@ public interface AlertingCompiler {
      * Compiles a rule into alerting engine and evaluates an event using the engine
      *
      * @param rule json string with an alerting rule
-     * @param event string json for evaluation
+     * @param event json string for evaluation
      * @return alerting result with testing result
      * @see AlertingResult
      */

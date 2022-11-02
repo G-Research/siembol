@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A data transfer object for representing alerting correlation attributes
  *
- * <p>This class is using for json (de)serialisation of an alerting correlation attributes and
+ * <p>This class is used for json (de)serialisation of an alerting correlation attributes and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

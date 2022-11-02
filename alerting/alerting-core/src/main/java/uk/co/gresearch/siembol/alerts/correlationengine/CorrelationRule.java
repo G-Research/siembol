@@ -256,7 +256,7 @@ public class CorrelationRule extends AbstractRule {
          * Adds alert counter into the rule
          *
          * @param alertName the name of the alert for correlation
-         * @param threshold threshold of alerts for teh counter
+         * @param threshold threshold of alerts for the counter
          * @param flags alert counter metadata flags
          * @return this builder
          * @see AlertCounterMetadata.Flags

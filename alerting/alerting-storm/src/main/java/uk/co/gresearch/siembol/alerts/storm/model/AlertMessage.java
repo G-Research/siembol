@@ -12,7 +12,7 @@ import java.util.Optional;
  * A serializable object for representing an alerting message after triggering by an alerting engine
  *
  * <p>This class implements serializable interface and is used for representing an alerting message after
- * triggering an alert by an alerting engine.
+ * being triggered by an alerting engine.
  *
  * @author  Marian Novotny
  *
