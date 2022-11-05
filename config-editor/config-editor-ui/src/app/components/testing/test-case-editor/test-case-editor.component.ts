@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { copyHiddenTestCaseFields, TestCaseWrapper } from '@app/model/test-case';
-import { Type } from '@app/model/config-model';
+import { Type, TestConfigSpec } from '@app/model/config-model';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { cloneDeep } from 'lodash';
 import { EditorService } from '@app/services/editor.service';
@@ -33,6 +33,26 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   testStoreService: TestStoreService;
   form: FormGroup = new FormGroup({});
   private markHistoryChange = false;
+  private testConfigSpec: TestConfigSpec = undefined;
+  private TEST_CASE_TESTER_KEY = "test_case_tester";
+  testCaseConfigTestersFields: FormlyFieldConfig[] = [ 
+    {
+      key: this.TEST_CASE_TESTER_KEY,
+      type: "enum",
+      templateOptions: {
+        label: "Test case tester",
+        hintEnd: "The name of the test case tester selected",
+        change: (field, $event) => {
+            this.updateConfigTester($event.value);
+        },
+        options: []
+      },
+    },
+  ];
+  testCaseConfigTesterModel = {};
+  dropDownForm: FormGroup = new FormGroup({});
+  numTesters = 0;
+
   constructor(
     private appService: AppService,
     private editorService: EditorService,
@@ -45,33 +65,39 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.editorService.metaDataMap.testing.testCaseEnabled) {
-      const subschema = cloneDeep(this.editorService.testSpecificationSchema);
-      const schema = cloneDeep(this.appService.testCaseSchema);
-      schema.properties.test_specification = subschema;
-      const schemaConverter = new FormlyJsonschema();
-      this.editorService.configSchema.formatTitlesInSchema(schema, '');
-      this.options = {
-        resetOnHide: false,
-        map: SchemaService.renameDescription,
-      };
-      this.field = schemaConverter.toFieldConfig(schema, this.options);
-
-      this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
-        this.testCaseWrapper = testCaseWrapper;
-        if (
-          testCaseWrapper &&
-          !this.editorService.configSchema.areTestCasesEqual(testCaseWrapper.testCase, this.testCase)
-        ) {
-          this.testCase = cloneDeep(this.testCaseWrapper.testCase);
-        }
-      });
+    this.numTesters = this.editorService.testSpecificationTesters.test_case_testing.length;
+    if (this.numTesters > 0) {
+      this.testConfigSpec = this.editorService.getTestConfig(this.editorService.testSpecificationTesters.test_case_testing[0]);
+      this.initSchema();
+      this.initDropdown();
     }
     this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
       if (this.form.valid && !this.markHistoryChange) {
         this.testStoreService.updateEditedTestCaseAndHistory(this.getFormTestCaseWrapper());
       }
       this.markHistoryChange = false;
+    });
+  }
+  initSchema() {
+    const subschema = cloneDeep(this.testConfigSpec.test_schema);
+    const schema = cloneDeep(this.appService.testCaseSchema);
+    schema.properties.test_specification = subschema;
+    const schemaConverter = new FormlyJsonschema();
+    this.editorService.configSchema.formatTitlesInSchema(schema, '');
+    this.options = {
+      resetOnHide: false,
+      map: SchemaService.renameDescription,
+    };
+    this.field = schemaConverter.toFieldConfig(schema, this.options);
+
+    this.editedTestCase$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCaseWrapper => {
+      this.testCaseWrapper = testCaseWrapper;
+      if (
+        testCaseWrapper &&
+        !this.editorService.configSchema.areTestCasesEqual(testCaseWrapper.testCase, this.testCase)
+      ) {
+        this.testCase = cloneDeep(this.testCaseWrapper.testCase);
+      }
     });
   }
 
@@ -150,4 +176,26 @@ export class TestCaseEditorComponent implements OnInit, OnDestroy {
     ret.testCase = copyHiddenTestCaseFields(cloneDeep(testCase), this.testCase);
     return ret;
   }
+
+  initDropdown() {
+    return this.testCaseConfigTestersFields.map(f => {
+      if (f.key === this.TEST_CASE_TESTER_KEY) {
+        f.defaultValue = this.editorService.testSpecificationTesters.test_case_testing[0];
+        f.templateOptions.options = this.editorService.testSpecificationTesters.test_case_testing.map(testerName => {
+          return { value: testerName, label: testerName}
+        })
+      }
+    })
+  }
+
+  updateConfigTester(testerName: string) {
+    const tester = this.editorService.getTestConfig(testerName);
+    if (tester !== undefined) {
+      this.testConfigSpec = tester;
+      if (this.testConfigSpec.test_case_testing) {
+        this.initSchema();
+      }
+    }
+  }
+
 }

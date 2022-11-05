@@ -1,3 +1,6 @@
+<form *ngIf="numTesters > 1" [formGroup]="form">
+    <formly-form [model]="testCaseConfigTesterModel" [fields]="testCaseConfigTestersFields" [options]="options" [form]="dropDownForm"></formly-form>
+</form>
 <mat-card-title>
     <button mat-raised-button title="Test Suite" (click)="onCancelEditing()"><</button>
     <h2>{{ testCase.test_case_name }} v{{ testCase.version }}</h2>

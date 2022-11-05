@@ -1,4 +1,7 @@
 <mat-card>
+    <form *ngIf="numTesters > 1" [formGroup]="form">
+        <formly-form [model]="configTesterModel" [fields]="configTestersFields" [options]="options" [form]="formDropDown"></formly-form>
+    </form>
     <div class="console">
         <span class="title">
             <h4>

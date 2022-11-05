@@ -7,7 +7,7 @@ import { UiMetadata } from '../../model/ui-metadata-map';
 import { ConfigLoaderService } from '../config-loader.service';
 import { ConfigStoreStateBuilder } from './config-store-state.builder';
 import { TestStoreService } from './test-store.service';
-import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, Type } from '@app/model/config-model';
+import { AdminConfig, ConfigAndTestsToClone, ConfigToImport, ExistingConfigError, FILTER_PARAM_KEY, Importers, SEARCH_PARAM_KEY, Type, TestSpecificationTesters } from '@app/model/config-model';
 import { ClipboardStoreService } from '../clipboard-store.service';
 import { ConfigHistoryService } from '../config-history.service';
 import { AppConfigService } from '../app-config.service';
@@ -33,6 +33,7 @@ const initialConfigStoreState: ConfigStoreState = {
   isAnyFilterPresent: false,
   serviceFilterConfig: undefined,
   user: undefined,
+  testSpecificationTesters: undefined,
 };
 
 const initialPullRequestState: PullRequestInfo = {
@@ -71,6 +72,7 @@ export class ConfigStoreService {
   public readonly isAnyFilterPresent$ = this.store.asObservable().pipe(map(x => x.isAnyFilterPresent));
   public readonly serviceFilterConfig$ = this.store.asObservable().pipe(map(x => x.serviceFilterConfig));
   public readonly serviceFilters$ = this.store.asObservable().pipe(map(x => x.serviceFilters));
+  public readonly testSpecificationTesters$ = this.store.asObservable().pipe(map(x => x.testSpecificationTesters));
 
   /*eslint-enable */
 
@@ -108,7 +110,8 @@ export class ConfigStoreService {
     release: any, 
     testCaseMap: TestCaseMap, 
     user: string,
-    uiMetadata: UiMetadata
+    uiMetadata: UiMetadata,
+    testers?: TestSpecificationTesters
   ) {
     const newState = new ConfigStoreStateBuilder(this.store.getValue())
       .user(user)
@@ -122,6 +125,7 @@ export class ConfigStoreService {
       .detectOutdatedConfigs()
       .reorderConfigsByRelease()
       .computeConfigManagerRowData()
+      .updateConfigTesters(testers)
       .build();
 
     this.store.next(newState);
@@ -225,7 +229,7 @@ export class ConfigStoreService {
   }
 
   reloadStoreAndRelease(): Observable<any> {
-    const testCaseMapFun = this.metaDataMap.testing.testCaseEnabled ? this.configLoaderService.getTestCases() : of({});
+    const testCaseMapFun = this.store.getValue().testSpecificationTesters.test_case_testing.length > 0 ? this.configLoaderService.getTestCases() : of({});
     return forkJoin(
       this.configLoaderService.getConfigs(),
       this.configLoaderService.getRelease(),
@@ -422,7 +426,8 @@ export class ConfigStoreService {
   }
 
   deleteConfig(configName: string): Observable<any> {
-    return this.configLoaderService.deleteConfig(configName).pipe(map(data => {
+    const testCaseIsEnabled = this.store.getValue().testSpecificationTesters.test_case_testing.length > 0;
+    return this.configLoaderService.deleteConfig(configName, testCaseIsEnabled).pipe(map(data => {
       const newState = new ConfigStoreStateBuilder(this.store.getValue())
         .testCaseMap(data.testCases)
         .configs(data.configs)

@@ -1,6 +1,6 @@
 import { Config, Release, FileHistory } from '.';
 import { TestCaseMap, TestCaseWrapper } from './test-case';
-import { AdminConfig, ConfigManagerRow } from './config-model';
+import { AdminConfig, ConfigManagerRow, TestSpecificationTesters } from './config-model';
 import { FilterConfig } from './ui-metadata-map';
 
 export interface ConfigStoreState {
@@ -22,4 +22,5 @@ export interface ConfigStoreState {
   isAnyFilterPresent: boolean;
   user: string;
   serviceFilterConfig: FilterConfig;
+  testSpecificationTesters: TestSpecificationTesters;
 }

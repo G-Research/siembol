@@ -91,7 +91,7 @@ export class ReleaseDialogComponent implements AfterViewChecked {
           }
         });
     }
-    this.testEnabled = this.uiMetadata.testing.releaseTestEnabled;
+    this.testEnabled = this.service.testSpecificationTesters.release_testing.length > 0;
     this.environment = this.config.environment;
 
     this.service.configStore.initialRelease$.subscribe((d: Release) => {

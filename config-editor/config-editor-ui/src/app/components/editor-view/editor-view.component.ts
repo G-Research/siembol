@@ -75,9 +75,9 @@ export class EditorViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.editedConfig$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((config: Config) => {
       this.configData = config.configData;
       this.testingEnabled = () =>
-        this.editorService.metaDataMap.testing.perConfigTestEnabled && this.editorComponent.form.valid;
+      this.editorService.testSpecificationTesters.config_testing.length > 0 && this.editorComponent.form.valid;
       this.testCaseEnabled = () =>
-        this.editorService.metaDataMap.testing.testCaseEnabled && this.editorComponent.form.valid && !config.isNew;
+      this.editorService.testSpecificationTesters.test_case_testing.length > 0 && this.editorComponent.form.valid && !config.isNew;
     });
   }
 

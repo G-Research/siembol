@@ -40,7 +40,7 @@ export class TestCentreComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.editorService.metaDataMap.testing.testCaseEnabled) {
+    if (this.editorService.testSpecificationTesters.test_case_testing.length > 0) {
       this.testCases$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(testCases => {
         this.testCases = testCases;
       });

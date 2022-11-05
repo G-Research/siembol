@@ -11,7 +11,8 @@ import {
   GitFiles,
   PullRequestInfo,
   SchemaInfo,
-  TestSchemaInfo,
+  TestConfigSpecTesters,
+  TestConfigSpec,
   AdminSchemaInfo,
   AdminConfig,
   AdminConfigGitFiles,
@@ -79,10 +80,10 @@ export class ConfigLoaderService {
       }));
   }
 
-  getTestSpecificationSchema(): Observable<JSONSchema7> {
+  getConfigTesters(): Observable<TestConfigSpec[]> {
     return this.http
-      .get<TestSchemaInfo>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testschema`)
-      .pipe(map(x => x.test_schema));
+      .get<TestConfigSpecTesters>(`${this.config.serviceRoot}api/v1/${this.serviceName}/configs/testers`)
+      .pipe(map(result => result.config_testers));
   }
 
   getSchema(): Observable<JSONSchema7> {
@@ -367,14 +368,14 @@ export class ConfigLoaderService {
       .pipe(map(x => x.test_case_result));
   }
 
-  deleteConfig(configName: string): Observable<ConfigAndTestCases> {
+  deleteConfig(configName: string, testCaseIsEnabled: boolean): Observable<ConfigAndTestCases> {
     return this.http
       .post<GitFilesDelete<any>>(
         `${this.config.serviceRoot}api/v1/${this.serviceName}/configstore/configs/delete?configName=${configName}`,
         null
       )
-      .pipe(map(result => {
-        if (!result.configs_files || (!result.test_cases_files && this.uiMetadata.testing.testCaseEnabled)) {
+      .pipe(map(result => { 
+        if (!result.configs_files || (!result.test_cases_files && testCaseIsEnabled)) {
           throw new DOMException('bad format response when deleting config');
         }
         const configAndTestCases = {

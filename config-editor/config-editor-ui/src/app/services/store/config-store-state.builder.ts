@@ -4,7 +4,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Config, Release, FileHistory } from '../../model';
 import { TestCaseMap } from '@app/model/test-case';
 import { TestCaseWrapper, TestCaseResult } from '../../model/test-case';
-import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER } from '@app/model/config-model';
+import { AdminConfig, ConfigManagerRow, ConfigStatus, FILTER_DELIMITER, TestSpecificationTesters } from '@app/model/config-model';
 import { FilterConfig, UiMetadata } from '@app/model/ui-metadata-map';
 
 export class ConfigStoreStateBuilder {
@@ -286,5 +286,10 @@ export class ConfigStoreStateBuilder {
         },
       },
     }
+  }
+
+  updateConfigTesters(testers: TestSpecificationTesters) {
+    this.state.testSpecificationTesters = testers;
+    return this;
   }
 }
