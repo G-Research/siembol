@@ -5,7 +5,7 @@ Introduction
 - [2. History](#history)
 - [3. How Siembol Improves upon Metron](#how-siembol-improves-upon-metron)
     * [3.1 Components for Alert Escalation](#components-for-alert-escalation)
-    * [3.2 Integration with Other Systems-Siembol Response](#integration-with-other-systems-siembol-response)
+    * [3.2 Integration with Other Systems - Siembol Response](#integration-with-other-systems-\-\-siembol-response)
     * [3.3 Advanced Parsing Framework for Building Fault-Tolerant Parsers](#advanced-parsing-framework-for-building-fault-tolerant-parsers)
     * [3.4 Advanced Enrichment Component](#advanced-enrichment-component)
     * [3.5 Configurations and Rules are Defined by a Web Application Siembol UI](#configurations-and-rules-are-defined-by-a-web-application-siembol-ui)
@@ -54,7 +54,7 @@ _Easy installation for use with prepared Docker images and Helm charts._ Metronâ
 - Security teams can easily create a rule-based alert from a single data source, or they can create advanced correlation rules that combine various data sources.
 - Siembol UI supports translating Sigma rule specification (generic and open signature format for SIEM alerting [https://github.com/SigmaHQ/sigma](https://github.com/SigmaHQ/sigma)) into the Siembol alerting rule.
 
-### Integration with Other Systems-Siembol Response
+### Integration with Other Systems - Siembol Response
 
 - Easy way to integrate Siembol with other systems such as [Jira](https://www.atlassian.com/software/jira), [Cortex](https://github.com/TheHive-Project/Cortex), [ELK](https://www.elastic.co/what-is/elk-stack), and [LDAP](https://ldap.com/).
 - Functionality to provide additional enrichments about an alert, such as [ELK](https://www.elastic.co/what-is/elk-stack) searches or [LDAP](https://ldap.com/) searches, with the option to filter the alert as part of an automatic incident response.
