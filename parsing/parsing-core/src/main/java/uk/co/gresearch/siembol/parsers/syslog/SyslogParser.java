@@ -176,7 +176,7 @@ public class SyslogParser {
      *
      * @param str a raw syslog message
      * @return the parsed syslog message on success
-     * @throw IllegalStateException if the parser reaches an invalid state during parsing a message
+     * @throws IllegalStateException if the parser reaches an invalid state during parsing a message
      * @see SyslogMessage
      */
     public SyslogMessage parse(String str) {
