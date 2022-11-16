@@ -53,7 +53,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertTrue(extractor.shouldRemoveField());
-        Assert.assertFalse(extractor.shouldOverwiteFields());
+        Assert.assertFalse(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(simpleNoQuotas.trim());
         Assert.assertEquals(3, out.size());
@@ -79,7 +79,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertFalse(extractor.shouldRemoveField());
-        Assert.assertTrue(extractor.shouldOverwiteFields());
+        Assert.assertTrue(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(simpleQuotes.trim());
         Assert.assertEquals(3, out.size());
@@ -104,7 +104,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertFalse(extractor.shouldRemoveField());
-        Assert.assertTrue(extractor.shouldOverwiteFields());
+        Assert.assertTrue(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(simpleQuotes.trim());
         Assert.assertEquals(3, out.size());
@@ -130,7 +130,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertFalse(extractor.shouldRemoveField());
-        Assert.assertTrue(extractor.shouldOverwiteFields());
+        Assert.assertTrue(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(nonStandardDelimiters.trim());
         Assert.assertEquals(3, out.size());
@@ -159,7 +159,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertFalse(extractor.shouldRemoveField());
-        Assert.assertTrue(extractor.shouldOverwiteFields());
+        Assert.assertTrue(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(nonStandardDelimitersEscaping.trim());
         Assert.assertEquals(3, out.size());
@@ -189,7 +189,7 @@ public class KeyValueExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertFalse(extractor.shouldRemoveField());
-        Assert.assertTrue(extractor.shouldOverwiteFields());
+        Assert.assertTrue(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(nonStandardDelimitersEscaping.trim());
         Assert.assertEquals(3, out.size());

@@ -9,7 +9,14 @@ import java.time.temporal.TemporalQueries;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
+/**
+ * An object that formats a string timestamps into millisecond epoch time
+ *
+ * <p>This object validates, parses and formats a string timestamps into millisecond epoch time.
+ * It supports list of formatters that are executed in a chain until the first formatter will be successful.
+ *
+ * @author  Marian Novotny
+ */
 public class ParserDateFormat {
     private static final String DEFAULT_TIMEZONE = "UTC";
     private final Pattern dateTimePattern;

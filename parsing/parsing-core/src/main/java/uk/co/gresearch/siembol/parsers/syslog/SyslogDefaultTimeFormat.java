@@ -6,6 +6,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
+import uk.co.gresearch.siembol.parsers.common.SiembolParser;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -13,7 +14,13 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * The class provides default time formatting for syslog messages
+ * A class with static methods for default syslog timestamp parsing
+ *
+ * <p>This class exposes static methods for default timestamp syslog parsing.
+ *
+ * @author  Marian Novotny
+ * @see SyslogParser
+ *
  */
 public class SyslogDefaultTimeFormat {
     private static final int WEEK_MILLISECONDS = 7 * 24 * 3600 * 1000;

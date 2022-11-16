@@ -2,11 +2,15 @@ package uk.co.gresearch.siembol.parsers.netflow;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
-
 /**
- * The class is a simple ByteBuffer wrapper that provides reading unsigned integers and byte arrays from ByteBuffer
+ * An object for representing a binary buffer
+ *
+ * <p>This class represents binary buffer for parsing netflow messages.
+ * It is wrapping ByteBuffer to provide support for parsing unsigned fields of structures.
+ *
+ * @author Marian Novotny
+ *
  */
-
 public class BinaryBuffer {
     private static final int SIZE_OF_UBYTE = 1;
     private static final int SIZE_OF_USHORT = 2;

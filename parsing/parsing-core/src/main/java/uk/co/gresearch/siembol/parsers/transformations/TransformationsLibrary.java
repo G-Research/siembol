@@ -4,13 +4,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.co.gresearch.siembol.common.utils.FieldFilter;
 import uk.co.gresearch.siembol.common.utils.PatternFilter;
+import uk.co.gresearch.siembol.parsers.syslog.SyslogParser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.function.Function;
-
+/**
+ * A class with static methods for implementing transformations
+ *
+ * <p>This class exposes static methods for implementing Transformation interface.
+ * These helper functions are used in Transformation factory in lambda functions that are implementing transformations.
+ *
+ * @author  Marian Novotny
+ * @see TransformationFactory
+ *
+ */
 public class TransformationsLibrary {
     public static Map<String, Object> fieldTransformation(Map<String, Object> log,
                                                           Function<String, String> fun) {

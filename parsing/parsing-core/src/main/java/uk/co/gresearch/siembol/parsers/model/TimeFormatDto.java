@@ -2,7 +2,16 @@ package uk.co.gresearch.siembol.parsers.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing attributes of a time format
+ *
+ * <p>This class is used for json (de)serialisation of a time format used in a time formatter and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 @Attributes(title = "time format", description = "Time format for timestamp parsing")
 public class TimeFormatDto {
     @JsonProperty("validation_regex")

@@ -1,7 +1,18 @@
 package uk.co.gresearch.siembol.parsers.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing attributes for a transformation configuration
+ *
+ * <p>This class is used for json (de)serialisation of a transformation configuration and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see TransformationTypeDto
+ * @see TransformationAttributesDto
+ */
 @Attributes(title = "transformation", description = "The specification of transformation")
 public class TransformationDto {
     @Attributes(description = "The transformation is enabled", required = false)

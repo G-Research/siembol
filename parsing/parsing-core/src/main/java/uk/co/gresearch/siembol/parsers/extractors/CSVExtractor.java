@@ -4,7 +4,16 @@ import com.google.common.base.Splitter;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+ * An object for extracting fields using CSV extracting
+ *
+ * <p>This derived class of ParserExtractor provides functionality for CSV (Comma Separated Values) extracting.
+ * It uses column names list for adding field names with possibility to skip some columns.
+ * It supports handling quotas.
+ *
+ * @author  Marian Novotny
+ * @see ParserExtractor
+ */
 public class CSVExtractor extends ParserExtractor {
     private static final String UNKNOWN_COLUMN_NAME_PREFIX = "unknown";
     private static final String EMPTY_STRING = "";
@@ -57,6 +66,12 @@ public class CSVExtractor extends ParserExtractor {
         return values;
     }
 
+    /**
+     * Extracts a message string using CSV parsing
+     *
+     * @param message input message to be extracted
+     * @return map of string to object with extracted fields
+     */
     @Override
     protected Map<String, Object> extractInternally(String message) {
         Map<String, Object> ret = new HashMap<>();
@@ -107,6 +122,11 @@ public class CSVExtractor extends ParserExtractor {
         return true;
     }
 
+    /**
+     * Creates a CSV extractor builder instance
+     *
+     * @return CSV builder instance
+     */
     public static Builder<CSVExtractor> builder() {
 
         return new Builder<CSVExtractor>() {
@@ -127,17 +147,36 @@ public class CSVExtractor extends ParserExtractor {
         };
     }
 
+    /**
+     * A builder for CSV parser extractor
+     *
+     * <p>This class is using Builder pattern.
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends CSVExtractor>
             extends ParserExtractor.Builder<T> {
         protected String skippingColumnName = "_";
         protected String wordDelimiter = ",";
         protected List<ColumnNames> columnNamesList = new ArrayList<>();
 
+        /**
+         * Sets word delimiter for delimiting a row value - ',' by default
+         *
+         * @param wordDelimiter word delimiter for delimiting a row value
+         * @return this builder
+         */
         public CSVExtractor.Builder<T> wordDelimiter(String wordDelimiter) {
             this.wordDelimiter = wordDelimiter;
             return this;
         }
 
+        /**
+         * Sets column names
+         *
+         * @param columnNamesList list of column names
+         * @return this builder
+         */
         public CSVExtractor.Builder<T> columnNames(List<ColumnNames> columnNamesList) {
             if (columnNamesList == null
                     || columnNamesList.isEmpty()) {
@@ -146,9 +185,14 @@ public class CSVExtractor extends ParserExtractor {
 
             this.columnNamesList = columnNamesList;
             return this;
-
         }
 
+        /**
+         * Sets skipping column name string
+         *
+         * @param skippingColumnName name of the column that will be skipped during extracting
+         * @return this builder
+         */
         public CSVExtractor.Builder<T> skippingColumnName(String skippingColumnName) {
             if (skippingColumnName == null) {
                 throw new IllegalArgumentException("The skipping column name should not be null");

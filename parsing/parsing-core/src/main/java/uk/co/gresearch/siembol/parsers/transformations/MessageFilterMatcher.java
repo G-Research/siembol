@@ -3,7 +3,14 @@ package uk.co.gresearch.siembol.parsers.transformations;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.regex.Pattern;
-
+/**
+ * An object for representing a matcher for message filtering
+ *
+ * <p>This class represents a regular expression matcher for message filtering.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class MessageFilterMatcher {
     private static final String MISSING_ARGUMENT = "FiledName and pattern should not be null";
     public enum Flags {

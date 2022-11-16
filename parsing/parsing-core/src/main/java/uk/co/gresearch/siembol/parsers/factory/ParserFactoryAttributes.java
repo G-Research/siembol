@@ -6,7 +6,15 @@ import uk.co.gresearch.siembol.parsers.extractors.ParserExtractor;
 import uk.co.gresearch.siembol.parsers.transformations.Transformation;
 
 import java.util.List;
-
+/**
+ * An object for representing a parser factory result attributes
+ *
+ * <p>This class represents parser factory result attributes used in parser factory result.
+ *
+ * @author Marian Novotny
+ * @see ParserFactoryResult
+ *
+ */
 public class ParserFactoryAttributes {
     private List<ParserExtractor> extractors;
     private List<Transformation> transformations;

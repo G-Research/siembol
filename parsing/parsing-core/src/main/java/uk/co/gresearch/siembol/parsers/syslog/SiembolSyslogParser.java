@@ -14,7 +14,17 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static uk.co.gresearch.siembol.common.constants.SiembolMessageFields.ORIGINAL;
-
+/**
+ * An object for syslog parsing
+ *
+ * <p>This class is an implementation of SiembolParser interface.
+ * It is used for parsing a log message using RFC 3164 or RFC 5424 compliant fault-tolerant syslog parser.
+ *
+ * It evaluates chain of extractors and transformations if registered.
+ * @author  Marian Novotny
+ * @see SiembolParser
+ *
+ */
 public class SiembolSyslogParser implements SiembolParser {
     public enum Flags {
         EXPECT_RFC_3164_VERSION,
@@ -47,6 +57,9 @@ public class SiembolSyslogParser implements SiembolParser {
         flags = builder.flags;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Map<String, Object>> parse(byte[] bytes) {
 
@@ -107,7 +120,7 @@ public class SiembolSyslogParser implements SiembolParser {
                             sdElement.getKey());
                     syslogObject.putAll(currentElements);
                 } else {
-                    //we add syslogObject that contains header and msg into sdElemnts
+                    //we add syslogObject that contains header and msg into sdElements
                     currentElements.put(SYSLOG_SD_ID, sdElement.getKey());
                     currentElements.putAll(syslogObject);
                     ret.add(currentElements);
@@ -119,7 +132,7 @@ public class SiembolSyslogParser implements SiembolParser {
             }
 
             return ret.stream()
-                    .map(x -> extractAndTransfrom(x))
+                    .map(x -> extractAndTransform(x))
                     .filter(x -> !x.isEmpty())
                     .collect(Collectors.toList());
         } catch (Exception e) {
@@ -129,7 +142,7 @@ public class SiembolSyslogParser implements SiembolParser {
         }
     }
 
-    private Map<String, Object> extractAndTransfrom(Map<String, Object> message) {
+    private Map<String, Object> extractAndTransform(Map<String, Object> message) {
         Map<String, Object> ret = message;
         if (extractors != null) {
             ret = ParserExtractor.extract(extractors, ret);

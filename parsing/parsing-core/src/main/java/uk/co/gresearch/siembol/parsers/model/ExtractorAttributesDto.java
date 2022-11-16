@@ -6,7 +6,17 @@ import uk.co.gresearch.siembol.common.constants.SiembolMessageFields;
 
 import java.util.Arrays;
 import java.util.List;
-
+/**
+ * A data transfer object for representing an attributes of an extractor
+ *
+ * <p>This class is used for json (de)serialisation of attributes and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ColumnFilterDto
+ */
 @Attributes(title = "extractor attributes", description = "Attributes for extractor and related functions")
 public class ExtractorAttributesDto {
     @JsonProperty("should_overwrite_fields")

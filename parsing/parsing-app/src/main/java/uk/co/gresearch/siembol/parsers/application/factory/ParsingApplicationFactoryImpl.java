@@ -31,7 +31,17 @@ import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.parsers.application.factory.ParsingApplicationFactoryResult.StatusCode.OK;
-
+/**
+ * An object for compiling parsing applications
+ *
+ * <p>This class in an implementation of ParsingApplicationFactory interface.
+ * It is used for creating a parsing applications, validating parsing application configuration and
+ * providing json schema for parsing application configurations.
+ *
+ * @author  Marian Novotny
+ * @see ParsingApplicationFactory
+ *
+ */
 public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory {
     private static final String MISSING_PARSER_MSG = "Missing parser: %s in parser configurations";
     private static final String MISSING_SINGLE_PARSER = "Missing single_parser properties";
@@ -58,6 +68,11 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
     private final ParserFactory parserFactory;
     private final Function<String, String> getParserDummyFun;
 
+    /**
+     * Creates ParsingApplicationFactoryImpl instance
+     *
+     * @throws Exception if the creation fails
+     */
     public ParsingApplicationFactoryImpl() throws Exception {
         jsonSchemaValidator = new SiembolJsonSchemaValidator(ParsingApplicationsDto.class);
         parserFactory = ParserFactoryImpl.createParserFactory();
@@ -65,6 +80,9 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         getParserDummyFun = x -> dummyParser;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsingApplicationFactoryResult getSchema() {
         ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();
@@ -72,6 +90,9 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         return new ParsingApplicationFactoryResult(OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsingApplicationFactoryResult create(String parserApplicationConfig, String parserConfigs) {
         ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();
@@ -93,6 +114,9 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         return new ParsingApplicationFactoryResult(OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsingApplicationFactoryResult create(String parserApplicationConfig) {
         ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();
@@ -107,6 +131,9 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         return new ParsingApplicationFactoryResult(OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsingApplicationFactoryResult validateConfiguration(String parserApplicationConfig) {
         try {
@@ -119,6 +146,9 @@ public class ParsingApplicationFactoryImpl implements ParsingApplicationFactory 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsingApplicationFactoryResult validateConfigurations(String parserApplicationConfigurations) {
         ParsingApplicationFactoryAttributes attributes = new ParsingApplicationFactoryAttributes();

@@ -4,7 +4,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing routing parser
+ *
+ * <p>This class is used for json (de)serialisation of routing parser and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ *
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ParserPropertiesDto
+ * @see RoutedParserPropertiesDto
+ */
 @Attributes(title = "routing parser", description = "The specification for the routing parser")
 public class RoutingParserDto {
     @JsonProperty("router_parser_name")

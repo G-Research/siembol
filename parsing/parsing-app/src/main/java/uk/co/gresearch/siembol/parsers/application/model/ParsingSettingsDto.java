@@ -2,7 +2,22 @@ package uk.co.gresearch.siembol.parsers.application.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing parsing settings
+ *
+ * <p>This class is used for json (de)serialisation of parsing settings and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ *
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see RoutingParserDto
+ * @see ParserPropertiesDto
+ * @see TopicRoutingParserDto
+ * @see HeaderRoutingParserDto
+ *
+ */
 @Attributes(title = "parsing settings", description = "Settings of parsing")
 public class ParsingSettingsDto {
     @JsonProperty("routing_parser")
