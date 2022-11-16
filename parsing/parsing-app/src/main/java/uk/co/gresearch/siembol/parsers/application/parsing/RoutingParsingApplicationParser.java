@@ -215,7 +215,6 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
          * @param pattern a regular expression pattern for evaluation
          *
          * @return this builder
-         * @throws PatternSyntaxException if the pattern is not valid regular expression string
          * @see SerializableSiembolParser
          *
          */
