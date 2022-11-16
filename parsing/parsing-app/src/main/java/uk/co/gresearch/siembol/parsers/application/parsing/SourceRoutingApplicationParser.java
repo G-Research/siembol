@@ -91,12 +91,12 @@ public class SourceRoutingApplicationParser extends ParsingApplicationParser {
 
         /**
          * Adds the parser with its source
-         * @parame source a source identification for selecting the parser
+         * @param source a source identification for selecting the parser
          * @param topic an output topic for parsing
          * @param siembolParser a serializable siembol parser
          *
          * @return this builder
-         * @thows IllegalArgumentException if the source is not unique and has been already used
+         * @throws IllegalArgumentException if the source is not unique and has been already used
          * @see SerializableSiembolParser
          *
          */
