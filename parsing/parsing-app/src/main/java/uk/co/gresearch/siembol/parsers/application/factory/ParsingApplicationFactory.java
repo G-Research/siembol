@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.parsers.application.factory;
 /**
  * An object for compiling parsing applications
  *
- * <p>This interface is for creating a parsing applications, validating parsing application configuration and
+ * <p>This interface is for creating a parsing application, validating a parsing application configuration and
  * providing json schema for parsing application configurations.
  *
  * @author  Marian Novotny
@@ -25,7 +25,7 @@ public interface ParsingApplicationFactory {
      * @param parsingApplicationConfig a parsing application configuration json string 
      * @param parserConfigs parser configurations json string
      * @return parsing application factory result with generated parsing application on success,
-     *         otherwise parser  result with an error status code.
+     *         otherwise parser result with an error status code.
      * @see ParsingApplicationFactoryResult
      */
     ParsingApplicationFactoryResult create(String parsingApplicationConfig, String parserConfigs);

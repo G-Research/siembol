@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 /**
- * An object for parsing application parser rule
+ * An object for parsing application parser
  *
  * <p>This abstract class is using template pattern for handling common functionality of all parsing application parsers.
  *
@@ -96,7 +96,7 @@ public abstract class ParsingApplicationParser implements Serializable {
     }
 
     /**
-     * Parses the message using internal parsers internally.
+     * Parses the message using internal parser(s).
      * Template method to be implemented by descendant classes.
      *
      * @param source source of the message than can be used for selecting a parser for parsing
@@ -122,11 +122,11 @@ public abstract class ParsingApplicationParser implements Serializable {
     }
 
     /**
-     * Parses the message using internal parsers with additional knowledge of source of the message
+     * Parses the message using internal parser(s) with additional knowledge of a source of the message
      *
      * @param source source of the message than can be used for selecting a parser for parsing
      * @param metadata metadata of the message as a json string
-     * @param message byt array of message for parsing
+     * @param message byt array of the message for parsing
      *
      * @return the list of parsing application results
      * @see ParsingApplicationResult
@@ -286,9 +286,9 @@ public abstract class ParsingApplicationParser implements Serializable {
         protected HashSet<String> siembolFields = new HashSet<>(SiembolMessageFields.getMessageFieldsSet());
 
         /**
-         * Sets name of the parsing application parser
+         * Sets the name of the parsing application parser
          *
-         * @param name name of the parsing application parser
+         * @param name the name of the parsing application parser
          * @return this builder
          */
         public Builder<T> name(String name) {
@@ -310,9 +310,9 @@ public abstract class ParsingApplicationParser implements Serializable {
         }
 
         /**
-         * Sets whether the application will add guid to the message after parsing
+         * Sets whether the application will add guid field to the message after parsing
          *
-         * @param addGuidToMessages the flag whether the application will add guid to the message after parsing
+         * @param addGuidToMessages the flag whether the application will add guid field to the message after parsing
          * @return this builder
          */
         public Builder<T> addGuidToMessages(boolean addGuidToMessages) {
@@ -358,9 +358,9 @@ public abstract class ParsingApplicationParser implements Serializable {
         }
 
         /**
-         * Sets the processing time filed with the current time that will be added to the message after parsing
+         * Sets the processing time field with the current time that will be added to the message after parsing
          *
-         * @param processingTimeField field name that will eb added after parsing a message
+         * @param processingTimeField field name that will be added after parsing a message
          * @return this builder
          */
         public Builder<T> processingTimeField(String processingTimeField) {
@@ -402,7 +402,7 @@ public abstract class ParsingApplicationParser implements Serializable {
         }
 
         /**
-         * Sets siembol fields that will be not removed during evaluating maximum number of fields
+         * Sets siembol fields that cannot be removed during evaluating maximum number of fields
          *
          * @param siembolFields set of fields that will be not removed during evaluating maximum number of fields
          * @return this builder

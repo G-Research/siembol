@@ -7,12 +7,12 @@ import uk.co.gresearch.siembol.parsers.common.SerializableSiembolParser;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 /**
- * An object for parsing application that integrates a routing parsing application using information about source
+ * An object for parsing application that integrates a routing parsing application using information about the source
  *
  * <p>This derived class of ParsingApplicationParser is using template pattern for implementing
- * a parsing application that integrates a routing parsing application using information about source.
- * The selected parser will be selected based on map of source to parser.
- * Default parser will be selected if the map does nto contain the source.
+ * a parsing application that integrates a routing parsing application using information about the source.
+ * The final parser will be selected based on a map of a source to a parser.
+ * Default parser will be selected if the map does not contain the source.
  *
  * @author  Marian Novotny
  */
@@ -78,7 +78,7 @@ public class SourceRoutingApplicationParser extends ParsingApplicationParser {
 
         /**
          * Sets the default parser
-         * @param topic output topic for parsing
+         * @param topic an output topic for parsing
          * @param siembolParser a serializable siembol parser
          *
          * @return this builder
@@ -91,8 +91,8 @@ public class SourceRoutingApplicationParser extends ParsingApplicationParser {
 
         /**
          * Adds the parser with its source
-         * @parame source the source identification for selecting the parser
-         * @param topic output topic for parsing
+         * @parame source a source identification for selecting the parser
+         * @param topic an output topic for parsing
          * @param siembolParser a serializable siembol parser
          *
          * @return this builder

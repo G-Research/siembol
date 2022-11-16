@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 /**
- * An object for parsing application that integrates a routing parsing application with
- * selecting a final parser after router parsing.
+ * An object for a parsing application that integrates a routing parser and
+ * a final parser will be selected by pattern matching.
  *
  * <p>This derived class of ParsingApplicationParser is using template pattern for implementing
- * a parsing application that integrates a routing parsing application using router parsing and
+ * a parsing application that integrates a routing parser and
  * evaluating regular expression patterns for selecting the final parser.
- * Default parser will be selected if no pattern will match.
+ * Default parser is selected if no pattern has been matched.
  *
  * @author  Marian Novotny
  */
@@ -194,7 +194,7 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
 
         /**
          * Sets the default parser
-         * @param topic output topic for parsing
+         * @param topic an output topic for parsing
          * @param siembolParser a serializable siembol parser
          *
          * @return this builder
@@ -207,15 +207,15 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
 
         /**
          * Adds the parser with pattern for evaluation whether the parser will be selected.
-         * The parsers are evaluated in the list based on how they are added using this method.
-         * The parser will be selected if the pattern will match the routing condition field.
+         * The parsers are evaluated in the list based on how they are added by this method.
+         * The parser is selected if the pattern has been matched on the routing condition field.
          *
-         * @param topic output topic for parsing
+         * @param topic an output topic for parsing
          * @param siembolParser a serializable siembol parser
-         * @param pattern regular expression pattern for evaluation
+         * @param pattern a regular expression pattern for evaluation
          *
          * @return this builder
-         * @thows PatternSyntaxException if the pattern is not valid regular expression pattern
+         * @thows PatternSyntaxException if the pattern is not valid regular expression string
          * @see SerializableSiembolParser
          *
          */

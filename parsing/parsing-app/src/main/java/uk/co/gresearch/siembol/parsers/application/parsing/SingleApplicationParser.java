@@ -71,7 +71,7 @@ public class SingleApplicationParser extends ParsingApplicationParser {
 
         /**
          * Sets the parser
-         * @param topic output topic for parsing
+         * @param topic an output topic for parsing
          * @param siembolParser a serializable siembol parser
          *
          * @return this builder
