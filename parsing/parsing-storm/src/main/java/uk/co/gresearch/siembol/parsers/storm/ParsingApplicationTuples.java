@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.parsers.storm;
 /**
- * An enum of tuple field names used in a parsing storm topology
+ * An enum of tuple field names used in a parsing application storm topology
  *
  * @author  Marian Novotny
  *

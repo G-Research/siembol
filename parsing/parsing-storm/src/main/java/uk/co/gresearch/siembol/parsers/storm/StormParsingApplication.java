@@ -40,8 +40,8 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.CLIENT_ID_CONFIG;
 /**
  * A main class of parsing storm topology
  *
- * <p>This class provides helper function to build a parsing application topology and
- * provides main function that is executed during submission of a storm topology.
+ * <p>This class provides helper functions to build a parsing application topology and
+ * provides the main function that is executed during the submission of a storm topology.
  *
  * @author Marian Novotny
  * @see ParsingApplicationBolt
