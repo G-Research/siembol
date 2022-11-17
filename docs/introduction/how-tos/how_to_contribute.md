@@ -1,12 +1,12 @@
 How to Contribute
 =================
 
-- [1. How to contribute to the siembol Java project](#how-to-contribute-to-the-siembol-java-project)
+- [1. Contribute to the siembol Java project](#contribute-to-the-siembol-java-project)
     * [1.1 Environment](#environment)
-    * [1.2 How to compile and install](#how-to-compile-and-install)
-    * [1.3 How to solve dependencies conflicts](#how-to-solve-dependencies-conflicts)
-    * [1.4 How to increase the version of submodules](#how-to-increase-the-version-of-submodules)
-- [2. How to contribute to config editor UI project](#how-to-contribute-to-config-editor-UI-project)
+    * [1.2 Compile and install](#compile-and-install)
+    * [1.3 Solving dependencies conflicts](#solving-dependencies-conflicts)
+    * [1.4 Increasing the version of submodules](#increasing-the-version-of-submodules)
+- [2. Contribute to config editor UI project](#contribute-to-config-editor-ui-project)
     * [2.1 NodeJS version](#nodejs-version)
     * [2.2 Angular version](#angular-version)
     * [2.3 Build](#build)
@@ -14,9 +14,9 @@ How to Contribute
     * [2.5 Running unit tests](#running-unit-tests)
     * [2.6 Linting](#linting)
     * [2.7 Package lock file](#package-lock-file)
-    * [2.8 Increase the config editor's UI version](#increase-the-config-editors-UI-version)
+    * [2.8 Increasing the config editor's UI version](#increasing-the-config-editors-ui-version)
 
-How to contribute to the siembol Java project
+Contribute to the siembol Java project
 ---------------------------------------------
 
 ### Environment
@@ -24,7 +24,7 @@ How to contribute to the siembol Java project
 - [Maven](https://maven.apache.org/guides/) - version `3.5+`
 - [Java Development Kit 17+](https://adoptopenjdk.net/)
 
-### How to compile and install
+### Compile and install
 
 To install the project locally:
 
@@ -46,7 +46,7 @@ To build the project but skip testing:
 mvn clean package -DskipTests=true
 ```
 
-### How to solve dependencies conflicts
+### Solving dependencies conflicts
 
 To obtain the dependency trees that can help to resolve issues with conflict in dependencies
 
@@ -54,7 +54,7 @@ To obtain the dependency trees that can help to resolve issues with conflict in 
 mvn dependency:tree
 ```
 
-### How to increase the version of submodules
+### Increasing the version of submodules
 
 To increment versions in all submodules:
 
@@ -65,8 +65,8 @@ mvn versions:set -DnewVersion=your_new_version
 > **_note:_** Incrementing the version is recommended for each PR with siembol java code change. Use version name with `SNAPSHOT` if you are not preparing a release version.
 
 
-How to contribute to config editor UI project
----------------------------------------------
+Contribute to config editor UI project
+---------------------------------------
 
 ### NodeJS version
 
@@ -136,6 +136,6 @@ Always update and commit dependencies in the [package lock file](/config-editor/
 Get-Content package-lock.json | ConvertFrom-Json | ConvertTo-Json -compress -Depth 10 | Out-File package-lock2.json -Encoding ascii ; rm package-lock.json ; mv package-lock2.json package-lock.json
 ```
 
-### Increase the config editor's UI version
+### Increasing the config editor's UI version
 
 The config editor's UI version should be increased after each code change in [package.json](/config-editor/config-editor-ui/package.json).
