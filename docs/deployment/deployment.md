@@ -9,8 +9,8 @@
     * [3.1 Enrichment Store](#enrichment-store) 
     * [3.2 Oauth2 Proxy](#oauth2-proxy)
     * [3.3 Ingress for dependencies](#ingress-for-dependencies)
-    * [3.4 Enrichment Store Table](#enrichment-store)
-    * [3.5 Storm Table](#storm)
+    * [3.4 Enrichment Store Parameters](#enrichment-store)
+    * [3.5 Storm Parameters](#storm)
     * [3.6 Enable & Disable components](#enable-and-disable-components)
     * [3.7 Customize Helm Chart](#customize-helm-chart)
  
