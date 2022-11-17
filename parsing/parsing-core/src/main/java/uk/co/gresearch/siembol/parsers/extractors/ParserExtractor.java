@@ -8,7 +8,7 @@ import static uk.co.gresearch.siembol.parsers.extractors.ParserExtractor.ParserE
  * An object for extracting fields from the message
  *
  * <p>This abstract class is using template pattern for handling common functionality of all extractors.
- * The extractor is registered on a field and extracting the key value pairs after processing the field value.
+ * The extractor is registered on a field and extracting the key value pairs during processing the field value.
  *
  * @author  Marian Novotny
  * @see JsonExtractor
@@ -108,11 +108,11 @@ public abstract class ParserExtractor  {
     }
 
     /**
-     * Applies a pre-processing function.
-     * Extracts key value pairs from an input string.
-     * Applies the post-processing functions.
+     * Applies a pre-processing function on an input string.
+     * Extracts key value pairs from the input string.
+     * Applies the post-processing functions on extracted pairs.
      *
-     * @param str Input string
+     * @param str an input string
      * @return extracted key value pairs as a map of String to Object
      */
     public Map<String, Object> extract(String str) {
@@ -155,7 +155,7 @@ public abstract class ParserExtractor  {
     }
 
     /**
-     * An abstract builder for parser extractor
+     * An abstract builder for a parser extractor
      *
      * <p>This abstract class is using Builder pattern.
      *
@@ -172,9 +172,9 @@ public abstract class ParserExtractor  {
                 new ArrayList<>();
 
         /**
-         * Sets name of the extractor
+         * Sets the name of the extractor
          *
-         * @param name name of the extractor
+         * @param name the name of the extractor
          * @return this builder
          */
         public Builder<T> name(String name) {
@@ -183,9 +183,9 @@ public abstract class ParserExtractor  {
         }
 
         /**
-         * Sets field name of the extractor
+         * Sets a field name of the extractor
          *
-         * @param field field name of the extractor
+         * @param field a field name of the extractor
          * @return this builder
          */
         public Builder<T> field(String field) {
@@ -208,7 +208,7 @@ public abstract class ParserExtractor  {
         /**
          * Sets a pre-processing function of the extractor
          *
-         * @param preProcessing Pre-processing function of the extractor
+         * @param preProcessing A pre-processing function of the extractor
          * @return this builder
          */
         public Builder<T> preProcessing(Function<String, String> preProcessing) {
@@ -219,7 +219,7 @@ public abstract class ParserExtractor  {
         /**
          * Sets a list of post-processing functions of the extractor
          *
-         * @param postProcessing List of post-processing functions of the extractor
+         * @param postProcessing A list of post-processing functions of the extractor
          * @return this builder
          */
         public Builder<T> postProcessing(List<Function<Map<String, Object>,
@@ -232,11 +232,11 @@ public abstract class ParserExtractor  {
     }
 
     /**
-     * Extracts a message by executing a list of extractors
+     * Extracts pairs from a message object by executing a list of extractors
      *
-     * @param extractors List fo extractors to be executed in a chain
-     * @param messageObject initial message that will be extended by calling a chain of extractors
-     * @return message after executing all extractors
+     * @param extractors List of extractors to be executed in a chain
+     * @param messageObject an initial message object that will be extended by calling a chain of extractors
+     * @return the message object after executing all extractors
      */
     public static Map<String, Object> extract(
             List<ParserExtractor> extractors,

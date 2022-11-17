@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.parsers.extractors;
 /**
  * An object that represents structure for handling key value indices
  *
- * <p>This object represents helper structure for handling key value indices used in KeyValueExctractor
+ * <p>This object represents helper structure for handling key value indices used in KeyValueExtractor
  *
  * @author  Marian Novotny
  * @see KeyValueExtractor.Builder

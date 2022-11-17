@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * An object that represents structure for column names
  *
- * <p>This object represents helper structure for column names used in CSV parser extractor
+ * <p>This object represents helper structure for representing column names used in CSV parser extractor.
  *
  * @author  Marian Novotny
  */

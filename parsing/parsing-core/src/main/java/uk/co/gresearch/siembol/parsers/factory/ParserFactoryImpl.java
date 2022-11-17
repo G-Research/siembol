@@ -31,8 +31,8 @@ import static uk.co.gresearch.siembol.parsers.model.PreProcessingFunctionDto.STR
  * An object for compiling parsers
  *
  * <p>This class is an implementation of ParserFactory interface.
- * It is used for creating a parser, testing a parser on input, validating parser configuration and
- * providing json schema for parser configurations.
+ * It is used for creating a parser, testing a parser on input, validating a parser configuration and
+ * providing the json schema for parser configurations.
  *
  * @author  Marian Novotny
  * @see ParserFactory

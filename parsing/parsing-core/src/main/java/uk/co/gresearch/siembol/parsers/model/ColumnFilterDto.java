@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.parsers.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 /**
- * A data transfer object for representing column filter in csv extractor
+ * A data transfer object for representing column filter in a csv extractor
  *
  * <p>This class is used for json (de)serialisation of a column filter and
  * for generating json schema from this class using annotations.

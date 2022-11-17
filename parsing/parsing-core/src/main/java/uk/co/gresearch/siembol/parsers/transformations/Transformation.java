@@ -5,9 +5,9 @@ import java.util.function.Function;
 /**
  * An object for transformation
  *
- * <p>This functional interface for parsing transformations.
+ * <p>This functional interface is used for representing parsing transformations.
  * It is a functional interface that extends Function interface for
- * a function with a map of String to Object argument that returns a map of String to Object.
+ * a function of a map of String to Object argument that returns a map of String to Object.
  *
  * @author  Marian Novotny
  *

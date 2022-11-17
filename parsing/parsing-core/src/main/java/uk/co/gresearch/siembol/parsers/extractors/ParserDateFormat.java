@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 /**
- * An object that formats a string timestamps into millisecond epoch time
+ * An object that formats a string timestamps into a millisecond epoch time
  *
- * <p>This object validates, parses and formats a string timestamps into millisecond epoch time.
- * It supports list of formatters that are executed in a chain until the first formatter will be successful.
+ * <p>This object validates, parses and formats a string timestamps into a millisecond epoch time.
+ * It supports list of formatters that are executed in a chain until the first formatter is successful.
  *
  * @author  Marian Novotny
  */

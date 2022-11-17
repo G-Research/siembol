@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * An object for extracting fields using CSV extracting
  *
  * <p>This derived class of ParserExtractor provides functionality for CSV (Comma Separated Values) extracting.
- * It uses column names list for adding field names with possibility to skip some columns.
+ * It uses column names list for adding field names supporting to skip some columns.
  * It supports handling quotas.
  *
  * @author  Marian Novotny
@@ -129,7 +129,7 @@ public class CSVExtractor extends ParserExtractor {
      */
     public static Builder<CSVExtractor> builder() {
 
-        return new Builder<CSVExtractor>() {
+        return new Builder<>() {
             @Override
             public CSVExtractor build() {
                 if (this.columnNamesList == null ||
@@ -161,7 +161,7 @@ public class CSVExtractor extends ParserExtractor {
         protected List<ColumnNames> columnNamesList = new ArrayList<>();
 
         /**
-         * Sets word delimiter for delimiting a row value - ',' by default
+         * Sets word delimiter for delimiting a row value (',' by default)
          *
          * @param wordDelimiter word delimiter for delimiting a row value
          * @return this builder

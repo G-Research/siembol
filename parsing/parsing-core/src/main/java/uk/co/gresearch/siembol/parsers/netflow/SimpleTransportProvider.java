@@ -9,9 +9,9 @@ import java.util.*;
  * An object for providing netflow templates
  *
  * <p>This class is implementing NetflowTransportProvider interface.
- * It uses in memory map for storing and obtaining templates.
+ * It uses an in-memory map for storing and obtaining templates.
  * It uses NetflowMessageWithSource implementation.
- * This map is not synchronised since it is not shared between threads in Storm integration.
+ * This map is not synchronised since it is not shared between threads in the storm integration.
  *
  * @author Marian Novotny
  * @see NetflowTransportProvider

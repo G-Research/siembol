@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 /**
- * An object for representing a syslog message after syslog parsing
+ * An object for representing a syslog message used in syslog parsing
  *
- * <p>This class represents a syslog message after parsing by an internal syslog parser.
+ * <p>This class represents a syslog message in the internal syslog parser.
  *
  * @author Marian Novotny
  * @see SyslogParser

@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 /**
  * An enum for representing a transformation type
  *
- * <p>This enum is used for json (de)serialisation of transformation type.
+ * <p>This enum is used for json (de)serialisation of a transformation type.
  *
  * @author  Marian Novotny
  * @see com.fasterxml.jackson.annotation.JsonProperty

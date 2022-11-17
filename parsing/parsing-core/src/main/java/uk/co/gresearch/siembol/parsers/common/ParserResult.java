@@ -6,7 +6,7 @@ import java.util.Map;
  * An object for representing a parser result
  *
  * <p>This class contains a list of parsed messages and
- *  exception in case a parser throws an error.
+ *  exception if a parser throws an error.
  *  It provides metadata about the parsed messages such as the source type.
  *
  * @author Marian Novotny

@@ -35,7 +35,7 @@ public class NetflowField {
         try {
             return dataType.read(buffer, length);
         } catch (Exception e) {
-            LOG.error(String.format("Exception during parsing field %s type: %d, len: %d, exception: %s, buffer: %s",
+            LOG.error(String.format("Exception during parsing field %s type: %s, len: %d, exception: %s, buffer: %s",
                     ExceptionUtils.getStackTrace(e),
                     getName(),
                     type,

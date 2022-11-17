@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
 /**
- * A data transfer object for representing attributes of a regex select
+ * A data transfer object for representing attributes of a regex select extractor
  *
  * <p>This class is used for json (de)serialisation of a regex select used in a regex select extractor and
  * for generating json schema from this class using annotations.

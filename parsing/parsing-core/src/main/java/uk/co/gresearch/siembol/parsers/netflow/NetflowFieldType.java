@@ -7,8 +7,8 @@ import static uk.co.gresearch.siembol.parsers.netflow.NetflowDataType.*;
 /**
  * An enum of netflow v9 field types
  *
- * <p>This enum represent a netflow v9 field types.
- * It provides a name, type code and data type for parsing a field.
+ * <p>This enum represents a netflow v9 field types.
+ * It provides a name, a type code and a data type used for parsing a field.
  *
  * @author Marian Novotny
  * @see NetflowBufferReader

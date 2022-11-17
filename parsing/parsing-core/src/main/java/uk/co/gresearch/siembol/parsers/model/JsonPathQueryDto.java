@@ -3,7 +3,6 @@ package uk.co.gresearch.siembol.parsers.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
-import java.util.List;
 /**
  * A data transfer object for representing attributes for json path query
  *

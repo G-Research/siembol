@@ -9,7 +9,7 @@ import static uk.co.gresearch.siembol.common.constants.SiembolMessageFields.TIME
 /**
  * A library of helper static functions used in parsing extractors
  *
- * <p>This class provides placeholder of helper static functions used in parsing extractors
+ * <p>This class provides placeholder for helper static functions used in parsing extractors
  *
  * @author  Marian Novotny
  */

@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * An object for extracting fields from the message using json parser
+ * An object for extracting fields from the message using json parsing
  *
  * <p>This derived class of ParserExtractor class is using json parsing to extract fields from the massage.
- * The extractor is parsing json string recursively in order to create a flat map of extracting fields.
+ * The extractor is parsing a json string recursively in order to create a flat map of extracting fields.
  *
  * @author  Marian Novotny
  * @see ParserExtractor
@@ -74,7 +74,7 @@ public class JsonExtractor extends ParserExtractor {
     }
 
     /**
-     * Extracts a message string using json parser
+     * Extracts a message string using a json parser
      *
      * @param message input message to be extracted
      * @return map of string to object with extracted fields
@@ -107,7 +107,7 @@ public class JsonExtractor extends ParserExtractor {
      */
     public static Builder<JsonExtractor> builder() {
 
-        return new Builder<JsonExtractor>() {
+        return new Builder<>() {
             @Override
             public JsonExtractor build() {
                 return new JsonExtractor(this);

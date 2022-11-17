@@ -6,7 +6,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
-import uk.co.gresearch.siembol.parsers.common.SiembolParser;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;

@@ -14,7 +14,7 @@ public class ParserFactoryResult {
     public enum StatusCode {
         OK,
         ERROR
-    };
+    }
 
     private final StatusCode statusCode;
     private final ParserFactoryAttributes attributes;

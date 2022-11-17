@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.parsers.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 /**
- * An enum for representing a syslog verson
+ * An enum for representing a syslog version
  *
  * <p>This enum is used for json (de)serialisation of case type.
  *

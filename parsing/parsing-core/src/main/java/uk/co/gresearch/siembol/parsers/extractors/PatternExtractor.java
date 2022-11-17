@@ -42,9 +42,9 @@ public class PatternExtractor extends ParserExtractor {
     /**
      * Implementation of template method for extracting key value pairs from an input string.
      * The list of regular expression named groups are executed in a chain.
-     * The pattern needs to match in order to be extracted and included in the result.
+     * The fields are extracted and included in the result only if the pattern matches the input string.
      *
-     * @param str Input string
+     * @param str An input string
      * @return extracted key value pairs as a map of String to Object
      */
     @Override
@@ -107,7 +107,7 @@ public class PatternExtractor extends ParserExtractor {
     }
 
     /**
-     * Creates pattern extractor builder instance
+     * Creates a pattern extractor builder instance
      *
      * @return pattern extractor builder
      */

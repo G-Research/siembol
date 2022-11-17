@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
 import uk.co.gresearch.siembol.parsers.common.SerializableSiembolParser;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
+
 /**
  * An object for parsing application that integrates a single parser
  *

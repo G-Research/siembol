@@ -1,9 +1,9 @@
 package uk.co.gresearch.siembol.parsers.netflow;
 /**
- * An object for providing netflow transport message
+ * An object for providing a netflow transport message
  *
  * <p>This class is implementing NetflowTransportMessage interface.
- * It uses string identification of device such as its IP address that is unique per device.
+ * It uses a string identification of a device such as its IP address that must be unique per a device.
  *
  * @author Marian Novotny
  * @see NetflowTransportMessage

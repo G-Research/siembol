@@ -16,7 +16,7 @@ import java.lang.invoke.MethodHandles;
 
 import java.util.*;
 /**
- * An object for extracting fields from the message using json path queries
+ * An object for extracting fields from the message by evaluating json path queries
  *
  * <p>This derived class of ParserExtractor class is using json path query to extract fields from the massage.
  * The extractor is evaluating json path queries in order to create a map of extracting fields.
@@ -116,7 +116,7 @@ public class JsonPathExtractor extends ParserExtractor {
     }
 
     /**
-     * Extracts a message string using json path queries
+     * Extracts fields from a message string using json path queries
      *
      * @param message input message to be extracted
      * @return map of string to object with extracted fields
@@ -179,8 +179,9 @@ public class JsonPathExtractor extends ParserExtractor {
         protected EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags = EnumSet.noneOf(JsonPathExtractorFlags.class);
 
         /**
-         * Adds a json path query string
-         * It supports a dot and a bracket notation using syntax from https://github.com/json-path/JsonPath#readme
+         * Adds a json path query string.
+         * It supports a dot and a bracket notation using syntax from
+         * <a href="https://github.com/json-path/JsonPath#readme">https://github.com/json-path/JsonPath#readme</a> .
          *
          * @param field A field name for storing query result
          * @param query A json path query

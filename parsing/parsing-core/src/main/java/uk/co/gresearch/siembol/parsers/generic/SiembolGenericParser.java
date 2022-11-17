@@ -17,9 +17,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * <p>This class is an implementation of SiembolParser interface.
  * It is used for parsing a log by creating two fields:
- * - 'original_string; with the message,
- * - 'timestamp' with the current time in milliseconds.
- * It evaluates chain of extractors and transformations if registered.
+ * - 'original_string' field with the input message,
+ * - 'timestamp' field with the current time in milliseconds.
+ * It evaluates the chain of extractors and transformations if registered.
  * @author  Marian Novotny
  * @see SiembolParser
  *

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * An object for representing a netflow parsing result
  *
- * <p>This class represents netflow parsing result used by a netflow parser.
+ * <p>This class represents a netflow parsing result used by a netflow parser.
  * It includes a status code of the result along with a netflow parsed message.
  *
  * @author Marian Novotny

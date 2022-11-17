@@ -40,7 +40,7 @@ public class KeyValueExtractor extends ParserExtractor {
     }
 
     /**
-     * Extracts a message string using key value extracting
+     * Extracts fields from a message string using key value extracting
      *
      * @param message input message to be extracted
      * @return map of string to object with extracted fields
@@ -184,9 +184,9 @@ public class KeyValueExtractor extends ParserExtractor {
         }
 
         /**
-         * Sets the function for returning an end index of key-value pair
+         * Sets the function for returning the ending index of key-value pair
          *
-         * @param indexOf the function for returning end index of the key-value pair
+         * @param indexOf the function for returning the ending index of the key-value pair
          * @return this builder
          */
         public Builder<T> indexOfEnd(KeyValueIndices.IndexOf indexOf) {

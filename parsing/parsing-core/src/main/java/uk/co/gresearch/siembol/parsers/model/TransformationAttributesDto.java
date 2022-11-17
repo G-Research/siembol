@@ -5,7 +5,7 @@ import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
 /**
- * A data transfer object for representing a transformation function attribute
+ * A data transfer object for representing a transformation attributes
  *
  * <p>This class is used for json (de)serialisation of attributes of a transformation and
  * for generating json schema from this class using annotations.

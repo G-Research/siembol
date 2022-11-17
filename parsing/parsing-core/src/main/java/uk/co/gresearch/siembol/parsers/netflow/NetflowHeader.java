@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.parsers.netflow;
 /**
  * An object for representing a netflow header
  *
- * <p>This class represents netflow header used by a netflow parser.
+ * <p>This class represents a netflow header used by a netflow parser.
  *
  * @author Marian Novotny
  *

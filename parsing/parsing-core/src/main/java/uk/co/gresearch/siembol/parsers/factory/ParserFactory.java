@@ -2,8 +2,8 @@ package uk.co.gresearch.siembol.parsers.factory;
 /**
  * An object for compiling parsers
  *
- * <p>This interface is for creating a parser, testing a parser on input, validating parser configuration and
- * providing json schema for parser configurations.
+ * <p>This interface is for creating a parser, testing a parser on an input, validating a parser configuration and
+ * providing a json schema for parser configurations.
  *
  * @author  Marian Novotny
  * @see ParserFactoryResult
@@ -12,9 +12,9 @@ package uk.co.gresearch.siembol.parsers.factory;
 public interface ParserFactory {
 
     /**
-     * Gets json schema of parser configurations
+     * Gets the json schema of parser configurations
      *
-     * @return parser factory result with json schema of parser configurations
+     * @return parser factory result with the json schema of parser configurations
      * @see ParserFactoryResult
      */
     ParserFactoryResult getSchema();

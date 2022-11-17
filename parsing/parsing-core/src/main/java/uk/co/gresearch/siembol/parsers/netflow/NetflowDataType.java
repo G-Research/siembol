@@ -13,7 +13,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * An enum of netflow v9 data types
  *
  * <p>This enum represent a netflow v9 data types.
- * It provides a function for parsing a binary buffer.
+ * A data type includes a function for reading a binary buffer.
  *
  * @author Marian Novotny
  * @see NetflowBufferReader
@@ -99,8 +99,8 @@ public enum NetflowDataType implements NetflowBufferReader {
         try {
             return Inet4Address.getByAddress(dst).getHostAddress();
         } catch (Exception e) {
-            LOG.error(String.format("Invalid Ipv4 address: %s"),
-                    new String(dst, UTF_8));
+            LOG.error(String.format("Invalid Ipv4 address: %s",
+                    new String(dst, UTF_8)));
             return UNKNOWN_IPV4;
         }
     }
@@ -115,8 +115,8 @@ public enum NetflowDataType implements NetflowBufferReader {
         try {
             return Inet6Address.getByAddress(dst).getHostAddress();
         } catch (Exception e) {
-            LOG.error(String.format("Invalid Ipv6 address: %s"),
-                    new String(dst, UTF_8));
+            LOG.error(String.format("Invalid Ipv6 address: %s",
+                    new String(dst, UTF_8)));
             return UNKNOWN_IPV6;
         }
     }

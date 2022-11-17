@@ -8,11 +8,13 @@ import java.util.*;
 /**
  * An object for parsing a netflow v9 message
  *
- * <p>This class implements a fault-tolerant netflow v 9 parser.
- * Netflow v9 is parsing data using netflow templates messages that are identified by a device and template id.
- * Network devices are using template id field as a counter rather than a unique id on the network and
- * collisions of template id between devices is common on a network with multiple collectors.
- * This way we are using NetflowTransportProvider interface to provide global id of the template.
+ * <p>This class implements a fault-tolerant netflow v9 parser.
+ * Parsing of fields in Netflow v9 protocol is based on the netflow template messages that
+ * are identified by a device and template id.
+ * Network devices are using template id field as a counter rather than as a unique id on the network and
+ * collisions of template id values on a network with multiple collectors are common.
+ * This way we are using NetflowTransportProvider interface to provide global id of the template in order
+ * to avoid collisions.
  *
  * @author Marian Novotny
  * @see NetflowParsingResult
