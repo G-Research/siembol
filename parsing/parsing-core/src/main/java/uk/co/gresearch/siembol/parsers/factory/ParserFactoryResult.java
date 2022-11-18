@@ -1,10 +1,20 @@
 package uk.co.gresearch.siembol.parsers.factory;
-
+/**
+ * An object for representing a parser factory result
+ *
+ * <p>This class represents parser factory result used by a parser factory.
+ * It includes a status code of the result along with a parser factory attributes.
+ *
+ * @author Marian Novotny
+ * @see StatusCode
+ * @see ParserFactoryAttributes
+ *
+ */
 public class ParserFactoryResult {
     public enum StatusCode {
         OK,
         ERROR
-    };
+    }
 
     private final StatusCode statusCode;
     private final ParserFactoryAttributes attributes;

@@ -6,7 +6,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import static uk.co.gresearch.siembol.common.constants.SiembolMessageFields.TIMESTAMP;
-
+/**
+ * A library of helper static functions used in parsing extractors
+ *
+ * <p>This class provides placeholder for helper static functions used in parsing extractors
+ *
+ * @author  Marian Novotny
+ */
 
 public class ParserExtractorLibrary {
 
@@ -104,5 +110,4 @@ public class ParserExtractorLibrary {
         }
         return map;
     }
-
 }

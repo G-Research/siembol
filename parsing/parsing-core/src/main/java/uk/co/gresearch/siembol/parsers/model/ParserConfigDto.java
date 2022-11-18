@@ -2,7 +2,19 @@ package uk.co.gresearch.siembol.parsers.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 import java.util.List;
-
+/**
+ * A data transfer object for representing attributes for a parser configuration
+ *
+ * <p>This class is used for json (de)serialisation of a parser configuration and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ParserAttributesDto
+ * @see ParserExtractorDto
+ * @see TransformationDto
+ */
 @Attributes(title = "parser config", description = "Parser specification")
 public class ParserConfigDto {
     @JsonProperty("parser_name")

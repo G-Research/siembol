@@ -27,7 +27,18 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toCollection;
 import static uk.co.gresearch.siembol.parsers.model.PreProcessingFunctionDto.STRING_REPLACE;
-
+/**
+ * An object for compiling parsers
+ *
+ * <p>This class is an implementation of ParserFactory interface.
+ * It is used for creating a parser, testing a parser on input, validating a parser configuration and
+ * providing the json schema for parser configurations.
+ *
+ * @author  Marian Novotny
+ * @see ParserFactory
+ * @see ParserFactoryResult
+ *
+ */
 public class ParserFactoryImpl implements ParserFactory {
     private static final ObjectReader JSON_PARSER_CONFIG_READER =
             new ObjectMapper().readerFor(ParserConfigDto.class);
@@ -49,6 +60,9 @@ public class ParserFactoryImpl implements ParserFactory {
         this.jsonSchemaValidator = jsonSchemaValidator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParserFactoryResult getSchema() {
         ParserFactoryAttributes attributes = new ParserFactoryAttributes();
@@ -56,6 +70,9 @@ public class ParserFactoryImpl implements ParserFactory {
         return new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParserFactoryResult create(String parserConfigStr) {
         try {
@@ -93,6 +110,9 @@ public class ParserFactoryImpl implements ParserFactory {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParserFactoryResult test(String parserConfig, String metadata, byte[] rawLog) {
         SerializableSiembolParser parser;
@@ -108,6 +128,9 @@ public class ParserFactoryImpl implements ParserFactory {
         return new ParserFactoryResult(ParserFactoryResult.StatusCode.OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParserFactoryResult validateConfiguration(String parserConfig) {
         try {
@@ -118,6 +141,9 @@ public class ParserFactoryImpl implements ParserFactory {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParserFactoryResult validateConfigurations(String parserConfigurations) {
         try {
@@ -184,7 +210,7 @@ public class ParserFactoryImpl implements ParserFactory {
         }
 
         if (attributes.getQuotaHandling()) {
-            ret.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+            ret.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
         }
 
         if (attributes.getEscapingHandling()) {

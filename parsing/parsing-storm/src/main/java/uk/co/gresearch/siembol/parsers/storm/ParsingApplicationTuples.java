@@ -1,5 +1,16 @@
 package uk.co.gresearch.siembol.parsers.storm;
-
+/**
+ * An enum of tuple field names used in a parsing application storm topology
+ *
+ * @author  Marian Novotny
+ *
+ * @see #SOURCE
+ * @see #METADATA
+ * @see #LOG
+ * @see #PARSING_MESSAGES
+ * @see #COUNTERS
+ *
+ */
 public enum ParsingApplicationTuples {
     SOURCE("source"),
     METADATA("metadata"),

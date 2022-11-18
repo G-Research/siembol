@@ -13,7 +13,13 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * The class provides default time formatting for syslog messages
+ * A class with static methods for default syslog timestamp parsing
+ *
+ * <p>This class exposes static methods for default timestamp syslog parsing.
+ *
+ * @author  Marian Novotny
+ * @see SyslogParser
+ *
  */
 public class SyslogDefaultTimeFormat {
     private static final int WEEK_MILLISECONDS = 7 * 24 * 3600 * 1000;

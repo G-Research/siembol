@@ -5,7 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Objects;
-
+/**
+ * An object for representing a netflow field
+ *
+ * <p>This class represents netflow field used by a netflow parser.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class NetflowField {
     private static final String UNKNOWN_VALUE = "unknown";
     private static final Logger LOG = LoggerFactory
@@ -26,9 +33,9 @@ public class NetflowField {
     public Object getValue(BinaryBuffer buffer) {
         NetflowDataType dataType = NetflowFieldType.of(type).getDataType();
         try {
-            return dataType.apply(buffer, length);
+            return dataType.read(buffer, length);
         } catch (Exception e) {
-            LOG.error(String.format("Exception during parsing field %s type: %d, len: %d, exception: %s, buffer: %s",
+            LOG.error(String.format("Exception during parsing field %s type: %s, len: %d, exception: %s, buffer: %s",
                     ExceptionUtils.getStackTrace(e),
                     getName(),
                     type,

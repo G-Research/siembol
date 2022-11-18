@@ -4,7 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing attributes for fields filter transformation
+ *
+ * <p>This class is used for json (de)serialisation of a fields filter transformation attributes and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 @Attributes(title = "fields filter", description = "Specification for fields filter")
 public class FieldsFilterDto {
     @JsonProperty("including_fields")

@@ -3,7 +3,13 @@ package uk.co.gresearch.siembol.parsers.extractors;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * An object that represents structure for column names
+ *
+ * <p>This object represents helper structure for representing column names used in CSV parser extractor.
+ *
+ * @author  Marian Novotny
+ */
 public class ColumnNames {
     private final ArrayList<String> columnNames;
     private final AbstractMap.SimpleEntry<Integer, String> filter;

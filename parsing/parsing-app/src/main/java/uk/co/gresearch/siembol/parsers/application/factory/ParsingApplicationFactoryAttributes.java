@@ -4,7 +4,14 @@ import uk.co.gresearch.siembol.parsers.application.model.ParsingApplicationTypeD
 import uk.co.gresearch.siembol.parsers.application.parsing.ParsingApplicationParser;
 
 import java.util.List;
-
+/**
+ * An object for representing a parsing application factory attributes
+ *
+ * <p>This class represents parsing application factory attributed used by a parsing application factory result.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class ParsingApplicationFactoryAttributes {
     private String jsonSchema;
     private String name;

@@ -11,7 +11,16 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * An object for extracting fields from the message using json parsing
+ *
+ * <p>This derived class of ParserExtractor class is using json parsing to extract fields from the massage.
+ * The extractor is parsing a json string recursively in order to create a flat map of extracting fields.
+ *
+ * @author  Marian Novotny
+ * @see ParserExtractor
+ *
+ */
 public class JsonExtractor extends ParserExtractor {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
@@ -64,7 +73,12 @@ public class JsonExtractor extends ParserExtractor {
         }
     }
 
-
+    /**
+     * Extracts a message string using a json parser
+     *
+     * @param message input message to be extracted
+     * @return map of string to object with extracted fields
+     */
     @Override
     protected Map<String, Object> extractInternally(String message) {
         try {
@@ -86,9 +100,14 @@ public class JsonExtractor extends ParserExtractor {
         }
     }
 
+    /**
+     * Creates a json extractor builder instance
+     *
+     * @return json extractor builder instance
+     */
     public static Builder<JsonExtractor> builder() {
 
-        return new Builder<JsonExtractor>() {
+        return new Builder<>() {
             @Override
             public JsonExtractor build() {
                 return new JsonExtractor(this);
@@ -96,20 +115,39 @@ public class JsonExtractor extends ParserExtractor {
         };
     }
 
+    /**
+     * A builder for json parser extractor
+     *
+     * <p>This class is using Builder pattern.
+     *
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends JsonExtractor>
             extends ParserExtractor.Builder<T> {
         private String nestedSeparator = "_";
         private String pathPrefix = "";
 
+        /**
+         * Sets a separator string that will be used to create field names for nested fields.
+         * For example { "a" : { "b" : "c" } } will be extracted as ["a_b" -> "c"] using the separator: '_'.
+         *
+         * @return this builder
+         */
         public Builder<T> nestedSeparator(String separator) {
             this.nestedSeparator = separator;
             return this;
         }
 
+        /**
+         * Sets a prefix of extracted field names.
+         * For example { "a" : "b" } will be extracted as ["test_a" -> "b"] using the prefix: 'test'.
+         *
+         * @return this builder
+         */
         public Builder<T> pathPrefix(String startingPath) {
             this.pathPrefix = startingPath;
             return this;
         }
-
     }
 }

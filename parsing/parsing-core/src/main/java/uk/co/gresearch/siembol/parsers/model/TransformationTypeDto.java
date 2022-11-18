@@ -2,7 +2,26 @@ package uk.co.gresearch.siembol.parsers.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * An enum for representing a transformation type
+ *
+ * <p>This enum is used for json (de)serialisation of a transformation type.
+ *
+ * @author  Marian Novotny
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see #FIELD_NAME_STRING_REPLACE
+ * @see #FIELD_NAME_STRING_REPLACE_ALL
+ * @see #FIELD_NAME_STRING_DELETE_ALL
+ * @see #FIELD_NAME_CHANGE_CASE
+ * @see #RENAME_FIELDS
+ * @see #DELETE_FIELDS
+ * @see #TRIM_VALUE
+ * @see #LOWERCASE_VALUE
+ * @see #UPPERCASE_VALUE
+ * @see #CHOMP_VALUE
+ * @see #FILTER_MESSAGE
+ *
+ */
 @Attributes(title = "transformation type", description = "The type of transformation")
 public enum  TransformationTypeDto {
     @JsonProperty("field_name_string_replace") FIELD_NAME_STRING_REPLACE("field_name_string_replace"),

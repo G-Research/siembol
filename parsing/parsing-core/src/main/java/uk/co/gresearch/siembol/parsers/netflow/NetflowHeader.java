@@ -1,5 +1,12 @@
 package uk.co.gresearch.siembol.parsers.netflow;
-
+/**
+ * An object for representing a netflow header
+ *
+ * <p>This class represents a netflow header used by a netflow parser.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class NetflowHeader {
     private final int count;
     private final long uptime;
@@ -13,13 +20,13 @@ public class NetflowHeader {
                          long uptime,
                          long timestamp,
                          long sequence,
-                         int sourceid) {
+                         int sourceId) {
         this.version = version;
         this.count = count;
         this.uptime = uptime;
         this.timestamp = timestamp;
         this.sequence = sequence;
-        this.sourceId = sourceid;
+        this.sourceId = sourceId;
     }
 
     public int getCount() {

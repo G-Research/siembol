@@ -9,8 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
-public enum NetflowDataType implements ReadNetflowBuffer {
+/**
+ * An enum of netflow v9 data types
+ *
+ * <p>This enum represent a netflow v9 data types.
+ * A data type includes a function for reading a binary buffer.
+ *
+ * @author Marian Novotny
+ * @see NetflowBufferReader
+ *
+ */
+public enum NetflowDataType implements NetflowBufferReader {
     INTEGER(NetflowDataType::readInteger),
     FLOAT(NetflowDataType::readFloat),
     IPV4_ADDRESS(NetflowDataType::readIpv4Address),
@@ -90,8 +99,8 @@ public enum NetflowDataType implements ReadNetflowBuffer {
         try {
             return Inet4Address.getByAddress(dst).getHostAddress();
         } catch (Exception e) {
-            LOG.error(String.format("Invalid Ipv4 address: %s"),
-                    new String(dst, UTF_8));
+            LOG.error(String.format("Invalid Ipv4 address: %s",
+                    new String(dst, UTF_8)));
             return UNKNOWN_IPV4;
         }
     }
@@ -106,8 +115,8 @@ public enum NetflowDataType implements ReadNetflowBuffer {
         try {
             return Inet6Address.getByAddress(dst).getHostAddress();
         } catch (Exception e) {
-            LOG.error(String.format("Invalid Ipv6 address: %s"),
-                    new String(dst, UTF_8));
+            LOG.error(String.format("Invalid Ipv6 address: %s",
+                    new String(dst, UTF_8)));
             return UNKNOWN_IPV6;
         }
     }
@@ -117,14 +126,14 @@ public enum NetflowDataType implements ReadNetflowBuffer {
         return new String(dst, UTF_8);
     }
 
-    private final ReadNetflowBuffer readBuffer;
+    private final NetflowBufferReader readBuffer;
 
-    NetflowDataType(ReadNetflowBuffer readBuffer) {
+    NetflowDataType(NetflowBufferReader readBuffer) {
         this.readBuffer = readBuffer;
     }
 
     @Override
-    public Object apply(BinaryBuffer buffer, int fieldLength) {
-        return readBuffer.apply(buffer, fieldLength);
+    public Object read(BinaryBuffer buffer, int fieldLength) {
+        return readBuffer.read(buffer, fieldLength);
     }
 }

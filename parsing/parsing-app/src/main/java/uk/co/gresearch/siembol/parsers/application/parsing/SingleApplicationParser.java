@@ -5,9 +5,15 @@ import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.parsers.common.ParserResult;
 import uk.co.gresearch.siembol.parsers.common.SerializableSiembolParser;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * An object for parsing application that integrates a single parser
+ *
+ * <p>This derived class of ParsingApplicationParser is using template pattern for implementing
+ * a parsing application that integrates a single parser.
+ *
+ * @author  Marian Novotny
+ */
 public class SingleApplicationParser extends ParsingApplicationParser {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
@@ -21,11 +27,19 @@ public class SingleApplicationParser extends ParsingApplicationParser {
         this.parser = builder.parser;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected ParserResult parseInternally(String source, String metadata, byte[] message) {
         return parser.parseToResult(metadata, message);
     }
 
+    /**
+     * Creates SingleApplicationParser builder instance
+     *
+     * @return SingleApplicationParser builder
+     */
     public static Builder<SingleApplicationParser> builder() {
         return new Builder<>() {
             private static final long serialVersionUID = 1L;
@@ -42,11 +56,26 @@ public class SingleApplicationParser extends ParsingApplicationParser {
         };
     }
 
+    /**
+     * A builder for SingleApplicationParser parser
+     *
+     * <p>This class is using Builder pattern.
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends SingleApplicationParser> extends
             ParsingApplicationParser.Builder<T> {
         private static final long serialVersionUID = 1L;
         protected SiembolParserWrapper parser;
 
+        /**
+         * Sets the parser
+         * @param topic an output topic for parsing
+         * @param siembolParser a serializable siembol parser
+         *
+         * @return this builder
+         * @see SerializableSiembolParser
+         */
         public Builder<T> parser(String topic, SerializableSiembolParser siembolParser) throws Exception {
             parser = new SiembolParserWrapper(siembolParser, topic);
             return this;

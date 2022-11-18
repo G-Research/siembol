@@ -6,14 +6,23 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.co.gresearch.siembol.parsers.extractors.KeyValueExtractor.KeyValueExtractorFlags.NEXT_KEY_STRATEGY;
-
+/**
+ * An object for extracting fields using key value extracting
+ *
+ * <p>This derived class of ParserExtractor provides functionality for key value extracting.
+ * Key value pairs are in form key1=value1 key2=value2 etc.
+ * It supports handling quotes, escaped characters and a fault-tolerant extracting using a next key strategy.
+ *
+ * @author  Marian Novotny
+ * @see ParserExtractor
+ */
 public class KeyValueExtractor extends ParserExtractor {
 
     private static final String EXTRACTOR_ERROR_PREFIX = "kv_error";
     private final static String DUPLICATE_FORMAT_MSG = "duplicate_%s_%d";
 
     public enum KeyValueExtractorFlags {
-        QUOTA_VALUE_HANDLING,
+        QUOTE_VALUE_HANDLING,
         RENAME_DUPLICATE_KEYS,
         ESCAPING_HANDLING,
         NEXT_KEY_STRATEGY
@@ -30,8 +39,14 @@ public class KeyValueExtractor extends ParserExtractor {
         this.errorKeyName = String.format("%s_%s", EXTRACTOR_ERROR_PREFIX, getName());
     }
 
+    /**
+     * Extracts fields from a message string using key value extracting
+     *
+     * @param message input message to be extracted
+     * @return map of string to object with extracted fields
+     */
     @Override
-    protected Map<String, Object> extractInternally(String message){
+    protected Map<String, Object> extractInternally(String message) {
         Map<String, Object> extracted = new HashMap<>();
         int offset = 0;
         DuplicatesFieldMap duplicatesMap = flags.contains(KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS)
@@ -52,8 +67,7 @@ public class KeyValueExtractor extends ParserExtractor {
             String value = message.substring(indices.getKeyIndex() + 1, indices.getValueIndex());
 
             if (extracted.containsKey(key)
-                    && flags.contains(KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS))
-            {
+                    && flags.contains(KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS)) {
                 int index = duplicatesMap.getIndex(key);
                 key = String.format(DUPLICATE_FORMAT_MSG, key, index);
             }
@@ -65,14 +79,19 @@ public class KeyValueExtractor extends ParserExtractor {
         return extracted;
     }
 
+    /**
+     * Creates a key value extractor builder instance
+     *
+     * @return key value extractor builder instance
+     */
     public static Builder<KeyValueExtractor> builder() {
-        return new Builder<KeyValueExtractor>() {
+        return new Builder<>() {
             private KeyValueIndices.IndexOf getDefaultIndexOfEnd() {
                 return new KeyValueIndices.IndexOf() {
                     @Override
                     public KeyValueIndices apply(String str, int from) {
                         boolean quoteHandling = keyValueFlags.contains(
-                                KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+                                KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
                         Optional<Character> escaped = keyValueFlags.contains(
                                 KeyValueExtractorFlags.ESCAPING_HANDLING)
@@ -114,6 +133,13 @@ public class KeyValueExtractor extends ParserExtractor {
         };
     }
 
+    /**
+     * A builder for key value extractor
+     *
+     * <p>This class is using Builder pattern.
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends KeyValueExtractor>
             extends ParserExtractor.Builder<T> {
         protected char keyValueDelimiter = '=';
@@ -121,29 +147,60 @@ public class KeyValueExtractor extends ParserExtractor {
         protected char escapedChar = '\\';
         protected KeyValueIndices.IndexOf indexOfEnd;
         protected EnumSet<KeyValueExtractorFlags> keyValueFlags = EnumSet
-                .of(KeyValueExtractorFlags.QUOTA_VALUE_HANDLING,
+                .of(KeyValueExtractorFlags.QUOTE_VALUE_HANDLING,
                         KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS);
 
+        /**
+         * Sets key value delimiter
+         *
+         * @param keyValueDelimiter character using for delimiting key and value in the pair (default value is '=')
+         * @return this builder
+         */
         public Builder<T> keyValueDelimiter(char keyValueDelimiter) {
             this.keyValueDelimiter = keyValueDelimiter;
             return this;
         }
 
+        /**
+         * Sets word delimiter for delimiting key-value pairs
+         *
+         * @param wordDelimiter word delimiter for delimiting key-value pairs
+         * @return this builder
+         */
         public Builder<T> wordDelimiter(char wordDelimiter) {
             this.wordDelimiter = wordDelimiter;
             return this;
         }
 
+        /**
+         * Sets escaped character
+         *
+         * @param escapedChar a character for escaping
+         * @return this builder
+         */
         public Builder<T> escapedChar(char escapedChar) {
             this.escapedChar = escapedChar;
             return this;
         }
 
+        /**
+         * Sets the function for returning the ending index of key-value pair
+         *
+         * @param indexOf the function for returning the ending index of the key-value pair
+         * @return this builder
+         */
         public Builder<T> indexOfEnd(KeyValueIndices.IndexOf indexOf) {
             this.indexOfEnd = indexOf;
             return this;
         }
 
+        /**
+         * Sets json path extractor flags
+         *
+         * @param flags extractor flags
+         * @return this builder
+         * @see KeyValueExtractorFlags
+         */
         public Builder<T> keyValueExtractorFlags(
                 EnumSet<KeyValueExtractorFlags> flags) {
             this.keyValueFlags = flags;

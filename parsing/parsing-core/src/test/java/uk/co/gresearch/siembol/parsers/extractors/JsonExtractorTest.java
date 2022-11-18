@@ -40,7 +40,7 @@ public class JsonExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertTrue(extractor.shouldRemoveField());
-        Assert.assertFalse(extractor.shouldOverwiteFields());
+        Assert.assertFalse(extractor.shouldOverwriteFields());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class JsonExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertTrue(extractor.shouldRemoveField());
-        Assert.assertFalse(extractor.shouldOverwiteFields());
+        Assert.assertFalse(extractor.shouldOverwriteFields());
     }
 
     @Test

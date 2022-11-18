@@ -9,7 +9,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * An object for parsing a syslog message
+ *
+ * <p>This class implements a fault-tolerant syslog parser complaint with RFC 3164 and RFC 5424.
+ * It parses a raw syslog message into a SyslogMessage object.
+ *
+ * @author Marian Novotny
+ * @see SyslogMessage
+ *
+ */
 public class SyslogParser {
     private static final String BOM_SIGNATURE = "BOM";
     private static final int MAX_PRIORITY = 255;
@@ -35,11 +44,22 @@ public class SyslogParser {
     private final DateTimeZone dateTimeZone;
     private final List<ParserDateFormat> dateFormats;
 
+    /**
+     * Creates a SyslogParser that is using default Syslog timestamp parsing
+     *
+     * @param timeZone Time zone string for default syslog timestamp parsing
+     */
     public SyslogParser(String timeZone) {
         dateTimeZone = DateTimeZone.forID(timeZone);
         dateFormats = null;
     }
 
+    /**
+     * Creates a SyslogParser that is using custom timestamp parsers
+     *
+     * @param dateFormats List of custom timestamp parsers
+     * @see ParserDateFormat
+     */
     public SyslogParser(List<ParserDateFormat> dateFormats) {
         this.dateFormats = dateFormats;
         this.dateTimeZone = null;
@@ -151,6 +171,14 @@ public class SyslogParser {
         return message;
     }
 
+    /**
+     * Parses a syslog message
+     *
+     * @param str a raw syslog message
+     * @return the parsed syslog message on success
+     * @throws IllegalStateException if the parser reaches an invalid state during parsing a message
+     * @see SyslogMessage
+     */
     public SyslogMessage parse(String str) {
         Matcher priMatcher = PRI_PATTERN.matcher(str);
         if (!priMatcher.find()) {

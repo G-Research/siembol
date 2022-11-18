@@ -15,7 +15,16 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
 import java.util.*;
-
+/**
+ * An object for extracting fields from the message by evaluating json path queries
+ *
+ * <p>This derived class of ParserExtractor class is using json path query to extract fields from the massage.
+ * The extractor is evaluating json path queries in order to create a map of extracting fields.
+ *
+ * @author  Marian Novotny
+ * @see ParserExtractor
+ *
+ */
 public class JsonPathExtractor extends ParserExtractor {
     public enum JsonPathExtractorFlags {
         AT_LEAST_ONE_QUERY_RESULT
@@ -106,6 +115,12 @@ public class JsonPathExtractor extends ParserExtractor {
         return Optional.empty();
     }
 
+    /**
+     * Extracts fields from a message string using json path queries
+     *
+     * @param message input message to be extracted
+     * @return map of string to object with extracted fields
+     */
     @Override
     protected Map<String, Object> extractInternally(String message) {
         Map<String, Object> result = new HashMap<>();
@@ -132,6 +147,11 @@ public class JsonPathExtractor extends ParserExtractor {
         return result;
     }
 
+    /**
+     * Creates a json path extractor builder instance
+     *
+     * @return json path extractor builder instance
+     */
     public static Builder<JsonPathExtractor> builder() {
 
         return new Builder<>() {
@@ -145,12 +165,28 @@ public class JsonPathExtractor extends ParserExtractor {
         };
     }
 
+    /**
+     * A builder for json path extractor
+     *
+     * <p>This class is using Builder pattern.
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends JsonPathExtractor>
             extends ParserExtractor.Builder<T> {
 
         protected ArrayList<ImmutablePair<String, String>> queries = new ArrayList<>();
         protected EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags = EnumSet.noneOf(JsonPathExtractorFlags.class);
 
+        /**
+         * Adds a json path query string.
+         * It supports a dot and a bracket notation using syntax from
+         * <a href="https://github.com/json-path/JsonPath#readme">https://github.com/json-path/JsonPath#readme</a> .
+         *
+         * @param field A field name for storing query result
+         * @param query A json path query
+         * @return this builder
+         */
         public Builder<T> addQuery(String field, String query) {
             if (Strings.isNullOrEmpty(field) || Strings.isNullOrEmpty(query)) {
                 throw new IllegalArgumentException(EMPTY_FIELD_OR_QUERY_MSG);
@@ -160,6 +196,13 @@ public class JsonPathExtractor extends ParserExtractor {
             return this;
         }
 
+        /**
+         * Sets json path extractor flags
+         *
+         * @param jsonPathExtractorFlags Json path extractor flags
+         * @return this builder
+         * @see JsonPathExtractorFlags
+         */
         public Builder<T> jsonPathExtractorFlags(EnumSet<JsonPathExtractorFlags> jsonPathExtractorFlags) {
             this.jsonPathExtractorFlags = jsonPathExtractorFlags;
             return this;

@@ -9,7 +9,18 @@ import java.util.*;
 
 import static uk.co.gresearch.siembol.common.constants.SiembolMessageFields.ORIGINAL;
 import static uk.co.gresearch.siembol.common.constants.SiembolMessageFields.TIMESTAMP;
-
+/**
+ * An object for netflow parsing
+ *
+ * <p>This class is an implementation of SiembolParser interface.
+ * It is used for parsing a netflow v9 messages.
+ *
+ * It evaluates chain of extractors and transformations if registered.
+ * @author  Marian Novotny
+ * @see SiembolParser
+ * @see NetflowTransportProvider
+ *
+ */
 
 public class SiembolNetflowParser implements SiembolParser {
     private static final Logger LOG = LoggerFactory
@@ -33,11 +44,16 @@ public class SiembolNetflowParser implements SiembolParser {
         return ret;
     }
 
-    public SiembolNetflowParser() {
-        final NetflowTransportProvider<String> provider = new SimpleTransportProvider();
-        netflowParser = new NetflowParser<>(provider);
+    public SiembolNetflowParser(NetflowTransportProvider<?> netflowTransportProvider) {
+        netflowParser = new NetflowParser<>(netflowTransportProvider);
     }
 
+    public SiembolNetflowParser() {
+        this(new SimpleTransportProvider());
+    }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Map<String, Object>> parse(String metadata, byte[] bytes) {
         ArrayList<Map<String, Object>> ret = new ArrayList<>();

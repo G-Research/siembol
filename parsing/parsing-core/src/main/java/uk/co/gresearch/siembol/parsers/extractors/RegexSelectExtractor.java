@@ -42,11 +42,11 @@ public class RegexSelectExtractor extends ParserExtractor {
     }
 
     public static Builder<RegexSelectExtractor> builder() {
-        return new Builder<RegexSelectExtractor>() {
+        return new Builder<>() {
             @Override
             public RegexSelectExtractor build() {
                 if (this.outputField == null
-                        || patterns == null){
+                        || patterns == null) {
                     throw new IllegalArgumentException(MISSING_ARGUMENTS);
                 }
                 return new RegexSelectExtractor(this);

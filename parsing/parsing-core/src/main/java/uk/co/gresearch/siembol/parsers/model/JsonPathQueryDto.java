@@ -3,8 +3,16 @@ package uk.co.gresearch.siembol.parsers.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
-import java.util.List;
-
+/**
+ * A data transfer object for representing attributes for json path query
+ *
+ * <p>This class is used for json (de)serialisation of json path query attributes and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 @Attributes(title = "json path query", description = "Specification for json path query")
 public class JsonPathQueryDto {
     @JsonProperty("output_field")

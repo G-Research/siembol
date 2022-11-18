@@ -19,7 +19,13 @@ import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+ * An object for parsing application parser
+ *
+ * <p>This abstract class is using template pattern for handling common functionality of all parsing application parsers.
+ *
+ * @author  Marian Novotny
+ */
 public abstract class ParsingApplicationParser implements Serializable {
     public enum Flags implements Serializable {
         PARSE_METADATA,
@@ -52,7 +58,6 @@ public abstract class ParsingApplicationParser implements Serializable {
     private final HashSet<String> siembolFields;
     private final int maxFieldSize;
     private final int maxNumFields;
-
 
     protected ParsingApplicationParser(Builder<?> builder) {
         this.name = builder.name;
@@ -90,12 +95,42 @@ public abstract class ParsingApplicationParser implements Serializable {
         return msg.toString();
     }
 
+    /**
+     * Parses the message using internal parser(s).
+     * Template method to be implemented by descendant classes.
+     *
+     * @param source source of the message than can be used for selecting a parser for parsing
+     * @param metadata metadata of the message as a json string
+     * @param message byte array of message for parsing
+     *
+     * @return the list of parsing application results
+     * @see ParsingApplicationResult
+     */
     protected abstract ParserResult parseInternally(String source, String metadata, byte[] message);
 
+    /**
+     * Parses the message using internal parser(s)
+     *
+     * @param metadata metadata of the message as a json string
+     * @param message byte array of message for parsing
+     *
+     * @return the list of parsing application results
+     * @see ParsingApplicationResult
+     */
     public ArrayList<ParsingApplicationResult> parse(String metadata, byte[] message) {
         return parse(UNKNOWN_SOURCE, metadata, message);
     }
 
+    /**
+     * Parses the message using internal parser(s) with additional knowledge of a source of the message
+     *
+     * @param source source of the message than can be used for selecting a parser for parsing
+     * @param metadata metadata of the message as a json string
+     * @param message byte array of the message for parsing
+     *
+     * @return the list of parsing application results
+     * @see ParsingApplicationResult
+     */
     public ArrayList<ParsingApplicationResult> parse(String source, String metadata, byte[] message) {
         ArrayList<ParsingApplicationResult> ret = new ArrayList<>();
         try {
@@ -220,10 +255,22 @@ public abstract class ParsingApplicationParser implements Serializable {
         return ret;
     }
 
+    /**
+     * Gets name of the parsing application parser
+     *
+     * @return the name of the parsing application parser
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * An abstract builder for parsing application parsers
+     *
+     * <p>This abstract class is using Builder pattern.
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends ParsingApplicationParser> implements Serializable {
         private static final long serialVersionUID = 1L;
         private static final String METADATA_FORMAT_MSG = "%s";
@@ -238,11 +285,23 @@ public abstract class ParsingApplicationParser implements Serializable {
         protected Integer maxFieldSize = 20000;
         protected HashSet<String> siembolFields = new HashSet<>(SiembolMessageFields.getMessageFieldsSet());
 
+        /**
+         * Sets the name of the parsing application parser
+         *
+         * @param name the name of the parsing application parser
+         * @return this builder
+         */
         public Builder<T> name(String name) {
             this.name = name;
             return this;
         }
 
+        /**
+         * Sets whether the application will parse the metadata as a json string
+         *
+         * @param parseMetadata the flag whether the application will parse the metadata as a json string
+         * @return this builder
+         */
         public Builder<T> parseMetadata(boolean parseMetadata) {
             if (parseMetadata) {
                 flags.add(Flags.PARSE_METADATA);
@@ -250,6 +309,13 @@ public abstract class ParsingApplicationParser implements Serializable {
             return this;
         }
 
+        /**
+         * Sets whether the application will add guid field to the message after parsing
+         *
+         * @param addGuidToMessages a boolean flag which will determine whether the application will add
+         *                          a guid field to the message after parsing
+         * @return this builder
+         */
         public Builder<T> addGuidToMessages(boolean addGuidToMessages) {
             if (addGuidToMessages) {
                 flags.add(Flags.ADD_GUID_TO_MESSAGES);
@@ -257,6 +323,12 @@ public abstract class ParsingApplicationParser implements Serializable {
             return this;
         }
 
+        /**
+         * Sets the metadata prefix
+         *
+         * @param metadataPrefix the prefix that will be added to metadata fields after parsing the metadata json message
+         * @return this builder
+         */
         public Builder<T> metadataPrefix(String metadataPrefix) {
             if (metadataPrefix != null) {
                 this.metadataFormatMsg = metadataPrefix + METADATA_FORMAT_MSG;
@@ -264,36 +336,78 @@ public abstract class ParsingApplicationParser implements Serializable {
             return this;
         }
 
+        /**
+         * Sets the error topic
+         *
+         * @param errorTopic the topic for sending error messages
+         * @return this builder
+         */
         public Builder<T> errorTopic(String errorTopic) {
             this.errorTopic = errorTopic;
             return this;
         }
 
+        /**
+         * Sets the original string topic
+         *
+         * @param originalStringTopic the topic for sending original strings in case of truncating the message
+         * @return this builder
+         */
         public Builder<T> originalStringTopic(String originalStringTopic) {
             this.originalStringTopic = originalStringTopic;
             return this;
         }
 
+        /**
+         * Sets the processing time field with the current time that will be added to the message after parsing
+         *
+         * @param processingTimeField field name that will be added after parsing a message
+         * @return this builder
+         */
         public Builder<T> processingTimeField(String processingTimeField) {
             this.processingTimeField = processingTimeField;
             return this;
         }
 
+        /**
+         * Sets the maximum number of fields
+         *
+         * @param maxNumFields maximum number of fields after parsing
+         * @return this builder
+         */
         public Builder<T> maxNumFields(int maxNumFields) {
             this.maxNumFields = maxNumFields;
             return this;
         }
 
+        /**
+         * Sets the maximum field size after parsing. Larger fields will be truncated to this size.
+         *
+         * @param maxFieldSize the maximum field size after parsing
+         * @return this builder
+         */
         public Builder<T> maxFieldSize(int maxFieldSize) {
             this.maxFieldSize = maxFieldSize;
             return this;
         }
 
+        /**
+         * Sets the time provider
+         *
+         * @param timeProvider time provider which can be used in testing
+         * @return this builder
+         */
         public Builder<T> timeProvider(TimeProvider timeProvider) {
             this.timeProvider = timeProvider;
             return this;
         }
 
+        /**
+         * Sets siembol fields that cannot be removed during evaluating maximum number of fields
+         *
+         * @param siembolFields set of fields that will be not removed during evaluating maximum number of fields
+         * @return this builder
+         */
         public Builder<T> siembolFields(HashSet<String> siembolFields) {
             this.siembolFields = siembolFields;
             return this;

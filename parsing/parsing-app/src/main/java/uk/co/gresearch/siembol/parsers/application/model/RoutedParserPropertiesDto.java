@@ -2,7 +2,18 @@ package uk.co.gresearch.siembol.parsers.application.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing routed parser properties
+ *
+ * <p>This class is used for json (de)serialisation of routed parser properties and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ *
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ParserPropertiesDto
+ */
 @Attributes(title = "routed parser properties", description = "The properties of routed parser")
 public class RoutedParserPropertiesDto {
     @JsonProperty("routing_field_pattern")

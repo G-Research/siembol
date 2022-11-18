@@ -9,7 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
+/**
+ * An object for a parsing application that integrates a routing parser and
+ * a final parser will be selected by pattern matching.
+ *
+ * <p>This derived class of ParsingApplicationParser is using template pattern for implementing
+ * a parsing application that integrates a routing parser and
+ * evaluating regular expression patterns for selecting the final parser.
+ * Default parser is selected if no pattern has been matched.
+ *
+ * @author  Marian Novotny
+ */
 public class RoutingParsingApplicationParser extends ParsingApplicationParser {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
@@ -35,6 +45,9 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
         this.routerParser = builder.routerParser;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected ParserResult parseInternally(String source, String metadata, byte[] message) {
         ParserResult routerResult = routerParser.parseToResult(metadata, message);
@@ -83,6 +96,12 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
 
         return routerResult;
     }
+
+    /**
+     * Creates RoutingParsingApplicationParser builder instance
+     *
+     * @return RoutingParsingApplicationParser builder
+     */
     public static Builder<RoutingParsingApplicationParser> builder() {
         return new Builder<>() {
             private static final long serialVersionUID = 1L;
@@ -103,6 +122,13 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
         };
     }
 
+    /**
+     * A builder for routing parsing application parser
+     *
+     * <p>This class is using Builder pattern.
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends RoutingParsingApplicationParser> extends
             ParsingApplicationParser.Builder<T> {
         private static final long serialVersionUID = 1L;
@@ -114,16 +140,37 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
         protected SiembolParserWrapper defaultParser;
         protected ArrayList<SiembolParserWrapper> parsers =  new ArrayList<>();
 
+        /**
+         * Sets the routing condition field that is used for evaluating patterns of the parsers
+         *
+         * @param routingConditionField a field that is used for evaluating patterns of the parsers
+         *
+         * @return this builder
+         */
         public Builder<T> routingConditionField(String routingConditionField) {
             this.routingConditionField = routingConditionField;
             return this;
         }
 
+        /**
+         * Sets the routing message field that is used for the final parser input
+         *
+         * @param routingMessageField a field that is used for the final parser input
+         *
+         * @return this builder
+         */
         public Builder<T> routingMessageField(String routingMessageField) {
             this.routingMessageField = routingMessageField;
             return this;
         }
 
+        /**
+         * Sets the list of fields from router parsing that will be merged to the parsed message
+         *
+         * @param mergedFields a list of fields from router parsing that will be merged to the parsed message
+         *
+         * @return this builder
+         */
         public Builder<T> mergedFields(List<String> mergedFields) {
             if (mergedFields != null ) {
                 this.mergedFields = new ArrayList<>(mergedFields);
@@ -131,17 +178,46 @@ public class RoutingParsingApplicationParser extends ParsingApplicationParser {
             return this;
         }
 
+        /**
+         * Sets the router parser used for preparing fields for selecting the final parser
+         *
+         * @param siembolParser a serializable siembol parser
+         *
+         * @return this builder
+         * @see SerializableSiembolParser
+         */
         public Builder<T> routerParser(SerializableSiembolParser siembolParser) {
             final RouterCondition alwaysMatch = x -> true;
             this.routerParser = new SiembolParserWrapper(alwaysMatch, siembolParser, null);
             return this;
         }
 
+        /**
+         * Sets the default parser
+         * @param topic an output topic for parsing
+         * @param siembolParser a serializable siembol parser
+         *
+         * @return this builder
+         * @see SerializableSiembolParser
+         */
         public Builder<T> defaultParser(String topic, SerializableSiembolParser siembolParser) {
             defaultParser = new SiembolParserWrapper(siembolParser, topic);
             return this;
         }
 
+        /**
+         * Adds the parser with pattern for evaluation whether the parser will be selected.
+         * The parsers are evaluated in the list based on how they are added by this method.
+         * The parser is selected if the pattern has been matched on the routing condition field.
+         *
+         * @param topic an output topic for parsing
+         * @param siembolParser a serializable siembol parser
+         * @param pattern a regular expression pattern for evaluation
+         *
+         * @return this builder
+         * @see SerializableSiembolParser
+         *
+         */
         public Builder<T> addParser(String topic, SerializableSiembolParser siembolParser, String pattern) {
             final Pattern conditionPattern = Pattern.compile(pattern, Pattern.DOTALL);
             final RouterCondition condition = x -> conditionPattern.matcher(x).matches();

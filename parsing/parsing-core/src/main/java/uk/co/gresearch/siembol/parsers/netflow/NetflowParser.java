@@ -2,9 +2,25 @@ package uk.co.gresearch.siembol.parsers.netflow;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.lang.invoke.MethodHandles;
 import java.util.*;
-
+/**
+ * An object for parsing a netflow v9 message
+ *
+ * <p>This class implements a fault-tolerant netflow v9 parser.
+ * Parsing of fields in Netflow v9 protocol is based on the netflow template messages that
+ * are identified by a device and template id.
+ * Network devices are using template id field as a counter rather than as a unique id on the network and
+ * collisions of template id values on a network with multiple collectors are common.
+ * This way we are using NetflowTransportProvider interface to provide global id of the template in order
+ * to avoid collisions.
+ *
+ * @author Marian Novotny
+ * @see NetflowParsingResult
+ * @see NetflowTransportProvider
+ *
+ */
 public class NetflowParser<T> {
     public static final int SUPPORTED_VERSION = 9;
     public static final int TEMPLATE_FLOW_SET_ID = 0;
@@ -21,10 +37,22 @@ public class NetflowParser<T> {
 
     private final NetflowTransportProvider<T> transportProvider;
 
+    /**
+     * Creates a netflow parser
+     *
+     * @param transportProvider provider of global template id from a netflow message
+     */
     public NetflowParser(NetflowTransportProvider<T> transportProvider) {
         this.transportProvider = transportProvider;
     }
 
+    /**
+     * Parses a netflow message
+     *
+     * @param metadata an input string used in transport provider to identify the device and template
+     * @param data binary netflow payload
+     * @return netflow parsing result with the parsed netflow message
+     */
     public NetflowParsingResult parse(String metadata, byte[] data) {
         NetflowTransportMessage<T> message = transportProvider.message(metadata, data);
         return parse(message);

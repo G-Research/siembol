@@ -59,7 +59,7 @@ public class CSVExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertTrue(extractor.shouldRemoveField());
-        Assert.assertFalse(extractor.shouldOverwiteFields());
+        Assert.assertFalse(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(simpleEmptyLastColumn.trim());
         Assert.assertEquals(6, out.size());
@@ -87,7 +87,7 @@ public class CSVExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertTrue(extractor.shouldRemoveField());
-        Assert.assertFalse(extractor.shouldOverwiteFields());
+        Assert.assertFalse(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(simpleNoQuotes.trim());
         Assert.assertEquals(5, out.size());
@@ -285,7 +285,7 @@ public class CSVExtractorTest {
         Assert.assertEquals(name, extractor.getName());
         Assert.assertEquals(field, extractor.getField());
         Assert.assertTrue(extractor.shouldRemoveField());
-        Assert.assertFalse(extractor.shouldOverwiteFields());
+        Assert.assertFalse(extractor.shouldOverwriteFields());
 
         Map<String, Object> out = extractor.extract(simpleChangedDelimiter.trim());
         Assert.assertEquals(5, out.size());

@@ -34,7 +34,20 @@ import uk.co.gresearch.siembol.parsers.application.parsing.ParsingApplicationRes
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-
+/**
+ * An object for integration of a parsing application into a storm bolt
+ *
+ * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
+ *  parses logs using a parsing application parser initialised from the parser configurations cached in the ZooKeeper,
+ *  watches for the parser configurations update in ZooKeeper and
+ *  updates the parsers without needing to restart the topology or the bolt,
+ *  emits parsed messages and exceptions after parsing.
+ *
+ * @author Marian Novotny
+ * @see ParsingApplicationParser
+ * @see ZooKeeperConnector
+ *
+ */
 public class ParsingApplicationBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

@@ -15,12 +15,30 @@ import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.parsers.model.CaseTypeDto.LOWERCASE;
 import static uk.co.gresearch.siembol.parsers.model.TransformationTypeDto.*;
-
+/**
+ * An object for creating transformations
+ *
+ * <p>This class is for creating a Transformation instances using functional programming style.
+ *
+ * @author  Marian Novotny
+ * @see Transformation
+ *
+ */
 public class TransformationFactory {
     private static final String MISSING_TRANSFORMATION_TYPE = "Missing transformation type";
     private static final String UNKNOWN_TRANSFORMATION_TYPE = "Unknown transformation type";
     private static final String MISSING_TRANSFORMATION_ATTRIBUTES = "Missing transformation attributes";
 
+    /**
+     * Creates a transformation instance from a specification
+     *
+     * @param specification a data transform object that specify the transformation
+     * @return Transformation instance using a lambda function
+     * @throws IllegalArgumentException when the specification is not valid and
+     *         is not possible to create a transformation.
+     * @see Transformation
+     * @see TransformationDto
+     */
     public Transformation create(TransformationDto specification) {
         if(specification.getType() == null) {
             throw new IllegalArgumentException(MISSING_TRANSFORMATION_TYPE);

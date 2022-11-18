@@ -5,7 +5,15 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+/**
+ * An object for extracting fields using regular expression matching
+ *
+ * <p>This derived class of ParserExtractor provides functionality for regular expression extracting.
+ * It supports extracting fields using regular expression named groups matching.
+ *
+ * @author  Marian Novotny
+ * @see ParserExtractor
+ */
 public class PatternExtractor extends ParserExtractor {
     public enum PatternExtractorFlags {
         SHOULD_MATCH,
@@ -20,12 +28,25 @@ public class PatternExtractor extends ParserExtractor {
     private final List<SimpleEntry<Pattern, List<String>>> patterns;
     private final EnumSet<PatternExtractorFlags> patternExtractorFlags;
 
+    /**
+     * Creates pattern extractor using builder pattern.
+     *
+     * @param builder Pattern extractor builder
+     */
     private PatternExtractor(Builder<?> builder) {
         super(builder);
         this.patterns = builder.compiledPatterns;
         this.patternExtractorFlags = builder.patternExtractorFlags;
     }
 
+    /**
+     * Implementation of template method for extracting key value pairs from an input string.
+     * The list of regular expression named groups are executed in a chain.
+     * The fields are extracted and included in the result only if the pattern matches the input string.
+     *
+     * @param str An input string
+     * @return extracted key value pairs as a map of String to Object
+     */
     @Override
     public Map<String, Object> extractInternally(String str) {
 
@@ -85,9 +106,20 @@ public class PatternExtractor extends ParserExtractor {
         return new SimpleEntry<>(pattern, names);
     }
 
+    /**
+     * Creates a pattern extractor builder instance
+     *
+     * @return pattern extractor builder
+     */
     public static Builder<PatternExtractor> builder() {
-        return new Builder<PatternExtractor>()
+        return new Builder<>()
         {
+            /**
+             * Builds pattern extractor
+             *
+             * @return pattern extractor
+             * @throws IllegalArgumentException if building of the pattern extractor fails
+             */
             @Override
             public PatternExtractor build()
             {
@@ -108,6 +140,14 @@ public class PatternExtractor extends ParserExtractor {
         };
     }
 
+    /**
+     * A builder for the pattern extractor
+     *
+     * <p>This abstract class is derived from PatternExtractor.Builder class
+     *
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends PatternExtractor>
             extends ParserExtractor.Builder<T> {
 
@@ -116,12 +156,26 @@ public class PatternExtractor extends ParserExtractor {
         protected EnumSet<PatternExtractorFlags> patternExtractorFlags =
                 EnumSet.noneOf(PatternExtractorFlags.class);
 
+        /**
+         * Sets patterns of the extractor
+         *
+         * @param patterns List of string patterns.
+         *                 It supports  `_`, `:`, which are forbidden in Java patterns.
+         * @return this builder
+         */
         public Builder<T> patterns(
                 List<String> patterns) {
             this.patterns = patterns;
             return this;
         }
 
+        /**
+         * Sets pattern extractor flags
+         *
+         * @param flags pattern flags of the extractor
+         * @return this builder
+         * @see PatternExtractorFlags
+         */
         public Builder<T> patternExtractorFlags(
                 EnumSet<PatternExtractorFlags> flags) {
             this.patternExtractorFlags = flags;

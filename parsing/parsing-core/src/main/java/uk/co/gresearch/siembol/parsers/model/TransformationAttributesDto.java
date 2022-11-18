@@ -4,7 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing a transformation attributes
+ *
+ * <p>This class is used for json (de)serialisation of attributes of a transformation and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see FieldRenameDto
+ * @see FieldsFilterDto
+ * @see MessageFilterDto
+ * @see CaseTypeDto
+ */
 @Attributes(title = "transformation attributes", description = "The attributes for the transformation function")
 public class TransformationAttributesDto {
     @JsonProperty("string_replace_target")

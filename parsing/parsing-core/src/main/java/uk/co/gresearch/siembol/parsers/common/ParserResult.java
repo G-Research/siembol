@@ -2,7 +2,16 @@ package uk.co.gresearch.siembol.parsers.common;
 
 import java.util.List;
 import java.util.Map;
-
+/**
+ * An object for representing a parser result
+ *
+ * <p>This class contains a list of parsed messages and
+ *  exception if a parser throws an error.
+ *  It provides metadata about the parsed messages such as the source type.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class ParserResult {
     private List<Map<String, Object>> parsedMessages;
     private Throwable exception;

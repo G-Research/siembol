@@ -3,7 +3,15 @@ package uk.co.gresearch.siembol.parsers.netflow;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
-
+/**
+ * An object for representing a netflow parsing result
+ *
+ * <p>This class represents a netflow parsing result used by a netflow parser.
+ * It includes a status code of the result along with a netflow parsed message.
+ *
+ * @author Marian Novotny
+ *
+ */
 public class NetflowParsingResult {
     enum StatusCode {
         OK,

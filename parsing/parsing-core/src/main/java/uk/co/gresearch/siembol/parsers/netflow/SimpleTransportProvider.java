@@ -5,7 +5,19 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
-
+/**
+ * An object for providing netflow templates
+ *
+ * <p>This class is implementing NetflowTransportProvider interface.
+ * It uses an in-memory map for storing and obtaining templates.
+ * It uses NetflowMessageWithSource implementation.
+ * This map is not synchronised since it is not shared between threads in the storm integration.
+ *
+ * @author Marian Novotny
+ * @see NetflowTransportProvider
+ * @see NetflowMessageWithSource
+ *
+ */
 public class SimpleTransportProvider implements NetflowTransportProvider<String> {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
@@ -13,11 +25,17 @@ public class SimpleTransportProvider implements NetflowTransportProvider<String>
     private final Map<String, List<NetflowField>> templates
             = new HashMap<>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NetflowTransportMessage<String> message(String metadata, byte[] data) {
         return new NetflowMessageWithSource(metadata, data);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<List<NetflowField>> getTemplate(NetflowTransportMessage<String> transportMessage,
                                                           NetflowHeader header,
@@ -27,6 +45,9 @@ public class SimpleTransportProvider implements NetflowTransportProvider<String>
         return Optional.ofNullable(templates.get(key));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateTemplate(NetflowTransportMessage<String> transportMessage,
                                NetflowHeader header,

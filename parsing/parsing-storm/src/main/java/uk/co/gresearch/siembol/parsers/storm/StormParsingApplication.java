@@ -37,7 +37,17 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.CLIENT_ID_CONFIG;
-
+/**
+ * A main class of parsing storm topology
+ *
+ * <p>This class provides helper functions to build a parsing application topology and
+ * provides the main function that is executed during the submission of a storm topology.
+ *
+ * @author Marian Novotny
+ * @see ParsingApplicationBolt
+ * @see ParsingApplicationTuples
+ *
+ */
 public class StormParsingApplication {
     private static final Logger LOG =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
