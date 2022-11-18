@@ -1,4 +1,22 @@
 # Deployment
+
+- [1. Build artifacts](#build-artifacts)
+    * [1.1 Java artifacts](#java-artifacts)
+    * [1.2 Docker images](#docker-images)
+    * [1.3  Application configuration files](#application-configuration-files)
+- [2. Infrastructure dependencies](#infrastructure-dependencies)
+- [3. Helm charts](#helm-charts)
+    * [3.1 Enrichment Store](#enrichment-store) 
+    * [3.2 Oauth2 Proxy](#oauth2-proxy)
+    * [3.3 Ingress for dependencies](#ingress-for-dependencies)
+    * [3.4 Enrichment Store Parameters](#enrichment-store)
+    * [3.5 Storm Parameters](#storm)
+    * [3.6 Enable & Disable components](#enable-and-disable-components)
+    * [3.7 Customize Helm Chart](#customize-helm-chart)
+ 
+
+
+
 ## Build artifacts
 Building and publishing artifacts are executed by [GitHub Actions](/.github/workflows/ci.yml) triggered by events in the siembol repository.
 
@@ -174,7 +192,7 @@ For the heartbeat to work config has to be added to each Siembol service type us
 See [siembol monitoring](how-tos/how_to_setup_siembol_monitoring.md) for configuration details.
 
 
-### Enable & Disable components
+### Enable and Disable components
 
 All Siembol components can be enabled or disabled by modifying the `enabled_apps` list.
 By default the enabled_apps list consists of these components:

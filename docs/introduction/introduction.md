@@ -1,5 +1,26 @@
+Introduction
+=============
+
+- [1. Siembol](#siembol)
+- [2. History](#history)
+- [3. Siembol vs Metron](#siembol-vs-metron)
+    * [3.1 Components for Alert Escalation](#components-for-alert-escalation)
+    * [3.2 Integration with Other Systems](#integration-with-other-systems)
+    * [3.3 Advanced Parsing Framework for Building Fault-Tolerant Parsers](#advanced-parsing-framework-for-building-fault-tolerant-parsers)
+    * [3.4 Advanced Enrichment Component](#advanced-enrichment-component)
+    * [3.5 Configurations and Rules](#configurations-and-rules)
+    * [3.6 Easy Installation](#easy-installation)
+- [4. Use Cases](#use-cases)
+  * [4.1 SIEM Log Collection](#siem-log-collection-using-open-source-technologies)
+  * [4.2 Detection of Leaks and Attacks on Infrastructure](#detection-of-leaks-and-attacks-on-infrastructure)
+- [5. High Level Architecture](#high-level-architecture)
+  * [5.1 Data Pipelines](#data-pipelines)
+  * [5.2 Services](#services)
+  * [5.3 Infrastructure dependencies](#infrastructure-dependencies)
+  * [5.4 Architecture](#architecture)
+
 Siembol
-=======
+--------
 
 Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, allowing security teams to respond to attacks before they become incidents.
 
@@ -10,7 +31,7 @@ Siembol was developed in-house at G-Research as a security data processing appli
 
 As early adopters of Metron, we believed in the product and tried hard to adapt it to our needs. Ultimately, we recognized its limitations and we began to add the missing features and shore up its instabilities. Sadly, by the time we were able to give back to the Metron community, Metron's time had passed. However, as we still believe in the core mission of Metron, we are releasing our work under the project name, 'Siembol'. We hope this will provide the security community with an effective alternative, filling the void left by Metron's move to the [Apache Attic](https://attic.apache.org/).
 
-How Siembol Improves upon Metron
+Siembol vs Metron
 --------------------------------
 
 _Components for alert escalation._ CSIRT security teams can easily create a rule-based alert from a single data source, or they can create advanced correlation rules that combine various data sources. We are planning to release a tool for translating Sigma rule specification into the alerting rule engine soon after open-sourcing.
@@ -33,7 +54,9 @@ _Easy installation for use with prepared Docker images and Helm charts._ Metronâ
 - Security teams can easily create a rule-based alert from a single data source, or they can create advanced correlation rules that combine various data sources.
 - Siembol UI supports translating Sigma rule specification (generic and open signature format for SIEM alerting [https://github.com/SigmaHQ/sigma](https://github.com/SigmaHQ/sigma)) into the Siembol alerting rule.
 
-### Integration with Other Systems â€“ Siembol Response
+### Integration with Other Systems
+
+Siembol's approach:
 
 - Easy way to integrate Siembol with other systems such as [Jira](https://www.atlassian.com/software/jira), [Cortex](https://github.com/TheHive-Project/Cortex), [ELK](https://www.elastic.co/what-is/elk-stack), and [LDAP](https://ldap.com/).
 - Functionality to provide additional enrichments about an alert, such as [ELK](https://www.elastic.co/what-is/elk-stack) searches or [LDAP](https://ldap.com/) searches, with the option to filter the alert as part of an automatic incident response.
@@ -53,7 +76,9 @@ _Easy installation for use with prepared Docker images and Helm charts._ Metronâ
 
 - Defining rules for selecting enrichment logic, joining enrichment tables, and defining how to enrich the processed log.
 
-### Configurations and Rules are Defined by a Web Application Siembol UI
+### Configurations and Rules
+
+Configurations and rules are defined by a web application Siembol UI.
 
 - All configurations are stored in JSON format and edited by web forms in order to avoid mistakes and speed up creation and learning time.
 - Configurations are stored in Git repositories.
@@ -65,8 +90,9 @@ _Easy installation for use with prepared Docker images and Helm charts._ Metronâ
 - All Siembol services can have multiple instances with authorization based on OIDC group membership. This allows multi-tenancy usage without the need to deploy multiple instances of Siembol.
 - We are planning to test and tune OAUTH/OIDC integration with popular identity providers.
 
-### Easy Installation to Try Out with Prepared Docker Images and Helm Charts
+### Easy Installation
 
+- Easy installation is possible with prepared Docker Images and Helm Charts.
 - Siembol supports deployment on external [Hadoop](https://hadoop.apache.org/) clusters to ensure high performance. However, we are providing k8s Helm charts for all deployment dependencies in order to test Siembol in development environments.
 
 
@@ -82,7 +108,7 @@ Use-Cases
 - At G-Research we use Siembol to parse, normalize, enrich and detect approximately 150k events a second. Per day, this adds up to volumes of approximately 15TB of raw data, or 13 billion events.
 
 
-### Detection Tool for Detection of Leaks and Attacks on Infrastructure
+### Detection of Leaks and Attacks on Infrastructure
 
 - Siembol can be used as a tool for detecting attacks or leaks by teams responsible for the system platform. For example, the Big Data team at G-Research is using Siembol to detect leaks and attacks on the [Hadoop](https://hadoop.apache.org/) platform. These detections are then used as another data source within the Siembol SIEM log collection for the CSIRT team handling these incidents.
 
