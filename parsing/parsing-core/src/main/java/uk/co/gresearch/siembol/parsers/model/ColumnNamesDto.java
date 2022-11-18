@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A data transfer object for representing column names in a csv extractor
  *
- * <p>This class is used for json (de)serialisation of a column names and
+ * <p>This class is used for json (de)serialisation of column names and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

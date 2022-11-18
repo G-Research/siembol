@@ -6,7 +6,7 @@ import com.github.reinert.jjschema.Attributes;
 /**
  * A data transfer object for representing attributes for json path query
  *
- * <p>This class is used for json (de)serialisation of a json path query attributes and
+ * <p>This class is used for json (de)serialisation of json path query attributes and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

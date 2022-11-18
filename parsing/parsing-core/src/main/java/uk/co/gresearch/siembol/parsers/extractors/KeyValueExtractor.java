@@ -11,7 +11,7 @@ import static uk.co.gresearch.siembol.parsers.extractors.KeyValueExtractor.KeyVa
  *
  * <p>This derived class of ParserExtractor provides functionality for key value extracting.
  * Key value pairs are in form key1=value1 key2=value2 etc.
- * It supports handling quotas, escaped characters and a fault-tolerant extracting using a next key strategy.
+ * It supports handling quotes, escaped characters and a fault-tolerant extracting using a next key strategy.
  *
  * @author  Marian Novotny
  * @see ParserExtractor
@@ -22,7 +22,7 @@ public class KeyValueExtractor extends ParserExtractor {
     private final static String DUPLICATE_FORMAT_MSG = "duplicate_%s_%d";
 
     public enum KeyValueExtractorFlags {
-        QUOTA_VALUE_HANDLING,
+        QUOTE_VALUE_HANDLING,
         RENAME_DUPLICATE_KEYS,
         ESCAPING_HANDLING,
         NEXT_KEY_STRATEGY
@@ -91,7 +91,7 @@ public class KeyValueExtractor extends ParserExtractor {
                     @Override
                     public KeyValueIndices apply(String str, int from) {
                         boolean quoteHandling = keyValueFlags.contains(
-                                KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+                                KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
                         Optional<Character> escaped = keyValueFlags.contains(
                                 KeyValueExtractorFlags.ESCAPING_HANDLING)
@@ -147,7 +147,7 @@ public class KeyValueExtractor extends ParserExtractor {
         protected char escapedChar = '\\';
         protected KeyValueIndices.IndexOf indexOfEnd;
         protected EnumSet<KeyValueExtractorFlags> keyValueFlags = EnumSet
-                .of(KeyValueExtractorFlags.QUOTA_VALUE_HANDLING,
+                .of(KeyValueExtractorFlags.QUOTE_VALUE_HANDLING,
                         KeyValueExtractorFlags.RENAME_DUPLICATE_KEYS);
 
         /**

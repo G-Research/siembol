@@ -66,7 +66,7 @@ public class KeyValueExtractorTest {
     public void testGoodSimpleQuotesRemove() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
         extractorFlags.add(KeyValueExtractor.ParserExtractorFlags.REMOVE_QUOTES);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
@@ -92,7 +92,7 @@ public class KeyValueExtractorTest {
     public void testGoodSimpleQuotesLeave() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
                 .keyValueExtractorFlags(keyValueFlags)
@@ -116,7 +116,7 @@ public class KeyValueExtractorTest {
     public void testGoodNonStandardsDelimiter() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
                 .keyValueExtractorFlags(keyValueFlags)
@@ -143,7 +143,7 @@ public class KeyValueExtractorTest {
     public void testGoodNonStandardsDelimiterEscaping() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
         keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.ESCAPING_HANDLING);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
@@ -172,7 +172,7 @@ public class KeyValueExtractorTest {
     public void testGoodNonStandardsDelimiterEscapingNextKey() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
         keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.ESCAPING_HANDLING);
         keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.NEXT_KEY_STRATEGY);
 
@@ -205,7 +205,7 @@ public class KeyValueExtractorTest {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.THROWN_EXCEPTION_ON_ERROR);
 
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
                 .keyValueExtractorFlags(keyValueFlags)
@@ -225,7 +225,7 @@ public class KeyValueExtractorTest {
     public void testGoodEmptyValue() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
                 .keyValueExtractorFlags(keyValueFlags)
@@ -246,7 +246,7 @@ public class KeyValueExtractorTest {
     public void testGoodEmptyValueQuota() {
         extractorFlags.add(
                 ParserExtractor.ParserExtractorFlags.SHOULD_OVERWRITE_FIELDS);
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
         extractorFlags.add(KeyValueExtractor.ParserExtractorFlags.REMOVE_QUOTES);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
@@ -326,7 +326,7 @@ public class KeyValueExtractorTest {
 
     @Test
     public void testWrongQuotesFaultTolerant() {
-        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+        keyValueFlags.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
 
         KeyValueExtractor extractor = KeyValueExtractor.builder()
                 .keyValueExtractorFlags(keyValueFlags)

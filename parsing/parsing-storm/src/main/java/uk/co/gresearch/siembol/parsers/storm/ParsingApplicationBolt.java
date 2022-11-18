@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
  *  parses logs using a parsing application parser initialised from the parser configurations cached in the ZooKeeper,
  *  watches for the parser configurations update in ZooKeeper and
- *  updates the parsers without need to restart the topology or the bolt,
+ *  updates the parsers without needing to restart the topology or the bolt,
  *  emits parsed messages and exceptions after parsing.
  *
  * @author Marian Novotny

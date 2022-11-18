@@ -101,7 +101,7 @@ public abstract class ParsingApplicationParser implements Serializable {
      *
      * @param source source of the message than can be used for selecting a parser for parsing
      * @param metadata metadata of the message as a json string
-     * @param message byt array of message for parsing
+     * @param message byte array of message for parsing
      *
      * @return the list of parsing application results
      * @see ParsingApplicationResult
@@ -112,7 +112,7 @@ public abstract class ParsingApplicationParser implements Serializable {
      * Parses the message using internal parser(s)
      *
      * @param metadata metadata of the message as a json string
-     * @param message byt array of message for parsing
+     * @param message byte array of message for parsing
      *
      * @return the list of parsing application results
      * @see ParsingApplicationResult
@@ -126,7 +126,7 @@ public abstract class ParsingApplicationParser implements Serializable {
      *
      * @param source source of the message than can be used for selecting a parser for parsing
      * @param metadata metadata of the message as a json string
-     * @param message byt array of the message for parsing
+     * @param message byte array of the message for parsing
      *
      * @return the list of parsing application results
      * @see ParsingApplicationResult
@@ -312,7 +312,8 @@ public abstract class ParsingApplicationParser implements Serializable {
         /**
          * Sets whether the application will add guid field to the message after parsing
          *
-         * @param addGuidToMessages the flag whether the application will add guid field to the message after parsing
+         * @param addGuidToMessages a boolean flag which will determine whether the application will add
+         *                          a guid field to the message after parsing
          * @return this builder
          */
         public Builder<T> addGuidToMessages(boolean addGuidToMessages) {

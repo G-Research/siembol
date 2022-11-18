@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A data transfer object for representing attributes for a parsers configurations
  *
- * <p>This class is used for json (de)serialisation of a parsers configurations and
+ * <p>This class is used for json (de)serialisation of parsers configurations and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

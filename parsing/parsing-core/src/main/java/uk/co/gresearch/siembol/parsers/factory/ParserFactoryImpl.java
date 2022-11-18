@@ -210,7 +210,7 @@ public class ParserFactoryImpl implements ParserFactory {
         }
 
         if (attributes.getQuotaHandling()) {
-            ret.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTA_VALUE_HANDLING);
+            ret.add(KeyValueExtractor.KeyValueExtractorFlags.QUOTE_VALUE_HANDLING);
         }
 
         if (attributes.getEscapingHandling()) {

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  *
  * <p>This derived class of ParserExtractor provides functionality for CSV (Comma Separated Values) extracting.
  * It uses column names list for adding field names supporting to skip some columns.
- * It supports handling quotas.
+ * It supports handling quotes.
  *
  * @author  Marian Novotny
  * @see ParserExtractor
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class CSVExtractor extends ParserExtractor {
     private static final String UNKNOWN_COLUMN_NAME_PREFIX = "unknown";
     private static final String EMPTY_STRING = "";
-    private static final char QUOTA = '"';
+    private static final char QUOTE = '"';
 
     private final String wordDelimiter;
     private final ArrayList<ColumnNames> columnNamesList;
@@ -33,11 +33,11 @@ public class CSVExtractor extends ParserExtractor {
     protected ArrayList<Object> getValues(String message, char delimiter) {
         ArrayList<Object> values = new ArrayList<>();
         int offset = 0;
-        Optional<Character> quota = Optional.of(QUOTA);
+        Optional<Character> quote = Optional.of(QUOTE);
 
         while (offset < message.length()) {
             int delimiterOffset = ParserExtractorLibrary.indexOf(
-                    message, delimiter, offset, quota, Optional.empty());
+                    message, delimiter, offset, quote, Optional.empty());
             if (delimiterOffset == -1) {
                 delimiterOffset = message.length();
             }

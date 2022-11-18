@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * An object for parsing a log
  *
- * <p>This interface for parsing a log and providing metadata for a caller such us
+ * <p>This interface for parsing a log and providing metadata for a caller such as
  * the parser source type.
  *
  * @author  Marian Novotny
