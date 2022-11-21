@@ -1,4 +1,8 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,17 +120,17 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         configInfo.setCommitMessage(commitMsg);
 
         Map<String, Optional<String>> files = new HashMap<>();
-        String updatedConfig = config.replaceFirst(ruleVersionRegex,
-                String.format(ruleVersionFormat, newConfigVersion));
+        StringBuilder sb = new StringBuilder(config);
+        replaceInJson(sb, configVersionField, ruleVersionRegex, String.format(ruleVersionFormat, newConfigVersion));
 
         if (!configAuthor.equals(configInfo.getCommitter())) {
             //NOTE: we consider author to be the last committer,
             // auth logic can be added here when needed
-            updatedConfig = updatedConfig.replaceFirst(ruleAuthorRegex,
+            replaceInJson(sb, configAuthorField, ruleAuthorRegex,
                     String.format(ruleAuthorFormat, configInfo.getCommitter()));
         }
 
-        files.put(String.format(configFilenameFormat, configName), Optional.of(updatedConfig));
+        files.put(String.format(configFilenameFormat, configName), Optional.of(sb.toString()));
         configInfo.setFilesContent(files);
 
         configInfo.setConfigInfoType(configType);
@@ -149,11 +153,12 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
 
         configInfo.setCommitMessage(String.format(commitTemplateRelease, newRulesVersion));
 
-        String updatedRelease = release.replaceFirst(releaseVersionRegex,
+        StringBuilder sb = new StringBuilder(release);
+        replaceInJson(sb, configsVersionField, releaseVersionRegex,
                 String.format(releaseVersionFormat, newRulesVersion));
 
         Map<String, Optional<String>> files = new HashMap<>();
-        files.put(releaseFilename, Optional.of(updatedRelease));
+        files.put(releaseFilename, Optional.of(sb.toString()));
         configInfo.setFilesContent(files);
         configInfo.setConfigInfoType(configType);
 
@@ -222,6 +227,38 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     @Override
     public ConfigInfoType getConfigInfoType() {
         return configType;
+    }
+    private void replaceInJson(StringBuilder sb, String fieldName, String replacePattern, String replacement) {
+        int fieldOffset = getFieldsOffsets(fieldName, sb.toString());
+        String updatedPart = sb.substring(fieldOffset).replaceFirst(replacePattern, replacement);
+        sb.setLength(fieldOffset);
+        sb.append(updatedPart);
+    }
+    private int getFieldsOffsets(String fieldName, String json) {
+        Map<String, Integer> ret = new HashMap<>();
+        JsonFactory factory = new JsonFactory();
+        try(JsonParser parser = factory.createParser(json)) {
+            if (parser.nextToken() != JsonToken.START_OBJECT) {
+                throw new IllegalStateException();
+            }
+
+            while (parser.nextToken() != null) {
+                if (fieldName.equals(parser.currentName())) {
+                    return Long.valueOf(parser.getTokenLocation().getCharOffset()).intValue();
+                }
+
+                parser.nextToken();
+                if (parser.currentToken() == JsonToken.START_OBJECT
+                        || parser.currentToken() == JsonToken.START_ARRAY) {
+                    parser.skipChildren();
+                    continue;
+                }
+            }
+        } catch (Exception e) {
+            return 0;
+        }
+
+        return 0;
     }
 
     public static class Builder {
