@@ -1,6 +1,5 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,7 +34,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private static final String JSON_PATH_FIELD_SEARCH_FORMAT = "$..%s";
 
     private final String configNameField;
-    private String configNamePrefixField;
+    private final String configNamePrefixField;
     private final String configAuthorField;
     private final String configVersionField;
     private final String configsVersionField;
@@ -201,7 +200,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                 .stream()
                 .filter(x -> x.getFileName().equals(releaseFilename))
                 .findFirst();
-        if (!release.isPresent()) {
+        if (release.isEmpty()) {
             LOG.warn(MISSING_FILENAME_MSG, releaseFilename);
             return INIT_RELEASE_VERSION;
         }
@@ -230,13 +229,13 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     }
 
     private void replaceInJson(StringBuilder sb, String fieldName, String replacePattern, String replacement) {
-        int fieldOffset = getFieldsOffsets(fieldName, sb.toString());
+        int fieldOffset = getFieldOffset(fieldName, sb.toString());
         String updatedPart = sb.substring(fieldOffset).replaceFirst(replacePattern, replacement);
         sb.setLength(fieldOffset);
         sb.append(updatedPart);
     }
 
-    private int getFieldsOffsets(String fieldName, String json) {
+    private int getFieldOffset(String fieldName, String json) {
         JsonFactory factory = new JsonFactory();
         try(JsonParser parser = factory.createParser(json)) {
             if (parser.nextToken() != JsonToken.START_OBJECT) {
@@ -252,7 +251,6 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                 if (parser.currentToken() == JsonToken.START_OBJECT
                         || parser.currentToken() == JsonToken.START_ARRAY) {
                     parser.skipChildren();
-                    continue;
                 }
             }
         } catch (IOException e) {
@@ -281,14 +279,14 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         private String configsVersionField;
         private String configFilenameFormat = "%s.json";
         private String releaseFilename = "rules.json";
-        private String jsonFileSuffix = "json";
+        private final String jsonFileSuffix = "json";
         private String ruleVersionRegex;
         private String releaseVersionRegex;
         private String ruleAuthorRegex;
         private String ruleVersionFormat;
         private String ruleAuthorFormat;
         private String releaseVersionFormat;
-        private Pattern ruleNamePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
+        private final Pattern ruleNamePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
         private String commitTemplateNew = RULE_COMMIT_TEMPLATE_NEW;
         private String commitTemplateUpdate = RULE_COMMIT_TEMPLATE_UPDATE;
         private String commitTemplateRelease = RULE_COMMIT_TEMPLATE_RELEASE;
@@ -339,8 +337,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                     || configVersionField == null
                     || configsVersionField == null
                     || configFilenameFormat == null
-                    || releaseFilename == null
-                    || jsonFileSuffix == null) {
+                    || releaseFilename == null) {
                 throw new IllegalArgumentException(MISSING_ARGUMENTS);
             }
 
