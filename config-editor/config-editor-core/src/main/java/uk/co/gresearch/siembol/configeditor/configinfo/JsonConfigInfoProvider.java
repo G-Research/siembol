@@ -237,7 +237,6 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     }
 
     private int getFieldsOffsets(String fieldName, String json) {
-        Map<String, Integer> ret = new HashMap<>();
         JsonFactory factory = new JsonFactory();
         try(JsonParser parser = factory.createParser(json)) {
             if (parser.nextToken() != JsonToken.START_OBJECT) {
@@ -256,11 +255,11 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                     continue;
                 }
             }
-        } catch (Exception e) {
-            return 0;
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
 
-        return 0;
+        return -1;
     }
 
     public static class Builder {
