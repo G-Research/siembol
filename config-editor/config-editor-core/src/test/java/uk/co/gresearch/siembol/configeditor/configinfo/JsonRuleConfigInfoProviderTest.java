@@ -49,6 +49,39 @@ public class JsonRuleConfigInfoProviderTest {
             }
             """;
 
+    private final String releaseWithDuplicateAfter = """
+            {
+              "rules_version" : 1,
+              "rules": [{
+                 "rule_name": "info_provider_test",
+                 "rule_author": "mark",
+                 "rule_version": 12,
+                 "rule_description": "Test rule",
+                 "enrichments": {
+                    "rules_version" : 1
+                 },
+                 "actions": { }
+                 
+                 }]
+            }
+            """;
+
+    private final String releaseWithDuplicateBefore = """
+            {
+              "rules": [{
+                 "rule_name": "info_provider_test",
+                 "rule_author": "mark",
+                 "rule_version": 12,
+                 "rule_description": "Test rule",
+                 "enrichments": {
+                    "rules_version" : 1
+                 },
+                 "actions": { }
+                 
+                 }],
+              "rules_version" : 1
+            }
+            """;
     private final String releaseNoRules = """
             {
               "rules_version" : 1,
@@ -337,5 +370,43 @@ public class JsonRuleConfigInfoProviderTest {
                 .get("info_provider-test.json").get().indexOf("\"rule_author\": \"john\",") > 0);
         Assert.assertFalse(info.isNewConfig());
         Assert.assertEquals(ConfigInfoType.RULE, info.getConfigInfoType());
+    }
+
+    @Test
+    public void releaseTestWithDuplicateAfter() {
+        ConfigInfo info = infoProvider.getReleaseInfo(steve, releaseWithDuplicateAfter);
+
+        Assert.assertEquals(info.getOldVersion(), 1);
+        Assert.assertEquals(info.getVersion(), 2);
+        Assert.assertEquals(info.getCommitter(), "steve");
+        Assert.assertEquals(info.getCommitMessage(), "Rules released to version: 2");
+
+        Assert.assertEquals(info.getCommitter(), "steve");
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
+
+        Assert.assertEquals(info.getFilesContent().size(), 1);
+        Assert.assertEquals(info.getFilesContent().containsKey("rules.json"), true);
+        Assert.assertEquals(info.getFilesContent()
+                .get("rules.json").get().indexOf("\"rules_version\": 2,") > 0, true);
+
+    }
+
+    @Test
+    public void releaseTestWithDuplicateBefore() {
+        ConfigInfo info = infoProvider.getReleaseInfo(steve, releaseWithDuplicateBefore);
+
+        Assert.assertEquals(info.getOldVersion(), 1);
+        Assert.assertEquals(info.getVersion(), 2);
+        Assert.assertEquals(info.getCommitter(), "steve");
+        Assert.assertEquals(info.getCommitMessage(), "Rules released to version: 2");
+
+        Assert.assertEquals(info.getCommitter(), "steve");
+        Assert.assertEquals(info.getCommitterEmail(), steve.getEmail());
+
+        Assert.assertEquals(info.getFilesContent().size(), 1);
+        Assert.assertEquals(info.getFilesContent().containsKey("rules.json"), true);
+        Assert.assertEquals(info.getFilesContent()
+                .get("rules.json").get().indexOf("\"rules_version\": 2") > 0, true);
+
     }
 }

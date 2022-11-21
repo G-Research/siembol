@@ -228,12 +228,14 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     public ConfigInfoType getConfigInfoType() {
         return configType;
     }
+
     private void replaceInJson(StringBuilder sb, String fieldName, String replacePattern, String replacement) {
         int fieldOffset = getFieldsOffsets(fieldName, sb.toString());
         String updatedPart = sb.substring(fieldOffset).replaceFirst(replacePattern, replacement);
         sb.setLength(fieldOffset);
         sb.append(updatedPart);
     }
+
     private int getFieldsOffsets(String fieldName, String json) {
         Map<String, Integer> ret = new HashMap<>();
         JsonFactory factory = new JsonFactory();
