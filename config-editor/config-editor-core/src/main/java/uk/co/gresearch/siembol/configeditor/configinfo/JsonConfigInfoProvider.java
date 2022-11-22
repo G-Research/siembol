@@ -32,6 +32,8 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private static final String PREFIX_NAME_FORMAT = "%s-%s";
     private static final String PREFIX_NAME_CHECK_FORMAT = "%s_%s";
     private static final String JSON_PATH_FIELD_SEARCH_FORMAT = "$..%s";
+    private static final String UNEXPECTED_CONFIGURATION_MSG = "Unexpected configuration format. " +
+            "Json object is expected.";
 
     private final String configNameField;
     private final String configNamePrefixField;
@@ -239,7 +241,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         JsonFactory factory = new JsonFactory();
         try(JsonParser parser = factory.createParser(json)) {
             if (parser.nextToken() != JsonToken.START_OBJECT) {
-                throw new IllegalStateException();
+                throw new IllegalStateException(UNEXPECTED_CONFIGURATION_MSG);
             }
 
             while (parser.nextToken() != null) {
