@@ -6,7 +6,7 @@ excerpt_separator: <!--more-->
 image: BHEurope2021.png
 ---
 
-Siembol will be presented at <a href="https://www.blackhat.com/eu-21/">Black Hat Europe in London! </a>
+Siembol was presented at <a href="https://www.blackhat.com/eu-21/">Black Hat Europe in London! </a>
 <br><br>
 Marian Novotny presented "Anti-Malware for the Cloud" on November 10-11. <!--more-->
 <br><br>
