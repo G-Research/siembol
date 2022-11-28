@@ -24,7 +24,7 @@ jobs:
 
           artifacts_url=${{ github.event.workflow_run.artifacts_url }}
 
-          gh api $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results" or .name=="Event File") | [.name, .archive_download_url] | @tsv' | while read artifact
+          gh api --paginate $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results" or .name=="Event File") | [.name, .archive_download_url] | @tsv' | while read artifact
           do
             IFS=$'\t' read name url <<< "$artifact"
             gh api $url > "$name.zip"
