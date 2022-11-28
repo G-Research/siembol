@@ -1,4 +1,7 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,9 +32,11 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private static final String PREFIX_NAME_FORMAT = "%s-%s";
     private static final String PREFIX_NAME_CHECK_FORMAT = "%s_%s";
     private static final String JSON_PATH_FIELD_SEARCH_FORMAT = "$..%s";
+    private static final String UNEXPECTED_CONFIGURATION_MSG = "Unexpected configuration format. " +
+            "Json object is expected.";
 
     private final String configNameField;
-    private String configNamePrefixField;
+    private final String configNamePrefixField;
     private final String configAuthorField;
     private final String configVersionField;
     private final String configsVersionField;
@@ -116,17 +121,17 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         configInfo.setCommitMessage(commitMsg);
 
         Map<String, Optional<String>> files = new HashMap<>();
-        String updatedConfig = config.replaceFirst(ruleVersionRegex,
-                String.format(ruleVersionFormat, newConfigVersion));
+        StringBuilder sb = new StringBuilder(config);
+        replaceInJson(sb, configVersionField, ruleVersionRegex, String.format(ruleVersionFormat, newConfigVersion));
 
         if (!configAuthor.equals(configInfo.getCommitter())) {
             //NOTE: we consider author to be the last committer,
             // auth logic can be added here when needed
-            updatedConfig = updatedConfig.replaceFirst(ruleAuthorRegex,
+            replaceInJson(sb, configAuthorField, ruleAuthorRegex,
                     String.format(ruleAuthorFormat, configInfo.getCommitter()));
         }
 
-        files.put(String.format(configFilenameFormat, configName), Optional.of(updatedConfig));
+        files.put(String.format(configFilenameFormat, configName), Optional.of(sb.toString()));
         configInfo.setFilesContent(files);
 
         configInfo.setConfigInfoType(configType);
@@ -149,11 +154,12 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
 
         configInfo.setCommitMessage(String.format(commitTemplateRelease, newRulesVersion));
 
-        String updatedRelease = release.replaceFirst(releaseVersionRegex,
+        StringBuilder sb = new StringBuilder(release);
+        replaceInJson(sb, configsVersionField, releaseVersionRegex,
                 String.format(releaseVersionFormat, newRulesVersion));
 
         Map<String, Optional<String>> files = new HashMap<>();
-        files.put(releaseFilename, Optional.of(updatedRelease));
+        files.put(releaseFilename, Optional.of(sb.toString()));
         configInfo.setFilesContent(files);
         configInfo.setConfigInfoType(configType);
 
@@ -196,7 +202,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                 .stream()
                 .filter(x -> x.getFileName().equals(releaseFilename))
                 .findFirst();
-        if (!release.isPresent()) {
+        if (release.isEmpty()) {
             LOG.warn(MISSING_FILENAME_MSG, releaseFilename);
             return INIT_RELEASE_VERSION;
         }
@@ -224,6 +230,38 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return configType;
     }
 
+    private void replaceInJson(StringBuilder sb, String fieldName, String replacePattern, String replacement) {
+        int fieldOffset = getFieldOffset(fieldName, sb.toString());
+        String updatedPart = sb.substring(fieldOffset).replaceFirst(replacePattern, replacement);
+        sb.setLength(fieldOffset);
+        sb.append(updatedPart);
+    }
+
+    private int getFieldOffset(String fieldName, String json) {
+        JsonFactory factory = new JsonFactory();
+        try(JsonParser parser = factory.createParser(json)) {
+            if (parser.nextToken() != JsonToken.START_OBJECT) {
+                throw new IllegalStateException(UNEXPECTED_CONFIGURATION_MSG);
+            }
+
+            while (parser.nextToken() != null) {
+                if (fieldName.equals(parser.currentName())) {
+                    return Long.valueOf(parser.getTokenLocation().getCharOffset()).intValue();
+                }
+
+                parser.nextToken();
+                if (parser.currentToken() == JsonToken.START_OBJECT
+                        || parser.currentToken() == JsonToken.START_ARRAY) {
+                    parser.skipChildren();
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
+        return -1;
+    }
+
     public static class Builder {
         private static final String COMMIT_TEMPLATE_NEW = "Adding new %s: %%s";
         private static final String COMMIT_TEMPLATE_UPDATE = "Updating %s: %%s to version: %%d";
@@ -243,14 +281,14 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         private String configsVersionField;
         private String configFilenameFormat = "%s.json";
         private String releaseFilename = "rules.json";
-        private String jsonFileSuffix = "json";
+        private final String jsonFileSuffix = "json";
         private String ruleVersionRegex;
         private String releaseVersionRegex;
         private String ruleAuthorRegex;
         private String ruleVersionFormat;
         private String ruleAuthorFormat;
         private String releaseVersionFormat;
-        private Pattern ruleNamePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
+        private final Pattern ruleNamePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
         private String commitTemplateNew = RULE_COMMIT_TEMPLATE_NEW;
         private String commitTemplateUpdate = RULE_COMMIT_TEMPLATE_UPDATE;
         private String commitTemplateRelease = RULE_COMMIT_TEMPLATE_RELEASE;
@@ -301,8 +339,7 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
                     || configVersionField == null
                     || configsVersionField == null
                     || configFilenameFormat == null
-                    || releaseFilename == null
-                    || jsonFileSuffix == null) {
+                    || releaseFilename == null) {
                 throw new IllegalArgumentException(MISSING_ARGUMENTS);
             }
 

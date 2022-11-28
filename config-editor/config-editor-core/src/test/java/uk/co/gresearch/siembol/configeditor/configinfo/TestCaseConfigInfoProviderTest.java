@@ -12,13 +12,9 @@ import java.util.ArrayList;
 public class TestCaseConfigInfoProviderTest {
     private final String testCase = """
              {
-               "test_case_name": "test_case",
-               "version": 12345,
-               "author": "john",
-               "config_name": "syslog",
-               "description": "unitest test case",
                "test_specification": {
-                 "secret": true
+                 "secret": true,
+                 "version": 1
                },
                "assertions": [
                  {
@@ -37,7 +33,12 @@ public class TestCaseConfigInfoProviderTest {
                    "description": "skipped assertion",
                    "active": false
                  }
-               ]
+               ],
+               "test_case_name": "test_case",
+               "version": 12345,
+               "author": "john",
+               "config_name": "syslog",
+               "description": "unitest test case"
              }
             """;
 
