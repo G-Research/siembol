@@ -1,6 +1,9 @@
 ![Siembol](logo.svg)
 
-[![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/54ad78bc63b24ce445e8241f179fe1ddeecf8eef/arsenal/usa/2021.svg)](https://www.blackhat.com/us-21/arsenal/schedule/index.html#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-24038) 
+[![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/54ad78bc63b24ce445e8241f179fe1ddeecf8eef/arsenal/usa/2021.svg)](https://www.blackhat.com/us-21/arsenal/schedule/index.html#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-24038)
+[![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/europe/2021.svg?sanitize=true)](https://www.blackhat.com/eu-21/arsenal/schedule/index.html#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-25165)
+[![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2022.svg?sanitize=true)](https://www.blackhat.com/us-22/arsenal/schedule/#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-27927)
+
 [![Apache License](https://img.shields.io/badge/License-Apache%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # Siembol 
@@ -12,12 +15,17 @@ Introduction
 
 Siembol is an open-source, real-time security information and event management tool developed in-house at G-Research.
  
-Siembol is designed to support the following:
+Siembol's use cases:
 
-* to centralize both security data collecting and the monitoring of logs from different sources.
-* as a tool for detecting attacks or leaks by teams responsible for the system platform.
+* **SIEM Log Collection Using Open Source Technologies**
 
-For a full description, visit: [Introduction](/docs/introduction/introduction.md).
+Siembol can be used to centralize both security data collecting and the monitoring of logs from different sources.
+
+* **Detection of Leaks and Attacks on Infrastructure**
+
+Siembol can be used as a tool for detecting attacks or leaks by teams responsible for the system platform. 
+
+For more extensive introduction, visit: [Introduction](/docs/introduction/introduction.md).
 
 Installation
 ------------
@@ -32,6 +40,9 @@ If you wish to contribute to Siembol, first read: [Contribution Guide](/docs/int
 #### Code of Conduct
 G-Research has adopted a Code of Conduct that is to be honored by everyone who participates in the Siembol community formally or informally.
 Please read the full text: [Code of Conduct](/CODE_OF_CONDUCT.md)
+
+####
+All notable changes to this project are documented in this file: [CHANGELOG](/CHANGELOG.md)
 
 Siembol UI
 -------------
