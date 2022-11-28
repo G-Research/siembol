@@ -66,7 +66,7 @@ There you will find guides on:
 Services
 ---------
 
-To explore Siembol's services, visit: [Siembol services](/docs/services.md).
+To explore Siembol's services, visit: [Siembol services](/docs/services/services.md).
         
 Deployment
 ----------
