@@ -21,7 +21,6 @@ import uk.co.gresearch.siembol.common.filesystem.SiembolFileSystemFactory;
 import uk.co.gresearch.siembol.common.filesystem.SupportedFileSystem;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
-import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrar;
 import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
 import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
 import uk.co.gresearch.siembol.common.model.EnrichmentTableDto;
@@ -43,7 +42,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
+/**
+ * An object for integration of an enrichment memory tables into a storm bolt
+ *
+ * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
+ *  evaluates enrichment commands using enrichment tables.
+ *  The metadata about tables are cached in the ZooKeeper and downloaded from a filesystem such as http or hdfs.
+ *  It watches for the metadata table update in ZooKeeper and
+ *  updates the enrichment tables without needing to restart the topology or the bolt.
+ *  It emits the event on input, the computed enrichments, exceptions and counters after processing.
+ *
+ * @author Marian Novotny
+ *
+ * @see ZooKeeperConnector
+ * @see EnrichmentTable
+ * @see EnrichmentMemoryTable
+ */
 public class MemoryTableEnrichmentBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -190,7 +204,6 @@ public class MemoryTableEnrichmentBolt extends BaseRichBolt {
                 counters.add(SiembolMetrics.ENRICHMENT_RULE_APPLIED.getMetricName(command.getRuleName()));
                 counters.add(SiembolMetrics.ENRICHMENT_TABLE_APPLIED.getMetricName(command.getTableName()));
             }
-
         }
         collector.emit(tuple, new Values(event, enrichments, exceptions, counters));
         collector.ack(tuple);

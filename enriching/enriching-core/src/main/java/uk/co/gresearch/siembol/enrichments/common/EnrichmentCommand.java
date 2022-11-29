@@ -7,7 +7,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * An object that represents an enrichment command used after evaluating an enrichment rule
+ *
+ * <p>This class implements Serializable interface to be integrated in Storm.
+ * It represents an enrichment command used after evaluating an enrichment rule.
+ * It is used for joining enrichment tables and computing enriching fields.
+ *
+ * @author  Marian Novotny
+ */
 public class EnrichmentCommand implements Serializable {
     private static final long serialVersionUID = 1L;
     private String ruleName;

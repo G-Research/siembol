@@ -24,7 +24,16 @@ import uk.co.gresearch.siembol.common.model.StormEnrichmentAttributesDto;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * An object for integration of merging enrichment with an event into a storm bolt
+ *
+ * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
+ *  evaluates merges an event with enrichments computed by a table enrichment bolt.
+ *  It also creates messages with topic to be published to Kafka.
+ *  It emits the messages to be written to Kafka and counters after processing.
+ *
+ * @author Marian Novotny
+ */
 public class EnrichmentMergerBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

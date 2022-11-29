@@ -10,7 +10,15 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+ * An object that represents and enrichment table using an in-memory map
+ *
+ * <p>This class implements EnrichmentTable and Serializable interfaces.
+ * It uses in-memory hash map for implementing the table.
+ * It provides lookup into the table for an enrichment key.
+ *
+ * @author  Marian Novotny
+ */
 public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
     private static final long serialVersionUID = 1L;
     private static final String INVALID_JSON_TABLE_OBJECT = "Json table should be a json object";
@@ -19,15 +27,21 @@ public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
 
     private final HashMap<String, ArrayList<Pair<String, String>>> table;
 
-    public EnrichmentMemoryTable(HashMap<String, ArrayList<Pair<String, String>>> table) {
+    EnrichmentMemoryTable(HashMap<String, ArrayList<Pair<String, String>>> table) {
         this.table = table;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsKey(String key) {
         return table.containsKey(key.toLowerCase());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<List<Pair<String, String>>> getValues(String key, List<String> field) {
         List<Pair<String, String>> values = table.get(key.toLowerCase());
@@ -38,6 +52,13 @@ public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
         return Optional.of(values.stream().filter(x -> field.contains(x.getKey())).collect(Collectors.toList()));
     }
 
+    /**
+     * Static factory method for creating an enrichment memory table
+     * @param is an input stream for reading a json file with the table
+     * @return enrichment memory table created from the input stream json file
+     * @throws IOException when reading from the stream fails, or
+     *         IllegalArgumentException when the table is invalid.
+     */
     public static EnrichmentMemoryTable fromJsonStream(InputStream is) throws IOException {
         HashMap<String, ArrayList<Pair<String, String>>> table = new HashMap<>();
         JsonFactory factory = new JsonFactory();

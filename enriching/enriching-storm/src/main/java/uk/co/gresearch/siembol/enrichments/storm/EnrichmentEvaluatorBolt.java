@@ -15,7 +15,6 @@ import uk.co.gresearch.siembol.common.constants.SiembolConstants;
 import uk.co.gresearch.siembol.common.error.ErrorMessage;
 import uk.co.gresearch.siembol.common.error.ErrorType;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetrics;
-import uk.co.gresearch.siembol.common.metrics.SiembolMetricsCachedRegistrar;
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory;
 import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactoryImpl;
@@ -36,7 +35,21 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.OK;
-
+/**
+ * An object for integration of an enrichment evaluator into a storm bolt
+ *
+ * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
+ *  computes enrichment commands for a log by evaluating enrichment rules cached in the ZooKeeper,
+ *  watches for the enrichment rules update in ZooKeeper and
+ *  updates the enrichment evaluator without needing to restart the topology or the bolt,
+ *  emits the event on input, the enrichment commands and exceptions after processing.
+ *
+ * @author Marian Novotny
+ *
+ * @see EnrichmentEvaluator
+ * @see ZooKeeperConnector
+ *
+ */
 public class EnrichmentEvaluatorBolt extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -115,7 +128,7 @@ public class EnrichmentEvaluatorBolt extends BaseRichBolt {
 
     private EnrichmentEvaluator getEnrichmentEvaluator(String rules) {
         try {
-            EnrichmentResult engineResult =  EnrichmentCompilerImpl.createEnrichmentsCompiler().compile(rules);
+            EnrichmentResult engineResult =  EnrichmentCompilerImpl.createEnrichmentCompiler().compile(rules);
             if (engineResult.getStatusCode() != OK) {
                 String errorMsg = String.format(COMPILER_EXCEPTION_MSG_FORMAT,
                         engineResult.getAttributes().getMessage());

@@ -11,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * A class with static methods for enrichment computation
+ *
+ * <p>This class exposes static methods for enrichment computation.
+ *
+ * @author  Marian Novotny
+ */
 public class EnrichmentEvaluatorLibrary {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

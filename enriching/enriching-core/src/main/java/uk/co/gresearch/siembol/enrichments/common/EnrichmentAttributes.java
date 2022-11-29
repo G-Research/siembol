@@ -3,7 +3,16 @@ package uk.co.gresearch.siembol.enrichments.common;
 import uk.co.gresearch.siembol.enrichments.evaluation.EnrichmentEvaluator;
 
 import java.util.ArrayList;
-
+/**
+ * An object for representing enrichment attributes
+ *
+ * <p>This class represents an enrichment attributes such as an enrichment evaluator and enrichment commands that
+ * are used in the enrichment result.
+ *
+ * @author  Marian Novotny
+ * @see EnrichmentEvaluator
+ * @see EnrichmentCommand
+ */
 public class EnrichmentAttributes {
     private String rulesSchema;
     private String testSchema;
