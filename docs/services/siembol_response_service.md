@@ -1,4 +1,27 @@
 # Siembol Response Service
+
+- [1. Overview](#overview)
+- [2. Siembol Response Rule](#siembol-response-rule)
+  * [2.1 Evaluation](#evaluation)
+  * [2.2 Response Rule](#response-rule)
+  * [2.3 Provided evaluators](#provided-evaluators)
+      * [2.3.1 Fixed result](#fixed-result)
+      * [2.3.2 Matching](#matching)
+      * [2.3.3 Json path assignment](#json-path-assignment)
+      * [2.3.4 Markdown table formatter](#markdown-table-formatter)
+      * [2.3.5 Array markdown table formatter](#array-markdown-table-formatter)
+      * [2.3.6 Array reducer](#array-reducer)
+      * [2.3.7 Alert throttling](#alert-throttling)
+      * [2.3.8 Sleep](#sleep)
+      * [2.3.9 Kafka writer](#kafka-writer)
+      * [2.3.10 Time exclusion](#time-exclusion)
+- [3. Plugins](#plugins)
+  * [3.1 Plugin architecture](#plugin-architecture)
+  * [3.2 Evaluators - GR open source plans](#evaluators-\-\-gr-open-source-plans)
+- [4. Application Properties](#application-properties)
+  * [4.1 Authentication](#authentication)
+    * [4.1.1 Oauth2 Authentication](#oauth2-authentication)
+
 ## Overview
 Siembol response is a service for defining a response to an alert. It brings a functionality: 
 - To integrate siembol with other systems such as jira, ldap, elk, the hive, cortex etc.
@@ -126,7 +149,10 @@ Siembol response plugins allows to extend the functionality of siembol response 
 ### Plugin architecture
 A Siembol response plugin is a shaded jar file that includes all its dependencies see [how to write response plugin](how-tos/how_to_write_response_plugin.md). The plugins can be copied in a directory where they will be loaded by the [springboot properties launcher](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html) The plugin is also integrated into siembol UI and its evaluators can be used in the similar way as the ones provided directly by siembol response.
 
-### Evaluators implemented internally at GR that we are planning to open source
+###  Evaluators - GR open source plans
+
+Evaluators implemented internally at GR that are planned to become open source:
+
 - Elk search 
     - calling an Elastic Search query using LUCENE or json query syntax
 - Elk store 
