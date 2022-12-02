@@ -21,7 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
+/**
+ * An object for integration of a Kafka producer into a storm bolt
+ *
+ * <p>This abstract class extends a Storm BaseRichBolt class to implement a Storm bolt, that
+ *  prepares a Kafka producer and Siembol metrics registrar and
+ *  provides functionality for asynchronous writing kafka messages and increasing Siembol counters.
+ *  It supports sending multiple messages from one tuple using reference counting implemented in KafkaWriterAnchor.
+ *
+ * @author Marian Novotny
+ * @see Producer
+ * @see SiembolMetricsRegistrar
+ * @see KafkaWriterMessage
+ * @see KafkaWriterAnchor
+ *
+ */
 public abstract class KafkaWriterBoltBase extends BaseRichBolt {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG =

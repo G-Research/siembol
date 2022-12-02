@@ -9,7 +9,17 @@ import org.springframework.security.oauth2.jwt.*;
 import java.util.*;
 
 import static uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationProperties.SWAGGER_AUTH_SCHEMA;
-
+/**
+ * An object that implement OAUTH2 authentication in Spring Boot projects
+ *
+ * <p>This class extends WebSecurityConfigurerAdapter from Spring framework.
+ * It permits all HTTP request in the project from the excluded list of patterns.
+ * It validates Jason Web Token from the HTTP header in order to decide whether permit the request.
+ *
+ * @author  Marian Novotny
+ * @see ResourceServerOauth2Properties
+ * @see Oauth2Helper
+ */
 public class SiembolOauth2SecurityAdapter extends WebSecurityConfigurerAdapter {
     private ResourceServerOauth2Properties properties;
 

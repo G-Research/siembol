@@ -2,7 +2,15 @@ package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-
+/**
+ * A data transfer object for representing a Storm topology
+ *
+ * <p>This class is used for json (de)serialisation of a storm topology.
+ * It is used in storm topology manager and synchronisation service.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ */
 public class StormTopologyDto {
     @JsonProperty("topology_name")
     private String topologyName;

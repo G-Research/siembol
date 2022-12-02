@@ -10,7 +10,15 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+/**
+ * A data transfer object for representing an alerting spark testing result
+ *
+ * <p>This class is used for json (de)serialisation of an alerting spark testing result.
+ * It is used in alerting spark application.
+ *
+ * @author  Marian Novotny
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 public class AlertingSparkTestingResultDto {
     private static final ObjectReader JSON_GENERIC_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {

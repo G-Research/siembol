@@ -1,6 +1,16 @@
 package uk.co.gresearch.siembol.common.authorisation;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+/**
+ * A data transfer object for representing a Siembol authorisation properties
+ *
+ * <p>This class is used for json (de)serialisation of a Siembol authorisation application properties.
+ *
+ * @author  Marian Novotny
+ * @see ResourceServerOauth2Properties
+ * @see SiembolAuthorisationType
+ *
+ */
 public class SiembolAuthorisationProperties {
     public static final String SWAGGER_AUTH_SCHEMA = "security_auth";
 

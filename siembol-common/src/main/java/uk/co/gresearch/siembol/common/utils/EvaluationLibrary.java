@@ -8,7 +8,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * A class with static helper methods for evaluation of substitution
+ *
+ * <p>This class exposes static methods for implementing evaluation of substitution.
+ * These helper functions are used in all Siembol components.
+ *
+ * @author  Marian Novotny
+ */
 public class EvaluationLibrary {
     private static final String VARIABLE_START = "${";
     private static final int VARIABLE_START_LEN = VARIABLE_START.length();

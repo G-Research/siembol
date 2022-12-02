@@ -4,14 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+/**
+ * An object that implements a pattern matching filtering
+ *
+ * <p>This class implements a pattern matching with a list of including patterns and a list of excluding patterns.
+ *
+ * @author  Marian Novotny
+ * @see Pattern
+ * @see FieldFilter
+ */
 public class PatternFilter implements FieldFilter {
     private final List<Pattern> includingPatterns;
     private final List<Pattern> excludingPatterns;
 
-    PatternFilter(List<Pattern> includingPattern, List<Pattern> excludingPattern) {
-        this.includingPatterns = includingPattern;
-        this.excludingPatterns = excludingPattern;
+    PatternFilter(List<Pattern> includingPatterns, List<Pattern> excludingPatterns) {
+        this.includingPatterns = includingPatterns;
+        this.excludingPatterns = excludingPatterns;
     }
 
     private boolean matchPatternList(List<Pattern> patterns, String str) {

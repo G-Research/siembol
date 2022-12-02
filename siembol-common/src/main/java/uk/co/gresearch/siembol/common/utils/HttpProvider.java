@@ -26,7 +26,14 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.security.Principal;
 import java.util.function.Supplier;
-
+/**
+ * An object that implements a Http client
+ *
+ * <p>This class implements a Http client used in various Siembol components.
+ * It supports kerberos authentication and methods for get a post requests.
+ *
+ * @author  Marian Novotny
+ */
 public class HttpProvider {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
@@ -44,7 +51,7 @@ public class HttpProvider {
         try (BufferedReader rd = new BufferedReader(
                 new InputStreamReader(input))) {
 
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             String line;
             while ((line = rd.readLine()) != null) {
                 buffer.append(line);

@@ -5,7 +5,19 @@ import com.github.reinert.jjschema.Attributes;
 
 import java.io.Serializable;
 import java.util.List;
-
+/**
+ * A data transfer object for representing a Storm enrichment application admin configuration
+ *
+ * <p>This class is used for json (de)serialisation of a Storm enrichment application admin configuration and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ZooKeeperAttributesDto
+ * @see StormAttributesDto
+ * @see KafkaBatchWriterAttributesDto
+ */
 @Attributes(title = "storm enrichment attributes", description = "Attributes for storm enrichment configuration")
 public class StormEnrichmentAttributesDto extends AdminConfigDto implements Serializable {
     private static final long serialVersionUID = 1L;

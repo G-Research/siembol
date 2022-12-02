@@ -4,7 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.io.Serializable;
-
+/**
+ * A data transfer object for representing overridden parsing application
+ *
+ * <p>This class is used for json (de)serialisation of overridden parsing application and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see StormAttributesDto
+ * @see KafkaBatchWriterAttributesDto
+ */
 @Attributes(title = "overridden application attributes", description = "Storm parsing application attributes")
 public class OverriddenApplicationAttributesDto implements Serializable {
     private static final long serialVersionUID = 1L;

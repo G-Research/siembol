@@ -1,7 +1,14 @@
 package uk.co.gresearch.siembol.common.filesystem;
 
 import java.util.function.Function;
-
+/**
+ * An enum for representing a Siembol file system for loading enrichment tables
+ *
+ * @author  Marian Novotny
+ *
+ * @see #HDFS
+ * @see #HTTP
+ */
 public enum SupportedFileSystem {
     HDFS("hdfs", HdfsFileSystemFactory::new),
     HTTP("http", HttpFileSystemFactory::new);

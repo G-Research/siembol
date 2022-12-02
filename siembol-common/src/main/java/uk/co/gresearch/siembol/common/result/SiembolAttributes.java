@@ -1,5 +1,11 @@
 package uk.co.gresearch.siembol.common.result;
-
+/**
+ * An object that represents Siembol attributes
+ *
+ * <p>This bean object represents Siembol attributes used in a Siembol result.
+ *
+ * @author  Marian Novotny
+ */
 public class SiembolAttributes {
     private String jsonSchema;
     private String message;

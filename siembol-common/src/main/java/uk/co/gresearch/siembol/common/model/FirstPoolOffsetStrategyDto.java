@@ -1,7 +1,18 @@
 package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+/**
+ * An enum for representing a first pool offset strategy used in storm kafka reader
+ *
+ * <p>This enum is used for json (de)serialisation of a first pool offset strategy used in storm kafka reader.
+ *
+ * @author  Marian Novotny
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see #EARLIEST
+ * @see #LATEST
+ * @see #UNCOMMITTED_EARLIEST
+ * @see #UNCOMMITTED_LATEST
+ */
 public enum FirstPoolOffsetStrategyDto {
     @JsonProperty("EARLIEST")
     EARLIEST("EARLIEST"),

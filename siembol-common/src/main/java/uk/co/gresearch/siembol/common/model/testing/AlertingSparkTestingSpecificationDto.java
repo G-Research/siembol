@@ -2,7 +2,19 @@ package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
+import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 
+/**
+ * A data transfer object for representing an alerting spark test specification
+ *
+ * <p>This class is used for json (de)serialisation of an alerting spark test specification and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see JsonRawStringDto
+ */
 @Attributes(title = "alerting spark test specification", description = "Specification for spark testing alerting rules")
 public class AlertingSparkTestingSpecificationDto {
     @JsonProperty("source_type")

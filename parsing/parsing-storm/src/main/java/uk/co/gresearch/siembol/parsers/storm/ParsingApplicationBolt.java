@@ -42,8 +42,8 @@ import java.util.concurrent.atomic.AtomicReference;
  *  watches for the parser configurations update in ZooKeeper and
  *  updates the parsers without needing to restart the topology or the bolt,
  *  emits parsed messages and exceptions after parsing.
- *
  * @author Marian Novotny
+ *
  * @see ParsingApplicationParser
  * @see ZooKeeperConnector
  *
