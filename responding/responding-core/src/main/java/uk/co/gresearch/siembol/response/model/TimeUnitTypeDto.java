@@ -2,7 +2,17 @@ package uk.co.gresearch.siembol.response.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * An enum for representing a time unit type
+ *
+ * <p>This enum is used for json (de)serialisation of a time unit type used in an alert throttling evaluator.
+ *
+ * @author  Marian Novotny
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see #MINUTES
+ * @see #HOURS
+ * @see #SECONDS
+ */
 @Attributes(title = "time unit type", description = "Time unit type for alert suppressing")
 public enum TimeUnitTypeDto {
     @JsonProperty("minutes") MINUTES("minutes", 60 * 1000L),

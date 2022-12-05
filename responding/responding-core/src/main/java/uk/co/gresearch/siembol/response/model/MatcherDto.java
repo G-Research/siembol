@@ -2,7 +2,17 @@ package uk.co.gresearch.siembol.response.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing matcher attributes
+ *
+ * <p>This class is used for json (de)serialisation of matcher used in a matching evaluator and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see MatcherTypeDto
+ */
 @Attributes(title = "matcher", description = "Matcher for matching fields in response rules")
 public class MatcherDto {
     @Attributes(description = "The matcher is enabled", required = false)
