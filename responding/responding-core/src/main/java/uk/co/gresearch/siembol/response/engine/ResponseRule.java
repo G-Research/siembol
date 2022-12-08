@@ -12,7 +12,15 @@ import uk.co.gresearch.siembol.response.common.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * An object for representing a response rule
+ *
+ * <p>This class implements Evaluable interface, and it represents a response rule.
+ * It is used for evaluating a response alert.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class ResponseRule implements Evaluable {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
@@ -37,10 +45,13 @@ public class ResponseRule implements Evaluable {
         this.logger = builder.logger;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         ResponseAlert currentAlert = (ResponseAlert)alert.clone();
-        LOG.debug("Trying to evaluate rule {} with alert {}", fullRuleName, alert.toString());
+        LOG.debug("Trying to evaluate rule {} with alert {}", fullRuleName, alert);
         currentAlert.put(ResponseFields.RULE_NAME.toString(), ruleName);
         currentAlert.put(ResponseFields.FULL_RULE_NAME.toString(), fullRuleName);
 
@@ -81,6 +92,11 @@ public class ResponseRule implements Evaluable {
         return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.MATCH, currentAlert);
     }
 
+    /**
+     * A builder for a response rule
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private String ruleName;
         private String fullRuleName;
@@ -89,19 +105,34 @@ public class ResponseRule implements Evaluable {
         private SiembolCounter matchesCounter;
         private SiembolCounter filtersCounter;
         private SiembolCounter errorsCounter;
-        private List<Evaluable> evaluators = new ArrayList<>();
+        private final List<Evaluable> evaluators = new ArrayList<>();
         private TestingLogger logger = new InactiveTestingLogger();
 
+        /**
+         * Sets metrics registrar
+         * @param metricsRegistrar for collecting the metrics
+         * @return this builder
+         */
         public Builder metricsRegistrar(SiembolMetricsRegistrar metricsRegistrar) {
             this.metricsRegistrar = metricsRegistrar;
             return this;
         }
 
+        /**
+         * Sets a rule name
+         * @param ruleName the name of the rule
+         * @return this builder
+         */
         public Builder ruleName(String ruleName) {
             this.ruleName = ruleName;
             return this;
         }
 
+        /**
+         * Sets a rule version
+         * @param ruleVersion the version of the rule
+         * @return this builder
+         */
         public Builder ruleVersion(Integer ruleVersion) {
             this.ruleVersion = ruleVersion;
             return this;
@@ -112,11 +143,22 @@ public class ResponseRule implements Evaluable {
             return this;
         }
 
+        /**
+         * Sets a testing logger
+         *
+         * @param logger a logger for testing
+         * @return this builder
+         */
         public Builder logger(TestingLogger logger) {
             this.logger = logger;
             return this;
         }
 
+        /**
+         * Builds the rule
+         *
+         * @return the rule built from the builder
+         */
         public ResponseRule build() {
             if (ruleName == null
                     || ruleVersion == null

@@ -4,15 +4,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import uk.co.gresearch.siembol.common.jsonschema.JsonSchemaValidator;
 import uk.co.gresearch.siembol.common.jsonschema.SiembolJsonSchemaValidator;
-import uk.co.gresearch.siembol.common.model.testing.ParserConfingTestSpecificationDto;
 import uk.co.gresearch.siembol.common.model.testing.ResponseTestSpecificationDto;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigTester;
 import uk.co.gresearch.siembol.configeditor.common.ConfigTesterFlag;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
-import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
+import uk.co.gresearch.siembol.common.constants.ResponseApplicationPaths;
 
 import java.io.IOException;
 

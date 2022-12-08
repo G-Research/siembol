@@ -1,14 +1,18 @@
 package uk.co.gresearch.siembol.response.common;
-
 /**
- * Interface for evaluating response alerts
+ * An object for evaluating response alerts
+ *
+ * <p>This interface is for evaluating response alerts.
+ *
+ * @author  Marian Novotny
  */
 public interface Evaluable {
     /**
-     * Create an evaluator instance from json attributes
-     * @param alert alert for evaluation
-     * @return RespondingResult with OK status code with result alert in attributes or
-     *                               ERROR status code with message otherwise
+     * Evaluates a response alert
+     *
+     * @param alert an alert for evaluation
+     * @return RespondingResult with OK status and the result alert in attributes or
+     *                          ERROR status code with an error message otherwise.
      */
     RespondingResult evaluate(ResponseAlert alert);
 }

@@ -8,7 +8,18 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.model.ArrayReducerEvaluatorAttributesDto;
-
+/**
+ * An object for creating an array reducer evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating an array reducer evaluator and providing metadata such as a type and attributes schema.
+ * The array reducer evaluator reduces json arrays that can be created during evaluation of a response rule.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ * @see ArrayReducerEvaluator
+ */
 public class ArrayReducerEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(ArrayReducerEvaluatorAttributesDto.class);
@@ -18,6 +29,9 @@ public class ArrayReducerEvaluatorFactory implements RespondingEvaluatorFactory 
         attributesSchema = new SiembolJsonSchemaValidator(ArrayReducerEvaluatorAttributesDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -40,11 +54,17 @@ public class ArrayReducerEvaluatorFactory implements RespondingEvaluatorFactory 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.ARRAY_REDUCER_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(

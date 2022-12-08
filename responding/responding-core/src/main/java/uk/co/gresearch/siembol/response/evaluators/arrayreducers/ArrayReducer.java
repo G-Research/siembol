@@ -3,7 +3,13 @@ package uk.co.gresearch.siembol.response.evaluators.arrayreducers;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-
+/**
+ * An enum for an array reducer types or strategies
+ *
+ * @author  Marian Novotny
+ * @see #FIRST
+ * @see #CONCATENATE
+ */
 public enum ArrayReducer implements BiFunction<List<Map<String, Object>>, String, Object> {
     FIRST(ArrayReducer::first),
     CONCATENATE(ArrayReducer::concatenate);

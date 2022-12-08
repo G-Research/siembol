@@ -16,6 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
+/**
+ * An enum for evaluators provided by Siembol.
+ * Custom evaluators can be integrated through a response plugin.
+ *
+ * @author  Marian Novotny
+ *
+ * @see #FIXED_RESULT_EVALUATOR
+ * @see #MATCHING_EVALUATOR
+ * @see #JSON_PATH_ASSIGNMENT_EVALUATOR
+ * @see #MARKDOWN_TABLE_FORMATTER_EVALUATOR
+ * @see #ARRAY_MARKDOWN_TABLE_FORMATTER_EVALUATOR
+ * @see #ARRAY_REDUCER_EVALUATOR
+ * @see #ALERT_THROTTLING_EVALUATOR
+ * @see #SLEEP_EVALUATOR
+ * @see #KAFKA_WRITER_EVALUATOR
+ * @see #TIME_EXCLUSION_EVALUATOR
+ */
 
 public enum ProvidedEvaluators {
     FIXED_RESULT_EVALUATOR("fixed_result"),

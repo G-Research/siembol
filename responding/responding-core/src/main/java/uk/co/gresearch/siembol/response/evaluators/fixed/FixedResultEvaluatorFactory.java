@@ -8,7 +8,18 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.model.FixedResultEvaluatorAttributesDto;
-
+/**
+ * An object for creating a fixed result evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating a fixed result evaluator and providing metadata such as a type and attributes schema.
+ * The fixed result evaluator returns always the same result from the attributes.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ * @see FixedResultEvaluator
+ */
 public class FixedResultEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(FixedResultEvaluatorAttributesDto.class);
@@ -18,6 +29,9 @@ public class FixedResultEvaluatorFactory implements RespondingEvaluatorFactory {
         attributesSchema = new SiembolJsonSchemaValidator(FixedResultEvaluatorAttributesDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -33,11 +47,17 @@ public class FixedResultEvaluatorFactory implements RespondingEvaluatorFactory {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.FIXED_RESULT_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(

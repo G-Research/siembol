@@ -11,8 +11,16 @@ import uk.co.gresearch.siembol.response.model.TimeExclusionEvaluatorAttributesDt
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
-
+/**
+ * An object for evaluating response alerts
+ *
+ * <p>This class implements Evaluable interface, and it is used in a response rule.
+ * The time exclusion evaluator inspects a timestamp and evaluates an excluding pattern.
+ * It filters the alert if the pattern matches.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class TimeExclusionEvaluator implements Evaluable {
     private static final String SUBSTITUTION_FAILED_MSG = "Substitution of time exclusion evaluator failed";
     private static final String EMPTY_FIELDS_IN_ATTRIBUTES_MSG = "Empty fields in time exclusion evaluator attributes";
@@ -23,6 +31,9 @@ public class TimeExclusionEvaluator implements Evaluable {
         this.attributes = attributes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         try {

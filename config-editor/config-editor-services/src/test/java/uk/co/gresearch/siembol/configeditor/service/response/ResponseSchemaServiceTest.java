@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import uk.co.gresearch.siembol.common.utils.HttpProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
-import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
+import uk.co.gresearch.siembol.common.constants.ResponseApplicationPaths;
 
 import java.io.IOException;
 

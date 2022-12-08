@@ -1,40 +1,46 @@
 package uk.co.gresearch.siembol.response.common;
 
 import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
-
 /**
- * Responding evaluator factory
- * - creates evaluator instances
- * - provides metadata about the evaluator such as attributes and type
- * - validates evaluator attributes
+ * An object for creating a response evaluator
+ *
+ * <p>This interface is for creating a response evaluator and providing metadata such as a type and attributes schema.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
  */
 public interface RespondingEvaluatorFactory {
     /**
-     * Create an evaluator instance from json attributes
+     * Creates an evaluator instance from json attributes
      *
-     * @param attributes json attributes used for creating evaluator instance
-     * @return RespondingResult with OK status code and evaluator in attributes or ERROR status code with message otherwise
+     * @param attributes a json string with attributes used for creating the evaluator instance
+     * @return a responding result with OK status code and evaluator in attributes on success, or
+     *         the result with ERROR status otherwise.
      */
     RespondingResult createInstance(String attributes);
 
     /**
-     * Get type of the evaluator including name. This name should be unique between factories.
+     * Gets the type of the evaluator including its name.
+     * The name should be unique in siembol response instance.
      *
-     * @return RespondingResult with evaluatorType in attributes or ERROR status code with message otherwise
+     * @return a responding result with the evaluator type in attributes on success, or
+     *          the result with ERROR status code and the error message otherwise.
      */
     RespondingResult getType();
 
     /**
-     * Get json schema of evaluator attributes
+     * Gets a json schema of evaluator attributes
      *
-     * @return RespondingResult with attributesSchema in attributes or ERROR status code with message otherwise
+     * @return a responding result with attributes schema on success, or
+     *         the result with ERROR status code and the error message otherwise.
      */
     RespondingResult getAttributesJsonSchema();
 
     /**
-     * Validate evaluator attributes
+     * Validates evaluator attributes
      *
-     * @return RespondingResult with OK status code if attributes are valid or ERROR status code with message otherwise
+     * @return a responding result with OK status code if the attributes are valid, or
+     *         the result with ERROR status code otherwise.
      */
     default RespondingResult validateAttributes(String attributes) {
         try {
@@ -45,9 +51,10 @@ public interface RespondingEvaluatorFactory {
     }
 
     /**
-     * Register metric factory that can be used for registering metrics
+     * Registers metric factory for registering metrics
      *
-     * @return RespondingResult with OK status code on success or ERROR status code with message otherwise
+     * @return a responding result with OK status code on success, or
+     *          the result with ERROR status code otherwise.
      */
     default RespondingResult registerMetrics(SiembolMetricsRegistrar metricRegistrar) {
         return new RespondingResult(RespondingResult.StatusCode.OK, new RespondingResultAttributes());

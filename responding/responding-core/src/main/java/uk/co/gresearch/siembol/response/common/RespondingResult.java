@@ -5,7 +5,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 
 import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
-
+/**
+ * An object that combines responding status code with attributes
+ *
+ * @author  Marian Novotny
+ * @see StatusCode
+ * @see RespondingResultAttributes
+ */
 public class RespondingResult {
     public enum StatusCode {
         @JsonProperty("OK") OK,

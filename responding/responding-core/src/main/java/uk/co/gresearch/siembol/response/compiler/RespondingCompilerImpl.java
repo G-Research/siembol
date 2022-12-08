@@ -24,9 +24,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
-
+/**
+ * An object that validates, tests and compiles responding rules
+ *
+ * <p>This class implements RespondingCompiler interface provides functionality for
+ * validating, testing and compiling response rules.
+ * Moreover, it computes and provides json schema for response rules.
+ *
+ *
+ * @author  Marian Novotny
+ * @see RespondingCompiler
+ */
 public class RespondingCompilerImpl implements RespondingCompiler {
-    private static ObjectReader TEST_SPECIFICATION_READER = new ObjectMapper()
+    private static final ObjectReader TEST_SPECIFICATION_READER = new ObjectMapper()
             .readerFor(ResponseTestSpecificationDto.class);
     private static final String TESTING_START_MSG = "Start testing on the event: %s";
     private static final String TESTING_FINISHED_MSG = "The testing finished with the status: %s";
@@ -44,7 +54,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
     private final JsonSchemaValidator testSpecificationValidator;
     private final SiembolMetricsRegistrar metricsRegistrar;
 
-    public RespondingCompilerImpl(Builder builder) {
+    RespondingCompilerImpl(Builder builder) {
         this.respondingEvaluatorFactoriesMap = builder.respondingEvaluatorFactoriesMap;
         this.rulesJsonSchemaStr = builder.rulesJsonSchemaStr;
         this.rulesSchemaValidator = builder.rulesSchemaValidator;
@@ -76,6 +86,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return builder.build();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult compile(String rules, TestingLogger logger) {
         RespondingResult validationResult = validateConfigurations(rules);
@@ -110,6 +123,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getSchema() {
         RespondingResultAttributes attributes = new RespondingResultAttributes();
@@ -117,6 +133,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return new RespondingResult(OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getTestSpecificationSchema() {
         RespondingResultAttributes attributes = new RespondingResultAttributes();
@@ -124,6 +143,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return new RespondingResult(OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult testConfigurations(String rules, String testSpecification) {
         SiembolResult validationResult = testSpecificationValidator.validate(testSpecification);
@@ -132,13 +154,13 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         }
         try {
             ResponseTestSpecificationDto testSpecificationDto = TEST_SPECIFICATION_READER.readValue(testSpecification);
-            String alertId = String.format(TEST_ALERT_ID_FORMAT_MSG, UUID.randomUUID().toString());
+            String alertId = String.format(TEST_ALERT_ID_FORMAT_MSG, UUID.randomUUID());
             ResponseAlert responseAlert = ResponseAlert.fromOriginalString(alertId,
                     testSpecificationDto.getEventContent());
 
             TestingLogger logger = new StringTestingLogger();
 
-            logger.appendMessage(String.format(TESTING_START_MSG, responseAlert.toString()));
+            logger.appendMessage(String.format(TESTING_START_MSG, responseAlert));
             RespondingResult rulesEngineResult = compile(rules, logger);
             if (rulesEngineResult.getStatusCode() != OK) {
                 return rulesEngineResult;
@@ -165,6 +187,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult validateConfiguration(String rule) {
         try {
@@ -174,11 +199,13 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getRespondingEvaluatorFactories() {
         RespondingResultAttributes attributes = new RespondingResultAttributes();
-        attributes.setRespondingEvaluatorFactories(respondingEvaluatorFactoriesMap.values().stream()
-                .collect(Collectors.toList()));
+        attributes.setRespondingEvaluatorFactories(new ArrayList<>(respondingEvaluatorFactoriesMap.values()));
         return new RespondingResult(OK, attributes);
     }
 
@@ -186,6 +213,9 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return String.format(RULES_WRAP_MSG, ruleStr);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult validateConfigurations(String rules) {
         SiembolResult validationResult = rulesSchemaValidator.validate(rules);
@@ -215,25 +245,45 @@ public class RespondingCompilerImpl implements RespondingCompiler {
         return new RespondingResult(OK, new RespondingResultAttributes());
     }
 
+    /**
+     * A builder for a responding compiler
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private static final String EVALUATOR_DUPLICATE_TYPE = "Evaluator type: %s already registered";
         private static final String EMPTY_EVALUATORS = "Response evaluators are empty";
-        private Map<String, RespondingEvaluatorFactory> respondingEvaluatorFactoriesMap = new HashMap<>();
+        private final Map<String, RespondingEvaluatorFactory> respondingEvaluatorFactoriesMap = new HashMap<>();
         private String rulesJsonSchemaStr;
         private JsonSchemaValidator rulesSchemaValidator;
         private JsonSchemaValidator testSpecificationValidator;
         private SiembolMetricsRegistrar metricsRegistrar;
 
+        /**
+         * Sets metrics registrar
+         * @param metricsRegistrar for collecting the metrics
+         * @return this builder
+         */
         public Builder metricsRegistrar(SiembolMetricsRegistrar metricsRegistrar) {
             this.metricsRegistrar = metricsRegistrar;
             return this;
         }
 
+        /**
+         * Adds responding evaluator factories
+         * @param factories the list of responding evaluator factories
+         * @return this builder
+         */
         public Builder addRespondingEvaluatorFactories(List<RespondingEvaluatorFactory> factories) {
             factories.forEach(this::addRespondingEvaluatorFactory);
             return this;
         }
 
+        /**
+         * Adds a responding evaluator factory
+         * @param factory a responding evaluator factory to be added
+         * @return this builder
+         */
         public Builder addRespondingEvaluatorFactory(RespondingEvaluatorFactory factory) {
             if (respondingEvaluatorFactoriesMap.containsKey(factory.getType().getAttributes().getEvaluatorType())) {
                 throw new IllegalArgumentException(String.format(EVALUATOR_DUPLICATE_TYPE, factory.getType()));
@@ -243,6 +293,11 @@ public class RespondingCompilerImpl implements RespondingCompiler {
             return this;
         }
 
+        /**
+         * Builds responding compiler instance from the builder state
+         * @return responding compiler instance
+         * @throws Exception if the building fails
+         */
         public RespondingCompilerImpl build() throws Exception {
             if (respondingEvaluatorFactoriesMap.isEmpty()) {
                 throw new IllegalArgumentException(EMPTY_EVALUATORS);
@@ -250,9 +305,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
 
             testSpecificationValidator = new SiembolJsonSchemaValidator(ResponseTestSpecificationDto.class);
 
-            respondingEvaluatorFactoriesMap.forEach((k, v) -> {
-                v.registerMetrics(metricsRegistrar);
-            });
+            respondingEvaluatorFactoriesMap.forEach((k, v) -> v.registerMetrics(metricsRegistrar));
 
             List<UnionJsonTypeOption> evaluatorOptions = respondingEvaluatorFactoriesMap.keySet().stream()
                     .map(x ->
@@ -263,7 +316,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
                                             .getAttributes().getAttributesSchema()))
                     .collect(Collectors.toList());
 
-            evaluatorOptions.sort(Comparator.comparing(x -> x.getSelectorName()));
+            evaluatorOptions.sort(Comparator.comparing(UnionJsonTypeOption::getSelectorName));
             UnionJsonType options = new UnionJsonType(EVALUATOR_TITLE, evaluatorOptions);
             rulesSchemaValidator = new SiembolJsonSchemaValidator(RulesDto.class, Optional.of(Arrays.asList(options)));
             rulesJsonSchemaStr = rulesSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();

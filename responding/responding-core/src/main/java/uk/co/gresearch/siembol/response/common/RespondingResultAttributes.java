@@ -5,7 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.gresearch.siembol.response.engine.ResponseEngine;
 
 import java.util.List;
-
+/**
+ * An object that collects attributes that can be returned by response components
+ *
+ * <p>This bean object collects attributes, and it is included in a responding result object.
+ *
+ * @author  Marian Novotny
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RespondingResultAttributes {
     private ResponseEvaluationResult result;

@@ -8,7 +8,18 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.model.SleepEvaluatorAttributesDto;
-
+/**
+ * An object for creating a sleep evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating a sleep evaluator and providing metadata such as a type and attributes schema.
+ * The sleep evaluator sleeps for certain time defined in the attributes. It is blocking the evaluation of the rule.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ * @see SleepEvaluator
+ */
 public class SleepEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(SleepEvaluatorAttributesDto.class);
@@ -18,6 +29,9 @@ public class SleepEvaluatorFactory implements RespondingEvaluatorFactory {
         attributesSchema = new SiembolJsonSchemaValidator(SleepEvaluatorAttributesDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -33,11 +47,17 @@ public class SleepEvaluatorFactory implements RespondingEvaluatorFactory {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.SLEEP_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(
