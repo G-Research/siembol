@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
+import uk.co.gresearch.siembol.common.model.JsonRawStringDto;
 /**
  * A data transfer object for representing a response evaluator
  *

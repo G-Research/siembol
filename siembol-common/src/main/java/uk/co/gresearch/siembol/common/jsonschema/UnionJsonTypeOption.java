@@ -1,5 +1,12 @@
 package uk.co.gresearch.siembol.common.jsonschema;
-
+/**
+ * An object for a union type option
+ *
+ * <p>This class supports a union type option that is implemented as an object under 'OneOf' in the json schema.
+ *
+ * @author  Marian Novotny
+ * @see UnionJsonType
+ */
 public class UnionJsonTypeOption {
     private final String selectorName;
     private final String attributesJsonSchema;

@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 
 import java.io.Serializable;
 import java.util.List;

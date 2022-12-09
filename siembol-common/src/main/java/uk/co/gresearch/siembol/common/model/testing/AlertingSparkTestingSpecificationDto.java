@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
+import uk.co.gresearch.siembol.common.model.JsonRawStringDto;
 
 /**
  * A data transfer object for representing an alerting spark test specification

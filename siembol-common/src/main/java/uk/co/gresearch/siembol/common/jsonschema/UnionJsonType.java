@@ -1,7 +1,17 @@
 package uk.co.gresearch.siembol.common.jsonschema;
 
 import java.util.List;
-
+/**
+ * An object for a union type
+ *
+ * <p>This class supports a union type that is implemented as 'OneOf' in the json schema.
+ * A json schema in Siembol is generated from Dto classes. However, Java does not support union fields in classes.
+ *
+ * @author  Marian Novotny
+ *
+ * @see UnionJsonTypeOption
+ *
+ */
 public class UnionJsonType {
     private static final String FORMAT_OPTION_START = "[";
     private static final String FORMAT_COMMA = ",";

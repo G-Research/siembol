@@ -2,7 +2,6 @@ package uk.co.gresearch.siembol.common.model.testing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 
 /**
  * A data transfer object for representing a parser configuration test specification

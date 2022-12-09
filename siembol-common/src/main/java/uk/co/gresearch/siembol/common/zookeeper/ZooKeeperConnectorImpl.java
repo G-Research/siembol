@@ -22,7 +22,15 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
+/**
+ * An object for watching and manipulating a ZooKeeper cache
+ *
+ * <p>This class implements ZooKeeperConnector interface.
+ * It is used for watching and manipulating a ZooKeeper Utf-8 String cache.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
     private static final int SLEEP_TIME_MS = 100;
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -46,6 +54,9 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         this.initTimeout = builder.initTimeout;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getData() {
         Optional<ChildData> childData = cache.get(path);
         if (childData.isPresent()) {
@@ -55,6 +66,9 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setData(String data) throws Exception {
         try {
@@ -66,13 +80,17 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addCacheListener(Runnable listener) {
-        cache.listenable().addListener((x, y, z) -> {
-            listener.run();
-        });
+        cache.listenable().addListener((x, y, z) -> listener.run());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialise() throws Exception {
         int initTime = 0;
@@ -85,12 +103,21 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         }
     }
 
+    /**
+     * Closes the connector
+     * @throws IOException on error
+     */
     @Override
     public void close() throws IOException {
         cache.close();
         client.close();
     }
 
+    /**
+     * Builder for ZooKeeperConnectorImpl instance
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private static final String WRONG_ATTRIBUTES_LOG_MSG = "Missing ZooKeeper connector attributes, zkServer: {}, " +
                 "path: {}, baseSleepTimeMs: {}, maxRetries: {}";
@@ -108,36 +135,72 @@ public class ZooKeeperConnectorImpl implements ZooKeeperConnector {
         private final AtomicBoolean initialised = new AtomicBoolean(false);
         private int initTimeout = 3000;
 
+        /**
+         * Sets a ZooKeeper node path
+         * @param path to a node cache
+         * @return this builder
+         */
         public Builder path(String path) {
             this.path = path;
             return this;
         }
 
+        /**
+         * Sets ZooKeeper server(s) url
+         * @param zkServer url String
+         * @return this builder
+         */
         public Builder zkServer(String zkServer) {
             this.zkServer = zkServer;
             return this;
         }
 
+        /**
+         * Sets max retries for ZooKeeper client
+         * @param maxRetries of a ZooKeeper client
+         * @return this builder
+         */
         public Builder maxRetries(Integer maxRetries) {
             this.maxRetries = maxRetries;
             return this;
         }
 
+        /**
+         * Sets base sleep time for an exponential backoff retry
+         * @param baseSleepTimeMs base sleep time for an exponential backoff retry in milliseconds
+         * @return this builder
+         */
         public Builder baseSleepTimeMs(Integer baseSleepTimeMs) {
             this.baseSleepTimeMs = baseSleepTimeMs;
             return this;
         }
 
+        /**
+         * Sets an initial value of the node if the node does nto exist
+         * @param initValue a string with an initial node value
+         * @return this builder
+         */
         public Builder initValueIfNotExists(String initValue) {
             this.initValue = Optional.ofNullable(initValue);
             return this;
         }
 
+        /**
+         * Sets the timeout for initialise method
+         * @param initTimeout timeout in milliseconds
+         * @return this builder
+         */
         public Builder initTimeout(int initTimeout) {
             this.initTimeout = initTimeout;
             return this;
         }
 
+        /**
+         * Builds a ZooKeeper connector instance
+         *
+         * @return a ZooKeeper connector instance built from an internal state of the builder
+         * @throws Exception on error
+         */
         public ZooKeeperConnectorImpl build() throws Exception {
             if (zkServer == null
                     || path == null

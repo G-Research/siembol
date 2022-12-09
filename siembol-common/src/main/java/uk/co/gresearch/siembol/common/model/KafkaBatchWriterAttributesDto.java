@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.common.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
+
 /**
  * A data transfer object for representing a kafka writer attributes
  *
