@@ -11,9 +11,9 @@ import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
- * An object for opening input streams from Hdfs
+ * An object for opening input streams from HDFS
  *
- * <p>This class implements SiembolFileSystem, and it is used for opening input streams from Hdfs.
+ * <p>This class implements SiembolFileSystem, and it is used for opening input streams from HDFS.
  *
  * @author  Marian Novotny
  * @see SiembolFileSystem

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * An object that evaluates enrichment rules
  *
  * <p>This class implements EnrichmentEvaluator interface. It provides functionality for evaluating enrichment rules.
- * It is using thr alerting engine with a custom implementation of an enriching rule in order to
+ * It is using the alerting engine with a custom implementation of an enriching rule in order to
  * implement the enrichment evaluation.
  *
  * @author  Marian Novotny

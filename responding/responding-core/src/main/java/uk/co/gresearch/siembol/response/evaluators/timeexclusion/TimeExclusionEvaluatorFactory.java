@@ -12,7 +12,7 @@ import uk.co.gresearch.siembol.response.model.TimeExclusionEvaluatorAttributesDt
  * An object for creating a time exclusion evaluator
  *
  * <p>This class implements RespondingEvaluatorFactory interface.
- * It is for creating a time exclusion evaluator and providing metadata such as a type and attributes schema.
+ * It is used for creating a time exclusion evaluator, and it provides metadata such as a type and attributes schema.
  * The time exclusion evaluator inspects a timestamp and evaluates an excluding pattern.
  * It filters the alert if the pattern matches.
  * Moreover, it provides the functionality for validating the evaluator attributes.

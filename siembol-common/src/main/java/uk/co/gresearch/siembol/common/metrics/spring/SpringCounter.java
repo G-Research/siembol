@@ -5,7 +5,8 @@ import uk.co.gresearch.siembol.common.metrics.SiembolCounter;
 /**
  * An object for representing a counter in Spring Boot
  *
- * <p>This class implements SiembolCounter interface is for representing a counter used in Siembol Spring Boot projects.
+ * <p>This class implements SiembolCounter interface.
+ * It implements a counter which is used in Siembol Spring Boot projects.
  *
  * @author  Marian Novotny
  * @see SiembolCounter

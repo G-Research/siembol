@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * An object that provides metadata about an enrichment table
  *
- * <p>This class represents a metadata of a enrichment table such as the number of row, the number of columns,
+ * <p>This class represents a metadata of an enrichment table such as the number of row, the number of columns,
  * table size and number of values.
  *
  * @author  Marian Novotny

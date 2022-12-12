@@ -3,7 +3,7 @@ package uk.co.gresearch.siembol.common.authorisation;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 /**
- * An object that implement disabled authentication in Spring Boot projects
+ * An object that implements disabled authentication in Spring Boot projects
  *
  * <p>This class extends WebSecurityConfigurerAdapter from Spring framework.
  * It permits all HTTP request in the project.

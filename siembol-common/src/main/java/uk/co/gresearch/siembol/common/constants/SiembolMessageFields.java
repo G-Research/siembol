@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 /**
- * An enum for representing a Siembol message fields added or used by Siembol components
+ * An enum for representing Siembol message fields added or used by Siembol components
  *
  * @author  Marian Novotny
  *

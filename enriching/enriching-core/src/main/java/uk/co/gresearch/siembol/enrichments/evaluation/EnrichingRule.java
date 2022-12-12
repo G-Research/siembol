@@ -108,7 +108,7 @@ public class EnrichingRule extends Rule {
         /**
          * Sets the key for joining the event with the table
          *
-         * @param key a string  for joining the enrichment table. It may contain a variable e.g. ${host}.
+         * @param key a string for joining the enrichment table. It may contain a variable e.g. ${host}.
          * @return this builder
          */
         public Builder<T> key(String key) {

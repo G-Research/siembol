@@ -27,9 +27,9 @@ import java.lang.invoke.MethodHandles;
 import java.security.Principal;
 import java.util.function.Supplier;
 /**
- * An object that implements a Http client
+ * An object that implements an HTTP client
  *
- * <p>This class implements a Http client used in various Siembol components.
+ * <p>This class implements an HTTP client used in various Siembol components.
  * It supports kerberos authentication and methods for GET and POST requests.
  *
  * @author  Marian Novotny

@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.common.error;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 /**
- * An enum for representing a Siembol error types used in an error message
+ * An enum for representing Siembol error types used in an error message
  *
  * @author  Marian Novotny
  *
