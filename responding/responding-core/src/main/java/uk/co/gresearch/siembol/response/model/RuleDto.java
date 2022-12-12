@@ -4,7 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing a response rule
+ *
+ * <p>This class is used for json (de)serialisation of a response rule and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ResponseEvaluatorDto
+ */
 @Attributes(title = "rule", description = "Response rule that should handle response to a siembol alert")
 public class RuleDto {
     @JsonProperty("rule_name")

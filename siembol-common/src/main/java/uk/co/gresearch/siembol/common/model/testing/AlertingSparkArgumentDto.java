@@ -3,7 +3,15 @@ package uk.co.gresearch.siembol.common.model.testing;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing an alerting spark testing argument
+ *
+ * <p>This class is used for json (de)serialisation of an alerting spark testing argument.
+ * It is used in alerting spark application.
+ *
+ * @author  Marian Novotny
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 public class AlertingSparkArgumentDto {
     @JsonProperty("max_result_size")
     private Integer maxResultSize = 100;

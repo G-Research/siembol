@@ -1,5 +1,16 @@
 package uk.co.gresearch.siembol.common.constants;
-
+/**
+ * An enum for representing a Siembol service types
+ *
+ * @author  Marian Novotny
+ *
+ * @see #RESPONSE
+ * @see #ALERT
+ * @see #CORRELATION_ALERT
+ * @see #PARSER_CONFIG
+ * @see #PARSING_APP
+ * @see #ENRICHMENT
+ */
 public enum ServiceType {
     RESPONSE("response"),
     ALERT("alert"),

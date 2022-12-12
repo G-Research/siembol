@@ -9,10 +9,17 @@ import uk.co.gresearch.siembol.response.common.*;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCode.OK;
-
+/**
+ * An object for evaluating response alerts
+ *
+ * <p>This class implements Evaluable interface, and it is used in a response rule.
+ * The table formatter evaluator generates a string with a Markdown table from a json object or an array from the alert.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class TableFormatter implements Evaluable {
     private static final String MISSING_VALUE = "";
     private static final String TABLE_FORMAT_MESSAGE = "%s\n%s";
@@ -42,7 +49,7 @@ public class TableFormatter implements Evaluable {
                 .addRow(firstColumn, secondColumn);
 
         responseAlert.keySet().stream()
-                .filter(x -> fieldFilter.match(x))
+                .filter(fieldFilter::match)
                 .sorted()
                 .forEach(x -> tableBuilder.addRow(x, responseAlert.get(x).toString()));
 
@@ -64,9 +71,7 @@ public class TableFormatter implements Evaluable {
         Set<String> columnsSet = new HashSet<>();
         arrayObj.forEach(x -> columnsSet.addAll(x.keySet()));
         columnsSet.removeIf(field -> !fieldFilter.match(field));
-        List<String> columnsList = columnsSet
-                .stream()
-                .collect(Collectors.toList());
+        List<String> columnsList = new ArrayList<>(columnsSet);
         Collections.sort(columnsList);
 
         if (!columnsList.isEmpty()) {
@@ -83,6 +88,9 @@ public class TableFormatter implements Evaluable {
         return tableBuilder.build().toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         String formattedTable = formatTable(alert);

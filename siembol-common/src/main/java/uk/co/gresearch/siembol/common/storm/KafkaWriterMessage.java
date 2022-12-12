@@ -3,7 +3,14 @@ package uk.co.gresearch.siembol.common.storm;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.io.Serializable;
-
+/**
+ * An object for representing a Kafka message
+ *
+ * <p>This class represents a Kafka message. It includes a topic, a message key and a message value.
+ * It implements Serializable interface for integration in Storm.
+ *
+ * @author  Marian Novotny
+ */
 public class KafkaWriterMessage implements Serializable {
     private static final long serialVersionUID = 1L;
     private final String topic;

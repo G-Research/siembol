@@ -9,7 +9,14 @@ import uk.co.gresearch.siembol.common.model.StormAttributesDto;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-
+/**
+ * A class with static helper methods for Siembol Storm topologies
+ *
+ * <p>This class exposes static methods for implementing Siembol Storm topologies.
+ * These helper functions are used in all Siembol Storm topologies.
+ *
+ * @author  Marian Novotny
+ */
 public class StormHelper {
     private static final int KAFKA_SPOUT_INIT_DELAY_MICRO_SEC = 500;
     private static final int KAFKA_SPOUT_DELAY_PERIOD_MILLI_SEC = 2;

@@ -7,7 +7,20 @@ import com.github.reinert.jjschema.SchemaIgnore;
 
 import java.io.Serializable;
 import java.util.List;
-
+/**
+ * A data transfer object for representing a Storm parsing application admin configuration
+ *
+ * <p>This class is used for json (de)serialisation of a Storm parsing application admin configuration and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see ZooKeeperAttributesDto
+ * @see StormAttributesDto
+ * @see KafkaBatchWriterAttributesDto
+ * @see OverriddenApplicationAttributesDto
+ */
 @Attributes(title = "storm parsing application attributes", description = "Storm parsing application attributes")
 public class StormParsingApplicationAttributesDto extends AdminConfigDto implements Serializable {
     private static final long serialVersionUID = 1L;

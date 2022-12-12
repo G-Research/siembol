@@ -8,7 +8,19 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.model.TableFormatterEvaluatorAttributesDto;
-
+/**
+ * An object for creating a table formatter evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating a table formatter evaluator and providing metadata such as a type and attributes schema.
+ * The table formatter evaluator generates a string with a Markdown table from the json object from the alert.
+ * It writes the table into the alert to be used by next evaluators of the rule.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ * @see TableFormatter
+ */
 public class TableFormatterEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(TableFormatterEvaluatorAttributesDto.class);
@@ -18,6 +30,9 @@ public class TableFormatterEvaluatorFactory implements RespondingEvaluatorFactor
         attributesSchema = new SiembolJsonSchemaValidator(TableFormatterEvaluatorAttributesDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -41,11 +56,17 @@ public class TableFormatterEvaluatorFactory implements RespondingEvaluatorFactor
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.MARKDOWN_TABLE_FORMATTER_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(

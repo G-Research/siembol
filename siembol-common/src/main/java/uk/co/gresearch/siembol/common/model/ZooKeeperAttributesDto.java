@@ -6,7 +6,16 @@ import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
 
 import java.io.Serializable;
-
+/**
+ * A data transfer object for representing ZooKeeper attributes
+ *
+ * <p>This class is used for json (de)serialisation of attributes for a ZooKeeper connector and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ */
 @Attributes(title = "zookeeper attributes", description = "Zookeeper attributes for node cache")
 public class ZooKeeperAttributesDto implements Serializable {
     private static final long serialVersionUID = 1L;

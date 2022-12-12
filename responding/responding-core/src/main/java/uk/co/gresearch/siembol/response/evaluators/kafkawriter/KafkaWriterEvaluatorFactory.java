@@ -14,7 +14,18 @@ import uk.co.gresearch.siembol.response.model.KafkaWriterEvaluatorAttributesDto;
 import uk.co.gresearch.siembol.response.model.KafkaWriterProperties;
 
 import java.util.function.Function;
-
+/**
+ * An object for creating a kafka writer evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating a kafka writer evaluator and providing metadata such as a type and attributes schema.
+ * The kafka writer evaluator writes a message from the alert to a kafka topic.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ * @see KafkaWriterEvaluator
+ */
 public class KafkaWriterEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(KafkaWriterEvaluatorAttributesDto.class);
@@ -38,6 +49,9 @@ public class KafkaWriterEvaluatorFactory implements RespondingEvaluatorFactory {
                 x -> new KafkaProducer<>(x.getProducerProperties(), new StringSerializer(), new StringSerializer()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -54,11 +68,17 @@ public class KafkaWriterEvaluatorFactory implements RespondingEvaluatorFactory {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.KAFKA_WRITER_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(

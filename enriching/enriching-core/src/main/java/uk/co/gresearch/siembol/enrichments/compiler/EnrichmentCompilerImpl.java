@@ -30,7 +30,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.OK;
-
+/**
+ * An object that validates, tests and compiles enrichment rules
+ *
+ * <p>This class implements EnrichmentCompiler interface.
+ * It provides functionality for validating, testing and compiling enrichment rules.
+ * Moreover, it computes and provides json schema for enrichment rules.
+ *
+ * @author  Marian Novotny
+ */
 public class EnrichmentCompilerImpl implements EnrichmentCompiler {
     private static final String TEST_START_MESSAGE = "Starting testing enriching rules:\n%s\n, " +
             "with test specification:\n%s";
@@ -41,7 +49,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
     private static final String TEST_ENRICHED_MESSAGES = "Enriched pairs added to the event:";
     private static final String TEST_ENRICHED_EVENT = "Enriched event:";
     private static final String UNSUPPORTED_MATCHER = "Unsupported matcher %s in enrichments rules";
-    private static final String RULE_TAGS_ENRICHMENTS_EMPTY_MSG = "Both enriching fields and tags are empty";
+    private static final String RULE_TAGS_ENRICHMENT_EMPTY_MSG = "Both enriching fields and tags are empty";
 
     private static final ObjectReader JSON_RULES_READER = new ObjectMapper().readerFor(RulesDto.class);
     private static final ObjectReader JSON_RULE_READER = new ObjectMapper().readerFor(RuleDto.class);
@@ -84,7 +92,7 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
     private Pair<String, Rule> createAlertingRule(RuleDto ruleDto) {
         if (ruleDto.getTableMapping().getEnrichingFields() == null
                 && ruleDto.getTableMapping().getTags() == null) {
-            throw new IllegalArgumentException(RULE_TAGS_ENRICHMENTS_EMPTY_MSG);
+            throw new IllegalArgumentException(RULE_TAGS_ENRICHMENT_EMPTY_MSG);
         }
 
         List<Matcher> matchers = ruleDto.getMatchers().stream()
@@ -126,6 +134,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnrichmentResult compile(String rules, TestingLogger logger) {
         SiembolResult validationResult = rulesSchemaValidator.validate(rules);
@@ -152,6 +163,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnrichmentResult getSchema() {
         EnrichmentAttributes attr = new EnrichmentAttributes();
@@ -159,6 +173,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return new EnrichmentResult(OK, attr);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnrichmentResult getTestSpecificationSchema() {
         EnrichmentAttributes attr = new EnrichmentAttributes();
@@ -166,6 +183,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return new EnrichmentResult(OK, attr);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnrichmentResult validateConfiguration(String configuration) {
         try {
@@ -175,6 +195,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnrichmentResult testConfiguration(String configuration, String testSpecification) {
         try {
@@ -196,6 +219,9 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnrichmentResult testConfigurations(String rules, String testSpecification) {
         EnrichmentAttributes attributes = new EnrichmentAttributes();
@@ -254,7 +280,12 @@ public class EnrichmentCompilerImpl implements EnrichmentCompiler {
         return JSON_RULES_WRITER.writeValueAsString(rules);
     }
 
-    public static EnrichmentCompiler createEnrichmentsCompiler() throws Exception {
+    /**
+     * Static factory method to create an enrichment compiler instance
+     *
+     * @return enrichment compiler instance
+     */
+    public static EnrichmentCompiler createEnrichmentCompiler() throws Exception {
         JsonSchemaValidator rulesSchemaValidator = new SiembolJsonSchemaValidator(RulesDto.class);
         JsonSchemaValidator testSchemaValidator = new SiembolJsonSchemaValidator(EnrichmentTestingSpecificationDto.class);
         return new EnrichmentCompilerImpl(rulesSchemaValidator, testSchemaValidator);

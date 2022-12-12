@@ -29,7 +29,19 @@ import java.util.Base64;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
-
+/**
+ * A main class of an enrichment storm topology
+ *
+ * <p>This class provides helper functions to build an enrichment application topology and
+ * provides the main function that is executed during the submission of a storm topology.
+ *
+ * @author Marian Novotny
+ *
+ * @see EnrichmentEvaluatorBolt
+ * @see EnrichmentMergerBolt
+ * @see MemoryTableEnrichmentBolt
+ *
+ */
 public class StormEnrichingApplication {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String KAFKA_SPOUT = "kafka-spout";

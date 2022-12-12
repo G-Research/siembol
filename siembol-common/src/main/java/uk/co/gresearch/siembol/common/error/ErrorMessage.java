@@ -10,7 +10,14 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
+/**
+ * An object that represents an error message
+ *
+ * <p>This bean object represents an error message. It is used in Siembol components and contains information
+ * such as timestamp, stacktrace and raw message. It has a dedicated source type - error to be recognised.
+ *
+ * @author  Marian Novotny
+ */
 public class ErrorMessage {
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)

@@ -4,7 +4,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+/**
+ * An enum for representing Siembol message fields added or used by Siembol components
+ *
+ * @author  Marian Novotny
+ *
+ * @see #ORIGINAL
+ * @see #GUID
+ * @see #SENSOR_TYPE
+ * @see #TIMESTAMP
+ * @see #PARSING_TIME
+ * @see #ENRICHING_TIME
+ * @see #RESPONSE_TIME
+ */
 public enum SiembolMessageFields {
     SRC_ADDR(SiembolConstants.SRC_ADDR),
     SRC_PORT(SiembolConstants.SRC_PORT),

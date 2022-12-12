@@ -13,7 +13,16 @@ import uk.co.gresearch.siembol.response.model.MatchingEvaluatorResultDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * An object for evaluating response alerts
+ *
+ * <p>This class implements Evaluable interface, and it is used in a response rule.
+ * The matching evaluator evaluates the alert by matching its underlying matchers.
+ * It returns the evaluation result based on the matching result.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class MatchingEvaluator implements Evaluable {
     private static final String EMPTY_MATCHERS = "Empty matchers in matching evaluator";
     private final List<BasicMatcher> matchers;
@@ -21,7 +30,7 @@ public class MatchingEvaluator implements Evaluable {
 
     public MatchingEvaluator(MatchingEvaluatorAttributesDto attributesDto) {
         matchers = attributesDto.getMatchers().stream()
-                .filter(x -> x.isEnabled())
+                .filter(MatcherDto::isEnabled)
                 .map(this::createMatcher)
                 .collect(Collectors.toList());
         if (matchers.isEmpty()) {
@@ -31,6 +40,9 @@ public class MatchingEvaluator implements Evaluable {
         matchingResult = attributesDto.getEvaluationResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         ResponseAlert current = (ResponseAlert)alert.clone();

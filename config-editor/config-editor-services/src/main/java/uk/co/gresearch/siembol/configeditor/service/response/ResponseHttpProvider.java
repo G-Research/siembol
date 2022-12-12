@@ -11,7 +11,7 @@ import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.common.RespondingResultAttributes;
-import uk.co.gresearch.siembol.response.common.ResponseApplicationPaths;
+import uk.co.gresearch.siembol.common.constants.ResponseApplicationPaths;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;

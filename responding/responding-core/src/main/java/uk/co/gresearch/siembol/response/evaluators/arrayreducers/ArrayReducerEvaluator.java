@@ -12,7 +12,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+/**
+ * An object for evaluating response alerts
+ *
+ * <p>This class implements Evaluable interface, and it is used in a response rule.
+ * The array reducer evaluator reduces json arrays that can be created during evaluation of a response rule.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class ArrayReducerEvaluator implements Evaluable {
     private final String arrayFieldName;
     private final String fieldFormatMessage;
@@ -27,6 +35,9 @@ public class ArrayReducerEvaluator implements Evaluable {
         this.fieldFilter = builder.fieldFilter;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         try {

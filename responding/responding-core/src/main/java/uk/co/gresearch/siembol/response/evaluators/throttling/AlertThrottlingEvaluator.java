@@ -12,7 +12,15 @@ import uk.co.gresearch.siembol.response.model.AlertThrottlingEvaluatorAttributes
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * An object for evaluating response alerts
+ *
+ * <p>This class implements Evaluable interface, and it is used in a response rule.
+ * The alert throttling evaluator may throttle the alert based on the suppression key and the time window.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class AlertThrottlingEvaluator implements Evaluable {
     private static final String SHARED_VALUE = "";
     private static final int MAX_CACHE_SIZE = 1000;
@@ -25,18 +33,22 @@ public class AlertThrottlingEvaluator implements Evaluable {
         this.cache = CacheBuilder.newBuilder()
                 .maximumSize(MAX_CACHE_SIZE)
                 .expireAfterWrite(timeWindowInMs, TimeUnit.MILLISECONDS)
-                .build(new CacheLoader<String, String>() {
+                .build(new CacheLoader<>() {
                     @Override
                     public String load(String key) {
                         return key.toLowerCase();
-                    }});
+                    }
+                });
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         Optional<String> currentKey = EvaluationLibrary.substitute(alert, suppressionKey);
-        if (!currentKey.isPresent()) {
+        if (currentKey.isEmpty()) {
             return RespondingResult.fromEvaluationResult(ResponseEvaluationResult.MATCH, alert);
         }
 

@@ -7,7 +7,16 @@ import uk.co.gresearch.siembol.common.metrics.storm.StormMetricsRegistrarFactory
 import uk.co.gresearch.siembol.common.model.KafkaBatchWriterAttributesDto;
 
 import java.lang.invoke.MethodHandles;
-
+/**
+ * An object for integration of a Kafka writer into Siembol storm applications such as parsing and enrichment
+ *
+ * <p>This class extends a Storm KafkaWriterBoltBase class to implement a Storm bolt, that
+ *  sends Kafka messages and increments related counters.
+ *
+ * @author Marian Novotny
+ * @see KafkaWriterBoltBase
+ *
+ */
 public class KafkaWriterBolt extends KafkaWriterBoltBase {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG =

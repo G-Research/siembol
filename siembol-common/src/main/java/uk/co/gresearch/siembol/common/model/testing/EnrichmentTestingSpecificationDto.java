@@ -6,8 +6,18 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
-
+import uk.co.gresearch.siembol.common.model.JsonRawStringDto;
+/**
+ * A data transfer object for representing an enrichment test specification
+ *
+ * <p>This class is used for json (de)serialisation of an enrichment test specification and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see JsonRawStringDto
+ */
 @Attributes(title = "enrichments test specification",
         description = "The specification for testing enrichments")
 public class EnrichmentTestingSpecificationDto {

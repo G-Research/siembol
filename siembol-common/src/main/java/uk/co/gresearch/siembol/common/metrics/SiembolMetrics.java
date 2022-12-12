@@ -1,5 +1,11 @@
 package uk.co.gresearch.siembol.common.metrics;
-
+/**
+ * An enum for representing a Siembol metrics used in Siembol components.
+ * It supports creating a name form additional arguments.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public enum SiembolMetrics {
     PARSING_CONFIGS_UPDATE("siembol_counter_parsing_configs_update"),
     PARSING_CONFIGS_ERROR_UPDATE("siembol_counter_parsing_configs_error_update"),

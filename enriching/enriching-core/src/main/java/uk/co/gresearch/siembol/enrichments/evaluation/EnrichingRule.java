@@ -15,7 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * An object for representing an enriching rule
+ *
+ * <p>This derived class of alerting abstract Rule class is implementing an enriching rule.
+ *
+ * @author  Marian Novotny
+ * @see Rule
+ */
 public class EnrichingRule extends Rule {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String COMMAND_FIELD_ERROR_MSG = "Enrichment command field already in event: %s";
@@ -47,6 +54,9 @@ public class EnrichingRule extends Rule {
         return Optional.of(ret);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult match(Map<String, Object> log) {
         AlertingResult result = super.match(log);
@@ -71,11 +81,22 @@ public class EnrichingRule extends Rule {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean canModifyEvent() {
         return true;
     }
 
+    /**
+     * A builder for an enriching rule
+     *
+     * <p>This abstract class is derived from Rule.Builder class
+     *
+     *
+     * @author  Marian Novotny
+     */
     public static abstract class Builder<T extends EnrichingRule> extends Rule.Builder<T> {
         protected String tableName;
         protected String key;
@@ -84,27 +105,56 @@ public class EnrichingRule extends Rule {
         protected static final String MISSING_REQUIRED_ARGUMENTS = "Missing required arguments in rule builder";
         protected static final String TAGS_AND_FIELDS_EMPTY = "Enrichment tags and fields are empty";
 
+        /**
+         * Sets the key for joining the event with the table
+         *
+         * @param key a string for joining the enrichment table. It may contain a variable e.g. ${host}.
+         * @return this builder
+         */
         public Builder<T> key(String key) {
             this.key = key;
             return this;
         }
 
+        /**
+         * Sets the table name for joining with the event
+         *
+         * @param tableName a name of the table
+         * @return this builder
+         */
         public Builder<T> tableName(String tableName) {
             this.tableName = tableName;
             return this;
         }
 
+        /**
+         * Sets the enriching tags added to the event after joining the table
+         *
+         * @param enrichingTags a list of enriching tags
+         * @return this builder
+         */
         public Builder<T> enrichmentTags(List<Pair<String, String>> enrichingTags) {
             enrichingTags.forEach(x -> this.enrichmentTags.add(ImmutablePair.of(x.getKey(), x.getValue())));
             return this;
         }
 
+        /**
+         * Sets the enriching fields (table columns) added to the event after joining the table
+         *
+         * @param enrichingFields a list of enriching fields
+         * @return this builder
+         */
         public Builder<T> enrichmentFields(List<Pair<String, String>> enrichingFields) {
             enrichingFields.forEach(x -> this.enrichmentFields.add(ImmutablePair.of(x.getKey(), x.getValue())));
             return this;
         }
     }
 
+    /**
+     * Creates EnrichingRule builder instance
+     *
+     * @return EnrichingRule builder
+     */
     public static Builder<EnrichingRule> enrichingRuleBuilder() {
 
         return new Builder<EnrichingRule>() {

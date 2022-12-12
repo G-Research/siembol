@@ -18,7 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+/**
+ * An object that evaluates enrichment rules
+ *
+ * <p>This class implements EnrichmentEvaluator interface. It provides functionality for evaluating enrichment rules.
+ * It is using the alerting engine with a custom implementation of an enriching rule in order to
+ * implement the enrichment evaluation.
+ *
+ * @author  Marian Novotny
+ * @see EnrichmentEvaluator
+ * @see EnrichingRule
+ * @see AlertingEngine
+ */
 public class AlertingEnrichmentEvaluator implements EnrichmentEvaluator {
     private static final String RULES_EXCEPTION_LOG = "Enrichment rule engine exception: {} on event: {}";
     private static final String MISSING_ENRICHMENTS_COMMAND = "Missing enrichment command in events %s";
@@ -40,6 +51,14 @@ public class AlertingEnrichmentEvaluator implements EnrichmentEvaluator {
         return (EnrichmentCommand)ret;
     }
 
+    /**
+     * Evaluates enrichment rules on an event using alerting engine with enriching rules
+     *
+     * @param event a json string with an event after parsing
+     * @return an enrichment result with a list of enrichment commands
+     * @see EnrichmentResult
+     * @see EnrichmentCommand
+     */
     @Override
     public EnrichmentResult evaluate(String event) {
         EnrichmentAttributes attr = new EnrichmentAttributes();
@@ -70,16 +89,34 @@ public class AlertingEnrichmentEvaluator implements EnrichmentEvaluator {
         }
     }
 
+    /**
+     * An object for building AlertingEnrichmentEvaluator instance. It is using the builder design pattern.
+     *
+     * @author  Marian Novotny
+     *
+     */
     public static class Builder {
         private static final String MISSING_RULES_ATTRIBUTES = "Missing enrichment rules";
         private AlertingEngine alertingEngine;
         private List<Pair<String, Rule>> rules;
 
+        /**
+         * Sets enriching rules that should be prepared in advance
+         *
+         * @param rules a list of pairs of the source type and the enriching rule
+         * @return this builder
+         */
         public Builder rules(List<Pair<String, Rule>> rules) {
             this.rules = rules;
             return this;
         }
 
+        /**
+         * Builds the alerting enrichment evaluator
+         *
+         * @return the alerting enrichment evaluator built from the builder state
+         * @throws IllegalArgumentException in case of wrong arguments
+         */
         public AlertingEnrichmentEvaluator build() {
             if (alertingEngine != null) {
                 return new AlertingEnrichmentEvaluator(this);

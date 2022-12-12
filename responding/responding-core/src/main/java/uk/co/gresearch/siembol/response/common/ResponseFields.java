@@ -1,5 +1,13 @@
 package uk.co.gresearch.siembol.response.common;
-
+/**
+ * An enum for Siembol response field names which are added to an alert after matching
+ *
+ * @author  Marian Novotny
+ * @see #ALERT_ID
+ * @see #RULE_NAME
+ * @see #FULL_RULE_NAME
+ * @see #ORIGINAL_STRING
+ */
 public enum ResponseFields {
     ALERT_ID("siembol_response_alert_id"),
     RULE_NAME("siembol_response_rule_name"),

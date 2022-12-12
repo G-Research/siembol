@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.StatusCode.OK;
-import static uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompilerImpl.createEnrichmentsCompiler;
+import static uk.co.gresearch.siembol.enrichments.compiler.EnrichmentCompilerImpl.createEnrichmentCompiler;
 
 public class EnrichmentCompilerTest {
     private static final ObjectReader JSON_MAP_READER = new ObjectMapper()
@@ -231,7 +231,7 @@ public class EnrichmentCompilerTest {
 
     @Before
     public void setUp() throws Exception {
-        enrichmentCompiler = createEnrichmentsCompiler();
+        enrichmentCompiler = createEnrichmentCompiler();
     }
 
     @Test

@@ -2,7 +2,14 @@ package uk.co.gresearch.siembol.common.authorisation;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * A data transfer object for representing a resource server OAUTH2 properties
+ *
+ * <p>This class is used for json (de)serialisation of a resource server OAUTH2 application properties.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public class ResourceServerOauth2Properties {
     private List<String> excludedUrlPatterns = new ArrayList<>();
     private String audience;

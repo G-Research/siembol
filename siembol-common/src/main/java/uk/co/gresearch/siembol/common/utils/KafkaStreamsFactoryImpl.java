@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class KafkaStreamsFactoryImpl implements KafkaStreamsFactory {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final String UNCAUGHT_EXCEPTION = "Uncaught exception in siembol response kafka streams";
+    private static final String UNCAUGHT_EXCEPTION = "Uncaught exception in kafka streams";
 
     @Override
     public KafkaStreams createKafkaStreams(Topology topology, Properties properties) {

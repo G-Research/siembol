@@ -4,7 +4,15 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import uk.co.gresearch.siembol.common.result.SiembolResult;
 
 import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
-
+/**
+ * An object that combines an enrichment result status code with attributes
+ *
+ * <p>This class represents an enrichment result that combines a status code along with the enrichment attributes.
+ *
+ * @author  Marian Novotny
+ * @see EnrichmentAttributes
+ * @see StatusCode
+ */
 public class EnrichmentResult {
     public enum StatusCode {
         OK,

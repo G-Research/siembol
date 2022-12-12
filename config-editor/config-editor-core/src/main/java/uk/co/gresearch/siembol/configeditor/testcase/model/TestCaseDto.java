@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
+import uk.co.gresearch.siembol.common.model.JsonRawStringDto;
 
 import java.util.List;
 

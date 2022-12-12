@@ -4,10 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
 import com.github.reinert.jjschema.SchemaIgnore;
-import uk.co.gresearch.siembol.common.jsonschema.JsonRawStringDto;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing a Storm attributes
+ *
+ * <p>This class is used for json (de)serialisation of a Storm attributes and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see FirstPoolOffsetStrategyDto
+ * @see JsonRawStringDto
+ */
 @Attributes(title = "storm attributes", description = "Attributes for storm configuration")
 public class StormAttributesDto {
     @JsonProperty("bootstrap.servers")

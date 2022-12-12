@@ -76,7 +76,7 @@ public class EnrichmentSchemaService extends ConfigSchemaServiceAbstract {
     public static ConfigSchemaService createEnrichmentsSchemaService(ConfigEditorUiLayout uiLayout) throws Exception {
         LOG.info("Initialising enrichment config schema service");
         ConfigSchemaServiceContext context = new ConfigSchemaServiceContext();
-        EnrichmentCompiler compiler = EnrichmentCompilerImpl.createEnrichmentsCompiler();
+        EnrichmentCompiler compiler = EnrichmentCompilerImpl.createEnrichmentCompiler();
         String rulesSchema = compiler.getSchema().getAttributes().getRulesSchema();
         String testSchema = compiler.getTestSpecificationSchema().getAttributes().getTestSchema();
 

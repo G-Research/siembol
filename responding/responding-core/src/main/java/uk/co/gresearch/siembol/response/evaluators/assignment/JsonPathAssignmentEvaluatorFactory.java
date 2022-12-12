@@ -8,8 +8,18 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.model.AssignmentEvaluatorAttributesDto;
-
-
+/**
+ * An object for creating a json path assignment evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating a json path assignment evaluator and providing metadata such as a type and attributes schema.
+ * The json path assignment evaluator evaluates a json path query and adds the result into the alert after
+ * successful evaluation. Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ * @see JsonPathAssignmentEvaluator
+ */
 public class JsonPathAssignmentEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(AssignmentEvaluatorAttributesDto.class);
@@ -19,6 +29,9 @@ public class JsonPathAssignmentEvaluatorFactory implements RespondingEvaluatorFa
         attributesSchema = new SiembolJsonSchemaValidator(AssignmentEvaluatorAttributesDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -34,11 +47,17 @@ public class JsonPathAssignmentEvaluatorFactory implements RespondingEvaluatorFa
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.JSON_PATH_ASSIGNMENT_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(

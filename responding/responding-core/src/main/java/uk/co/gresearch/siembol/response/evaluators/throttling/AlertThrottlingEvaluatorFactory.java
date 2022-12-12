@@ -8,7 +8,17 @@ import uk.co.gresearch.siembol.response.common.ProvidedEvaluators;
 import uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory;
 import uk.co.gresearch.siembol.response.common.RespondingResult;
 import uk.co.gresearch.siembol.response.model.AlertThrottlingEvaluatorAttributesDto;
-
+/**
+ * An object for creating an alert throttling evaluator
+ *
+ * <p>This class implements RespondingEvaluatorFactory interface.
+ * It is for creating an alert throttling evaluator and providing metadata such as a type and attributes schema.
+ * The alert throttling evaluator may throttle the alert based on the suppression key and the time window.
+ * Moreover, it provides the functionality for validating the evaluator attributes.
+ *
+ * @author  Marian Novotny
+ * @see RespondingEvaluatorFactory
+ */
 public class AlertThrottlingEvaluatorFactory implements RespondingEvaluatorFactory {
     private static final ObjectReader JSON_ATTRIBUTES_READER = new ObjectMapper()
             .readerFor(AlertThrottlingEvaluatorAttributesDto.class);
@@ -18,6 +28,9 @@ public class AlertThrottlingEvaluatorFactory implements RespondingEvaluatorFacto
         attributesSchema = new SiembolJsonSchemaValidator(AlertThrottlingEvaluatorAttributesDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult createInstance(String attributes) {
         try {
@@ -33,11 +46,17 @@ public class AlertThrottlingEvaluatorFactory implements RespondingEvaluatorFacto
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getType() {
         return RespondingResult.fromEvaluatorType(ProvidedEvaluators.ALERT_THROTTLING_EVALUATOR.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult getAttributesJsonSchema() {
         return RespondingResult.fromAttributesSchema(

@@ -4,7 +4,15 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
-
+/**
+ * An object that provides metadata about an enrichment table
+ *
+ * <p>This class represents a metadata of an enrichment table such as the number of row, the number of columns,
+ * table size and number of values.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public class TableMetadata {
     public static final String TABLE_METADATA_KEY = "table_metadata";
     public static final String LAST_UPDATE_FIELD_NAME = "last_update";

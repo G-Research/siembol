@@ -11,12 +11,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+/**
+ * An object for representing a response alert
+ *
+ * @author  Marian Novotny
+ */
 public class ResponseAlert extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
-    private static ObjectReader ALERT_READER = new ObjectMapper()
+    private static final ObjectReader ALERT_READER = new ObjectMapper()
             .readerFor(new TypeReference<Map<String, Object>>() {});
-    private static ObjectWriter RESPONSE_ALERT_WRITER = new ObjectMapper()
+    private static final ObjectWriter RESPONSE_ALERT_WRITER = new ObjectMapper()
             .writerFor(ResponseAlert.class);
 
     public ResponseAlert(String alertId) {

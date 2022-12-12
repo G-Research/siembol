@@ -27,7 +27,14 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * A class with static helper methods for implementing OAUTH2
+ *
+ * <p>This class exposes static methods for implementing OAUTH2 in Siembol Spring boot projects.
+ * These helper functions are used in various Siembol components.
+ *
+ * @author  Marian Novotny
+ */
 public class Oauth2Helper {
     private static final String MISSING_REQUIRED_AUDIENCE = "missing required audience";
     private static final int JWT_CLOCK_SKEW_IN_SECONDS = 30;

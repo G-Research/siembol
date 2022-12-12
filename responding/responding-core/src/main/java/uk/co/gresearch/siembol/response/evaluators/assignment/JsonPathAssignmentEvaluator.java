@@ -16,7 +16,16 @@ import uk.co.gresearch.siembol.response.model.JsonPathAssignmentTypeDto;
 
 import java.util.EnumSet;
 import java.util.Set;
-
+/**
+ * An object for evaluating response alerts
+ *
+ * <p>This class implements Evaluable interface, and it is used in a response rule.
+ * The json path assignment evaluator evaluates a json path query and adds the result into the alert after
+ * successful evaluation.
+ *
+ * @author  Marian Novotny
+ * @see Evaluable
+ */
 public class JsonPathAssignmentEvaluator implements Evaluable {
     private static final String ERROR_MESSAGE_FORMAT = "No json path:%s found in alert: %s";
     private static final ObjectWriter JSON_WRITER = new ObjectMapper()
@@ -51,6 +60,9 @@ public class JsonPathAssignmentEvaluator implements Evaluable {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RespondingResult evaluate(ResponseAlert alert) {
         JsonNode jsonActual;
