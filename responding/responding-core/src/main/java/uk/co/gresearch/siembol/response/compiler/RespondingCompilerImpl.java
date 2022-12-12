@@ -27,7 +27,7 @@ import static uk.co.gresearch.siembol.response.common.RespondingResult.StatusCod
 /**
  * An object that validates, tests and compiles responding rules
  *
- * <p>This class implements RespondingCompiler interface provides functionality for
+ * <p>This class implements RespondingCompiler interface and provides functionality for
  * validating, testing and compiling response rules.
  * Moreover, it computes and provides json schema for response rules.
  *
@@ -271,7 +271,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
 
         /**
          * Adds responding evaluator factories
-         * @param factories the list of responding evaluator factories
+         * @param factories a list of responding evaluator factories
          * @return this builder
          */
         public Builder addRespondingEvaluatorFactories(List<RespondingEvaluatorFactory> factories) {
@@ -295,7 +295,7 @@ public class RespondingCompilerImpl implements RespondingCompiler {
 
         /**
          * Builds responding compiler instance from the builder state
-         * @return responding compiler instance
+         * @return a responding compiler instance
          * @throws Exception if the building fails
          */
         public RespondingCompilerImpl build() throws Exception {

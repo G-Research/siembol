@@ -39,10 +39,10 @@ import static uk.co.gresearch.siembol.enrichments.common.EnrichmentResult.Status
  * An object for integration of an enrichment evaluator into a storm bolt
  *
  * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
- *  computes enrichment commands for a log by evaluating enrichment rules cached in the ZooKeeper,
- *  watches for the enrichment rules update in ZooKeeper and
- *  updates the enrichment evaluator without needing to restart the topology or the bolt,
- *  emits the event on input, the enrichment commands and exceptions after processing.
+ *  computes enrichment commands for a log by evaluating enrichment rules cached in the ZooKeeper.
+ *  It watches for the enrichment rules update in ZooKeeper and
+ *  updates the enrichment evaluator without needing to restart the topology or the bolt.
+ *  It emits the event on input, the enrichment commands and exceptions after processing.
  *
  * @author Marian Novotny
  *

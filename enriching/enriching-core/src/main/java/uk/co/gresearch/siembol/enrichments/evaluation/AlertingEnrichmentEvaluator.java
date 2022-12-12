@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
  * An object that evaluates enrichment rules
  *
  * <p>This class implements EnrichmentEvaluator interface. It provides functionality for evaluating enrichment rules.
- * It is using alerting engine with a custom implementation of enriching rule to implement evaluation.
+ * It is using thr alerting engine with a custom implementation of an enriching rule in order to
+ * implement the enrichment evaluation.
  *
  * @author  Marian Novotny
  * @see EnrichmentEvaluator
@@ -102,7 +103,7 @@ public class AlertingEnrichmentEvaluator implements EnrichmentEvaluator {
         /**
          * Sets enriching rules that should be prepared in advance
          *
-         * @param rules list of pairs of source type and enriching rule
+         * @param rules a list of pairs of the source type and the enriching rule
          * @return this builder
          */
         public Builder rules(List<Pair<String, Rule>> rules) {
@@ -113,7 +114,7 @@ public class AlertingEnrichmentEvaluator implements EnrichmentEvaluator {
         /**
          * Builds the alerting enrichment evaluator
          *
-         * @return alerting enrichment evaluator built from the builder state
+         * @return the alerting enrichment evaluator built from the builder state
          * @throws IllegalArgumentException in case of wrong arguments
          */
         public AlertingEnrichmentEvaluator build() {

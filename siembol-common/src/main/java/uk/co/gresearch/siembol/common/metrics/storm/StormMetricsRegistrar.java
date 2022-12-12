@@ -5,7 +5,7 @@ import uk.co.gresearch.siembol.common.metrics.*;
 /**
  * An object for registering metrics in Storm
  *
- * <p>This class implements SiembolMetricsRegistrar interface and it is using in Siembol Storm topologies.
+ * <p>This class implements SiembolMetricsRegistrar interface, and it is used in Siembol Storm topologies.
  *
  * @author  Marian Novotny
  * @see SiembolMetricsRegistrar

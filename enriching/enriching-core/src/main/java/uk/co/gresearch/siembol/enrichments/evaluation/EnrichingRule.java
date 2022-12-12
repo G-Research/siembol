@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 /**
- * An object for enriching rule
+ * An object for representing an enriching rule
  *
- * <p>This derived class of Rule is implementing an enriching rule.
+ * <p>This derived class of alerting abstract Rule class is implementing an enriching rule.
  *
  * @author  Marian Novotny
  * @see Rule
@@ -54,6 +54,9 @@ public class EnrichingRule extends Rule {
         return Optional.of(ret);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertingResult match(Map<String, Object> log) {
         AlertingResult result = super.match(log);
@@ -78,6 +81,9 @@ public class EnrichingRule extends Rule {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean canModifyEvent() {
         return true;
@@ -102,7 +108,7 @@ public class EnrichingRule extends Rule {
         /**
          * Sets the key for joining the event with the table
          *
-         * @param key string a key for joing the enrichment table. It may contain a variable e.g. ${host}.
+         * @param key a string  for joining the enrichment table. It may contain a variable e.g. ${host}.
          * @return this builder
          */
         public Builder<T> key(String key) {
@@ -124,7 +130,7 @@ public class EnrichingRule extends Rule {
         /**
          * Sets the enriching tags added to the event after joining the table
          *
-         * @param enrichingTags the list of enriching tags
+         * @param enrichingTags a list of enriching tags
          * @return this builder
          */
         public Builder<T> enrichmentTags(List<Pair<String, String>> enrichingTags) {
@@ -135,7 +141,7 @@ public class EnrichingRule extends Rule {
         /**
          * Sets the enriching fields (table columns) added to the event after joining the table
          *
-         * @param enrichingFields the list of enriching fields
+         * @param enrichingFields a list of enriching fields
          * @return this builder
          */
         public Builder<T> enrichmentFields(List<Pair<String, String>> enrichingFields) {

@@ -28,8 +28,8 @@ import java.util.Optional;
  * An object for integration of merging enrichment with an event into a storm bolt
  *
  * <p>This class extends a Storm BaseRichBolt class to implement a Storm bolt, that
- *  evaluates merges an event with enrichments computed by a table enrichment bolt.
- *  It also creates messages with topic to be published to Kafka.
+ *  merges an event with enrichment computed by a table enrichment bolt.
+ *  It also creates messages with a topic to be published to Kafka.
  *  It emits the messages to be written to Kafka and counters after processing.
  *
  * @author Marian Novotny

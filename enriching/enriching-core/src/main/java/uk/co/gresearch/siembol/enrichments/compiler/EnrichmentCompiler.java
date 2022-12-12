@@ -15,9 +15,9 @@ public interface EnrichmentCompiler {
     /**
      * Compiles rules into an enrichment evaluator
      *
-     * @param rules json string with alerting rules
-     * @param logger logger for debugging
-     * @return enrichment result with an enrichment evaluator
+     * @param rules a json string with enrichment rules
+     * @param logger a logger for debugging
+     * @return an enrichment result with an enrichment evaluator
      * @see EnrichmentResult
      */
     EnrichmentResult compile(String rules, TestingLogger logger);
@@ -25,8 +25,8 @@ public interface EnrichmentCompiler {
     /**
      * Compiles rules into an enrichment evaluator using an inactive logger
      *
-     * @param rules json string with alerting rules
-     * @return enrichment result with an enrichment evaluator
+     * @param rules a json string with alerting rules
+     * @return an enrichment result with an enrichment evaluator
      * @see EnrichmentResult
      */
     default EnrichmentResult compile(String rules) {
@@ -36,7 +36,7 @@ public interface EnrichmentCompiler {
     /**
      * Provides json schema for enrichment rules
      *
-     * @return enrichment result with json schema for enrichment rules
+     * @return an enrichment result with json schema for enrichment rules
      * @see EnrichmentResult
      */
     EnrichmentResult getSchema();
@@ -44,7 +44,7 @@ public interface EnrichmentCompiler {
     /**
      * Provides json schema for testing an enrichment rule
      *
-     * @return enrichment result with json schema for testing an enrichment rule
+     * @return an enrichment result with json schema for testing an enrichment rule
      * @see EnrichmentResult
      */
     EnrichmentResult getTestSpecificationSchema();
@@ -52,18 +52,18 @@ public interface EnrichmentCompiler {
     /**
      * Validates an enrichment rule
      *
-     * @param rule json string with an enrichment rule
-     * @return enrichment result with status OK if the rule is valid
+     * @param rule a json string with an enrichment rule
+     * @return an enrichment result with status OK if the rule is valid
      * @see EnrichmentResult
      */
     EnrichmentResult validateConfiguration(String rule);
 
     /**
      * Validates enrichment rules.
-     * Default implementation tries to compile the rules and returns the status.
+     * Default implementation tries to compile the rules and returns the compilation status.
      *
-     * @param rules json string with enrichment rules
-     * @return enrichment result with status OK if the rules are valid
+     * @param rules a json string with enrichment rules
+     * @return an enrichment result with status OK if the rules are valid
      * @see EnrichmentResult
      */
     default EnrichmentResult validateConfigurations(String rules) {
@@ -77,7 +77,7 @@ public interface EnrichmentCompiler {
     /**
      * Test an enrichment rule on input from a test specification
      *
-     * @param rule json string with an enrichment rule
+     * @param rule a json string with an enrichment rule
      * @param testSpecification a test specification for testing the rule
      * @return an enrichment result with the test result on success otherwise a result with an error status code
      * @see EnrichmentResult
@@ -87,7 +87,7 @@ public interface EnrichmentCompiler {
     /**
      * Test an enrichment rule on input from a test specification
      *
-     * @param rules json string with an enrichment rule
+     * @param rules a json string with an enrichment rule
      * @param testSpecification a test specification for testing the rule
      * @return an enrichment result with the test result on success otherwise a result with an error status code
      * @see EnrichmentResult

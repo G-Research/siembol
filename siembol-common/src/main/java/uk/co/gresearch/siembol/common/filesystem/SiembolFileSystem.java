@@ -14,7 +14,7 @@ import java.io.InputStream;
 public interface SiembolFileSystem extends Closeable {
     /**
      * Opens input stream from a path
-     * @param path  a path to an input stream
+     * @param path a path to an input stream
      * @return opened input stream
      * @throws IOException on error
      */

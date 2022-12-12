@@ -55,6 +55,9 @@ public class SiembolJsonSchemaValidator implements JsonSchemaValidator {
         jsonReader = new ObjectMapper().readerFor(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SiembolResult getJsonSchema() {
         SiembolAttributes attr = new SiembolAttributes();
@@ -62,6 +65,9 @@ public class SiembolJsonSchemaValidator implements JsonSchemaValidator {
         return new SiembolResult(SiembolResult.StatusCode.OK, attr);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SiembolResult validate(String json) {
         try {

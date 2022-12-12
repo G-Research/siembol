@@ -50,7 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *  The metadata about tables are cached in the ZooKeeper and downloaded from a filesystem such as http or hdfs.
  *  It watches for the metadata table update in ZooKeeper and
  *  updates the enrichment tables without needing to restart the topology or the bolt.
- *  It emits the event on input, the computed enrichments, exceptions and counters after processing.
+ *  It emits the event on input, the computed enrichment, exceptions and counters after processing.
  *
  * @author Marian Novotny
  *

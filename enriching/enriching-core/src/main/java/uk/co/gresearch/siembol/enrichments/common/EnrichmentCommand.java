@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * An object that represents an enrichment command used after evaluating an enrichment rule
  *
- * <p>This class implements Serializable interface to be integrated in Storm.
+ * <p>This class implements Serializable interface in order to be integrated in Storm.
  * It represents an enrichment command used after evaluating an enrichment rule.
  * It is used for joining enrichment tables and computing enriching fields.
  *

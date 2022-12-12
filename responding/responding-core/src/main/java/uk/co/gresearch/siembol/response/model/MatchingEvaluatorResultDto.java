@@ -8,7 +8,7 @@ import uk.co.gresearch.siembol.response.common.ResponseEvaluationResult;
 /**
  * An enum for representing a matching evaluator result
  *
- * <p>This enum is used for json (de)serialisation of a metching evaluator result used in a matching evaluator.
+ * <p>This enum is used for json (de)serialisation of a matching evaluator result used in a matching evaluator.
  *
  * @author  Marian Novotny
  * @see com.fasterxml.jackson.annotation.JsonProperty

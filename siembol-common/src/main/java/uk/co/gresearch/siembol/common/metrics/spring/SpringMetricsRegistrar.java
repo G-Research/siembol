@@ -9,7 +9,7 @@ import uk.co.gresearch.siembol.common.metrics.SiembolMetricsRegistrar;
 /**
  * An object for registering metrics in Spring
  *
- * <p>This class implements SiembolMetricsRegistrar interface and it is using in Siembol Spring Boot projects.
+ * <p>This class implements SiembolMetricsRegistrar interface, and it is using in Siembol Spring Boot projects.
  *
  * @author  Marian Novotny
  * @see SiembolMetricsRegistrar

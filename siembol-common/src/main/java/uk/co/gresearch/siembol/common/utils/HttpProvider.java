@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * An object that implements a Http client
  *
  * <p>This class implements a Http client used in various Siembol components.
- * It supports kerberos authentication and methods for get a post requests.
+ * It supports kerberos authentication and methods for GET and POST requests.
  *
  * @author  Marian Novotny
  */

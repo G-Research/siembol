@@ -19,6 +19,7 @@ import java.util.Optional;
 public interface EnrichmentTable {
     /**
      * Provides information whether the table contains a key
+     *
      * @param key an input string for table lookup
      * @return true if the table contains the key, otherwise false
      */

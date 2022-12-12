@@ -31,7 +31,7 @@ import java.util.List;
  * A class with static helper methods for implementing OAUTH2
  *
  * <p>This class exposes static methods for implementing OAUTH2 in Siembol Spring boot projects.
- * These helper functions are used in all Siembol components.
+ * These helper functions are used in various Siembol components.
  *
  * @author  Marian Novotny
  */

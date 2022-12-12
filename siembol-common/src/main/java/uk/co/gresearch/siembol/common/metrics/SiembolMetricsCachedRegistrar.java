@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * An object for registering metrics with caching
  *
- * <p>This class implements SiembolMetricsRegistrar interface and it is using a map for caching of metrics.
+ * <p>This class implements SiembolMetricsRegistrar interface, and it is using internally a map for caching of metrics.
  * This class is not thread safe and the caller needs to consider it.
  *
  * @author  Marian Novotny

@@ -2,18 +2,17 @@ package uk.co.gresearch.siembol.enrichments.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-import uk.co.gresearch.siembol.alerts.model.CorrelationAttributesDto;
 
 /**
- * A data transfer object for representing enriching field used in correlation attributes
+ * A data transfer object for representing enriching field used in a table mapping
  *
- * <p>This class is used for json (de)serialisation of a correlation alert and
+ * <p>This class is used for json (de)serialisation of an enriching field and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny
  * @see com.github.reinert.jjschema.Attributes
  * @see com.fasterxml.jackson.annotation.JsonProperty
- * @see CorrelationAttributesDto
+ *
  */
 @Attributes(title = "enriching field", description = "Mapping definition for enriching field")
 public class EnrichingFieldDto {

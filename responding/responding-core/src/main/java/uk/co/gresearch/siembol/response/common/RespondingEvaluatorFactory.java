@@ -21,7 +21,7 @@ public interface RespondingEvaluatorFactory {
 
     /**
      * Gets the type of the evaluator including its name.
-     * The name should be unique in siembol response instance.
+     * The name should be unique in the siembol response instance.
      *
      * @return a responding result with the evaluator type in attributes on success, or
      *          the result with ERROR status code and the error message otherwise.

@@ -13,8 +13,8 @@ import static uk.co.gresearch.siembol.common.authorisation.SiembolAuthorisationP
  * An object that implement OAUTH2 authentication in Spring Boot projects
  *
  * <p>This class extends WebSecurityConfigurerAdapter from Spring framework.
- * It permits all HTTP request in the project from the excluded list of patterns.
- * It validates Jason Web Token from the HTTP header in order to decide whether permit the request.
+ * It permits all HTTP requests from the excluded list of patterns.
+ * It validates Json Web Token from the HTTP header in order to decide whether to permit the request.
  *
  * @author  Marian Novotny
  * @see ResourceServerOauth2Properties

@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.common.result;
 /**
  * An object that represents Siembol result
  *
- * <p>This class represents Siembol result and it combines a status code with Siembol attributes.
+ * <p>This class represents Siembol result, and it combines a status code with Siembol attributes.
  *
  * @author  Marian Novotny
  * @see SiembolAttributes

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * An object that represents and enrichment table using an in-memory map
  *
  * <p>This class implements EnrichmentTable and Serializable interfaces.
- * It uses in-memory hash map for implementing the table.
+ * It uses an in-memory hash map for implementing the table.
  * It provides lookup into the table for an enrichment key.
  *
  * @author  Marian Novotny
@@ -54,6 +54,7 @@ public class EnrichmentMemoryTable implements EnrichmentTable, Serializable {
 
     /**
      * Static factory method for creating an enrichment memory table
+     *
      * @param is an input stream for reading a json file with the table
      * @return enrichment memory table created from the input stream json file
      * @throws IOException when reading from the stream fails, or

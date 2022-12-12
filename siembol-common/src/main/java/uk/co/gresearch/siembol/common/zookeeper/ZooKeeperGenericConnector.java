@@ -25,12 +25,14 @@ public interface ZooKeeperGenericConnector<T> extends Closeable {
 
     /**
      * Adds a callback to be called after a node change
-     * @param listener a callback to eb called after a node change
+     *
+     * @param listener a callback to be called after a node change
      */
     void addCacheListener(Runnable listener);
 
     /**
-     * Initializes the node, and it waits until the node is ready.
+     * Initializes the node and waits until the node is ready
+     *
      * @throws Exception on error
      */
     default void initialise() throws Exception {

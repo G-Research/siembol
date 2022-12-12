@@ -17,9 +17,9 @@ public interface RespondingCompiler {
     /**
      * Compiles rules into a response engine
      *
-     * @param rules json string with response rules
-     * @param logger logger for debugging
-     * @return alerting result with response engine
+     * @param rules a json string with response rules
+     * @param logger a logger for debugging
+     * @return an alerting result with response engine
      * @see RespondingResult
      * @see uk.co.gresearch.siembol.response.engine.ResponseEngine
      */
@@ -28,8 +28,8 @@ public interface RespondingCompiler {
     /**
      * Compiles rules into a response engine
      *
-     * @param rules json string with response rules
-     * @return alerting result with response engine
+     * @param rules a json string with response rules
+     * @return an alerting result with response engine
      * @see RespondingResult
      * @see uk.co.gresearch.siembol.response.engine.ResponseEngine
      */
@@ -40,7 +40,7 @@ public interface RespondingCompiler {
     /**
      * Provides json schema for response rules
      *
-     * @return RespondingResult with json schema for alerting rules
+     * @return RespondingResult with json schema for response rules
      * @see RespondingResult
      *
      */
@@ -58,9 +58,9 @@ public interface RespondingCompiler {
     /**
      * Compiles rules into response engine and evaluates a test specification using the engine
      *
-     * @param rules json string with alerting rules
-     * @param testSpecification json string for test specification
-     * @return alerting result with testing result
+     * @param rules a json string with response rules
+     * @param testSpecification a json string for test specification
+     * @return a responding result with testing result
      * @see RespondingResult
      */
     RespondingResult testConfigurations(String rules, String testSpecification);
@@ -68,8 +68,8 @@ public interface RespondingCompiler {
     /**
      * Validates a rule by trying to compile it
      *
-     * @param rule json string with a response rule
-     * @return responding result with status OK if the rule was able to compile
+     * @param rule a json string with a response rule
+     * @return a responding result with status OK if the rule was able to compile
      * @see RespondingResult
      */
     RespondingResult validateConfiguration(String rule);
@@ -77,8 +77,8 @@ public interface RespondingCompiler {
     /**
      * Validates rules by trying to compile them
      *
-     * @param rules json string with response rules
-     * @return responding result with status OK if rules were able to compile
+     * @param rules a json string with response rules
+     * @return a responding result with status OK if rules were able to compile
      * @see RespondingResult
      */
     default RespondingResult validateConfigurations(String rules) {
@@ -92,7 +92,7 @@ public interface RespondingCompiler {
     /**
      * Gets evaluator factories
      *
-     * @return responding result with evaluator factories
+     * @return a responding result with evaluator factories
      * @see uk.co.gresearch.siembol.response.common.RespondingEvaluatorFactory
      */
     RespondingResult getRespondingEvaluatorFactories();

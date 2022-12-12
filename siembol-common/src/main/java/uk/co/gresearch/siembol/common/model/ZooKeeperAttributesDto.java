@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * A data transfer object for representing ZooKeeper attributes
  *
- * <p>This class is used for json (de)serialisation of attributes for ZooKeeper connector and
+ * <p>This class is used for json (de)serialisation of attributes for a ZooKeeper connector and
  * for generating json schema from this class using annotations.
  *
  * @author  Marian Novotny

@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.common.metrics;
 /**
  * An object for registering metrics
  *
- * <p>This interface for registering metrics such as counters and gauges.
+ * <p>This interface is for registering metrics such as counters and gauges.
  *
  * @author  Marian Novotny
  *

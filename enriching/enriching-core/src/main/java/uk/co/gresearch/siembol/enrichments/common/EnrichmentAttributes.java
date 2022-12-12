@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * An object for representing enrichment attributes
  *
- * <p>This class represents an enrichment attributes such as an enrichment evaluator and enrichment commands that
+ * <p>This class represents enrichment attributes such as an enrichment evaluator and enrichment commands that
  * are used in the enrichment result.
  *
  * @author  Marian Novotny

@@ -12,7 +12,7 @@ import uk.co.gresearch.siembol.response.model.ArrayTableFormatterEvaluatorAttrib
  * <p>This class implements RespondingEvaluatorFactory interface.
  * It is for creating an array table formatter evaluator and providing metadata such as a type and attributes schema.
  * The table formatter evaluator generates a string with a Markdown table from the json array from the alert.
- * It writes the table into the alert to be used by next evaluators of the rule.
+ * It writes the table into the alert to be used by the next evaluators of the rule.
  * Moreover, it provides the functionality for validating the evaluator attributes.
  *
  * @author  Marian Novotny

@@ -22,9 +22,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 /**
- * A class with static helper methods for implementing json schema enhancements
+ * A class with helper methods for implementing json schema enhancements
  *
- * <p>This class exposes static methods for implementing enhancements in com.github.reinert.jjschema.
+ * <p>This class exposes methods for implementing enhancements in com.github.reinert.jjschema.
  * It supports using default values from Dto classes and preserving ordering of fields from Dto classes.
  * It extends the schema by supporting a union type - 'oneOf'
  *
