@@ -7,7 +7,18 @@ import com.github.reinert.jjschema.SchemaIgnore;
 import uk.co.gresearch.siembol.common.model.JsonRawStringDto;
 
 import java.util.List;
-
+/**
+ * A data transfer object for representing a test case
+ *
+ * <p>This class is used for json (de)serialisation a test case, and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see JsonRawStringDto
+ * @see TestAssertionDto
+ */
 @Attributes(title = "test case", description = "Test case for testing configurations")
 public class TestCaseDto {
     @JsonProperty("test_case_name")

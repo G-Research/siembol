@@ -2,7 +2,17 @@ package uk.co.gresearch.siembol.configeditor.testcase.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.reinert.jjschema.Attributes;
-
+/**
+ * A data transfer object for representing a test assertion
+ *
+ * <p>This class is used for json (de)serialisation a test assertion, and
+ * for generating json schema from this class using annotations.
+ *
+ * @author  Marian Novotny
+ * @see com.github.reinert.jjschema.Attributes
+ * @see com.fasterxml.jackson.annotation.JsonProperty
+ * @see AssertionTypeDto
+ */
 @Attributes(title = "test assertion", description = "Test assertion used in test case")
 public class TestAssertionDto {
     @JsonProperty("assertion_type")

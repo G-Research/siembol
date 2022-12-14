@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.model.*;
@@ -18,7 +18,15 @@ import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.BAD_REQUEST;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-
+/**
+ * An object that represents a config and a test case
+ *
+ * <p>This class represents a config and a test case.
+ * It implements common logic for both types of configurations.
+ * It is used in ConfigStoreImpl.
+ *
+ * @author  Marian Novotny
+ */
 public class ConfigItems {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String INIT_START = "Trying Initialise a git repository: {}";

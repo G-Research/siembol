@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;

@@ -2,7 +2,14 @@ package uk.co.gresearch.siembol.configeditor.common;
 
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * An object that represents information about a configuration change
+ *
+ * <p>This class represents information about configuration change such as the name of the configuration,
+ * its version, content etc.
+ *
+ * @author  Marian Novotny
+ */
 public class ConfigInfo {
     private String name;
     private Map<String, Optional<String>> filesContent;

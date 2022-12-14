@@ -1,5 +1,10 @@
 package uk.co.gresearch.siembol.configeditor.model;
-
+/**
+ * An enum for representing error messages resolutions.
+ * It supports formatting the title from arguments.
+ *
+ * @author  Marian Novotny
+ */
 public enum ErrorResolutions {
     GENERIC_BAD_REQUEST("Inspect error message and try to fix and replay your request"),
     CONCURRENT_USERS("Siembol UI can be used by multiple users in parallel. " +

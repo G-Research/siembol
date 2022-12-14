@@ -2,7 +2,14 @@ package uk.co.gresearch.siembol.configeditor.common;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * An object that represents information about a user
+ *
+ * <p>This class represents information about user such as the name, email address and groups that the user belongs to.
+ * Moreover, it includes the user role under which is trying to access Siembol services.
+ *
+ * @author  Marian Novotny
+ */
 public class UserInfo {
     private String userName;
     private String email;

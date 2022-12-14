@@ -1,7 +1,14 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
-
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
-
+/**
+ * An object for providing metadata about a json rule change
+ *
+ * <p>This class implements ConfigInfoProvider interface. It provides metadata about a json rule change.
+ * It provides information such as the author of the change, type of change, and the version of the configuration.
+ *
+ * @author  Marian Novotny
+ * @see ConfigInfoProvider
+ *
+ */
 public class JsonRuleConfigInfoProvider {
     private static final String AUTHOR_FIELD = "rule_author";
     private static final String NAME_FIELD = "rule_name";

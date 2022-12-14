@@ -1,5 +1,10 @@
 package uk.co.gresearch.siembol.configeditor.model;
-
+/**
+ * An enum for representing error messages.
+ * It supports formatting the message from arguments.
+ *
+ * @author  Marian Novotny
+ */
 public enum ErrorMessages {
     CONFIG_ITEM_ALREADY_EXISTS("%s already exists"),
     CONFIG_ITEM_UNEXPECTED_VERSION("Unexpected version for %s update"),

@@ -16,7 +16,13 @@ import uk.co.gresearch.siembol.configeditor.model.ConfigEditorUiLayout;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
-
+/**
+ * A class with static helper methods for config editor
+ *
+ * <p>This class exposes static helper methods for config editor.
+ *
+ * @author  Marian Novotny
+ */
 public class ConfigEditorUtils {
     private static final Logger LOG = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());

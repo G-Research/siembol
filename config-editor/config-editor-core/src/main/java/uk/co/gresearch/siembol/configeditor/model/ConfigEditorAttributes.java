@@ -8,7 +8,15 @@ import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.List;
-
+/**
+ * A data transfer object that represents config editor attributes
+ *
+ * <p>This class represents config editor attributes.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ * @see JsonRawValue
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorAttributes {
     private String exception;

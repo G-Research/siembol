@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnector;
 import uk.co.gresearch.siembol.common.zookeeper.ZooKeeperConnectorFactory;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;

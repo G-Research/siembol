@@ -16,7 +16,16 @@ import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * An object for providing metadata about a json configuration change
+ *
+ * <p>This class implements ConfigInfoProvider interface. It provides metadata about a json configuration change.
+ * It provides information such as the author of the change, type of change, and the version of the configuration.
+ *
+ * @author  Marian Novotny
+ * @see ConfigInfoProvider
+ *
+ */
 public class JsonConfigInfoProvider implements ConfigInfoProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String RULE_COMMIT_TEMPLATE_NEW = "Adding new %s: %s";
@@ -79,6 +88,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         this.jsonPathConfigNameSearch = String.format(JSON_PATH_FIELD_SEARCH_FORMAT, configNameField);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigInfo getConfigInfo(UserInfo user, String config) {
         ConfigInfo configInfo = configInfoFromUser(user);
@@ -138,6 +150,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return configInfo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigInfo getReleaseInfo(UserInfo user, String release) {
         ConfigInfo configInfo = configInfoFromUser(user);
@@ -166,6 +181,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return configInfo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getReleaseVersion(String content) {
         Map<String, Object> metadata;
@@ -184,6 +202,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return ((Number)metadata.get(configsVersionField)).intValue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConfigInRelease(String release, String configName) {
         JsonNode configsNode = ConfigEditorUtils.evaluateJsonPath(release, jsonPathConfigNameSearch);
@@ -196,6 +217,9 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getReleaseVersion(List<ConfigEditorFile> files) {
         Optional<ConfigEditorFile> release = files
@@ -210,21 +234,33 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return getReleaseVersion(release.get().getContent());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorFile.ContentType getFileContentType() {
         return ConfigEditorFile.ContentType.RAW_JSON_STRING;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isStoreFile(String filename) {
         return filename.endsWith(jsonFileSuffix);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isReleaseFile(String filename) {
         return releaseFilename.equals(filename);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigInfoType getConfigInfoType() {
         return configType;
@@ -262,6 +298,11 @@ public class JsonConfigInfoProvider implements ConfigInfoProvider {
         return -1;
     }
 
+    /**
+     * A builder for a json config info provider
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private static final String COMMIT_TEMPLATE_NEW = "Adding new %s: %%s";
         private static final String COMMIT_TEMPLATE_UPDATE = "Updating %s: %%s to version: %%d";

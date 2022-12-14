@@ -1,13 +1,21 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
 
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 
 import java.util.List;
-
+/**
+ * An object for providing metadata about a json admin configuration change
+ *
+ * <p>This class implements ConfigInfoProvider interface. It provides metadata about a json admin configuration change.
+ * It provides information such as the author of the change, type of change, and the version of the admin configuration.
+ *
+ * @author  Marian Novotny
+ * @see ConfigInfoProvider
+ *
+ */
 public class AdminConfigInfoProvider implements ConfigInfoProvider {
     private static final String UNSUPPORTED_MESSAGE = "Not supported operation";
     private static final String ADMIN_CONFIG_FILE_NAME = "admin_config.json";

@@ -1,5 +1,10 @@
 package uk.co.gresearch.siembol.configeditor.model;
-
+/**
+ * An enum for representing error messages titles.
+ * It supports formatting the title from arguments.
+ *
+ * @author  Marian Novotny
+ */
 public enum ErrorTitles {
     ADD_CONFIG("Problem storing configuration in git repository"),
     ADD_TEST_CASE("Problem storing test case in git repository"),

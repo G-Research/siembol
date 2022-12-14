@@ -10,6 +10,7 @@ import org.springframework.boot.actuate.health.Status;
 
 import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.common.*;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStoreImpl;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
@@ -28,7 +29,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-
+/**
+ * An object for composition of a config store service and a config schema service.
+ *
+ *
+ * <p>This class implements ServiceAggregator and Closeable interfaces.
+ * It is for composing a config store service and a config schema service.
+ * It checks an authorisation for a service and a user using an authorisation provider.
+ * It checks health of all services.
+ *
+ * @author  Marian Novotny
+ * @see ServiceAggregator
+ * @see AuthorisationProvider
+ *
+ */
 public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
     private static final Logger LOG =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -45,21 +59,33 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
         this.gitRepositoriesServices = builder.gitRepositoriesServices;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigStore getConfigStore(UserInfo user, String serviceName) throws AuthorisationException {
         return getService(user, serviceName).getConfigStore();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigSchemaService getConfigSchema(UserInfo user, String serviceName) throws AuthorisationException {
         return getService(user, serviceName).getConfigSchemaService();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ServiceAggregatorService> getAggregatorServices() {
         return serviceMap.values().stream().collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ConfigStore> getConfigStoreServices() {
         return serviceMap.keySet().stream()
@@ -67,6 +93,9 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ConfigSchemaService> getConfigSchemaServices() {
         return serviceMap.keySet().stream()
@@ -74,6 +103,9 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ConfigEditorService> getConfigEditorServices(UserInfo user) {
         List<ConfigEditorService> ret = new ArrayList<>();
@@ -107,16 +139,25 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Health checkConfigStoreServicesHealth() {
         return checkServiceHealth(getConfigStoreServices());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Health checkConfigSchemaServicesHealth() {
         return checkServiceHealth(getConfigSchemaServices());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult shutDown() {
         LOG.info("Initiating shutting down the config store services");
@@ -124,6 +165,9 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
         return new ConfigEditorResult(OK);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult awaitShutDown() {
         LOG.info("Initiating awaiting shutting down the config store services");
@@ -171,6 +215,11 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
         gitRepositoriesServices.forEach(x -> x.getLeft().close());
     }
 
+    /**
+     * A builder for a service aggregator
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private static final String SERVICE_ALREADY_REGISTERED = "Service is already registered";
         private static final String NO_SERVICE_REGISTERED = "No services registered in aggregator";
@@ -179,10 +228,26 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
         private Map<String, Pair<GitRepository, ExecutorService>> gitRepositoriesMap = new HashMap<>();
         private List<Pair<GitRepository, ExecutorService>> gitRepositoriesServices;
 
+        /**
+         * Creates a builder
+         *
+         * @param authProvider an authorisation provider for evaluating the access af a user to a service
+         */
         public Builder(AuthorisationProvider authProvider) {
             this.authProvider = authProvider;
         }
 
+        /**
+         * Adds a service into the builder
+         * @param name the name of the service
+         * @param type the type of the service
+         * @param configStore an already created config store for the service
+         * @param schemaService an already created config schema service for the service
+         * @return this builder
+         * @see ServiceType
+         * @see ConfigStore
+         * @see ConfigSchemaService
+         */
         Builder addService(String name, ServiceType type, ConfigStore configStore, ConfigSchemaService schemaService) {
             if (serviceMap.containsKey(name)) {
                 throw new IllegalArgumentException(SERVICE_ALREADY_REGISTERED);
@@ -196,6 +261,15 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
             return this;
         }
 
+        /**
+         * Adds a service into the builder
+         * @param name the name of the service
+         * @param type the type of the service
+         * @param storeProperties properties of the config store
+         * @param configInfoProvider config info provider for the service
+         * @param schemaService an already created config schema service for the service
+         * @return this builder
+         */
         public Builder addService(String name,
                                   ServiceType type,
                                   ConfigStoreProperties storeProperties,
@@ -205,6 +279,10 @@ public class ServiceAggregatorImpl implements ServiceAggregator, Closeable {
             return addService(name, type, configStore, schemaService);
         }
 
+        /**
+         *
+         * @return the service aggregator built from the builder state
+         */
         public ServiceAggregator build() {
             if (serviceMap.isEmpty()) {
                 throw new IllegalArgumentException(NO_SERVICE_REGISTERED);

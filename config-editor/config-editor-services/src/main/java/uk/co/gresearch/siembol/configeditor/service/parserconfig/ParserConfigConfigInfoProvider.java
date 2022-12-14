@@ -1,6 +1,6 @@
 package uk.co.gresearch.siembol.configeditor.service.parserconfig;
 
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 import uk.co.gresearch.siembol.configeditor.configinfo.JsonConfigInfoProvider;
 

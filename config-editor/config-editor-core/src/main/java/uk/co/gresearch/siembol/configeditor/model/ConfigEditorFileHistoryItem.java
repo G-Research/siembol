@@ -6,7 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
-
+/**
+ * A data transfer object that represents config editor file history item
+ *
+ * <p>This class represents config editor file history item.
+ * It includes the author of the change, the date of the modification and number of added/removed lines.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ */
 public class ConfigEditorFileHistoryItem {
     private String author;
     private String date;
