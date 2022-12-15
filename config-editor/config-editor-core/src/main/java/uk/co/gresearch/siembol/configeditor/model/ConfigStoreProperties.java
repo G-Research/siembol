@@ -1,5 +1,11 @@
 package uk.co.gresearch.siembol.configeditor.model;
-
+/**
+ * A properties object that represents config store properties
+ *
+ * <p>This class represents config store properties for a service. It is used in config editor application properties.
+ *
+ * @author  Marian Novotny
+ */
 public class ConfigStoreProperties {
     private String githubUrl;
     private String gitUserName;

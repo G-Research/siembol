@@ -2,7 +2,16 @@ package uk.co.gresearch.siembol.configeditor.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-
+/**
+ * A data transfer object that represents config tester attributes
+ *
+ * <p>This class represents config tester attributes such as the name, test specification schema and
+ * flags about the tester.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ * @see JsonRawValue
+ */
 public class ConfigTesterDto {
     private String name;
     @JsonProperty("test_schema")

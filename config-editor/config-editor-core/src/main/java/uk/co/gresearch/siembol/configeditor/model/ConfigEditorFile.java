@@ -6,7 +6,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * A data transfer object that represents config editor file
+ *
+ * <p>This class represents config editor file. It includes name, content and the history of modifications.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ * @see JsonRawValue
+ * @see ConfigEditorFileHistoryItem
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorFile {
     public enum ContentType {

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import uk.co.gresearch.siembol.configeditor.common.ConfigEditorUtils;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
 import uk.co.gresearch.siembol.configeditor.configinfo.AdminConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.configinfo.TestCaseInfoProvider;
@@ -22,7 +22,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.ERROR;
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-
+/**
+ * An object for storing and manipulating Siembol configurations
+ *
+ * <p>This  class implements ConfigStore interface is for storing and manipulating Siembol configurations.
+ * It is using GitRepository for storing configurations and ReleasePullRequestService for submitting a release and admin config.
+ * It stores configurations, test cases, an admin config and the release.
+ * It checks health of the service.
+ * All store operations are executed in dedicated threads in order to avoid concurrency issues.
+ *
+ * @author  Marian Novotny
+ * @see ConfigStore
+ * @see GitRepository
+ * @see ReleasePullRequestService
+ *
+ */
 public class ConfigStoreImpl implements ConfigStore {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String TEST_CASES_UNSUPPORTED_MSG = "Test cases are not supported";
@@ -50,6 +64,9 @@ public class ConfigStoreImpl implements ConfigStore {
         this.adminConfig = builder.adminConfig;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult addTestCase(UserInfo user, String testCase) {
         if (testCases == null) {
@@ -60,6 +77,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(command, storeExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult updateTestCase(UserInfo user, String testCase) {
         if (testCases == null) {
@@ -70,6 +90,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(command, storeExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult deleteTestCase(UserInfo user, String configName, String testCaseName) {
         if (testCases == null) {
@@ -81,6 +104,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(command, storeExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getTestCases() {
         if (testCases == null) {
@@ -93,18 +119,27 @@ public class ConfigStoreImpl implements ConfigStore {
         return testCases.getFiles();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult addConfig(UserInfo user, String newConfig) {
         Callable<ConfigEditorResult> command = () -> configs.addConfigItem(user, newConfig);
         return executeStoreCommand(command, storeExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult updateConfig(UserInfo user, String configToUpdate) {
         Callable<ConfigEditorResult> command = () -> configs.updateConfigItem(user, configToUpdate);
         return executeStoreCommand(command, storeExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult deleteConfig(UserInfo user, String configName) {
         Callable<ConfigEditorResult> releaseCheckCommand = () -> release.checkConfigNotInRelease(configName);
@@ -136,6 +171,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(deleteCommand, storeExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getConfigs() {
         if (exception.get() != null) {
@@ -145,6 +183,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return configs.getFiles();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getConfigsReleaseFromCache() {
         if (exception.get() != null) {
@@ -154,24 +195,36 @@ public class ConfigStoreImpl implements ConfigStore {
         return release.getConfigsReleaseFromCache();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getConfigsRelease() {
         Callable<ConfigEditorResult> command = release::getConfigsRelease;
         return executeStoreCommand(command, releaseExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getConfigsReleaseStatus() {
         Callable<ConfigEditorResult> command = release::getConfigsReleaseStatus;
         return executeStoreCommand(command, releaseExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease) {
         Callable<ConfigEditorResult> command = () -> release.submitConfigsRelease(user, rulesRelease);
         return executeStoreCommand(command, releaseExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getAdminConfigFromCache() {
         if (adminConfig == null) {
@@ -185,6 +238,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return adminConfig.getConfigsReleaseFromCache();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getAdminConfig() {
         if (adminConfig == null) {
@@ -195,6 +251,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(command, adminConfigExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getAdminConfigStatus() {
         if (adminConfig == null) {
@@ -205,6 +264,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(command, adminConfigExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult submitAdminConfig(UserInfo user, String adminConfigStr) {
         if (adminConfig == null) {
@@ -215,6 +277,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return executeStoreCommand(command, adminConfigExecutorService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getRepositories() {
         ConfigEditorRepositories repositories = new ConfigEditorRepositories();
@@ -239,6 +304,9 @@ public class ConfigStoreImpl implements ConfigStore {
         return new ConfigEditorResult(OK, attr);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Health checkHealth() {
         Exception e = exception.get();
@@ -267,6 +335,11 @@ public class ConfigStoreImpl implements ConfigStore {
         }
     }
 
+    /**
+     * A builder for a config store
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private static final ConfigInfoProvider TEST_CASE_INFO_PROVIDER = new TestCaseInfoProvider();
         private static final ConfigInfoProvider ADMIN_CONFIG_INFO_PROVIDER = new AdminConfigInfoProvider();

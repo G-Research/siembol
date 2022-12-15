@@ -7,13 +7,29 @@ import uk.co.gresearch.siembol.configeditor.model.ErrorResolutions;
 import uk.co.gresearch.siembol.configeditor.model.ErrorTitles;
 
 import java.util.function.Supplier;
-
+/**
+ * An object for evaluating a test case with enhanced error messages
+ *
+ * <p>This class is implementing TestCaseEvaluator interface, and it extends ServiceWithErrorMessage class.
+ * It is used for evaluating a test case using an underlying test case evaluator. It enriches error messages on error.
+ *
+ * @author  Marian Novotny
+ * @see ServiceWithErrorMessage
+ * @see TestCaseEvaluator
+ * @see ErrorMessages
+ * @see ErrorResolutions
+ * @see ErrorTitles
+ *
+ */
 public class TestCaseEvaluatorWithErrorMessage extends ServiceWithErrorMessage<TestCaseEvaluator>
         implements TestCaseEvaluator {
     public TestCaseEvaluatorWithErrorMessage(TestCaseEvaluator service) {
         super(service);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult evaluate(String jsonResult, String testCase) {
         Supplier<ConfigEditorResult> fun = () -> service.evaluate(jsonResult, testCase);
@@ -22,6 +38,9 @@ public class TestCaseEvaluatorWithErrorMessage extends ServiceWithErrorMessage<T
                 ErrorResolutions.VALIDATION.getResolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult validate(String testCase) {
         Supplier<ConfigEditorResult> fun = () -> service.validate(testCase);
@@ -30,6 +49,9 @@ public class TestCaseEvaluatorWithErrorMessage extends ServiceWithErrorMessage<T
                 ErrorResolutions.VALIDATION.getResolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getSchema() {
         return service.getSchema();

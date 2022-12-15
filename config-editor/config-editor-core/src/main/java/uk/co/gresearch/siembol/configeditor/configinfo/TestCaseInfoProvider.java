@@ -1,13 +1,21 @@
 package uk.co.gresearch.siembol.configeditor.configinfo;
 
 import uk.co.gresearch.siembol.configeditor.common.UserInfo;
-import uk.co.gresearch.siembol.configeditor.common.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfo;
 import uk.co.gresearch.siembol.configeditor.common.ConfigInfoType;
 
 import java.util.List;
-
+/**
+ * An object for providing metadata about a json test case change
+ *
+ * <p>This class implements ConfigInfoProvider interface. It provides metadata about a json test case change.
+ * It provides information such as the author of the change, type of change, and the version of the test case.
+ *
+ * @author  Marian Novotny
+ * @see ConfigInfoProvider
+ *
+ */
 public class TestCaseInfoProvider implements ConfigInfoProvider {
     private static final String UNSUPPORTED_MESSAGE = "Not supported operation";
     private static final String AUTHOR_FIELD = "author";

@@ -5,7 +5,13 @@ import uk.co.gresearch.siembol.common.constants.ServiceType;
 import uk.co.gresearch.siembol.configeditor.configstore.ConfigStore;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-
+/**
+ * An object that represents a service used in the service aggregator
+ *
+ * <p>This class represents a service used in the service aggregator.
+ *
+ * @author  Marian Novotny
+ */
 public class ServiceAggregatorService {
     private final String name;
     private final ServiceType type;

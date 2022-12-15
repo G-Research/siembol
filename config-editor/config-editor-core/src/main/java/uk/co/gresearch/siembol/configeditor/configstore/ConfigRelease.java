@@ -4,6 +4,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.gresearch.siembol.configeditor.common.*;
+import uk.co.gresearch.siembol.configeditor.configinfo.ConfigInfoProvider;
 import uk.co.gresearch.siembol.configeditor.git.GitRepository;
 import uk.co.gresearch.siembol.configeditor.git.ReleasePullRequestService;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorFile;
@@ -17,7 +18,15 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.OK;
-
+/**
+ * An object that represents a config release and an admin config
+ *
+ * <p>This class represents a config release and an admin config.
+ * It implements common logic for both types of configurations.
+ * It is used in ConfigStoreImpl.
+ *
+ * @author  Marian Novotny
+ */
 public class ConfigRelease {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String SUBMIT_INIT_LOG_MSG = "User: {} trying to release {} version: {}";

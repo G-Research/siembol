@@ -1,5 +1,13 @@
 package uk.co.gresearch.siembol.configeditor.common;
-
+/**
+ * An enum of configuration types
+ *
+ * @author  Marian Novotny
+ * @see #RULE
+ * @see #CONFIG
+ * @see #TEST_CASE
+ * @see #ADMIN_CONFIG
+ */
 public enum ConfigInfoType {
     RULE("rule", "rules", "Rules"),
     CONFIG("configuration", "configurations", "Configurations"),

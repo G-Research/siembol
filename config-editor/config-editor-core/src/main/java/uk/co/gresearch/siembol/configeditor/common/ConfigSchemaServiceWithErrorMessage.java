@@ -8,7 +8,16 @@ import uk.co.gresearch.siembol.configeditor.model.ErrorTitles;
 
 import java.util.Map;
 import java.util.function.Supplier;
-
+/**
+ * An object for configuration schema service with enhanced error messages
+ *
+ * <p>This class implements ConfigSchemaService interface, and it extends ServiceWithErrorMessage class.
+ * It enriches error messages on error.
+ *
+ * @author  Marian Novotny
+ * @see ServiceWithErrorMessage
+ * @see ConfigSchemaService
+ */
 public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage<ConfigSchemaService>
         implements ConfigSchemaService {
 
@@ -16,11 +25,17 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
         super(service);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getSchema() {
         return service.getSchema();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult validateConfiguration(String configuration) {
         Supplier<ConfigEditorResult> fun = () -> service.validateConfiguration(configuration);
@@ -29,6 +44,9 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
                 ErrorResolutions.VALIDATION.getResolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult validateConfigurations(String configurations) {
         Supplier<ConfigEditorResult> fun = () -> service.validateConfigurations(configurations);
@@ -37,31 +55,49 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
                 ErrorResolutions.VALIDATION.getResolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, ConfigImporter> getConfigImporters() {
         return service.getConfigImporters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getConfigTesters() {
         return service.getConfigTesters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigTester getConfigTester(String name) {
         return service.getConfigTester(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Health checkHealth() {
         return service.checkHealth();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getImporters() {
         return service.getImporters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult importConfig(UserInfo user,
                                            String importerName,
@@ -74,11 +110,17 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
                 ErrorResolutions.GENERIC_BAD_REQUEST.getResolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getAdminConfigurationSchema() {
         return service.getAdminConfigurationSchema();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult validateAdminConfiguration(String configuration) {
         Supplier<ConfigEditorResult> fun = () -> service.validateAdminConfiguration(configuration);
@@ -87,6 +129,9 @@ public class ConfigSchemaServiceWithErrorMessage extends ServiceWithErrorMessage
                 ErrorResolutions.VALIDATION.getResolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getAdminConfigTopologyName(String configuration) {
         return service.getAdminConfigTopologyName(configuration);

@@ -29,7 +29,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult.StatusCode.*;
-
+/**
+ * An object for evaluating a test case
+ *
+ * <p>This class is implementing TestCaseEvaluator interface. It is used for evaluating a test case,
+ * validating its syntax. Moreover, it provides json schema for a test case specification.
+ *
+ * @author  Marian Novotny
+ *
+ */
 public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
     private static final ObjectReader TEST_CASE_READER =
             new ObjectMapper().readerFor(TestCaseDto.class);
@@ -38,6 +46,12 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
     private final JsonSchemaValidator jsonSchemaValidator;
     private final String testCaseSchema;
 
+    /**
+     * Creates a test case evaluator
+     * @param uiLayout a layout for enriching a test case json schema
+     * @throws Exception on error
+     * @see ConfigEditorUiLayout
+     */
     public TestCaseEvaluatorImpl(ConfigEditorUiLayout uiLayout) throws Exception {
         this.jsonSchemaValidator = new SiembolJsonSchemaValidator(TestCaseDto.class);
         String schemaStr = jsonSchemaValidator.getJsonSchema().getAttributes().getJsonSchema();
@@ -92,6 +106,9 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult evaluate(String jsonResult, String testCaseJson) {
         ConfigEditorTestCaseResult testCaseResult = new ConfigEditorTestCaseResult();
@@ -127,6 +144,9 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
         return new ConfigEditorResult(OK, attributes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult validate(String testCase) {
         SiembolResult validationResult = jsonSchemaValidator.validate(testCase);
@@ -141,6 +161,9 @@ public class TestCaseEvaluatorImpl implements TestCaseEvaluator {
         return new ConfigEditorResult(OK, new ConfigEditorAttributes());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConfigEditorResult getSchema() {
         return ConfigEditorResult.fromSchema(testCaseSchema);

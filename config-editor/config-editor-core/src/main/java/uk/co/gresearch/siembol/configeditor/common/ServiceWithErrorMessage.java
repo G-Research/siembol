@@ -3,7 +3,13 @@ package uk.co.gresearch.siembol.configeditor.common;
 import uk.co.gresearch.siembol.configeditor.model.ConfigEditorResult;
 
 import java.util.function.Supplier;
-
+/**
+ * An object that enhances error messages for a service
+ *
+ * <p>This class provides functionality for enhancing error messages for a generic service.
+ *
+ * @author  Marian Novotny
+ */
 public class ServiceWithErrorMessage<T> {
     protected final T service;
 

@@ -26,7 +26,16 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
+/**
+ * An object for interaction with a git repository
+ *
+ *
+ * <p>This class implements Closeable interface.
+ * It is used for cloning the repository, committing a change in a git repository and
+ * for obtaining the current files including the history of changes.
+ *
+ * @author  Marian Novotny
+ */
 public class GitRepository implements Closeable {
     private static final String MISSING_ARGUMENTS_MSG = "Missing arguments required for git repository initialisation";
     private static final String ERROR_INIT_MSG = "Error during git repository initialisation";
@@ -63,6 +72,16 @@ public class GitRepository implements Closeable {
         defaultBranch = builder.defaultBranch;
     }
 
+    /**
+     * Copies and commits the files in the repository
+     *
+     * @param configInfo metadata such as a git branch, an author and files to be copied and committed
+     * @param directory the directory where the files should be copied
+     * @param fileNameFilter the filter for filtering the files to be included in the result
+     * @return a config editor result with the current files in the repository
+     * @throws GitAPIException
+     * @throws IOException
+     */
     public ConfigEditorResult transactCopyAndCommit(
             ConfigInfo configInfo,
             String directory,
@@ -131,10 +150,25 @@ public class GitRepository implements Closeable {
     }
 
 
+    /**
+     * Gets the current files from a directory
+     * @param directory a folder name
+     * @return a config editor result with the current files in the repository under the directory
+     * @throws IOException
+     * @throws GitAPIException
+     */
     public ConfigEditorResult getFiles(String directory) throws IOException, GitAPIException {
         return getFiles(directory, x -> true);
     }
 
+    /**
+     * Gets the current files from a directory
+     * @param directory a folder name
+     * @param fileNameFilter a filter for filtering the files
+     * @return a config editor result with the current files in the repository under the directory
+     * @throws IOException
+     * @throws GitAPIException
+     */
     public ConfigEditorResult getFiles(String directory,
                                        Function<String, Boolean> fileNameFilter) throws IOException, GitAPIException {
         git.pull()
@@ -203,23 +237,43 @@ public class GitRepository implements Closeable {
         return new ConfigEditorResult(ConfigEditorResult.StatusCode.OK, attr);
     }
 
+    /**
+     * Gets a git repository URL
+     * @return a git repository URL
+     */
     public String getRepoUri() {
         return repoUri;
     }
 
+    /**
+     * Formats a git repository URL with a directory
+     * @return a git repository URL with a directory
+     */
     public String getDirectoryUrl(String directory) {
         return String.format(GIT_REPO_DIRECTORY_URL_FORMAT, gitUrl, repoName, defaultBranch, directory);
     }
 
+    /**
+     * Gets the default branch computed during initialisation
+     * @return the default branch name
+     */
     public String getDefaultBranch() {
         return defaultBranch;
     }
 
+    /**
+     * Closes the repository
+     */
     @Override
     public void close() {
         git.close();
     }
 
+    /**
+     * A builder for a git repository
+     *
+     * @author  Marian Novotny
+     */
     public static class Builder {
         private static final String GIT_REPO_URL_FORMAT = "%s/%s.git";
         private String repoName;
@@ -231,26 +285,53 @@ public class GitRepository implements Closeable {
         private Git git;
         private ConfigEditorFile.ContentType contentType = ConfigEditorFile.ContentType.RAW_JSON_STRING;
 
+        /**
+         * Sets the repository name
+         * @param repoName the name of teh repository
+         * @return this builder
+         */
         public Builder repoName(String repoName) {
             this.repoName = repoName;
             return this;
         }
 
+        /**
+         * Sets git url
+         * @param gitUrl a url to git server
+         * @return this builder
+         */
         public Builder gitUrl(String gitUrl) {
             this.gitUrl = gitUrl;
             return this;
         }
 
+        /**
+         * Sets folder for this repository to be considered.
+         * @param repoFolder the name of the folder
+         * @return this builder
+         */
         public Builder repoFolder(String repoFolder) {
             this.repoFolder = repoFolder;
             return this;
         }
 
+        /**
+         * Sets the credentials for the git repository
+         * @param userName the name of the user
+         * @param password password or PAT
+         * @return this builder
+         */
         public Builder credentials(String userName, String password) {
             credentialsProvider = new UsernamePasswordCredentialsProvider(userName, password);
             return this;
         }
 
+        /**
+         * Builds the git repository
+         * @return the git repository built from the builder state
+         * @throws GitAPIException
+         * @throws IOException
+         */
         public GitRepository build() throws GitAPIException, IOException {
             if (repoName == null
                     || gitUrl == null
