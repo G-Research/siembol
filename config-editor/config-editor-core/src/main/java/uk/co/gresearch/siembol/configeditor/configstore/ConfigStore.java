@@ -77,13 +77,13 @@ public interface ConfigStore extends HealthCheckable {
     ConfigEditorResult getConfigs();
 
     /**
-     * Gets the release form cache
+     * Gets the release from cache
      * @return config editor result with the release file
      */
     ConfigEditorResult getConfigsReleaseFromCache();
 
     /**
-     * Gets the release form the store
+     * Gets the release from the store
      * @return config editor result with the release file
      */
     ConfigEditorResult getConfigsRelease();
@@ -103,13 +103,13 @@ public interface ConfigStore extends HealthCheckable {
     ConfigEditorResult submitConfigsRelease(UserInfo user, String rulesRelease);
 
     /**
-     * Gets the admin configuration form the cache
+     * Gets the admin configuration from the cache
      * @return config editor result with the admin configuration file
      */
     ConfigEditorResult getAdminConfigFromCache();
 
     /**
-     * Gets the admin configuration form the store
+     * Gets the admin configuration from the store
      * @return config editor result with the admin configuration file
      */
     ConfigEditorResult getAdminConfig();
