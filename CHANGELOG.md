@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2022-12-15
+
+- Fixing error messages in Siembol UI
+- Improved initialisation in Siembol response
+- Reworking configuration testing in config editor rest module
+- Adding numeric compare matcher in Siembol alerting
+- Sending correlated alerts after matching in Siembol correlation alerting
+- Minor refactoring of Siembol monitoring
+- Adding javadoc to Siembol java modules
+- Upgrading ngx-formly dependency to version 6.0.2 in Siembol UI
+
+
 ## [2.5.0] - 2022-06-30
 
 - Adding siembol-monitoring module with siembol-heartbeat service
