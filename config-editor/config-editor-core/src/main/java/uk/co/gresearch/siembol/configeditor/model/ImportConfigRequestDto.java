@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * A data transfer object that represents a config importer request
  *
- * <p>This class represents config importer. It includes properties such as the name of teh importer,
+ * <p>This class represents config importer. It includes properties such as the name of the importer,
  * a config to import and importer attributes.
  *
  * @author  Marian Novotny

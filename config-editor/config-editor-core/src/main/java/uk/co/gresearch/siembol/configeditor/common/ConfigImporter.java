@@ -29,7 +29,7 @@ public interface ConfigImporter {
      * Imports open standard configuration into Siembol syntax
      * @param user a user info object
      * @param importerAttributes a json string with importer attributes
-     * @param configuration a configuration for importing into Siembol
+     * @param configuration configuration for importing into Siembol
      * @return config editor result with OK status code and the imported config if the import was successful, otherwise
      *         the result with ERROR status.
      */

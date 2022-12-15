@@ -2,7 +2,7 @@ package uk.co.gresearch.siembol.configeditor.common;
 /**
  * An object for providing authorisation for Siembol services
  *
- * <p>This interface is for providing authorisation for a Siembol services.
+ * <p>This interface is for providing authorisation for a Siembol service.
  * It decides whether the user is allowed to access a service under its role.
  *
  * @author  Marian Novotny

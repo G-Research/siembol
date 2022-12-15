@@ -100,7 +100,7 @@ public class ReleasePullRequestService {
 
         /**
          * Sets the repository name
-         * @param repoName the name of teh repository
+         * @param repoName the name of the repository
          * @return this builder
          */
         public Builder repoName(String repoName) {

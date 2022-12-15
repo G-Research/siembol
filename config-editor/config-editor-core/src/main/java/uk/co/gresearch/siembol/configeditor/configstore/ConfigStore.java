@@ -8,7 +8,7 @@ import uk.co.gresearch.siembol.configeditor.common.HealthCheckable;
  * An object for storing and manipulating Siembol configurations
  *
  * <p>This interface is for storing and manipulating Siembol configurations.
- * It stores configurations, test cases, an admin config and the release.
+ * It stores configurations, test cases, admin config and the release.
  * It checks health of the service.
  *
  * @author  Marian Novotny
@@ -77,7 +77,7 @@ public interface ConfigStore extends HealthCheckable {
     ConfigEditorResult getConfigs();
 
     /**
-     * Gets the release form the cache
+     * Gets the release form cache
      * @return config editor result with the release file
      */
     ConfigEditorResult getConfigsReleaseFromCache();
@@ -136,7 +136,7 @@ public interface ConfigStore extends HealthCheckable {
 
     /**
      * Checks the health of the store
-     * @return an health object with the status information
+     * @return a health object with the status information
      * @see Health
      */
     Health checkHealth();

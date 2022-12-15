@@ -70,8 +70,8 @@ public interface ConfigSchemaService extends HealthCheckable {
     ConfigTester getConfigTester(String name);
 
     /**
-     * Checks a health of teh service
-     * @return a health object with the status
+     * Checks a health of the service
+     * @return health object with the status
      * @see Health
      */
     default Health checkHealth() { return Health.up().build(); }
@@ -96,7 +96,7 @@ public interface ConfigSchemaService extends HealthCheckable {
     /**
      * Imports a config into a service syntax
      * @param user a user info object
-     * @param importerName the name of teh importer
+     * @param importerName the name of the importer
      * @param importerAttributes a json string with importer attributes
      * @param configToImport a string with configuration to be imported
      * @return config editor result with OK status code and the imported config if the import was successful, otherwise

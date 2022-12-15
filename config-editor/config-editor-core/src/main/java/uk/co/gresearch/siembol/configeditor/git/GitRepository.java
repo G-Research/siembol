@@ -254,7 +254,7 @@ public class GitRepository implements Closeable {
     }
 
     /**
-     * Gets the default branch computed during initialisatio
+     * Gets the default branch computed during initialisation
      * @return the default branch name
      */
     public String getDefaultBranch() {

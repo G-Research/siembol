@@ -73,7 +73,7 @@ public interface ConfigInfoProvider {
     /**
      * Gets information whether the config is included in the release
      * @param release a json string with release
-     * @param configName teh name of config to check
+     * @param configName the name of config to check
      * @return true if the config is included in the release, otherwise false
      */
     boolean isConfigInRelease(String release, String configName);
