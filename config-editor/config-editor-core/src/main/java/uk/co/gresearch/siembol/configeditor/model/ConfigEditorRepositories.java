@@ -3,6 +3,14 @@ package uk.co.gresearch.siembol.configeditor.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * A data transfer object that represents config editor repositories
+ *
+ * <p>This class represents config editor repositories.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorRepositories {
     @JsonProperty("rule_store_url")

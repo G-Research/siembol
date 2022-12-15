@@ -5,7 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
-
+/**
+ * A data transfer object that represents a config importer request
+ *
+ * <p>This class represents config importer. It includes properties such as the name of teh importer,
+ * a config to import and importer attributes.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ * @see JsonRawValue
+ */
 public class ImportConfigRequestDto {
     @JsonProperty("importer_name")
     private String importerName;

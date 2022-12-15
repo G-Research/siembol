@@ -1,6 +1,8 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,16 @@ import uk.co.gresearch.siembol.common.result.SiembolResult;
 import java.util.List;
 
 import static uk.co.gresearch.siembol.common.result.SiembolResult.StatusCode.OK;
-
+/**
+ * A data transfer object that represents config editor result
+ *
+ * <p>This class represents config editor result. It combines a status code with attributes.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ * @see JsonRawValue
+ * @see ConfigEditorAttributes
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigEditorResult {
     public enum StatusCode {

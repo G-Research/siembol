@@ -3,7 +3,14 @@ package uk.co.gresearch.siembol.configeditor.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
-
+/**
+ * A data transfer object that represents test case result
+ *
+ * <p>This class represents config editor test case evaluation result.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ */
 public class ConfigEditorTestCaseResult {
     @JsonProperty("number_skipped_assertions")
     private Integer skippedAssertions;

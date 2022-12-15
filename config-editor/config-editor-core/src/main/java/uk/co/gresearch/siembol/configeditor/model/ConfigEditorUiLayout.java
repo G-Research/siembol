@@ -5,7 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Map;
 import java.util.HashMap;
-
+/**
+ * A data transfer object that represents UI layout specification
+ *
+ * <p>This class represents UI layout specification for a service.
+ * This allows to change and enrich json schemas generated from DTO classes.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ */
 public class ConfigEditorUiLayout {
     @JsonProperty("config_layout")
     Map<String, JsonNode> configLayout = new HashMap<>();

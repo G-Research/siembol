@@ -1,10 +1,18 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.co.gresearch.siembol.common.model.StormTopologyDto;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * An object that represents config editor service context
+ *
+ * <p>This class represents config editor service context.
+ *
+ * @author  Marian Novotny
+ * @see JsonProperty
+ */
 public class ConfigEditorServiceContext {
     private String serviceName;
     private String configRelease;

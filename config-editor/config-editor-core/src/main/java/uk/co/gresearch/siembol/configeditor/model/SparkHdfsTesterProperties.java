@@ -1,9 +1,15 @@
 package uk.co.gresearch.siembol.configeditor.model;
 
-
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * An object that represents an alerting spark tester properties
+ *
+ * <p>This class represents an alerting spark tester properties. It is used in the spark alerting main function
+ * in order specify the test requirements.
+ *
+ * @author  Marian Novotny
+ */
 public class SparkHdfsTesterProperties {
     private String url;
 
