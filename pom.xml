@@ -63,7 +63,7 @@
         <slf4j_version>2.0.3</slf4j_version>
         <commons_lang3_version>3.12.0</commons_lang3_version>
         <commons_io_version>2.11.0</commons_io_version>
-        <gson_version>2.9.1</gson_version>
+        <gson_version>2.10.1</gson_version>
         <kubernetes_client_version>6.1.1</kubernetes_client_version>
         <reactor_core_version>3.5.0</reactor_core_version>
         <io_micrometer_version>1.9.5</io_micrometer_version>
