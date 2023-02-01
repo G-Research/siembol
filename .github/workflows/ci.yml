@@ -114,7 +114,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: deployment/docker
           file: deployment/docker/Dockerfile.storm
@@ -182,7 +182,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=siembol-${{ matrix.component }}
       - name: Build and export Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: deployment/docker
           file: deployment/docker/Dockerfile.java
@@ -267,7 +267,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=siembol-config-editor-ui
       - name: Build and export Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: deployment/docker
           file: deployment/docker/Dockerfile.config-editor-ui
