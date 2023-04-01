@@ -1,4 +1,4 @@
-﻿# For most projects, this workflow file will not need changing; you simply need
+# For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
 # You may wish to alter this file to override the set of languages analyzed,
@@ -73,7 +73,7 @@ jobs:
         java-version: '17'
     - name: Cache Maven packages
       if: ${{ matrix.language == 'java' }} 
-      uses: actions/cache@v3.0.11
+      uses: actions/cache@v3.3.1
       with:
         path: ~/.m2
         key: maven-${{ hashFiles('**/pom.xml') }}
