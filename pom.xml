@@ -9,7 +9,7 @@
     <version>2.7.0-SNAPSHOT</version>
     <description>A scalable, advanced security analytics framework based on open-source big data technologies.</description>
     <inceptionYear>2019</inceptionYear>
-    <url>https://siembol.io/</url>
+    <url>https://g-research.github.io/siembol/</url>
     <licenses>
         <license>
             <name>Apache 2.0 License</name>
