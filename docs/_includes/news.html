@@ -1,5 +1,5 @@
 	<section id="news" class="section-content main-background-color">
-		<img class="hidden-xs hidden-sm" src="/media/img/top-diagonal.png" alt="">
+		<img class="hidden-xs hidden-sm" src="{{ '/media/img/top-diagonal.png' | relative_url }}" alt="">
 
 		<div class="container padding-top-50 padding-bottom-50">
 			<div class="row">
@@ -12,12 +12,12 @@
 						<div class="row">
 							{% for article in site.posts %}
 							<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 article">
-								<a href="{{ article.url }}">
-									<div class="article-image article-image-container" style="background: center no-repeat url(/media/news/title/{{ article.image }});"></div>
+								<a href="{{ article.url | relative_url }}">
+									<div class="article-image article-image-container" style="background: center no-repeat url({{ '/media/news/title/' | append: article.image | relative_url }});"></div>
 								</a>
-								<a href="{{ article.url }}"><h3><b>{{ article.title }}</b></h3></a>
+								<a href="{{ article.url | relative_url }}"><h3><b>{{ article.title }}</b></h3></a>
 								<p>{{ article.excerpt }}</p>
-								<a href="{{ article.url }}"><span>Read More</span></a>
+								<a href="{{ article.url | relative_url }}"><span>Read More</span></a>
 							</div>
 							{% endfor %}
 						</div>
@@ -27,5 +27,5 @@
 			</div>
 		</div>
 
-		<img class="bottom-diagonal hidden-xs hidden-sm" src="/media/img/bottom-diagonal.png" alt="">
+		<img class="bottom-diagonal hidden-xs hidden-sm" src="{{ '/media/img/bottom-diagonal.png' | relative_url }}" alt="">
 	</section>
