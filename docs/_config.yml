@@ -3,7 +3,6 @@
 
 current_version:  1.1.0
 name: Siembol
-url: "https://g-research.github.io"
 baseurl: "/siembol"
 
 # Main Logo
