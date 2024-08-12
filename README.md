@@ -6,6 +6,9 @@
 
 [![Apache License](https://img.shields.io/badge/License-Apache%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
 
+> [!WARNING]  
+> This project is no longer maintained. Feel free to fork and make your own changes if needed.
+
 # Siembol 
 
 Siembol provides a scalable, advanced security analytics framework based on open-source big data technologies. Siembol normalizes, enriches, and alerts on data from various sources, which allows security teams to respond to attacks before they become incidents.
