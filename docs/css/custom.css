@@ -87,3 +87,22 @@ hr {
         width: 125px !important;
     }
 }
+
+/* ANNOUNCEMENT BAR */
+
+.announcement-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    z-index: 3000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+}
+
+.navbar {
+    margin-top: 30px;
+}
