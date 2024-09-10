@@ -62,8 +62,7 @@ module.exports = function(grunt) {
                     './_js/window-onload.js',
                     './_js/document-ready.js',
                     './_js/window-resize.js',
-                    './_js/widgets-config.js',
-                    './_js/google-maps.js'
+                    './_js/widgets-config.js'
                 ],
 
               dest: './js/main.js',
