@@ -1,5 +1,5 @@
 		<section id="work" class="section-content secondary-background-color">
-			<img class="top-diagonal hidden-xs hidden-sm" src="/media/img/top-diagonal.png" alt="">
+			<img class="top-diagonal hidden-xs hidden-sm" src="{{ '/media/img/top-diagonal.png' | relative_url }}" alt="">
 
 			<div class="container padding-top-100 padding-bottom-100">
 				<div class="row">
@@ -11,7 +11,7 @@
 							<ul class="mosaic-list">
 								{% for thumbs in site.work_thumbs %}
 								<li class="mosaic-gallery-item col-lg-3 col-ms-3 col-sm-6">
-									<img src="{{ thumbs.image }}" alt="{{ thumbs.title }}">
+									<img src="{{ thumbs.image | relative_url }}" alt="{{ thumbs.title }}">
 									<div class="mosaic-thumb-overlay">
 										<a href="{{ thumbs.url }}">
 											<div class="mosaic-thumb-detail">

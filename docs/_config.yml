@@ -3,6 +3,7 @@
 
 current_version:  1.1.0
 name: Siembol
+baseurl: "/siembol"
 
 # Main Logo
 # -------------------------
@@ -52,7 +53,7 @@ features_thumbs:
 # Blockquote
 # -------------------------
 
-blockquote: 
+blockquote:
    text: "We develop online marketing solutions that help enterprises accurately identify the consumers that truly need their services."
    tagline: "Serving the community since 2014"
    button_text: "Read More"
@@ -70,7 +71,7 @@ services:
    description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni tenetur officiis vel aspernatur. Quidem eligendi sequi veritatis vel recusandae porro maxime corporis id, deleniti harum alias asperiores soluta unde aliquam."
  - title: "UI/UX Design"
    icon: "magic"
-   description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni tenetur officiis vel aspernatur. Quidem eligendi sequi veritatis vel recusandae porro maxime corporis id, deleniti harum alias asperiores soluta unde aliquam."      
+   description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni tenetur officiis vel aspernatur. Quidem eligendi sequi veritatis vel recusandae porro maxime corporis id, deleniti harum alias asperiores soluta unde aliquam."
 
 # Work Mosaic
 # -------------------------
@@ -95,7 +96,7 @@ work_thumbs:
  - title: "Officiis Aspernatur"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
-   image: "/media/img/work-05.jpg"   
+   image: "/media/img/work-05.jpg"
  - title: "Soluta Asperiores"
    description: "Fugit aut earum in sit, placeat quis consequatur."
    url: "#_"
