@@ -59,7 +59,7 @@ While this code of conduct should be adhered to by participants, we recognize th
 
 As a small and young project, we don’t yet have a Code of Conduct enforcement team. We encourage contributors to try to resolve issues with respectful communication - [here is an example of how to do that](https://github.com/fsprojects/fantomas/pull/649#issuecomment-599965505).
 
-Should there be difficulties in dealing with the situation or you are uncomfortable speaking up, unacceptable behavior may be reported to conduct@siembol.io. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident.
+Should there be difficulties in dealing with the situation or you are uncomfortable speaking up, unacceptable behavior may be reported to conduct@gr-oss.io. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident.
 
 If you are unsure whether an incident is a violation, or whether the space where the incident took place is covered by our Code of Conduct, we encourage you to still address or report it. We would prefer to have a few extra reports where we decide to take no action than to let an incident go unnoticed and unresolved, resulting in an individual or group feeling like they can no longer participate in the community. Reports deemed as not a violation will also allow us to improve our Code of Conduct and processes surrounding it. 
 
