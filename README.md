@@ -1,5 +1,8 @@
 ![Siembol](logo.svg)
 
+# Status: Archived
+
+![status: inactive](https://img.shields.io/badge/status-inactive-red.svg)
 [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/54ad78bc63b24ce445e8241f179fe1ddeecf8eef/arsenal/usa/2021.svg)](https://www.blackhat.com/us-21/arsenal/schedule/index.html#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-24038)
 [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/europe/2021.svg?sanitize=true)](https://www.blackhat.com/eu-21/arsenal/schedule/index.html#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-25165)
 [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2022.svg?sanitize=true)](https://www.blackhat.com/us-22/arsenal/schedule/#siembol-an-open-source-real-time-siem-tool-based-on-big-data-technologies-27927)
