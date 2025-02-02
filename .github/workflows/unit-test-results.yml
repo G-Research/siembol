@@ -17,26 +17,12 @@ jobs:
       # it does not yet support downloading from a different workflow
       # https://github.com/actions/download-artifact/issues/3
       - name: Download Artifacts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p artifacts && cd artifacts
-
-          artifacts_url=${{ github.event.workflow_run.artifacts_url }}
-
-          gh api --paginate $artifacts_url -q '.artifacts[] | select(.name=="unit-test-results" or .name=="Event File") | [.name, .archive_download_url] | @tsv' | while read artifact
-          do
-            IFS=$'\t' read name url <<< "$artifact"
-            gh api $url > "$name.zip"
-            unzip -d "$name" "$name.zip"
-          done
-
-          if [ $(ls . | wc -l) -eq 0 ]
-          then
-            echo "::error::No artifact with name 'unit-test-results' or 'Event File' exists"
-            exit 1
-          fi
-        shell: bash
+        uses: dawidd6/action-download-artifact@246dbf436b23d7c49e21a7ab8204ca9ecd1fe615
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          name: "unit-test-results|Event File"
+          name_is_regexp: true
+          path: artifacts
 
       - name: Publish unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
