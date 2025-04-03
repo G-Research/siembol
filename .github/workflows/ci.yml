@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '17'
@@ -320,7 +320,7 @@ jobs:
             maven-
 
       - name: Set up Maven Central Repository
-        uses: actions/setup-java@c3ac5dd0ed8db40fedb61c32fbe677e6b355e94c
+        uses: actions/setup-java@148017a9b0c6af80330bcc5db11d1c670d2e7074
         with:
           java-version: '17'
           distribution: 'adopt'
